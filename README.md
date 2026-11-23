@@ -11,7 +11,7 @@ Intel 8086 Lab rassemble dans une seule page :
 - Un moteur pédagogique avec exécution complète et pas à pas
 - L'observation des registres, des indicateurs FLAGS et d'une mémoire segmentée pédagogique
 - Une référence d'instructions, des exercices et des idées de projets
-- Une suite de 34 tests rapides intégrée à la page pour contrôler des cas de calcul, FLAGS, sauts, boucles et pile
+- Une suite de 45 tests rapides intégrée à la page pour contrôler des cas de calcul, FLAGS, sauts, boucles et pile
 - Un convertisseur binaire, décimal, hexadécimal et octal
 - Une sauvegarde locale dans le navigateur, sans compte ni serveur
 
@@ -35,13 +35,13 @@ Le moteur JavaScript est un interpréteur pédagogique, pas un émulateur matér
 - Décalages : `SHL`, `SAL`, `SHR`
 - Comparaison et branchements : `CMP`, `JMP`, `JE/JZ`, `JNE/JNZ`, `JC/JNC`, `JS/JNS`, `JO/JNO`, `JG/JGE/JL/JLE`, `JA/JAE/JB/JBE`
 - Multiplication et division : `MUL`, `IMUL`, `DIV`, `IDIV` (opérandes implicites `AX` et `DX:AX`, vérification du quotient et division par zéro)
-- Boucles et pile : `LOOP`, `PUSH`, `POP`
+- Boucles et pile : `LOOP`, `PUSH`, `POP`, `CALL`, `RET` (appels proches, appels imbriqués et adresses de retour sur une pile simulée SS:SP)
 - Contrôle : `NOP`, `HLT`
 - Interruption DOS partielle : `INT 21h` avec `AH=02h` pour afficher le caractère contenu dans `DL`
 
 Les instructions non implémentées doivent produire une erreur explicite. Pour `MUL` et `IMUL`, le résultat est placé dans `AX` (opérande 8 bits) ou `DX:AX` (opérande 16 bits). `DIV` et `IDIV` utilisent `AX` ou `DX:AX` comme dividende et placent quotient/reste dans les registres prévus par le 8086. Les divisions par zéro et dépassements de quotient produisent une erreur explicite. Pour la multiplication, seuls `CF` et `OF` sont définis par le modèle ; les autres FLAGS restent inchangés. Les FLAGS après division sont indéfinis sur le 8086 et sont laissés inchangés par ce simulateur.
 
-Le moteur prend désormais en charge les formes usuelles d'adressage effectif (direct, BX/BP/SI/DI, base+index et déplacement), les overrides CS/DS/ES/SS, le segment SS par défaut avec BP, ainsi que les accès BYTE/WORD en little-endian. L'adresse physique est calculée sur 20 bits avec la formule segment × 16 + offset. Cela reste un modèle pédagogique simplifié : les cycles de bus, la prélecture, les périphériques, les interruptions complètes, les appels de procédures et certaines règles de codage machine ne sont pas émulés.
+Le moteur prend désormais en charge les formes usuelles d'adressage effectif (direct, BX/BP/SI/DI, base+index et déplacement), les overrides CS/DS/ES/SS, le segment SS par défaut avec BP, ainsi que les accès BYTE/WORD en little-endian. L'adresse physique est calculée sur 20 bits avec la formule segment × 16 + offset. Cela reste un modèle pédagogique simplifié : les cycles de bus, la prélecture, les périphériques, les interruptions complètes, les appels proches `CALL`/`RET` sont simulés avec des adresses de retour correspondant aux indices d'instructions du programme, et non à des offsets d'octets machine. La pile est représentée par une structure interne avec suivi de `SP` et visualisation `SS:SP` ; elle ne constitue pas une émulation complète de la mémoire physique de la pile ni des mécanismes matériels.
 
 ## Architecture et confidentialité
 
