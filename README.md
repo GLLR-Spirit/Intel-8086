@@ -11,6 +11,7 @@ Intel 8086 Lab rassemble dans une seule page :
 - Un moteur pédagogique avec exécution complète et pas à pas
 - L'observation des registres, des indicateurs FLAGS et d'une mémoire de démonstration
 - Une référence d'instructions, des exercices et des idées de projets
+- Une suite de 10 tests rapides intégrée à la page pour contrôler des cas de calcul, FLAGS, sauts, boucles et pile
 - Un convertisseur binaire, décimal, hexadécimal et octal
 - Une sauvegarde locale dans le navigateur, sans compte ni serveur
 
@@ -49,7 +50,7 @@ Les instructions non implémentées doivent produire une erreur explicite. La se
 
 ## Développement
 
-Le projet privilégie la précision pédagogique. Toute nouvelle instruction doit être accompagnée de tests portant sur les résultats, les registres et les FLAGS avant d'être présentée comme prise en charge.
+Le projet privilégie la précision pédagogique. Toute nouvelle instruction doit être accompagnée de tests portant sur les résultats, les registres et les FLAGS avant d'être présentée comme prise en charge. Les tests rapides sont également exécutables depuis la section **Outils et références**.
 
 ## Licence
 
