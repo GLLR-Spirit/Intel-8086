@@ -107,10 +107,12 @@ function runSelfTests(){var cases=[
 ["Pile PUSH/POP","MOV AX, 1234h\nPUSH AX\nMOV AX, 0\nPOP BX\nHLT",function(s){return s.reg.BX===0x1234&&s.reg.SP===65534;}],
 ["Erreur instruction inconnue","FOOBAR AX\nHLT",function(s){return !!s.error;}],
 ["Adressage BX+SI","MOV BX, 10\nMOV SI, 4\nMOV AX, 1234h\nMOV WORD PTR [BX+SI], AX\nMOV DX, WORD PTR [BX+SI]\nHLT",function(s){return s.reg.DX===0x1234&&s.mem[14]===0x34&&s.mem[15]===0x12;}],
-["BP utilise SS","MOV BP, 20\nMOV AX, 55h\nMOV BYTE PTR [BP+2], AL\nHLT",function(s){return s.mem[22]===0x55;}],
+["BP utilise SS par défaut","MOV AX, 1000h\nMOV DS, AX\nMOV AX, 2000h\nMOV SS, AX\nMOV BP, 20\nMOV AL, 55h\nMOV BYTE PTR [BP+2], AL\nHLT",function(s){return s.mem[0x20016]===0x55&&s.mem[0x10016]===undefined;}],
 ["Préfixe de segment ES","MOV BX, 5\nMOV AX, 0A55Ah\nMOV ES, AX\nMOV BYTE PTR ES:[BX], 7Fh\nHLT",function(s){return s.mem[0xA55A5]===0x7F;}],
 ["Adressage direct et mot little-endian","MOV AX, 0BEEFh\nMOV WORD PTR [200h], AX\nMOV DX, WORD PTR [200h]\nHLT",function(s){return s.reg.DX===0xBEEF&&s.mem[0x200]===0xEF&&s.mem[0x201]===0xBE;}],
-["Combinaison invalide","MOV AX, WORD PTR [AX+BX]\nHLT",function(s){return !!s.error;}]
+["Combinaison invalide","MOV AX, WORD PTR [AX+BX]\nHLT",function(s){return !!s.error;}],
+["BP+DI+déplacement","MOV AX, 2000h\nMOV SS, AX\nMOV BP, 10\nMOV DI, 3\nMOV AL, 66h\nMOV BYTE PTR [BP+DI+4], AL\nHLT",function(s){return s.mem[0x20011]===0x66;}],
+["SI seul avec DS","MOV AX, 1200h\nMOV DS, AX\nMOV SI, 9\nMOV AL, 77h\nMOV BYTE PTR [SI], AL\nHLT",function(s){return s.mem[0x12009]===0x77;}]
 ];var out=[],ok=0;cases.forEach(function(t){var s=executeAll(t[1]),pass=t[2](s);if(pass)ok++;out.push((pass?"PASS":"FAIL")+" · "+t[0]+(s.error?" — "+s.error:""));});$("testResults").textContent=out.join("\n");$("testSummary").textContent=ok+"/"+cases.length+" tests réussis";$("testSummary").className="status "+(ok===cases.length?"success":"error");}
 $("runSelfTests").onclick=runSelfTests;
 $("reset").onclick=resetCPU;resetCPU();renderLessons();showLesson(0);renderInstructions("");renderExercises();renderProjects();stats();
