@@ -94,15 +94,15 @@ function executeAll(src){var oldCpu=cpu,oldHalted=halted,oldLabels=labels;try{va
 $("run").onclick=function(){try{if(!ops.length)prepare($("code").value);var count=0;while(!halted&&pc<ops.length&&count<10000){tick();count++;}renderCPU(cpu);consoleOut();status("Exécution terminée : "+cpu.steps+" instruction(s).",false,true);$("lineStatus").textContent="Programme terminé.";}catch(e){status(e.message,true);}};
 $("step").onclick=function(){try{if(!ops.length)prepare($("code").value);if(halted){status("Programme arrêté. Réinitialise le CPU pour recommencer.");return;}var ins=tick();renderCPU(cpu);consoleOut();status(ins?"Exécuté : "+ins.raw:"Fin du programme.");$("lineStatus").textContent=ins?"Ligne source : "+ins.line+" · "+ins.raw:"Programme terminé.";}catch(e){status(e.message,true);}};
 function runSelfTests(){var cases=[
-["MOV et ADD","MOV AX, 5\\nMOV BX, 3\\nADD AX, BX\\nHLT",function(s){return s.reg.AX===8;}],
-["Retenue ADD 8 bits","MOV AL, 255\\nADD AL, 1\\nHLT",function(s){return s.reg.AX===0&&s.flags.CF===1&&s.flags.ZF===1;}],
-["Débordement signé ADD","MOV AL, 127\\nADD AL, 1\\nHLT",function(s){return s.reg.AL===undefined?((s.reg.AX&255)===128&&s.flags.OF===1):false;}],
-["Retenue SHL","MOV AL, 128\\nSHL AL, 1\\nHLT",function(s){return (s.reg.AX&255)===0&&s.flags.CF===1&&s.flags.ZF===1;}],
-["Branchement conditionnel","MOV AX, 7\\nCMP AX, 7\\nJE OK\\nMOV BX, 0\\nJMP FIN\\nOK:\\nMOV BX, 1\\nFIN:\\nHLT",function(s){return s.reg.BX===1;}],
-["Boucle LOOP","MOV CX, 3\\nMOV AX, 0\\nT:\\nINC AX\\nLOOP T\\nHLT",function(s){return s.reg.AX===3&&s.reg.CX===0;}],
-["Pile PUSH/POP","MOV AX, 1234h\\nPUSH AX\\nMOV AX, 0\\nPOP BX\\nHLT",function(s){return s.reg.BX===0x1234&&s.reg.SP===65534;}],
-["Erreur instruction inconnue","FOOBAR AX\\nHLT",function(s){return !!s.error;}]
-];var out=[],ok=0;cases.forEach(function(t){var s=executeAll(t[1]),pass=t[2](s);if(pass)ok++;out.push((pass?"PASS":"FAIL")+" · "+t[0]+(s.error?" — "+s.error:""));});$("testResults").textContent=out.join("\\n");$("testSummary").textContent=ok+"/"+cases.length+" tests réussis";$("testSummary").className="status "+(ok===cases.length?"success":"error");}
+["MOV et ADD","MOV AX, 5\nMOV BX, 3\nADD AX, BX\nHLT",function(s){return s.reg.AX===8;}],
+["Retenue ADD 8 bits","MOV AL, 255\nADD AL, 1\nHLT",function(s){return s.reg.AX===0&&s.flags.CF===1&&s.flags.ZF===1;}],
+["Débordement signé ADD","MOV AL, 127\nADD AL, 1\nHLT",function(s){return (s.reg.AX&255)===128&&s.flags.OF===1;}],
+["Retenue SHL","MOV AL, 128\nSHL AL, 1\nHLT",function(s){return (s.reg.AX&255)===0&&s.flags.CF===1&&s.flags.ZF===1;}],
+["Branchement conditionnel","MOV AX, 7\nCMP AX, 7\nJE OK\nMOV BX, 0\nJMP FIN\nOK:\nMOV BX, 1\nFIN:\nHLT",function(s){return s.reg.BX===1;}],
+["Boucle LOOP","MOV CX, 3\nMOV AX, 0\nT:\nINC AX\nLOOP T\nHLT",function(s){return s.reg.AX===3&&s.reg.CX===0;}],
+["Pile PUSH/POP","MOV AX, 1234h\nPUSH AX\nMOV AX, 0\nPOP BX\nHLT",function(s){return s.reg.BX===0x1234&&s.reg.SP===65534;}],
+["Erreur instruction inconnue","FOOBAR AX\nHLT",function(s){return !!s.error;}]
+];var out=[],ok=0;cases.forEach(function(t){var s=executeAll(t[1]),pass=t[2](s);if(pass)ok++;out.push((pass?"PASS":"FAIL")+" · "+t[0]+(s.error?" — "+s.error:""));});$("testResults").textContent=out.join("\n");$("testSummary").textContent=ok+"/"+cases.length+" tests réussis";$("testSummary").className="status "+(ok===cases.length?"success":"error");}
 $("runSelfTests").onclick=runSelfTests;
 $("reset").onclick=resetCPU;resetCPU();renderLessons();showLesson(0);renderInstructions("");renderExercises();renderProjects();stats();
 })();
