@@ -133,7 +133,11 @@ function runSelfTests(){var cases=[
 ["Division par zéro","MOV AX, 10\nMOV BL, 0\nDIV BL\nHLT",function(s){return !!s.error&&s.error.indexOf("division par zéro")>=0;}],
 ["Dépassement quotient DIV","MOV AX, 1000h\nMOV BL, 1\nDIV BL\nHLT",function(s){return !!s.error&&s.error.indexOf("dépassement de quotient")>=0;}],
 ["IDIV quotient hors plage","MOV AX, 0FF80h\nMOV BL, 0FFh\nIDIV BL\nHLT",function(s){return !!s.error&&s.error.indexOf("dépassement de quotient")>=0;}],
-["MUL refuse immédiat","MOV AL, 2\nMUL 3\nHLT",function(s){return !!s.error;}]
+["MUL refuse immédiat","MOV AL, 2\nMUL 3\nHLT",function(s){return !!s.error;}],
+["IDIV 16 bits négatif","MOV DX, 0FFFFh\nMOV AX, 0FFF9h\nMOV BX, 2\nIDIV BX\nHLT",function(s){return s.reg.AX===0xFFFD&&s.reg.DX===0xFFFF;}],
+["IDIV 16 bits diviseur négatif","MOV DX, 0\nMOV AX, 7\nMOV BX, 0FFFFh\nIDIV BX\nHLT",function(s){return s.reg.AX===0xFFF9&&s.reg.DX===0;}],
+["Dépassement quotient DIV 16 bits","MOV DX, 1\nMOV AX, 0\nMOV BX, 1\nDIV BX\nHLT",function(s){return !!s.error&&s.error.indexOf("dépassement de quotient")>=0;}],
+["MUL opérande mémoire","MOV AX, 1000h\nMOV DS, AX\nMOV SI, 5\nMOV BYTE PTR [SI], 4\nMOV AL, 7\nMUL BYTE PTR [SI]\nHLT",function(s){return s.reg.AX===28;}]
 ];var out=[],ok=0;cases.forEach(function(t){var s=executeAll(t[1]),pass=t[2](s);if(pass)ok++;out.push((pass?"PASS":"FAIL")+" · "+t[0]+(s.error?" — "+s.error:""));});$("testResults").textContent=out.join("\n");$("testSummary").textContent=ok+"/"+cases.length+" tests réussis";$("testSummary").className="status "+(ok===cases.length?"success":"error");}
 $("runSelfTests").onclick=runSelfTests;
 $("reset").onclick=resetCPU;resetCPU();renderLessons();showLesson(0);renderInstructions("");renderExercises();renderProjects();stats();
