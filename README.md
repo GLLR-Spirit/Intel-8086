@@ -9,9 +9,9 @@ Intel 8086 Lab rassemble dans une seule page :
 - Des leçons progressives avec exemples modifiables
 - Un éditeur de code assembleur
 - Un moteur pédagogique avec exécution complète et pas à pas
-- L'observation des registres, des indicateurs FLAGS et d'une mémoire de démonstration
+- L'observation des registres, des indicateurs FLAGS et d'une mémoire segmentée pédagogique
 - Une référence d'instructions, des exercices et des idées de projets
-- Une suite de 10 tests rapides intégrée à la page pour contrôler des cas de calcul, FLAGS, sauts, boucles et pile
+- Une suite de 15 tests rapides intégrée à la page pour contrôler des cas de calcul, FLAGS, sauts, boucles et pile
 - Un convertisseur binaire, décimal, hexadécimal et octal
 - Une sauvegarde locale dans le navigateur, sans compte ni serveur
 
@@ -38,7 +38,7 @@ Le moteur JavaScript est un interpréteur pédagogique, pas un émulateur matér
 - Contrôle : `NOP`, `HLT`
 - Interruption DOS partielle : `INT 21h` avec `AH=02h` pour afficher le caractère contenu dans `DL`
 
-Les instructions non implémentées doivent produire une erreur explicite. La segmentation réelle, les cycles d'horloge, les périphériques, les interruptions complètes, les appels de procédures et l'ensemble des modes d'adressage ne sont pas encore émulés.
+Les instructions non implémentées doivent produire une erreur explicite. Le moteur prend désormais en charge les formes usuelles d'adressage effectif (direct, BX/BP/SI/DI, base+index et déplacement), les overrides CS/DS/ES/SS, le segment SS par défaut avec BP, ainsi que les accès BYTE/WORD en little-endian. L'adresse physique est calculée sur 20 bits avec la formule segment × 16 + offset. Cela reste un modèle pédagogique simplifié : les cycles de bus, la prélecture, les périphériques, les interruptions complètes, les appels de procédures et certaines règles de codage machine ne sont pas émulés.
 
 ## Architecture et confidentialité
 
@@ -50,7 +50,7 @@ Les instructions non implémentées doivent produire une erreur explicite. La se
 
 ## Développement
 
-Le projet privilégie la précision pédagogique. Toute nouvelle instruction doit être accompagnée de tests portant sur les résultats, les registres et les FLAGS avant d'être présentée comme prise en charge. Les tests rapides sont également exécutables depuis la section **Outils et références**.
+Le projet privilégie la précision pédagogique. Toute nouvelle instruction ou extension mémoire doit être accompagnée de tests portant sur les résultats, les registres et les FLAGS avant d'être présentée comme prise en charge. Les tests rapides sont également exécutables depuis la section **Outils et références**.
 
 ## Licence
 
