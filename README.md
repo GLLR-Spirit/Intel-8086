@@ -1,1 +1,56 @@
-# Intel-8086
+# Intel 8086 Lab
+
+**Un laboratoire interactif, gratuit et sans compte pour apprendre et pratiquer l'assembleur Intel 8086.**
+
+## Objectif
+
+Intel 8086 Lab rassemble dans une seule page :
+- Un parcours d'apprentissage libre ou guidé, du niveau débutant au niveau avancé
+- Des leçons progressives avec exemples modifiables
+- Un éditeur de code assembleur
+- Un moteur pédagogique avec exécution complète et pas à pas
+- L'observation des registres, des indicateurs FLAGS et d'une mémoire de démonstration
+- Une référence d'instructions, des exercices et des idées de projets
+- Un convertisseur binaire, décimal, hexadécimal et octal
+- Une sauvegarde locale dans le navigateur, sans compte ni serveur
+
+## Utiliser le laboratoire
+
+Ouvre simplement **[Intel 8086 Lab](https://gllr-spirit.github.io/Intel-8086/)** après activation de GitHub Pages.
+
+Pour activer GitHub Pages :
+1. Ouvre **Settings** dans le dépôt.
+2. Va dans **Pages**.
+3. Dans **Build and deployment**, choisis **Deploy from a branch**.
+4. Sélectionne la branche **main** et le dossier **/(root)**.
+5. Enregistre. GitHub publiera ensuite le site à l'adresse ci-dessus.
+
+## Simulateur : périmètre actuel
+
+Le moteur JavaScript est un interpréteur pédagogique, pas un émulateur matériel complet du 8086. Il prend actuellement en charge un sous-ensemble comprenant notamment :
+
+- Transferts et calculs : `MOV`, `ADD`, `SUB`, `INC`, `DEC`
+- Logique : `AND`, `OR`, `XOR`, `NOT`, `TEST`
+- Décalages : `SHL`, `SAL`, `SHR`
+- Comparaison et branchements : `CMP`, `JMP`, `JE/JZ`, `JNE/JNZ`, `JC/JNC`, `JS/JNS`, `JO/JNO`, `JG/JGE/JL/JLE`, `JA/JAE/JB/JBE`
+- Boucles et pile : `LOOP`, `PUSH`, `POP`
+- Contrôle : `NOP`, `HLT`
+- Interruption DOS partielle : `INT 21h` avec `AH=02h` pour afficher le caractère contenu dans `DL`
+
+Les instructions non implémentées doivent produire une erreur explicite. La segmentation réelle, les cycles d'horloge, les périphériques, les interruptions complètes, les appels de procédures et l'ensemble des modes d'adressage ne sont pas encore émulés.
+
+## Architecture et confidentialité
+
+- HTML, CSS et JavaScript natifs
+- Aucun backend, aucune inscription et aucune dépendance obligatoire
+- Les préférences, la progression, le code et les notes sont stockés dans le stockage local du navigateur
+- Effacer les données du navigateur peut supprimer ces sauvegardes
+- Le dépôt étant public, le code source de la page est consultable
+
+## Développement
+
+Le projet privilégie la précision pédagogique. Toute nouvelle instruction doit être accompagnée de tests portant sur les résultats, les registres et les FLAGS avant d'être présentée comme prise en charge.
+
+## Licence
+
+Aucune licence open source n'est déclarée pour le moment. Ne présume pas d'une autorisation de réutilisation ou de redistribution avant qu'une licence soit ajoutée.
