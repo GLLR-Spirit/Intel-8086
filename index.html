@@ -132,8 +132,8 @@ var expr=text.slice(1,-1).replace(/\s+/g,""),parts=expr.match(/[+-]?[^+-]+/g);if
 var regs=[],disp=0;parts.forEach(function(p){var sign=p.charAt(0)==="-"?-1:1,t=p.replace(/^[+-]/,"");if(["BX","BP","SI","DI"].indexOf(t)>=0)regs.push(t);else{var n=parseNumber(t);if(n===null)throw Error("Déplacement non encodable : "+t);disp+=sign*n;}});
 var rmMap={"BX+SI":0,"SI+BX":0,"BX+DI":1,"DI+BX":1,"BP+SI":2,"SI+BP":2,"BP+DI":3,"DI+BP":3,"SI":4,"DI":5,"BP":6,"BX":7};
 var key=regs.slice().sort(function(a,b){return ["BX","BP","SI","DI"].indexOf(a)-["BX","BP","SI","DI"].indexOf(b);}).join("+");
-if(regs.length>2||!Object.prototype.hasOwnProperty.call(rmMap,key))throw Error("Adresse effective non encodable en ModR/M 8086.");
-var rm=rmMap[key],mod,tail=[];
+if(regs.length>2||(regs.length>0&&!Object.prototype.hasOwnProperty.call(rmMap,key)))throw Error("Adresse effective non encodable en ModR/M 8086.");
+var rm=regs.length===0?6:rmMap[key],mod,tail=[];
 if(regs.length===0){if(disp<0||disp>65535)throw Error("Adresse directe hors plage 16 bits.");mod=0;rm=6;tail=encodingWord(disp);}
 else if(disp===0&&rm!==6){mod=0;}
 else if(disp>=-128&&disp<=127){mod=1;tail=[disp&255];}
