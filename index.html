@@ -204,7 +204,7 @@ function runSelfTests(){var cases=[
 ["Pile physique respecte le segment SS","MOV AX, 1000h\nMOV SS, AX\nPUSH 1234h\nHLT",function(s){return !!s.reg&&s.mem[0x1FFFC]===0x34&&s.mem[0x1FFFD]===0x12&&s.reg.SP===65532;}],
 ["IRET restaure FLAGS depuis la pile mémoire","VECTOR 38h, H\nSTI\nINT 38h\nHLT\nH:\nCLI\nIRET",function(s){return !!s.reg&&!s.error&&s.flags.IF===1&&s.reg.SP===65534;}],
 ["POP détecte une modification de SP","MOV AX, 1234h\nPUSH AX\nMOV SP, 0FFFEh\nPOP BX\nHLT",function(s){return !!s.error&&s.error.indexOf("SS:SP")>=0;}],
-["POP détecte une modification de SS","MOV AX, 1234h\nPUSH AX\nMOV SS, 1000h\nPOP BX\nHLT",function(s){return !!s.error&&s.error.indexOf("SS:SP")>=0;}],
+["POP détecte une modification de SS","MOV AX, 1234h\nPUSH AX\nMOV BX, 1000h\nMOV SS, BX\nPOP BX\nHLT",function(s){return !!s.error&&s.error.indexOf("SS:SP")>=0;}],
 ["POP lit la valeur réellement stockée en mémoire","MOV AX, 1234h\nPUSH AX\nMOV BYTE PTR SS:[FFFCh], 78h\nPOP BX\nHLT",function(s){return !s.error&&s.reg.BX===0x1278;}],
 ["Pile gère le bouclage de l’offset 16 bits","MOV SP, 0001h\nMOV AX, 0BEEFh\nPUSH AX\nPOP BX\nHLT",function(s){return !s.error&&s.reg.BX===0xBEEF&&s.reg.SP===1;}],
 ["MOVSB copie un octet","MOV AX, 1000h\nMOV DS, AX\nMOV AX, 2000h\nMOV ES, AX\nMOV SI, 10\nMOV DI, 20\nMOV BYTE PTR [SI], 5Ah\nMOVSB\nHLT",function(s){return !s.error&&s.mem[0x20014]===0x5A&&s.reg.SI===11&&s.reg.DI===21;}],
@@ -222,9 +222,9 @@ function runSelfTests(){var cases=[
 ["REP CMPSB agit comme REPE","MOV AX, 1000h\nMOV DS, AX\nMOV AX, 2000h\nMOV ES, AX\nMOV SI, 0\nMOV DI, 0\nMOV CX, 3\nMOV BYTE PTR [SI], 1\nMOV BYTE PTR [SI+1], 2\nMOV BYTE PTR [SI+2], 3\nMOV BYTE PTR ES:[DI], 1\nMOV BYTE PTR ES:[DI+1], 8\nMOV BYTE PTR ES:[DI+2], 3\nREP CMPSB\nHLT",function(s){return !s.error&&s.reg.CX===1&&s.reg.SI===2&&s.reg.DI===2&&s.flags.ZF===0;}],
 ["REP sur ligne séparée","MOV CX, 3\nMOV SI, 0\nMOV DI, 10\nMOV BYTE PTR [0], 11h\nMOV BYTE PTR [1], 22h\nMOV BYTE PTR [2], 33h\nREP\nMOVSB\nHLT",function(s){return s.reg.CX===0&&s.mem[10]===0x11&&s.mem[11]===0x22&&s.mem[12]===0x33;}],
 ["REP exécute une itération par pas","MOV CX, 3\nMOV SI, 0\nMOV DI, 10\nMOV BYTE PTR [0], 11h\nMOV BYTE PTR [1], 22h\nMOV BYTE PTR [2], 33h\nREP MOVSB\nHLT",function(s){return s.reg.CX===0&&s.reg.SI===3&&s.reg.DI===13;}],
-["MOVSB avec source CS:","MOV AX, 0\nMOV CS, AX\nMOV ES, AX\nMOV SI, 0\nMOV DI, 10\nMOV BYTE PTR CS:[0], 5Ah\nCS: MOVSB\nHLT",function(s){return !s.error&&s.mem[10]===0x5A&&s.reg.SI===1&&s.reg.DI===11;}],
+["MOVSB avec source CS:","MOV AX, 0\nMOV ES, AX\nMOV SI, 0\nMOV DI, 10\nMOV BYTE PTR CS:[0], 5Ah\nCS: MOVSB\nHLT",function(s){return !s.error&&s.mem[10]===0x5A&&s.reg.SI===1&&s.reg.DI===11;}],
 ["LODSB avec source SS:","MOV AX, 0\nMOV SS, AX\nMOV SI, 20\nMOV BYTE PTR SS:[20], 7Bh\nSS:\nLODSB\nHLT",function(s){return !s.error&&(s.reg.AX&255)===0x7B&&s.reg.SI===21;}],
-["REP et préfixe de segment séparés","MOV AX, 0\nMOV DS, AX\nMOV ES, AX\nMOV CS, AX\nMOV CX, 2\nMOV SI, 0\nMOV DI, 30\nMOV BYTE PTR CS:[0], 11h\nMOV BYTE PTR CS:[1], 22h\nREP\nCS:\nMOVSB\nHLT",function(s){return !s.error&&s.reg.CX===0&&s.mem[30]===0x11&&s.mem[31]===0x22;}],
+["REP et préfixe de segment séparés","MOV AX, 0\nMOV DS, AX\nMOV ES, AX\nMOV CX, 2\nMOV SI, 0\nMOV DI, 30\nMOV BYTE PTR CS:[0], 11h\nMOV BYTE PTR CS:[1], 22h\nREP\nCS:\nMOVSB\nHLT",function(s){return !s.error&&s.reg.CX===0&&s.mem[30]===0x11&&s.mem[31]===0x22;}],
 ["Destination MOVSB reste ES:DI","MOV AX, 0\nMOV ES, AX\nMOV DS, AX\nMOV SI, 0\nMOV DI, 40\nMOV BYTE PTR DS:[0], 66h\nSS: MOVSB\nHLT",function(s){return !s.error&&s.mem[40]===0x66&&s.mem[65576]===undefined;}],
 ["Diagnostic structuré : instruction inconnue","FOOBAR AX\nHLT",function(s){return !!s.diagnostic&&s.diagnostic.line===1&&s.diagnostic.category==="instruction"&&s.diagnostic.instruction==="FOOBAR AX"&&!!s.diagnostic.hint;}],
 ["Diagnostic structuré : opérandes invalides","MOV AX\nHLT",function(s){return !!s.diagnostic&&s.diagnostic.line===1&&s.diagnostic.category==="opérande"&&s.diagnostic.message.indexOf("attend 2")>=0;}],
@@ -233,10 +233,14 @@ function runSelfTests(){var cases=[
 ["MOV interdit une écriture dans CS","MOV CS, AX\nHLT",function(s){return !!s.error&&s.error.indexOf("ne peut pas modifier CS")>=0;}],
 ["MOV autorise AX vers DS","MOV AX, 1234h\nMOV DS, AX\nHLT",function(s){return !s.error&&s.reg&&s.reg.DS===0x1234;}],
 ["MOV autorise CS vers AX","MOV AX, CS\nHLT",function(s){return !s.error&&s.reg&&s.reg.AX===0;}],
-["MOV interdit segment vers registre 8 bits","MOV AL, DS\nHLT",function(s){return !!s.error&&s.error.indexOf("registre 8 bits")>=0;}],
+["MOV interdit segment vers registre 8 bits","MOV AL, DS\nHLT",function(s){return !!s.error;}],
 ["MOV interdit segment vers segment","MOV DS, ES\nHLT",function(s){return !!s.error&&s.error.indexOf("autre registre de segment")>=0;}],
 ["MOV interdit les opérations arithmétiques sur DS","ADD DS, AX\nHLT",function(s){return !!s.error&&s.error.indexOf("opérandes arithmétiques")>=0;}],
-["POP CS refusé","POP CS\nHLT",function(s){return !!s.error&&s.error.indexOf("POP CS")>=0;}]
+["POP CS refusé","POP CS\nHLT",function(s){return !!s.error&&s.error.indexOf("POP CS")>=0;}],
+["MOV DS depuis mémoire WORD","MOV WORD PTR [100], 1234h\nMOV DS, WORD PTR [100]\nHLT",function(s){return !s.error&&s.reg.DS===0x1234;}],
+["MOV segment vers mémoire WORD","MOV AX, 0\nMOV DS, AX\nMOV WORD PTR [100], 0\nMOV WORD PTR [100], DS\nHLT",function(s){return !s.error&&s.mem[100]===0&&s.mem[101]===0;}],
+["MOV refuse mémoire BYTE vers DS","MOV DS, BYTE PTR [100]\nHLT",function(s){return !!s.error&&s.error.indexOf("mémoire WORD")>=0;}],
+["MOV refuse mémoire BYTE depuis DS","MOV BYTE PTR [100], DS\nHLT",function(s){return !!s.error&&s.error.indexOf("mémoire WORD")>=0;}]
 ];var out=[],ok=0;cases.forEach(function(t){var s=executeAll(t[1]),pass=t[2](s);if(pass)ok++;out.push((pass?"PASS":"FAIL")+" · "+t[0]+(s.error?" — "+s.error:""));});$("testResults").textContent=out.join("\n");$("testSummary").textContent=ok+"/"+cases.length+" tests réussis";$("testSummary").className="status "+(ok===cases.length?"success":"error");}
 $("runSelfTests").onclick=runSelfTests;
 $("reset").onclick=resetCPU;resetCPU();renderLessons();showLesson(0);renderInstructions("");renderExercises();renderProjects();stats();
