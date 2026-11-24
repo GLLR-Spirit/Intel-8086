@@ -40,3 +40,5 @@ jobs:
         run: node tests/control-stack.cjs
       - name: Run relative branch and displacement tests
         run: node tests/relative-branches.cjs
+      - name: Run byte-offset execution tests
+        run: node tests/byte-offset-execution.cjs
