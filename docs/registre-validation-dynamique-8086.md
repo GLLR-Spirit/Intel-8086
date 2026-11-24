@@ -120,3 +120,7 @@ Les familles précédemment listées comme absentes ont maintenant reçu une imp
 **Limites explicites :** WAIT est un no-op faute de modélisation de l'entrée TEST ; ESC est un no-op faute de coprocesseur externe/8087 ; LOCK valide et conserve le préfixe mais le moteur mono-thread ne simule ni verrouillage du bus ni concurrence atomique ; les ports IN/OUT sont un modèle logiciel. Les formes de compte, les FLAGS indéfinis, les combinaisons de préfixes et les cas invalides nécessitent encore des matrices indépendantes. Ces instructions restent donc **partiellement validées**, et non certifiées exhaustives.
 
 Les tests différentiels ajoutés couvrent les cas nominaux source/binaire et les principaux encodages. Le statut ne sera élevé qu'après des vecteurs indépendants complets par forme.
+
+### Environnement d'E/S déterministe
+
+La directive pédagogique `PORT imm16, imm16` permet d'initialiser les ports pour l'exécution source ; elle n'est pas un opcode Intel et n'est pas émise dans le flux binaire. L'assembleur expose la table dans ses métadonnées `ports`. Le moteur binaire reçoit cette table par `initialState.io` ; l'interface binaire la reprend depuis les directives PORT présentes dans l'éditeur. Les huit formes IN/OUT immédiat/DX et AL/AX sont testées. Cette abstraction ne simule pas les périphériques ni les cycles matériels.
