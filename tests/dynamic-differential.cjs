@@ -473,7 +473,7 @@ test("tous les modes d’adressage mémoire 8086 et les quatre overrides de segm
     "MOV WORD PTR DS:[BP+SI+16], 0A0Ah",
     "MOV WORD PTR SS:[BX+DI+30h], 0B0Bh",
     "MOV WORD PTR ES:[BX+SI+20h], 0C0Ch",
-    "MOV WORD PTR CS:[BX+DI+22h], 0D0Dh",
+    "MOV WORD PTR CS:[BX+DI+0200h], 0D0Dh",
     "HLT"
   ].join("\n");
   const addresses=[
