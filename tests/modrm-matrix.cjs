@@ -75,7 +75,7 @@ function displacementBytes(mod, rm) {
   return [];
 }
 function expectedDecoderLength(mod, rm, immediateBytes) {
-  return 1 + displacementBytes(mod, rm).length + (immediateBytes || 0);
+  return 2 + displacementBytes(mod, rm).length + (immediateBytes || 0);
 }
 function assertDecoded(bytes, mnemonic, expectedLength, description) {
   const result = disassemble(bytes);
@@ -96,7 +96,9 @@ for (let mod = 0; mod < 4; mod++) {
       const sourceStore = "MOV " + operand + ", " + REG16[reg];
       const expectedRM = [modRM(mod, reg, rm)].concat(displacementBytes(mod, rm));
       const expectedLoad = [0x8B].concat(expectedRM);
-      const expectedStore = [0x89].concat(expectedRM);
+      const expectedStore = mod === 3
+        ? [0x8B, modRM(3, rm, reg)]
+        : [0x89].concat(expectedRM);
 
       test("Assembleur · 8B · mod=" + mod + " reg=" + reg + " r/m=" + rm, () => {
         const actual = assemble(sourceLoad);
