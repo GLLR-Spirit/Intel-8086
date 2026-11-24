@@ -128,24 +128,23 @@ for (const code of [
   counts.truncated++;
 }
 
-// Near indirect CALL via register and memory; IP is a logical instruction index
-// in this interpreter, not a byte offset in a loaded machine-code segment.
+// Near indirect CALL/JMP resolve targets and return addresses through assembled byte offsets.
 test("CALL r16 then RET restores logical IP and SP", () => {
   const s = execution([
-    "MOV AX, 4", "CALL AX", "MOV BX, 1", "JMP FIN",
+    "MOV AX, 10", "CALL AX", "MOV BX, 1", "JMP FIN",
     "SUB: MOV CX, 1234h", "RET", "FIN: HLT"
   ].join("\n"));
   assert.equal(s.reg.CX, 0x1234);
   assert.equal(s.reg.BX, 1);
   assert.equal(s.reg.SP, 0xFFFE);
-  assert.equal(s.reg.IP, 7);
+  assert.equal(s.reg.IP, 15);
   assert.equal(s.stack.length, 0);
 });
 counts.execution++;
 
 test("CALL r/m16 reads target from memory and returns", () => {
   const s = execution([
-    "MOV BX, 0100h", "MOV WORD PTR [BX], 5", "CALL WORD PTR [BX]",
+    "MOV BX, 0100h", "MOV WORD PTR [BX], 14", "CALL WORD PTR [BX]",
     "MOV DX, 7", "JMP FIN", "SUB: MOV CX, 4321h", "RET", "FIN: HLT"
   ].join("\n"));
   assert.equal(s.reg.CX, 0x4321);
@@ -155,7 +154,7 @@ test("CALL r/m16 reads target from memory and returns", () => {
 counts.execution++;
 
 test("JMP r16 transfers control without pushing a return address", () => {
-  const s = execution(["MOV AX, 3", "JMP AX", "MOV BX, 0", "TARGET: MOV BX, 1", "HLT"].join("\n"));
+  const s = execution(["MOV AX, 8", "JMP AX", "MOV BX, 0", "TARGET: MOV BX, 1", "HLT"].join("\n"));
   assert.equal(s.reg.BX, 1);
   assert.equal(s.reg.SP, 0xFFFE);
   assert.equal(s.stack.length, 0);
@@ -164,7 +163,7 @@ counts.execution++;
 
 test("JMP r/m16 reads a near target from memory", () => {
   const s = execution([
-    "MOV BX, 0100h", "MOV WORD PTR [BX], 4", "JMP WORD PTR [BX]",
+    "MOV BX, 0100h", "MOV WORD PTR [BX], 14", "JMP WORD PTR [BX]",
     "MOV CX, 0", "TARGET: MOV CX, 9", "HLT"
   ].join("\n"));
   assert.equal(s.reg.CX, 9);
@@ -173,7 +172,7 @@ counts.execution++;
 
 test("CALL FAR m16:16 and RETF restore CS:IP and SP", () => {
   const s = execution([
-    "MOV BX, 0100h", "MOV WORD PTR [BX], 6", "MOV WORD PTR [BX+2], 1234h",
+    "MOV BX, 0100h", "MOV WORD PTR [BX], 19", "MOV WORD PTR [BX+2], 1234h",
     "CALL FAR PTR [BX]", "MOV DX, 7", "JMP FIN",
     "SUB: MOV CX, 2468h", "RETF", "FIN: HLT"
   ].join("\n"));
@@ -187,7 +186,7 @@ counts.execution++;
 
 test("JMP FAR m16:16 changes CS:IP and does not push", () => {
   const s = execution([
-    "MOV BX, 0100h", "MOV WORD PTR [BX], 5", "MOV WORD PTR [BX+2], 2345h",
+    "MOV BX, 0100h", "MOV WORD PTR [BX], 17", "MOV WORD PTR [BX+2], 2345h",
     "JMP FAR PTR [BX]", "MOV CX, 0", "TARGET: MOV CX, 7", "HLT"
   ].join("\n"));
   assert.equal(s.reg.CX, 7);
@@ -208,7 +207,7 @@ counts.execution++;
 
 test("RETF imm16 removes caller arguments after far return", () => {
   const s = execution([
-    "MOV BX, 0100h", "MOV WORD PTR [BX], 7", "MOV WORD PTR [BX+2], 1111h",
+    "MOV BX, 0100h", "MOV WORD PTR [BX], 19", "MOV WORD PTR [BX+2], 1111h",
     "MOV AX, 55h", "PUSH AX", "CALL FAR PTR [BX]", "HLT",
     "PROC: RETF 2"
   ].join("\n"));
