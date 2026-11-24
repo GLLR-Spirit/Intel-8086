@@ -30,7 +30,7 @@ Elle utilise désormais trois niveaux de vérification arithmétique :
 2. Balayage exhaustif des couples d'opérandes 8 bits pour ADD, ADC, SUB et SBB, avec les deux états de retenue pertinents.
 3. Vecteurs binaires bruts : octets machine constants, sans passer par l'assembleur du laboratoire, puis comparaison des résultats avec l'oracle.
 
-Le lot étendu comprend également un cadre IRET brut en mémoire, sans métadonnées de pile, avec restauration d'un CS différent et bouclage de SP. Résultat vérifié : **34/34 tests différentiels réussis**, plus 393 216 cas ALU 8 bits exhaustifs, 800 cas de frontière 16 bits et 1 350 exécutions binaires ALU avec octets bruts. Run CI [45505098359](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45505098359), commit testé `daaab3856e0c0b5f017fa11dd12eeffc4cb35252`.
+Le lot étendu comprend également un cadre IRET brut en mémoire, sans métadonnées de pile, avec restauration d'un CS différent et bouclage de SP. Résultat vérifié : **37/37 tests différentiels réussis**, plus 393 216 cas ALU 8 bits exhaustifs, 800 cas de frontière 16 bits, 1 350 exécutions binaires ALU sur octets bruts, 768 combinaisons ModR/M registre-direct exécutées, 512 combinaisons Jcc/FLAGS et les huit modes d'adressage mémoire avec quatre overrides de segment. Run CI [45505436864](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45505436864), commit testé `08208ea6dc2cbe867b33e8bc1dc61ce3c6b22857`.
 
 ### Limites méthodologiques
 
@@ -95,7 +95,7 @@ Les flux incomplets sont une classe distincte : ils doivent produire une erreur 
 
 ## 6. Validation CI
 
-Le workflow principal [45505098359](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45505098359) a terminé avec le statut **success** sur le commit testé `daaab3856e0c0b5f017fa11dd12eeffc4cb35252`. La suite différentielle rapporte **34/34 tests réussis**, **393 216** vecteurs arithmétiques exhaustifs 8 bits, **800** vecteurs de frontière 16 bits et **1 350** exécutions binaires ALU à partir d'octets bruts.
+Le workflow principal [45505436864](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45505436864) a terminé avec le statut **success** sur le commit testé `08208ea6dc2cbe867b33e8bc1dc61ce3c6b22857`. La suite différentielle rapporte **37/37 tests réussis**, **393 216** vecteurs arithmétiques exhaustifs 8 bits, **800** vecteurs de frontière 16 bits, **1 350** exécutions binaires ALU sur octets bruts, **768** combinaisons registre-direct et **512** combinaisons Jcc/FLAGS.
 
 ## 7. Conclusion et seuil d'arrêt
 
