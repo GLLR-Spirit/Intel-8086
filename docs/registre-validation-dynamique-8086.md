@@ -26,7 +26,7 @@ La suite compare les états des deux moteurs sur :
 
 Elle utilise également des oracles arithmétiques indépendants pour ADD, ADC, SUB et SBB, des résultats fixes pour AND/OR/XOR/TEST, ainsi que des cas de branchement, de pile, de préfixes et d'encodages invalides.
 
-Dernier résultat observé pour cette suite : **25/25 tests réussis** avant l'extension supplémentaire. Le résultat du workflow après l'extension doit être consulté dans la section de validation CI ci-dessous et dans l'historique Actions.
+Dernier résultat vérifié pour cette suite : **29/29 tests réussis**, sans échec, dans le run CI [45503831908](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45503831908), commit `8f0069c68ca794be47dc54582d1321796c7e47b0`.
 
 ### Limites méthodologiques
 
@@ -86,7 +86,11 @@ Les flux incomplets sont une classe distincte : ils doivent produire une erreur 
 - RET/RETF avec ajustement impair : forme encodable/décodable mais refusée par le suivi pédagogique de pile, qui travaille par mots.
 - IRET : test source avec cadre `VECTOR`, plus test de rejet du flux binaire sans cadre. L'équivalence complète d'un environnement d'interruptions matériel n'est pas revendiquée.
 
-## 6. Conclusion et seuil d'arrêt
+## 6. Validation CI
+
+Le workflow principal [45503831908](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45503831908) a terminé avec le statut **success** sur le commit `8f0069c68ca794be47dc54582d1321796c7e47b0`. L'étape différentielle rapporte **29 réussites et 0 échec**. Les autres suites du workflow sont également passées. Une nouvelle exécution est déclenchée par les mises à jour documentaires de ce registre ; la validation finale du commit documentaire doit être lue dans Actions.
+
+## 7. Conclusion et seuil d'arrêt
 
 La suite différentielle renforce la confiance dans les scénarios comparés. **Elle ne rend pas la vérification parfaite** : il manque encore une validation indépendante exhaustive de toutes les formes, des valeurs ModR/M, des déplacements, des états initiaux, des effets de pile, des interruptions et des cas limites de mémoire.
 
