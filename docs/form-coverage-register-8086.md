@@ -26,10 +26,10 @@ Sources :
 | 4 | r16, r/m16 | 8B /r | Implémenté | Implémenté | Oui |
 | 5 | r/m16, Sreg | 8C /r | Implémenté | Implémenté | Oui |
 | 6 | Sreg, r/m16 | 8E /r | Implémenté | Implémenté | Oui |
-| 7 | AL, moffs8 | A0 | Absent | Absent | Non |
-| 8 | AX, moffs16 | A1 | Absent | Absent | Non |
-| 9 | moffs8, AL | A2 | Absent | Absent | Non |
-| 10 | moffs16, AX | A3 | Absent | Absent | Non |
+| 7 | AL, moffs8 | A0 | Implémenté | Implémenté | Oui |
+| 8 | AX, moffs16 | A1 | Implémenté | Implémenté | Oui |
+| 9 | moffs8, AL | A2 | Implémenté | Implémenté | Oui |
+| 10 | moffs16, AX | A3 | Implémenté | Implémenté | Oui |
 | 11 | r8, imm8 | B0–B7 | Implémenté | Implémenté | Oui |
 | 12 | r16, imm16 | B8–BF | Implémenté | Implémenté | Oui |
 | 13 | r/m8, imm8 | C6 /0 | Implémenté | Implémenté | Oui |
@@ -39,7 +39,7 @@ Sources :
 - `MOV Sreg,r/m16` ne permet pas CS comme destination.
 - `C6` et `C7` exigent l'extension ModR/M `/0`.
 - Les transferts immédiats vers un registre de segment ne sont pas une forme 8086 valide.
-- Les formes moffs utilisent une adresse directe 16 bits ; elles ne sont pas équivalentes à une forme ModR/M avec registre de base.
+- Les formes moffs utilisent une adresse directe 16 bits ; elles ne sont pas équivalentes à une forme ModR/M avec registre de base. L’assembleur les sélectionne pour les formes directes non qualifiées avec AL/AX ; une qualification BYTE/WORD PTR explicite conserve la voie ModR/M.
 - Les préfixes de segment doivent être testés séparément des opcodes de base.
 
 ## 3. ADD, ADC, SUB, SBB et CMP — 9 formes par instruction
@@ -71,9 +71,9 @@ Extensions ModR/M :
 | AL/AX, immédiat | Implémenté | Implémenté | Vecteurs ciblés présents, couverture à compléter par largeur et instruction |
 | Groupe 80h, r/m8 + imm8 | Implémenté | Implémenté | Quelques cas ciblés ; matrice complète à faire |
 | Groupe 81h, r/m16 + imm16 | Implémenté | Implémenté | Vecteurs ajoutés pour les cinq extensions, couverture mémoire/registre à compléter |
-| Groupe 83h, r/m16 + imm8 signé | Absent | Absent | À faire |
+| Groupe 83h, r/m16 + imm8 signé | Implémenté | Implémenté | Vecteurs indépendants ajoutés pour les cinq extensions |
 
-Le décompte de cette tranche est donc de **9 formes par instruction**, soit **45 formes arithmétiques/comparaison**. Huit formes sur neuf disposent d'une branche de génération et de décodage dans le sous-ensemble actuel ; la forme 83h reste absente pour les cinq instructions.
+Le décompte de cette tranche est de **9 formes par instruction**, soit **45 formes arithmétiques/comparaison**. Les neuf formes de chacune des cinq instructions disposent maintenant d’une branche de génération et de décodage.
 
 ## 4. Vecteurs indépendants ajoutés
 
@@ -82,7 +82,7 @@ Le fichier `tests/instruction-vectors.cjs` a été étendu avec :
 - dix cas directionnels pour ADD/ADC/SBB/SUB/CMP avec opérandes mémoire ;
 - quatre cas d'immédiat mot en mémoire couvrant ADD, ADC, SUB et CMP.
 
-Les vecteurs du désassembleur utilisent des octets fixes écrits dans le test. Ils ne réutilisent pas la sortie de l'assembleur comme oracle. La suite comprend maintenant 80 vecteurs indépendants : 34 contrôles d'assembleur, 32 de désassembleur, un contrôle de flux tronqué et 13 contrôles du simulateur. Le run CI 221 a validé les 80/80 vecteurs ainsi que les 354/354 tests de fumée. Elle ne couvre toujours pas toutes les variantes de ModR/M, tous les modes d'adressage, les déplacements signés, les préfixes, les opcodes moffs ni les groupes 83h.
+Les vecteurs du désassembleur utilisent des octets fixes écrits dans le test. Ils ne réutilisent pas la sortie de l'assembleur comme oracle. La suite comprend maintenant **114 vecteurs indépendants** ; le run CI 238 valide les 114/114 vecteurs ainsi que les 354/354 tests de fumée. Les cas ajoutés couvrent les cinq extensions 83h, les quatre opcodes moffs A0h–A3h, les overrides de segment, les déplacements disp8/disp16 et des cas de FLAGS. Ils ne couvrent toujours pas toutes les combinaisons de champs ModR/M, toutes les valeurs de déplacement ni l’ensemble des cas limites du simulateur.
 
 ## 5. Couverture calculable à ce stade
 
@@ -90,24 +90,22 @@ Le taux de couverture doit être calculé sur des unités explicites et ne pas m
 
 | Périmètre | Formes recensées | Génération assembleur | Décodage | Validation indépendante exhaustive |
 |---|---:|---|---|---|
-| MOV | 14 | 10 implémentées, 4 absentes | 10 implémentées, 4 absentes | Non |
-| ADD | 9 | 8 implémentées, 1 absente | 8 implémentées, 1 absente | Non |
-| ADC | 9 | 8 implémentées, 1 absente | 8 implémentées, 1 absente | Non |
-| SBB | 9 | 8 implémentées, 1 absente | 8 implémentées, 1 absente | Non |
-| SUB | 9 | 8 implémentées, 1 absente | 8 implémentées, 1 absente | Non |
-| CMP | 9 | 8 implémentées, 1 absente | 8 implémentées, 1 absente | Non |
-| **Total** | **59** | **50 implémentées, 9 absentes** | **50 implémentées, 9 absentes** | **Non** |
+| MOV | 14 | 14 implémentées | 14 implémentées | Non |
+| ADD | 9 | 9 implémentées | 9 implémentées | Non |
+| ADC | 9 | 9 implémentées | 9 implémentées | Non |
+| SBB | 9 | 9 implémentées | 9 implémentées | Non |
+| SUB | 9 | 9 implémentées | 9 implémentées | Non |
+| CMP | 9 | 9 implémentées | 9 implémentées | Non |
+| **Total** | **59** | **59 implémentées** | **59 implémentées** | **Non** |
 
-Ces pourcentages de présence de branches (50/59) ne sont **pas** des taux de validation. Une forme peut être implémentée mais insuffisamment testée. Inversement, un test isolé ne certifie pas tous les modes d'adressage et toutes les valeurs des champs ModR/M.
+La présence de branches (59/59) n’est **pas** un taux de validation exhaustive. Une forme peut être implémentée mais insuffisamment testée. Inversement, un test isolé ne certifie pas tous les modes d'adressage et toutes les valeurs des champs ModR/M.
 
 ## 6. Travail restant sur cette tranche
 
-1. Ajouter les cinq formes 83h avec extension de signe correcte, sans les confondre avec les formes 81h.
-2. Ajouter les quatre formes moffs MOV (A0h–A3h) dans l'assembleur et le désassembleur.
-3. Décliner les vecteurs sur registres, adresses effectives, disp8, disp16, adresse directe et préfixes de segment.
-4. Ajouter les tests négatifs des extensions ModR/M invalides, des tailles incompatibles et des restrictions sur CS.
-5. Étendre les tests simulateur pour AF, CF, OF, PF, SF et ZF avec cas limites 8 et 16 bits, sans attribuer une valeur aux indicateurs déclarés indéfinis par Intel.
-6. Confirmer les restrictions et les timings forme par forme dans les tableaux primaires Intel avant de clôturer les fiches.
+1. Décliner les vecteurs sur les combinaisons ModR/M registre-direct, base/index, disp8, disp16 et adresse directe.
+2. Ajouter des tests négatifs systématiques pour les extensions ModR/M invalides, les tailles incompatibles et les restrictions sur CS.
+3. Compléter les cas limites simulateur pour AF, CF, OF, PF, SF et ZF en 8 et 16 bits, sans attribuer de valeur aux indicateurs indéfinis.
+4. Confirmer les restrictions et timings forme par forme dans les tableaux primaires Intel avant de clôturer les fiches.
 
 ## 7. Portée de cette tranche
 
@@ -126,3 +124,12 @@ Le simulateur reste un interpréteur pédagogique. Les vecteurs de cette tranche
 - Aucun changement du moteur CPU, de l'assembleur ou du désassembleur dans ce lot ; seules les suites de tests et les documents ont été étendus.
 
 Ce résultat valide les cas ajoutés, pas toutes les combinaisons d'opérandes des 59 formes recensées.
+
+
+## Mise à jour — implémentation des formes 83h et MOV moffs
+
+Le groupe `83h` est bien présent dans le codage 8086 : le champ `S:W = 11` indique un immédiat de 8 bits étendu en signe vers 16 bits (table 4-7 du manuel Intel 8086 Family, octobre 1979). L’assembleur sélectionne désormais `83h` pour les opérandes mot dont l’immédiat est compris entre −128 et +127 ; hors de cette plage, il conserve `81h`. Le désassembleur lit l’octet immédiat comme une valeur signée.
+
+Les quatre formes `MOV moffs` (`A0h`–`A3h`) sont maintenant encodées et décodées. Pour préserver les cas ModR/M explicites déjà utilisés dans le laboratoire, l’assembleur choisit moffs pour les formes directes non qualifiées avec AL/AX ; une qualification BYTE/WORD PTR explicite conserve la forme ModR/M.
+
+**Validation CI 238** : [354/354 tests de fumée et 114/114 vecteurs indépendants réussis](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45443738198). Cela valide les cas ajoutés, mais ne certifie pas toutes les combinaisons d’adressage et de FLAGS.
