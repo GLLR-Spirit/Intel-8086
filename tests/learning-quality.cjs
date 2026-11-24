@@ -45,7 +45,7 @@ for (let i = advancedStart; i < learning.exercises.length; i++) {
     "New exercise " + i + " must provide a level, hint and step-by-step solution");
   const state = learning.executeAll(exercise[2]);
   assert.ok(!state.error, exercise[0] + " reference solution must execute: " + state.error);
-  assert.ok(exercise[3](state), exercise[0] + " reference solution must satisfy its validator");
+  assert.ok(exercise[3](state), exercise[0] + " reference solution must satisfy its validator; state=" + JSON.stringify(state.reg) + "; flags=" + JSON.stringify(state.flags));
 }
 
 const renderer = match[1].slice(match[1].indexOf("function renderExercises()"), match[1].indexOf("\nfunction renderProjects()"));
