@@ -406,6 +406,112 @@ test("vecteurs binaires bruts ALU 8 bits comparés à l’oracle indépendant", 
 });
 categories.arithmetic++;
 
+test("matrice exhaustive des 768 transferts ALU registre-direct 8/16 bits", () => {
+  const operations = [
+    {kind:"ADD",op8:0x00,op16:0x01,carries:[0],add:true},
+    {kind:"ADC",op8:0x10,op16:0x11,carries:[0,1],add:true},
+    {kind:"SBB",op8:0x18,op16:0x19,carries:[0,1],add:false},
+    {kind:"SUB",op8:0x28,op16:0x29,carries:[0],add:false}
+  ];
+  const names8 = ["AL","CL","DL","BL","AH","CH","DH","BH"];
+  const parents8 = ["AX","CX","DX","BX"];
+  let checked = 0;
+  for (const op of operations) for (const carry of op.carries) {
+    for (let dst = 0; dst < 8; dst++) for (let src = 0; src < 8; src++) {
+      const values = [0x00,0x01,0x0f,0x10,0x7f,0x80,0xfe,0xff];
+      const regs = {AX:0,CX:0,DX:0,BX:0};
+      for (let code=0;code<8;code++) {
+        const parent = parents8[code&3], value = values[code];
+        regs[parent] = code<4 ? ((regs[parent]&0xff00)|value) : ((regs[parent]&0x00ff)|(value<<8));
+      }
+      const a=values[dst],b=values[src],modrm=0xc0|(src<<3)|dst;
+      const state=api.executeBinary([op.op8,modrm,0xf4],0,0,{reg:regs,flags:{CF:carry}});
+      assert.ok(!state.error,state.error||op.kind+" byte register matrix");
+      const raw=op.add?a+b+carry:a-b-carry,result=raw&255;
+      const expected=op.add?addFlags(a,b,carry,8):subFlags(a,b,carry,8);
+      const parent=parents8[dst&3],old=regs[parent];
+      const expectedParent=dst<4?((old&0xff00)|result):((old&0x00ff)|(result<<8));
+      assert.equal(state.reg[parent],expectedParent,op.kind+" "+names8[dst]+","+names8[src]);
+      for(const [flag,value] of Object.entries(expected))assert.equal(state.flags[flag],value,op.kind+" "+flag);
+      assert.equal(state.steps,2);
+      checked++;
+    }
+  }
+  const names16=["AX","CX","DX","BX","SP","BP","SI","DI"];
+  for (const op of operations) for (const carry of op.carries)
+    for (let dst=0;dst<8;dst++) for(let src=0;src<8;src++){
+      const values=[0x0000,0x0001,0x000f,0x0010,0x007f,0x0080,0x7fff,0xffff];
+      const regs={};names16.forEach((name,i)=>regs[name]=values[i]);
+      const a=values[dst],b=values[src],modrm=0xc0|(src<<3)|dst;
+      const state=api.executeBinary([op.op16,modrm,0xf4],0,0,{reg:regs,flags:{CF:carry}});
+      assert.ok(!state.error,state.error||op.kind+" word register matrix");
+      const cin=(op.kind==="ADC"||op.kind==="SBB")?carry:0;
+      const raw=op.add?a+b+cin:a-b-cin,result=raw&65535;
+      const expected=op.add?addFlags(a,b,cin,16):subFlags(a,b,cin,16);
+      assert.equal(state.reg[names16[dst]],result,op.kind+" "+names16[dst]+","+names16[src]);
+      for(const [flag,value] of Object.entries(expected))assert.equal(state.flags[flag],value,op.kind+" "+flag);
+      checked++;
+    }
+  assert.equal(checked,768);
+});
+categories.arithmetic++;
+
+test("tous les modes d’adressage mémoire 8086 et les quatre overrides de segment", () => {
+  const source=[
+    "MOV AX, 1000h","MOV DS, AX","MOV AX, 2000h","MOV SS, AX",
+    "MOV AX, 3000h","MOV ES, AX",
+    "MOV BX, 0010h","MOV BP, 0020h","MOV SI, 0002h","MOV DI, 0004h",
+    "MOV WORD PTR [BX+SI], 1111h",
+    "MOV WORD PTR [BX+DI+2], 2222h",
+    "MOV WORD PTR [BP+SI+4], 3333h",
+    "MOV WORD PTR [BP+DI+6], 4444h",
+    "MOV WORD PTR [SI+8], 5555h",
+    "MOV WORD PTR [DI+10], 6666h",
+    "MOV WORD PTR [BP+12], 7777h",
+    "MOV WORD PTR [BX+14], 8888h",
+    "MOV WORD PTR [0300h], 9999h",
+    "MOV WORD PTR DS:[BP+SI+16], 0A0Ah",
+    "MOV WORD PTR SS:[BX+DI+30h], 0B0Bh",
+    "MOV WORD PTR ES:[BX+SI+20h], 0C0Ch",
+    "MOV WORD PTR CS:[BX+DI+22h], 0D0Dh",
+    "HLT"
+  ].join("\n");
+  const addresses=[
+    0x10012,0x10016,0x20026,0x2002a,0x1000a,0x1000e,0x2002c,0x1001e,0x10300,
+    0x10032,0x20044,0x30032,0x00034
+  ];
+  const {binaryState}=compareSourceBinary(source,addresses);
+  const expected=[0x1111,0x2222,0x3333,0x4444,0x5555,0x6666,0x7777,0x8888,0x9999,0x0a0a,0x0b0b,0x0c0c,0x0d0d];
+  for(let i=0;i<addresses.length;i++){
+    const value=binaryState.mem[addresses[i]]|(binaryState.mem[addresses[i]+1]<<8);
+    assert.equal(value,expected[i],"memory at "+addresses[i].toString(16));
+  }
+});
+categories.memory++;
+
+test("les 16 conditions Jcc sont exactes pour les 32 combinaisons CF/ZF/SF/OF/PF", () => {
+  const condition = [
+    f=>f.OF===1, f=>f.OF===0, f=>f.CF===1, f=>f.CF===0,
+    f=>f.ZF===1, f=>f.ZF===0, f=>f.CF===1||f.ZF===1, f=>f.CF===0&&f.ZF===0,
+    f=>f.SF===1, f=>f.SF===0, f=>f.PF===1, f=>f.PF===0,
+    f=>f.SF!==f.OF, f=>f.SF===f.OF, f=>f.ZF===1||f.SF!==f.OF, f=>f.ZF===0&&f.SF===f.OF
+  ];
+  let checked=0;
+  for(let bits=0;bits<32;bits++){
+    const flags={CF:bits&1,ZF:(bits>>1)&1,SF:(bits>>2)&1,OF:(bits>>3)&1,PF:(bits>>4)&1};
+    for(let code=0;code<16;code++){
+      const bytes=[0x70+code,0x04,0xb0,0x01,0xeb,0x02,0xb0,0x02,0xf4];
+      const state=api.executeBinary(bytes,0,0,{flags});
+      assert.ok(!state.error,state.error||"Jcc opcode "+(0x70+code).toString(16));
+      assert.equal(state.reg.AX&255,condition[code](flags)?2:1,"Jcc "+(0x70+code).toString(16)+" flags "+bits);
+      assert.equal(state.reg.IP,9);
+      checked++;
+    }
+  }
+  assert.equal(checked,512);
+});
+categories.stack++;
+
 test("oracle indépendant exhaustif des opérations arithmétiques 8 bits", () => {
   const kinds = [
     { kind: "ADD", carry: 0, add: true },
