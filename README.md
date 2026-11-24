@@ -11,7 +11,8 @@ Intel 8086 Lab rassemble dans une seule page :
 - Un moteur pédagogique avec exécution complète et pas à pas
 - L'observation des registres, des indicateurs FLAGS et d'une mémoire segmentée pédagogique
 - Une référence d'instructions, des exercices et des idées de projets
-- Une suite de 295 tests rapides intégrée à la page pour contrôler des cas de calcul, FLAGS, sauts, boucles et pile
+- Une suite de 315 tests rapides intégrée à la page pour contrôler des cas de calcul, FLAGS, sauts, boucles et pile
+- L'assembleur et le désassembleur prennent en charge `MOV Sreg, r/m16` (`8Eh`) et `MOV r/m16, Sreg` (`8Ch`) pour ES, CS, SS et DS, avec les champs ModR/M et les adresses mémoire 16 bits. `MOV CS, r/m16` est refusé comme destination ; les champs de segment 4–7 sont conservés comme `DB` et FS/GS sont rejetés en mode 8086. Les références binaires `8E D8`, `8C D8`, `8E 07` et `8C 52 04` sont testées indépendamment de l'assembleur.
 - L'assembleur et le désassembleur couvrent les transferts documentés des registres de segment sur 8086 : `PUSH ES/CS/SS/DS` (`06h/0Eh/16h/1Eh`) et `POP ES/SS/DS` (`07h/17h/1Fh`). `POP CS` est refusé dans le sous-ensemble documenté ; l'opcode historique `0Fh` n'est pas décodé comme une instruction prise en charge. Les tests vérifient les octets de référence et les sept formes valides.
 - `INC` et `DEC` prennent aussi en charge les formes `r/m8` et `r/m16` via les groupes ModR/M `FE /0`, `FE /1`, `FF /0` et `FF /1`, y compris les adresses mémoire et préfixes de segment pris en charge. Les formes registre 16 bits conservent leurs opcodes compacts `40h–4Fh`.
 - Le générateur binaire et le désassembleur couvrent désormais les formes registre 16 bits `INC`, `DEC`, `PUSH` et `POP` (opcodes `40h` à `5Fh`) en plus des formes déjà listées. Des vecteurs binaires de référence indépendants de l'assembleur vérifient les huit registres pour chacune de ces familles.
