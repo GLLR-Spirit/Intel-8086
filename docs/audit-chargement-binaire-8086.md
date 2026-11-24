@@ -25,7 +25,7 @@ Le mode retourné est `execution.mode = "dynamic-binary"`. Le compteur `executio
 
 ## Résultats de validation
 
-La suite `tests/byte-offset-execution.cjs` valide notamment :
+La suite `tests/byte-offset-execution.cjs` valide **33 scénarios**, sans échec dans le workflow CI vérifié. Elle couvre notamment :
 
 | Domaine | Couverture |
 |---|---|
