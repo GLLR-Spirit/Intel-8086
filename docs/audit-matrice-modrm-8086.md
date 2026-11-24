@@ -64,7 +64,7 @@ L'inspection de `encodingBytes` et de `disassembleBytes` confirme des chemins Mo
 | Famille | Opcodes/formes repérés | Particularité à auditer |
 |---|---|---|
 | MOV général | `88`–`8B` | Deux directions, tailles 8/16 bits |
-| MOV segment | `8C`, `8E` | `reg` désigne Sreg ; CS interdit en destination de `8E` |
+| MOV segment | `8C`, `8E` | Sur 8086/8088, `reg&3` sélectionne ES/CS/SS/DS ; `8E /1` (CS) est accepté ; sélecteurs 4..7 aliasent 0..3 |
 | MOV immédiat | `C6`, `C7` | Extension `/0` seulement |
 | Arithmétique/logique | `00`–`03`, `08`–`0B`, `10`–`13`, `18`–`1B`, `20`–`23`, `28`–`2B`, `30`–`33`, `38`–`3B` | `reg` est un registre général ; sens déterminé par D |
 | Groupes immédiats | `80`, `81`, `83` | `reg` est une extension d'opération |
