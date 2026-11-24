@@ -60,3 +60,8 @@ Le projet privilégie la précision pédagogique. Toute nouvelle instruction ou 
 ## Licence
 
 Aucune licence open source n'est déclarée pour le moment. Ne présume pas d'une autorisation de réutilisation ou de redistribution avant qu'une licence soit ajoutée.
+
+
+## Instructions de chaînes 8086
+
+Instructions prises en charge : `MOVSB/MOVSW`, `LODSB/LODSW`, `STOSB/STOSW`, `CMPSB/CMPSW`, `SCASB/SCASW`, avec les préfixes `REP`, `REPE/REPZ` et `REPNE/REPNZ`. Les sources utilisent `DS:SI`, les destinations `ES:DI`; `DF` contrôle l'incrémentation ou la décrémentation de `SI` et `DI`. Pour `CMPS` et `SCAS`, `REP` se comporte comme `REPE` et s'arrête si `ZF` devient nul. Une répétition est limitée à 10 000 itérations par instruction pour protéger le navigateur. Les préfixes doivent être écrits sur la même ligne que l'instruction (ex. `REP MOVSB`). Les overrides de segment pour les instructions de chaîne ne sont pas encore pris en charge.
