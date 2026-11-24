@@ -228,3 +228,6 @@ Les points marqués ouverts ne doivent pas être transformés en affirmations d�
 ADC et SBB sont désormais intégrées au simulateur, à l'assembleur et au désassembleur pour les formes registre/mémoire, accumulateur-immédiat et immédiat vers r/m avec les opcodes de groupe 80h/81h. Les formes 83h à immédiat signé court ne sont pas encore générées/décodées.
 
 Le simulateur lit CF entrant avant le calcul : ADC effectue DEST + SRC + CF ; SBB effectue DEST − SRC − CF. Les indicateurs AF, CF, OF, PF, SF et ZF sont recalculés à partir du résultat. Les vecteurs indépendants couvrent CF entrant à 0 et à 1, les cas 8/16 bits, retenue/emprunt sortants, débordement signé, encodages accumulateur et mémoire immédiate, et décodage de flux binaires fixes. Le statut de CI doit être consulté avant de considérer cette phase validée.
+
+
+**Validation CI du 24 novembre 2026 :** run 210, commit `48ae8aadf86354dc74283591059e5c7ec2548129` — 354/354 tests de fumée et 40/40 vecteurs indépendants réussis. Les tests confirment notamment la consommation de CF entrant par ADC/SBB et les résultats FLAGS sélectionnés. Cette validation ne clôt pas l'audit de toutes les formes documentées.
