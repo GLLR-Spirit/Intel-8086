@@ -290,15 +290,16 @@ test("PUSH r/m16 FF /6 and POP preserve word value", () => {
 });
 counts.execution++;
 
-for (const [mnemonic, operand] of [
-  ["CALL", "AX"],
-  ["CALL", "WORD PTR [BX]"],
-  ["JMP", "DX"],
-  ["JMP", "WORD PTR [BX]"]
-]) {
-  test(mnemonic + " indirect is recognized but explicitly not simulated · " + operand, () => {
-    const result = api.execute(mnemonic + " " + operand + "\nHLT");
-    assert.match(result.error, new RegExp(mnemonic + " indirect r/m16.*non encore prise en charge"));
+const indirectBounds = [
+  ["CALL", "AX", ["MOV AX, FFFFh"]],
+  ["CALL", "WORD PTR [BX]", ["MOV BX, 0100h", "MOV WORD PTR [BX], FFFFh"]],
+  ["JMP", "DX", ["MOV DX, FFFFh"]],
+  ["JMP", "WORD PTR [BX]", ["MOV BX, 0100h", "MOV WORD PTR [BX], FFFFh"]]
+];
+for (const [mnemonic, operand, setup] of indirectBounds) {
+  test(mnemonic + " indirect executes its target lookup and rejects an out-of-program IP · " + operand, () => {
+    const result = api.execute(setup.concat(mnemonic + " " + operand, "HLT").join("\n"));
+    assert.match(result.error, /cible IP hors du programme simulé/i);
   });
   counts.execution++;
 }
