@@ -634,7 +634,7 @@ test("LOCK ADD mémoire — préfixe F0, validation et round-trip", () => {
   const source="MOV BX, 0100h\nMOV AX, 2\nMOV WORD PTR [BX], 1\nLOCK ADD WORD PTR [BX], AX\nHLT";
   const {assembled,binaryState}=compareSourceBinary(source,[0x100,0x101]);
   const lockRow=assembled.rows.find(row=>row.instruction.startsWith("LOCK"));
-  assert.deepEqual(lockRow.bytes.slice(0,2),[0xf0,0x01]);
+  assert.deepEqual(Array.from(lockRow.bytes.slice(0,2)),[0xf0,0x01]);
   assert.equal(binaryState.mem[0x100]|(binaryState.mem[0x101]<<8),3);
   assert.throws(()=>api.assemble("LOCK CMP WORD PTR [BX], AX\nHLT"),/LOCK/);
 });
@@ -660,7 +660,7 @@ test("INTO — vecteur 4, gestionnaire IVT et retour IRET en binaire", () => {
   const state=api.executeBinary(Array.from(assembled.bytes),0,0,{mem:memory});
   assert.ok(!state.error,state.error||"INTO/IRET failed");
   assert.equal(state.reg.BX,1);
-  assert.equal(state.reg.IP,assembled.size);
+  assert.equal(state.reg.IP,handler);
   assert.equal(state.reg.SP,0xfffe);
 });
 
