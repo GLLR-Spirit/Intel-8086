@@ -76,7 +76,7 @@ Elle couvre :
 - la restauration de CS:IP et les effets sur SP ;
 - `RET imm16` et `RETF imm16`, y compris la limite explicite des ajustements impairs.
 
-La suite est exécutée dans le workflow CI principal. Les nombres de réussite définitifs sont ceux du dernier run associé au commit audité ; ce document ne doit pas être interprété comme une certification matérielle du processeur.
+La suite est exécutée dans le workflow CI principal. Le run [45482367409](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45482367409), sur le commit `04f7ee9c918f42cb7c25d8124ecf983ff0e9bcc4`, a validé les 304 vecteurs de cette suite. Le workflow complet a réussi avec **8 549 vérifications, 0 échec**. Ce résultat ne constitue pas une certification matérielle du processeur.
 
 ## 7. Conclusion
 
