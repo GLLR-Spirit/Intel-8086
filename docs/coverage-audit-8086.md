@@ -34,7 +34,7 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | LES | Oui | Oui | Oui | Oui | À faire |
 | LDS | Oui | Oui | Oui | Oui | À faire |
 | XLAT | Oui | Non | Non | Non | À faire |
-| PUSH | Oui | Oui | Partiel | Partiel | Partiel |
+| PUSH | Oui | Oui | Oui | Oui | Partiel |
 | POP | Oui | Oui | Partiel | Partiel | Partiel |
 | PUSHF | Oui | Oui | Oui | Oui | Partiel |
 | POPF | Oui | Oui | Oui | Oui | Partiel |
@@ -54,14 +54,14 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | ADC | Oui | Oui | Partiel | Partiel | Partiel |
 | SUB | Oui | Oui | Partiel | Partiel | Partiel |
 | SBB | Oui | Oui | Partiel | Partiel | Partiel |
-| INC | Oui | Oui | Oui | Oui | À faire |
-| DEC | Oui | Oui | Oui | Oui | À faire |
-| NEG | Oui | Non | Non | Non | À faire |
+| INC | Oui | Oui | Oui | Oui | Partiel |
+| DEC | Oui | Oui | Oui | Oui | Partiel |
+| NEG | Oui | Oui | Oui | Oui | Partiel |
 | CMP | Oui | Oui | Partiel | Partiel | Partiel |
-| MUL | Oui | Oui | Non | Non | Partiel |
-| IMUL | Oui | Oui | Non | Non | Partiel |
-| DIV | Oui | Oui | Non | Non | Partiel |
-| IDIV | Oui | Oui | Non | Non | Partiel |
+| MUL | Oui | Oui | Oui | Oui | Partiel |
+| IMUL | Oui | Oui | Oui | Oui | Partiel |
+| DIV | Oui | Oui | Oui | Oui | Partiel |
+| IDIV | Oui | Oui | Oui | Oui | Partiel |
 | AAA | Oui | Non | Non | Non | À faire |
 | AAS | Oui | Non | Non | Non | À faire |
 | AAM | Oui | Non | Non | Non | À faire |
@@ -73,7 +73,7 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | AND | Oui | Oui | Partiel | Partiel | À faire |
 | OR | Oui | Oui | Partiel | Partiel | À faire |
 | XOR | Oui | Oui | Partiel | Partiel | À faire |
-| NOT | Oui | Oui | Non | Non | À faire |
+| NOT | Oui | Oui | Oui | Oui | Partiel |
 | TEST | Oui | Oui | Partiel | Partiel | À faire |
 | ROL | Oui | Non | Non | Non | À faire |
 | ROR | Oui | Non | Non | Non | À faire |
@@ -141,22 +141,22 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 Le moteur interprète les principales familles arithmétiques/logiques, les transferts de données, les opérations de pile, les instructions de chaîne et plusieurs contrôles de flux. Il modélise également les interruptions au moyen de la directive pédagogique `VECTOR` et un service DOS limité.
 
 Limites notables :
-- `JMP`, `CALL` et `RET` sont limités aux formes proches par étiquette ; les transferts lointains et indirects ne sont pas un modèle complet.
+- `JMP`, `CALL` et `RET` restent exécutés uniquement sous forme proche par étiquette. Les formes indirectes FF /2 et /4 sont encodées/décodées mais leur exécution n'est pas simulée ; les transferts lointains ne sont pas exécutés.
 - `INT` est une simulation pédagogique des gestionnaires `VECTOR` et de quelques services ; ce n'est pas le matériel d'interruption complet.
 - `HLT` termine l'exécution pédagogique ; il ne modélise pas le réveil matériel par interruption.
-- `LOOPE`, `LOOPNE`, `JCXZ`, `IN`, `OUT`, `INTO`, `XLAT`, `NEG`, les ajustements ASCII/BCD, les rotations, `SAR`, `LAHF`, `SAHF`, `WAIT` et `ESC` ne sont pas exécutés.
+- `LOOPE`, `LOOPNE`, `JCXZ`, `IN`, `OUT`, `INTO`, `XLAT`, les ajustements ASCII/BCD, les rotations, `SAR`, `LAHF`, `SAHF`, `WAIT` et `ESC` ne sont pas exécutés. `NEG` est désormais simulé.
 
 ### 3.2 Assembleur
 
-Le générateur binaire est volontairement partiel. Il émet notamment des formes de MOV, arithmétique/logique, XCHG, LEA/LES/LDS, INC/DEC, pile, sauts conditionnels courts et quelques opcodes fixes.
+Le générateur binaire reste partiel. Il émet notamment MOV, arithmétique/logique, XCHG, LEA/LES/LDS, INC/DEC, pile, les groupes F6/F7 et les formes near indirectes FF /2 et /4.
 
 Limites observées dans le code :
 - Les groupes immédiats `80h/81h` sont générés pour l'arithmétique/logique ; la forme signée courte `83h` n'est pas générée.
 - `MOV` ne couvre pas toutes les variantes/opcodes, notamment les formes accumulator/moffs dédiées.
-- `PUSH r/m16` et `POP r/m16` mémoire ne sont pas générés ; seules les formes registre et certains registres de segment le sont.
-- `JMP` et `CALL` sont assemblés en near relatif 16 bits ; les formes short/far et indirectes ne sont pas couvertes.
+- `PUSH r/m16` via FF /6 est généré pour les formes registre et mémoire ; `POP r/m16` mémoire n'est pas généré.
+- `JMP` et `CALL` directs restent assemblés en near relatif 16 bits ; les formes near indirectes FF /2 et /4 sont également générées. Les formes far indirectes ne sont pas assemblées.
 - `RET` ne génère que le retour proche sans ajustement de pile ; les formes far et avec immédiat manquent.
-- Les chaînes, `REP`, les E/S, les opérations MUL/DIV, NOT, shifts/rotations et la plupart des instructions fixes ne sont pas encodés.
+- Les groupes F6/F7 (TEST r/m, immédiat ; NOT, NEG, MUL, IMUL, DIV, IDIV) et FF /6 PUSH sont encodés. Les chaînes, `REP`, les E/S, shifts/rotations et plusieurs instructions fixes restent absents.
 
 ### 3.3 Désassembleur
 
@@ -164,9 +164,9 @@ Le décodeur reconnaît un sous-ensemble des familles précédentes, mais ne con
 
 Limites observées :
 - Les opcodes de chaîne et préfixes REP ne sont pas décodés comme instructions.
-- Les formes `JMP` short/far/indirect et `CALL` far/indirect ne sont pas décodées.
+- Les formes near indirectes FF /2 et /4 sont décodées ; FF /3 et /5 sont décodées uniquement avec un opérande mémoire. Les formes short et directes far restent hors couverture.
 - Les formes `RET` far et avec ajustement de pile ne sont pas décodées.
-- Les opcodes E/S, MUL/DIV, shifts/rotations, ajustements, `INT`, `INTO`, `WAIT`, `ESC`, `XLAT`, `LAHF` et `SAHF` ne sont pas couverts.
+- Les groupes F6/F7 et FF sont partiellement couverts ; les opcodes E/S, shifts/rotations, ajustements, `INT`, `INTO`, `WAIT`, `ESC`, `XLAT`, `LAHF` et `SAHF` restent hors couverture.
 - Le décodage d'un opcode isolé ou d'une extension ModR/M non prise en charge doit rester strictement distingué d'une désassemblage complet : le décodeur peut émettre `DB` pour les octets qu'il ne sait pas interpréter.
 
 ## 4. Alias et préfixes — hors dénominateur
@@ -245,3 +245,14 @@ Le registre [form-coverage-register-8086.md](form-coverage-register-8086.md) a �
 Le champ S:W du manuel Intel 8086 (table 4-7) confirme que S=1 et W=1 étend l’immédiat de 8 bits à 16 bits ; l’opcode résultant du groupe est 83h. Il s’agit bien d’une forme du 8086, et non d’une extension 80186.
 
 **CI 238** : 354/354 tests de fumée et 114/114 vecteurs indépendants réussis : https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45443738198.
+
+
+## Mise à jour — groupes F6/F7, FF et C6/C7 (24 novembre 2026)
+
+Les groupes ont été intégrés au générateur, au décodeur et, pour les opérations déjà interprétées, au simulateur. La nouvelle suite [tests/group-opcodes.cjs](../tests/group-opcodes.cjs) vérifie les encodages fixes, toutes les valeurs ModR/M pertinentes, les extensions réservées, les restrictions mémoire/registres, les flux tronqués et des résultats d'exécution indépendants.
+
+- **F6/F7** : /0 TEST, /1 réservé, /2 NOT, /3 NEG, /4 MUL, /5 IMUL, /6 DIV, /7 IDIV. Les formes r/m sont générées et décodées ; les opérations prises en charge par l'interpréteur sont exécutées.
+- **FF** : /0 INC, /1 DEC, /2 CALL near indirect, /3 CALL far indirect (mémoire seulement), /4 JMP near indirect, /5 JMP far indirect (mémoire seulement), /6 PUSH r/m16, /7 réservé. Les formes near indirectes /2 et /4 et PUSH /6 sont générées et décodées ; /3 et /5 sont décodées en mémoire uniquement. L'interpréteur ne simule pas les transferts indirects CALL/JMP ; il les signale explicitement comme non pris en charge.
+- **C6/C7** : /0 MOV r/m,imm valide ; /1..7 réservés. Les 256 valeurs ModR/M par opcode sont testées côté décodeur, avec conservation des octets des extensions invalides.
+
+**Validation CI du commit précédent à cette mise à jour documentaire** : run 45451225859, commit `5d4e07f2897c7ad6efb3dfa81578897719d16e9c`, 1 348 vérifications dans la suite de groupes. Les quatre vecteurs TEST r/m,imm et les quatre tests de frontière d'exécution ajoutés ensuite seront comptés dans la prochaine exécution CI.
