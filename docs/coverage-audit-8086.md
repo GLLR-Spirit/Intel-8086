@@ -304,3 +304,14 @@ Nouvelle documentation : [audit du chargement binaire](audit-chargement-binaire-
 La suite `tests/byte-offset-execution.cjs` est étendue pour tester le chargement CS:IP, les branches, CALL/RET, le passage d'IP=FFFFh, les octets en mémoire et la comparaison source/binaire.
 
 Limite fondamentale : cette première version effectue un décodage linéaire préalable. Elle ne lit pas encore chaque opcode depuis la mémoire au moment de son exécution et n'autorise pas encore les branchements vers des frontières découvertes dynamiquement. Ce sera le travail de la prochaine phase.
+
+
+## Mise à jour — décodage dynamique depuis la mémoire (24 novembre 2026)
+
+Le chemin d'exécution binaire utilise désormais une boucle `fetch → decode → execute`. À chaque instruction, il lit les octets à partir de `CS:IP` dans `cpu.mem`, demande au décodeur une seule ligne, exécute cette instruction, puis recommence au nouvel IP. Les branches relatives ne sont plus contraintes par les frontières d'un balayage linéaire préalable. Les écritures qui modifient les octets du code sont prises en compte lors du fetch suivant.
+
+Nouvelle valeur `execution.mode` : `dynamic-binary`. Le compteur `decodedInstructions` indique les instructions effectivement décodées.
+
+La suite `tests/byte-offset-execution.cjs` vérifie notamment une branche vers un octet qui était un immédiat dans le balayage linéaire, une modification du code par `MOV BYTE PTR` avec préfixe CS, les retours CALL/RET, le bouclage IP et la comparaison avec l'exécution source.
+
+Limites : le décodeur/exécuteur reste un sous-ensemble du 8086 ; les formes non prises en charge sont refusées. La prélecture BIU, les cycles et les interactions bus ne sont pas simulés.
