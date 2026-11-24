@@ -167,9 +167,10 @@ test("binary conditional branch resolves to a decoded target instruction", () =>
   assert.equal(state.execution.decodedInstructions, 4);
 });
 countsBinary.branches++;
-test("rejects a branch target in the middle of an instruction", () => {
-  const result = api.executeBinary([0xEB,0x01,0xB8,0x34,0x12,0xF4],0,0);
-  assert.ok(result.error && /ne correspond pas à une instruction décodée/.test(result.error));
+test("dynamic branch can execute an opcode inside bytes decoded differently by linear sweep", () => {
+  const state = executeLoaded([0xEB,0x01,0xB8,0xF4,0x00],0,0);
+  assert.equal(state.steps,2);
+  assert.equal(state.reg.IP,4);
 });
 countsBinary.validation++;
 test("rejects unsupported DB opcodes instead of silently executing them", () => {
