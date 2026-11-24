@@ -335,3 +335,8 @@ Pour chaque graphie, consigner séparément :
 Une fiche détaillée de première passe est maintenant disponible dans [operand-encoding-8086.md](operand-encoding-8086.md). Elle décompose les formes ModR/M, les opcodes accumulateur-immédiat, les groupes 80h/81h/83h, les restrictions, les effets FLAGS et les cycles actuellement sourcés pour MOV, ADD, ADC, SUB, SBB et CMP.
 
 Cette matrice ne vaut pas validation exhaustive : les timings SUB/SBB et les contrôles binaires indépendants restent explicitement ouverts. Les propositions de vecteurs de tests dans cette fiche ne sont pas des tests exécutés.
+
+
+## État de prise en charge — ADC et SBB
+
+ADC et SBB sont maintenant implémentées dans le simulateur, l'assembleur et le désassembleur pour un sous-ensemble de formes 8086 : registre/mémoire, accumulateur-immédiat et groupe immédiat 80h/81h. Le format 83h et l'exhaustivité de chaque forme restent à auditer. Leur inclusion ne signifie donc pas que l'ensemble des instructions 8086 est couvert.
