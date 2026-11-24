@@ -328,7 +328,7 @@ test("near indirect JMP through a register fetches its target", () => {
 countsBinary.indirect++;
 test("far indirect CALL reads an m16:16 pointer and RETF restores CS:IP", () => {
   const bytes=Array(0x12).fill(0x90);
-  bytes.splice(0,5,0x2E,0xFF,0x1E,0x10,0x02);
+  bytes.splice(0,5,0x2E,0xFF,0x1E,0x07,0x01);
   bytes[5]=0xF4; bytes[7]=0x10; bytes[8]=0x01; bytes[9]=0x00; bytes[10]=0x56; bytes[0x10]=0xCB;
   const state=executeLoaded(bytes,0x5600,0x0100);
   assert.equal(state.reg.CS,0x5600);
@@ -339,7 +339,7 @@ test("far indirect CALL reads an m16:16 pointer and RETF restores CS:IP", () => 
 countsBinary.indirect++;
 test("far indirect JMP reads an m16:16 pointer and changes CS:IP", () => {
   const bytes=Array(0x12).fill(0x90);
-  bytes.splice(0,5,0x2E,0xFF,0x2E,0x10,0x02);
+  bytes.splice(0,5,0x2E,0xFF,0x2E,0x07,0x01);
   bytes[0x10]=0xF4;
   const state=executeLoaded(bytes,0x5700,0x0100);
   assert.equal(state.reg.CS,0x5700);
