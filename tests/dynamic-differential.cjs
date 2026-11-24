@@ -900,5 +900,8 @@ console.log("IRET : " + categories.iret + " vecteurs.");
 console.log("Encodages invalides / limites : " + categories.invalid + " vecteurs.");
 console.log("Oracle arithmétique indépendant : 393 216 vecteurs exhaustifs 8 bits + 800 vecteurs frontières 16 bits.");
 console.log("Exécution binaire ALU avec octets bruts : 1 350 vecteurs.");
+console.log("Oracle 8086 décalages/rotations : 20 736 cas 8 bits + 504 cas 16 bits.");
+console.log("Oracle ajustements : 3 072 cas AAA/AAS/DAA/DAS + 256 AAM + 65 536 AAD.");
+console.log("Extension de signe : 256 CBW + 65 536 CWD ; transfert FLAGS : 32 SAHF/LAHF ; ESC : 64 codes.");
 console.log("Résultat audit différentiel : " + passed + " réussis, " + failed + " échecs.");
 if (failed) process.exit(1);
