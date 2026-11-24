@@ -155,7 +155,7 @@ return null;
 }
 function encodingBytes(ins){
 var base=ins.op.replace(/^(REP|REPE|REPZ|REPNE|REPNZ)_/,""),a=ins.args;
-if(a.length===1){var unaryName=a[0].trim().toUpperCase(),unaryReg=encodingRegisterCode(unaryName),unaryInfo=info(unaryName);if(unaryReg!==null&&unaryInfo&&unaryInfo.bits===16){if(base==="INC")return [64+unaryReg];if(base==="DEC")return [72+unaryReg];if(base==="PUSH")return [80+unaryReg];if(base==="POP")return [88+unaryReg];}if(base==="INC"||base==="DEC"){var unaryBits=encodingOperandBits(unaryName);if(unaryBits===8||unaryBits===16){var unaryRM=encodingModRM(base==="INC"?0:1,unaryName);if(unaryRM)return encodingPrefixFor(unaryName).concat([unaryBits===8?254:255],unaryRM);}}}
+if(a.length===1){var unaryName=a[0].trim().toUpperCase(),unaryReg=encodingRegisterCode(unaryName),unaryInfo=info(unaryName),segmentOpcodes={ES:6,CS:14,SS:22,DS:30},segmentPopOpcodes={ES:7,SS:23,DS:31};if(base==="PUSH"&&segmentOpcodes[unaryName]!==undefined)return [segmentOpcodes[unaryName]];if(base==="POP"&&segmentPopOpcodes[unaryName]!==undefined)return [segmentPopOpcodes[unaryName]];if(unaryReg!==null&&unaryInfo&&unaryInfo.bits===16){if(base==="INC")return [64+unaryReg];if(base==="DEC")return [72+unaryReg];if(base==="PUSH")return [80+unaryReg];if(base==="POP")return [88+unaryReg];}if(base==="INC"||base==="DEC"){var unaryBits=encodingOperandBits(unaryName);if(unaryBits===8||unaryBits===16){var unaryRM=encodingModRM(base==="INC"?0:1,unaryName);if(unaryRM)return encodingPrefixFor(unaryName).concat([unaryBits===8?254:255],unaryRM);}}}
 if(a.length===2){
 var d=a[0].trim().toUpperCase(),q=a[1].trim().toUpperCase(),rd=encodingRegisterCode(d),rq=encodingRegisterCode(q),id=info(d),iq=info(q),dm=d.indexOf("[")>=0,qm=q.indexOf("[")>=0;
 if(base==="MOV"){
@@ -288,6 +288,13 @@ if(op>=64&&op<=71)ins="INC "+reg16[op-64];
 else if(op>=72&&op<=79)ins="DEC "+reg16[op-72];
 else if(op>=80&&op<=87)ins="PUSH "+reg16[op-80];
 else if(op>=88&&op<=95)ins="POP "+reg16[op-88];
+else if(op===6)ins="PUSH ES";
+else if(op===14)ins="PUSH CS";
+else if(op===22)ins="PUSH SS";
+else if(op===30)ins="PUSH DS";
+else if(op===7)ins="POP ES";
+else if(op===23)ins="POP SS";
+else if(op===31)ins="POP DS";
 else if(op===254||op===255){bits=op===254?8:16;modrm=read();ext=(modrm>>3)&7;rm=decodeRM(modrm,bits,prefix);if(ext===0)ins="INC "+rm.text;else if(ext===1)ins="DEC "+rm.text;}
 else if(op>=176&&op<=191){bits=op<184?8:16;reg=(op-(bits===8?176:184));ins="MOV "+(bits===8?reg8:reg16)[reg]+", "+imm(bits===8?read():word(),bits);}
 else if(op>=112&&op<=127){disp=signed(read(),8);target=(i+disp)&65535;ins=cond[op-112]+" "+hx(target,4);}
@@ -635,7 +642,19 @@ function runSelfTests(){var cases=[
 ["INC mémoire avec préfixe ES", "HLT", function(s){var r=disassembleBytes([38,254,7]);return r.rows.length===1&&r.rows[0].instruction==="INC BYTE PTR ES:[BX]"&&r.rows[0].bytes.join(",")==="38,254,7";}],
 ["INC/DEC r/m8 et r/m16 encodage exact", "HLT", function(s){var a=assembleProgram("INC AL\nDEC CL\nINC BX\nDEC DI");return a.bytes.join(",")==="254,192,254,201,67,79"&&encodingRoundTrip("INC AL\nDEC CL\nINC BX\nDEC DI");}],
 ["INC/DEC mémoire encodage exact avec displacement", "HLT", function(s){var a=assembleProgram("INC BYTE PTR [BX]\nDEC WORD PTR [BP+SI+4]");return a.bytes.join(",")==="254,7,255,74,4"&&encodingRoundTrip("INC BYTE PTR [BX]\nDEC WORD PTR [BP+SI+4]");}],
-["Extension ModR/M INC/DEC non prise en charge reste signalée", "HLT", function(s){var a=disassembleBytes([254,208]);return a.rows.length===1&&a.rows[0].instruction.indexOf("DB ")===0&&a.rows[0].bytes.join(",")==="254,208";}]
+["Extension ModR/M INC/DEC non prise en charge reste signalée", "HLT", function(s){var a=disassembleBytes([254,208]);return a.rows.length===1&&a.rows[0].instruction.indexOf("DB ")===0&&a.rows[0].bytes.join(",")==="254,208";}],
+["Référence externe PUSH ES = 06h", "HLT", function(s){var r=disassembleBytes([6]);return r.rows.length===1&&r.rows[0].instruction==="PUSH ES"&&r.rows[0].bytes.join(",")==="6";}],
+["Référence externe PUSH CS = 0Eh", "HLT", function(s){var r=disassembleBytes([14]);return r.rows.length===1&&r.rows[0].instruction==="PUSH CS"&&r.rows[0].bytes.join(",")==="14";}],
+["Référence externe PUSH SS = 16h", "HLT", function(s){var r=disassembleBytes([22]);return r.rows.length===1&&r.rows[0].instruction==="PUSH SS"&&r.rows[0].bytes.join(",")==="22";}],
+["Référence externe PUSH DS = 1Eh", "HLT", function(s){var r=disassembleBytes([30]);return r.rows.length===1&&r.rows[0].instruction==="PUSH DS"&&r.rows[0].bytes.join(",")==="30";}],
+["Référence externe POP ES = 07h", "HLT", function(s){var r=disassembleBytes([7]);return r.rows.length===1&&r.rows[0].instruction==="POP ES"&&r.rows[0].bytes.join(",")==="7";}],
+["Référence externe POP SS = 17h", "HLT", function(s){var r=disassembleBytes([23]);return r.rows.length===1&&r.rows[0].instruction==="POP SS"&&r.rows[0].bytes.join(",")==="23";}],
+["Référence externe POP DS = 1Fh", "HLT", function(s){var r=disassembleBytes([31]);return r.rows.length===1&&r.rows[0].instruction==="POP DS"&&r.rows[0].bytes.join(",")==="31";}],
+["Encodage exact des sept transferts de segments", "HLT", function(s){var a=assembleProgram("PUSH ES\nPUSH CS\nPUSH SS\nPUSH DS\nPOP ES\nPOP SS\nPOP DS");return a.bytes.join(",")==="6,14,22,30,7,23,31"&&encodingRoundTrip("PUSH ES\nPUSH CS\nPUSH SS\nPUSH DS\nPOP ES\nPOP SS\nPOP DS");}],
+["POP CS est refusé par l'analyseur 8086 documenté", "POP CS\nHLT", function(s){return !!s.error&&s.error.indexOf("POP CS")>=0;}],
+["POP CS n'est pas émis par l'assembleur binaire", "HLT", function(s){try{assembleProgram("POP CS");return false;}catch(e){return /POP CS/.test(e.message);}}],
+["PUSH/POP ES fonctionne dans l'interpréteur pédagogique", "PUSH ES\nMOV AX, 1234h\nMOV ES, AX\nPOP ES\nHLT", function(s){return !s.error&&s.reg.ES===0&&s.reg.SP===65534;}],
+["PUSH/POP SS conserve un cadre cohérent", "PUSH SS\nPOP SS\nHLT", function(s){return !s.error&&s.reg.SS===0&&s.reg.SP===65534&&s.stack.length===0;}]
 ];var out=[],ok=0;cases.forEach(function(t){var s=executeAll(t[1]),pass=t[2](s);if(pass)ok++;out.push((pass?"PASS":"FAIL")+" · "+t[0]+(s.error?" — "+s.error:""));});$("testResults").textContent=out.join("\n");$("testSummary").textContent=ok+"/"+cases.length+" tests réussis";$("testSummary").className="status "+(ok===cases.length?"success":"error");}
 $("runSelfTests").onclick=runSelfTests;
 $("reset").onclick=resetCPU;resetCPU();renderLessons();showLesson(0);renderInstructions("");renderExercises();renderProjects();stats();
