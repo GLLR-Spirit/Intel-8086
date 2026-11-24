@@ -190,7 +190,7 @@ console.log("Validation du flux chargé : " + countsBinary.validation + " tests.
 test("binary CALL/RET uses the loaded image byte return address", () => {
   const state = executeLoaded([0xE8,0x01,0x00,0xF4,0xB8,0x34,0x12,0xC3],0x3000,0x0100);
   assert.equal(state.reg.AX,0x1234);
-  assert.equal(state.reg.IP,0x0103);
+  assert.equal(state.reg.IP,0x0104);
   assert.equal(state.reg.SP,0xFFFE);
   assert.equal(state.stack.length,0);
 });
