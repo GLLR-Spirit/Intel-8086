@@ -626,9 +626,11 @@ test("XLAT — lecture DS:[BX+AL] et mise à jour de AL", () => {
   assert.equal(sourceState.mem[0x102],0x5a,"source store must initialize DS:[BX+2]");
   const binaryStore=runBinary(prefix+"HLT").state;
   assert.equal(binaryStore.mem[0x102],0x5a,"binary store must initialize DS:[BX+2]");
-  const source=runSource(prefix+"XLAT\nHLT");
+  let source;
+  try { source=runSource(prefix+"XLAT\nHLT"); } catch(error) { throw new Error("source XLAT: "+error.message); }
   assert.equal(source.reg.AX&255,0x5a,"source XLAT");
-  const binary=runBinary(prefix+"XLAT\nHLT").state;
+  let binary;
+  try { binary=runBinary(prefix+"XLAT\nHLT").state; } catch(error) { throw new Error("binary XLAT: "+error.message); }
   assert.equal(binary.reg.AX&255,0x5a,"binary XLAT");
 });
 test("REP MOVSB — préfixe binaire, répétition CX et transfert mémoire", () => {
