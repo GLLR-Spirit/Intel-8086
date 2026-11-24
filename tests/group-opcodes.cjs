@@ -289,6 +289,19 @@ test("PUSH r/m16 FF /6 and POP preserve word value", () => {
 });
 counts.execution++;
 
+for (const [mnemonic, operand] of [
+  ["CALL", "AX"],
+  ["CALL", "WORD PTR [BX]"],
+  ["JMP", "DX"],
+  ["JMP", "WORD PTR [BX]"]
+]) {
+  test(mnemonic + " indirect is recognized but explicitly not simulated · " + operand, () => {
+    const result = api.execute(mnemonic + " " + operand + "\nHLT");
+    assert.match(result.error, new RegExp(mnemonic + " indirect r/m16.*non encore prise en charge"));
+  });
+  counts.execution++;
+}
+
 // Truncated encodings for each group must raise a precise decoder error.
 const truncated = [
   [0xF6], [0xF6, 0xC0], [0xF7], [0xF7, 0xC0, 0x34],
