@@ -258,8 +258,11 @@ for (const opcode of [0x8C, 0x8E]) {
   for (let ext = 0; ext < 8; ext++) {
     test("MOV segment extension · " + opcode.toString(16) + " /" + ext, () => {
       const instruction = decodeInstruction(opcode, ext);
-      const invalid = ext > 3 || (opcode === 0x8E && ext === 1);
-      assert.equal(instruction.startsWith("DB "), invalid, instruction);
+      // On original 8086/8088, selector values 4..7 alias 0..3, and 8E /1
+      // (MOV CS, r/m16) is accepted. This decoder currently emits DB for
+      // these legacy encodings; do not misclassify them as architecturally invalid.
+      const legacyUnsupported = ext >= 4 || (opcode === 0x8E && ext === 1);
+      assert.equal(instruction.startsWith("DB "), legacyUnsupported, instruction);
     });
     groupCases++;
   }
