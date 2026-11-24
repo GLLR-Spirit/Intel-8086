@@ -471,7 +471,7 @@ function runSelfTests(){var cases=[
 ["Encodage JE relatif court","JE CIBLE\nNOP\nCIBLE: HLT",function(s){return JSON.stringify(assembleProgram("JE CIBLE\nNOP\nCIBLE: HLT").bytes)===JSON.stringify([116,1,144,244]);}],
 ["Encodage JNE relatif court arrière","HLT",function(s){return JSON.stringify(assembleProgram("DEBUT: NOP\nJNE DEBUT").bytes)===JSON.stringify([144,117,253]);}],
 ["Encodage des alias de sauts conditionnels","HLT",function(s){return JSON.stringify(assembleProgram("JZ FIN\nJNC FIN\nFIN: RET").bytes)===JSON.stringify([116,2,115,0,195]);}],
-["Encodage LOOP relatif","HLT",function(s){return JSON.stringify(assembleProgram("DEBUT: NOP\nLOOP DEBUT").bytes)===JSON.stringify([144,226,252]);}],
+["Encodage LOOP relatif","HLT",function(s){return JSON.stringify(assembleProgram("DEBUT: NOP\nLOOP DEBUT").bytes)===JSON.stringify([144,226,253]);}],
 ["CALL near relatif 16 bits et RET","CALL PROC\nHLT\nPROC: RET",function(s){return JSON.stringify(assembleProgram("CALL PROC\nHLT\nPROC: RET").bytes)===JSON.stringify([232,1,0,244,195]);}],
 ["CALL vers une étiquette précédente","HLT",function(s){return JSON.stringify(assembleProgram("PROC: RET\nCALL PROC").bytes)===JSON.stringify([195,232,252,255]);}],
 ["Saut court : déplacement maximal +127 accepté","JMP CIBLE\n"+Array(127).fill("NOP").join("\n")+"\nCIBLE: HLT",function(s){return assembleProgram("JMP CIBLE\n"+Array(127).fill("NOP").join("\n")+"\nCIBLE: HLT").bytes[1]===127;}],
