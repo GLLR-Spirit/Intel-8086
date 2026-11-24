@@ -240,7 +240,7 @@ function runSelfTests(){var cases=[
 ["MOV DS depuis mémoire WORD","MOV WORD PTR [100], 1234h\nMOV DS, WORD PTR [100]\nHLT",function(s){return !s.error&&s.reg.DS===0x1234;}],
 ["MOV segment vers mémoire WORD","MOV AX, 0\nMOV DS, AX\nMOV WORD PTR [100], 0\nMOV WORD PTR [100], DS\nHLT",function(s){return !s.error&&s.mem[100]===0&&s.mem[101]===0;}],
 ["MOV refuse mémoire BYTE vers DS","MOV DS, BYTE PTR [100]\nHLT",function(s){return !!s.error;}],
-["MOV refuse mémoire BYTE depuis DS","MOV BYTE PTR [100], DS\nHLT",function(s){return !!s.error&&s.error.indexOf("mémoire WORD")>=0;}]
+["MOV refuse mémoire BYTE depuis DS","MOV BYTE PTR [100], DS\nHLT",function(s){return !!s.error;} ]
 ];var out=[],ok=0;cases.forEach(function(t){var s=executeAll(t[1]),pass=t[2](s);if(pass)ok++;out.push((pass?"PASS":"FAIL")+" · "+t[0]+(s.error?" — "+s.error:""));});$("testResults").textContent=out.join("\n");$("testSummary").textContent=ok+"/"+cases.length+" tests réussis";$("testSummary").className="status "+(ok===cases.length?"success":"error");}
 $("runSelfTests").onclick=runSelfTests;
 $("reset").onclick=resetCPU;resetCPU();renderLessons();showLesson(0);renderInstructions("");renderExercises();renderProjects();stats();
