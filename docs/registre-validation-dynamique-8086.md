@@ -95,9 +95,20 @@ Les flux incomplets sont une classe distincte : ils doivent produire une erreur 
 - RET/RETF avec ajustement impair : forme encodable/décodable mais refusée par le suivi pédagogique de pile, qui travaille par mots.
 - INT/IRET : test source avec cadre `VECTOR`, test binaire avec trois mots bruts en mémoire (`IP`, `CS`, `FLAGS`), restauration d'un CS différent et bouclage 16 bits de SP, puis cycle binaire INT → entrée IVT → gestionnaire → IRET. Les interruptions matérielles et l'environnement complet ne sont pas revendiqués.
 
-## 6. Validation CI
+## 6. Validation CI — extension des familles manquantes
 
-Le workflow principal [45505775488](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45505775488) a terminé avec le statut **success** sur le commit testé `39b342f1611e5f323c951e02830f8274b7109839`. La suite différentielle rapporte **39/39 tests réussis**, **393 216** vecteurs arithmétiques exhaustifs 8 bits, **800** vecteurs de frontière 16 bits, **1 350** exécutions binaires ALU sur octets bruts, **768** combinaisons registre-direct, **512** combinaisons Jcc/FLAGS et les tests mémoire/interruptions.
+Le workflow principal [45509443384](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45509443384) a terminé avec le statut **success** sur le commit `a67351dd0a603af4c6065b0d0b020e067e31046e`.
+
+- Suite différentielle : **65/65 tests réussis, 0 échec**.
+- Vecteurs indépendants de l'instruction : **114 tests réussis**.
+- Oracle ALU déjà présent : **393 216** cas exhaustifs 8 bits et **800** cas de frontière 16 bits.
+- Décalages/rotations : **20 736** cas 8 bits et **504** cas 16 bits.
+- Ajustements : **3 072** cas AAA/AAS/DAA/DAS, **256** AAM et **65 536** AAD.
+- Extension de signe : **256** CBW et **65 536** CWD.
+- Transfert FLAGS : **32** cas SAHF/LAHF ; ESC : **64** codes.
+- Les suites existantes conservent aussi les **1 350** exécutions ALU sur octets bruts, **768** combinaisons registre-direct et **512** combinaisons Jcc/FLAGS.
+
+Ces chiffres représentent les cas réellement exécutés par les tests du dépôt. Ils ne doivent pas être interprétés comme une preuve de couverture exhaustive de chaque forme d'opérande, de chaque interaction de préfixe ou du matériel externe.
 
 ## 7. Conclusion et seuil d'arrêt
 
