@@ -291,7 +291,25 @@ Les codes ci-dessous sont les opcodes primaires ou les groupes d'opcodes archite
 
 Les pages exactes doivent être enregistrées dans les fiches détaillées lors de l'audit par forme. Le tableau ci-dessus constitue un rapprochement de premier niveau, pas une preuve suffisante pour chaque variante.
 
-## 11. Protocole d'audit par entrée
+
+## 12. Statut historique des graphies
+
+| Graphies | Classement provisoire | Décision de cette passe |
+|---|---|---|
+| Mnémotechniques principales présentes dans la Table 2-21 Intel (ADD, ADC, SUB, SBB, MOV, CALL, JMP, etc.) | Instruction documentée Intel 8086 | **Confirmée au niveau de la famille** ; les formes restent à auditer individuellement |
+| Sauts conditionnels synonymes (par ex. JB/JC/JNAE, JE/JZ, JG/JNLE) | Plusieurs noms pour une même condition/opcode | **Alias fonctionnels reconnus** ; présence exacte de chaque graphie dans le manuel d'assembleur Intel à confirmer |
+| SHL/SAL | Synonymie de décalage gauche | **Alias à conserver** ; vérifier la graphie admise par l'assembleur cible |
+| LOOPE/LOOPZ et LOOPNE/LOOPNZ | Synonymes de boucles conditionnelles | **Alias à conserver** ; vérifier la graphie admise par l'assembleur cible |
+| REPZ/REPNZ | Synonymes fréquemment acceptés pour REPE/REPNE | **À confirmer** dans la référence assembleur primaire retenue |
+| FWAIT | Graphie alternative de WAIT | **À confirmer** ; même opcode 9Bh si acceptée par l'assembleur |
+| XLATB | Graphie alternative de XLAT dans certains assembleurs | **À confirmer** ; le nom Intel de l'instruction est XLAT, opcode D7h |
+| RETF | Graphie utilisée par certains assembleurs pour un retour intersegment | **À confirmer** ; Intel documente les formes far de RET sous la famille RET, opcodes CAh/CBh |
+| LOCK | Préfixe de verrouillage | **Préfixe confirmé**, pas une instruction autonome |
+| REP/REPE/REPNE | Préfixes de répétition | **Préfixes confirmés**, pas des opérations autonomes |
+
+**Sens des statuts :** « confirmée au niveau de la famille » signifie que la famille architecturale est attestée par la documentation Intel consultée ; cela ne valide pas encore chaque syntaxe, variante ou champ d'encodage. « À confirmer » interdit de compter une graphie comme alias Intel vérifié tant que le manuel assembleur primaire ne l'atteste pas.
+
+## 13. Protocole d'audit par entrée
 
 Pour chaque graphie, consigner séparément :
 
