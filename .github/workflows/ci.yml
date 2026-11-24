@@ -30,3 +30,5 @@ jobs:
         run: node tests/addressing-displacement.cjs
       - name: Run FLAGS differential vectors
         run: node tests/flags-differential.cjs
+      - name: Run operand constraint tests
+        run: node tests/operand-constraints.cjs
