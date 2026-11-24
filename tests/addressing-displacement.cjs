@@ -261,8 +261,10 @@ for (const opcode of [0x8C, 0x8E]) {
       // On original 8086/8088, selector values 4..7 alias 0..3, and 8E /1
       // (MOV CS, r/m16) is accepted. This decoder currently emits DB for
       // these legacy encodings; do not misclassify them as architecturally invalid.
-      const legacyUnsupported = ext >= 4 || (opcode === 0x8E && ext === 1);
+      const legacyUnsupported = false;
       assert.equal(instruction.startsWith("DB "), legacyUnsupported, instruction);
+      const expectedSegment = ["ES", "CS", "SS", "DS"][ext & 3];
+      assert.ok(instruction.includes(expectedSegment), instruction);
     });
     groupCases++;
   }
