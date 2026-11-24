@@ -325,7 +325,7 @@ test("IRET binaire restaure un cadre architectural préchargé en mémoire", () 
   putWord(mem, 0xfffc, flagsWord);
   putWord(mem, 0xfffa, 0x0000);
   putWord(mem, 0xfff8, 0x0001);
-  const state = api.executeBinary([0xcf, 0xf4], 0, 0, {
+  const state = api.executeBinary([0xcf, 0xf4], 0x0100, 0, {
     reg: { SS: ss, SP: sp },
     mem,
     stack: [
@@ -349,7 +349,7 @@ test("état initial binaire refuse les registres, FLAGS, octets et cadres invali
     { flags: { CF: 2 } },
     { mem: { "1048576": 0 } },
     { mem: { "10": 256 } },
-    { stack: [{ value: 1, kind: "bad", address: 0x10000, segment: 0 }] }
+    { stack: [{ value: 1, kind: "bad", address: 0x10000, segment: 0 }] },\n    { unknown: true }
   ]) {
     const state = api.executeBinary([0xf4], 0, 0, seed);
     assert.ok(state.error, JSON.stringify(seed));
