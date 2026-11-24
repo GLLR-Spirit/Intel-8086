@@ -708,7 +708,7 @@ test("Oracle indépendant exhaustif 8 bits — SHL/SHR/SAR et rotations 8086 ave
       checked++;
     }
   }
-  assert.equal(checked,18432);
+  assert.equal(checked,20736);
 });
 test("Oracle indépendant exhaustif 8 bits — AAA/AAS et DAA/DAS", () => {
   let checked=0;
@@ -743,7 +743,7 @@ test("Oracle AAM base 10 sur les 256 valeurs possibles de AL", () => {
   for(let al=0;al<256;al++){
     const state=api.executeBinary([0xd4,0x0a,0xf4],0,0,{reg:{AX:al}});
     assert.ok(!state.error,state.error||"AAM");
-    assert.equal(state.reg.AH,Math.floor(al/10));
+    assert.equal(state.reg.AX>>8,Math.floor(al/10));
     assert.equal(state.reg.AX&255,al%10);
   }
 });
