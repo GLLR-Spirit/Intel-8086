@@ -604,7 +604,16 @@ function runSelfTests(){var cases=[
 ["Round-trip toutes les conditions de branchement et LOOP/CALL/JMP","HLT",function(s){return encodingRoundTrip("JO A\nJNO A\nJB A\nJAE A\nJE A\nJNE A\nJBE A\nJA A\nJS A\nJNS A\nJP A\nJNP A\nJL A\nJGE A\nJLE A\nJG A\nLOOP A\nJMP A\nCALL A\nA: RET");}],
 ["Round-trip toutes les instructions fixes encodées","HLT",function(s){return encodingRoundTrip("NOP\nHLT\nCLC\nSTC\nCMC\nCLI\nSTI\nCLD\nSTD\nPUSHF\nPOPF\nRET\nIRET");}],
 ["Round-trip flux combinant ModR/M, préfixes, immédiats et branchements","HLT",function(s){return encodingRoundTrip("MOV AX, 1234h\nMOV WORD PTR ES:[BX+SI+8], AX\nADD WORD PTR SS:[BP+DI+128], 5678h\nTEST AL, 80h\nXCHG AX, DX\nJNE FIN\nMOV BYTE PTR CS:[DI-4], 7Fh\nFIN: HLT");}],
-["TEST AX immédiat utilise bien l'opcode  A9h","HLT",function(s){var b=encodingBytes(parseProgram("TEST AX, 1234h").ops[0]);return b&&b[0]===169&&encodingRoundTrip("TEST AX, 1234h");}]
+["TEST AX immédiat utilise bien l'opcode  A9h","HLT",function(s){var b=encodingBytes(parseProgram("TEST AX, 1234h").ops[0]);return b&&b[0]===169&&encodingRoundTrip("TEST AX, 1234h");}],
+["Désassembleur refuse les valeurs supérieures à FFh", "HLT", function(s){try{disassembleBytes([256]);return false;}catch(e){return /Octet invalide/.test(e.message);}}],
+["Désassembleur refuse les valeurs négatives et fractionnaires", "HLT", function(s){try{disassembleBytes([144,-1]);return false;}catch(e){return /Octet invalide/.test(e.message);}}],
+["Extension SBB non prise en charge conserve la frontière suivante", "HLT", function(s){var r=disassembleBytes([128,216,1,244]);return r.rows.length===2&&r.rows[0].bytes.join(",")==="128,216,1"&&r.rows[0].instruction.indexOf("DB ")===0&&r.rows[1].instruction==="HLT";}],
+["Extension MOV C6 non prise en charge consomme son immédiat", "HLT", function(s){var r=disassembleBytes([198,200,127,244]);return r.rows.length===2&&r.rows[0].bytes.join(",")==="198,200,127"&&r.rows[1].instruction==="HLT";}],
+["Opcode de groupe F6 non pris en charge ne désynchronise pas le flux", "HLT", function(s){var r=disassembleBytes([246,208,144]);return r.rows.length===2&&r.rows[0].bytes.join(",")==="246,208"&&r.rows[1].instruction==="NOP";}],
+["Préfixe de segment isolé signalé explicitement", "HLT", function(s){try{disassembleBytes([38]);return false;}catch(e){return /Préfixe de segment isolé/.test(e.message);}}],
+["Préfixes de segment répétés refusés", "HLT", function(s){try{disassembleBytes([38,46,144]);return false;}catch(e){return /répétés/.test(e.message);}}],
+["Flux tronqué au milieu d'un immédiat refusé sans décodage partiel", "HLT", function(s){try{disassembleBytes([184,52]);return false;}catch(e){return /Flux tronqué/.test(e.message);}}],
+["Parser hexadécimal refuse un octet sur trois chiffres", "HLT", function(s){try{parseHexBytes("100");return false;}catch(e){return /Octet hexadécimal invalide/.test(e.message);}}]
 ];var out=[],ok=0;cases.forEach(function(t){var s=executeAll(t[1]),pass=t[2](s);if(pass)ok++;out.push((pass?"PASS":"FAIL")+" · "+t[0]+(s.error?" — "+s.error:""));});$("testResults").textContent=out.join("\n");$("testSummary").textContent=ok+"/"+cases.length+" tests réussis";$("testSummary").className="status "+(ok===cases.length?"success":"error");}
 $("runSelfTests").onclick=runSelfTests;
 $("reset").onclick=resetCPU;resetCPU();renderLessons();showLesson(0);renderInstructions("");renderExercises();renderProjects();stats();
