@@ -35,19 +35,14 @@ function test(name, fn) {
     process.exitCode = 1;
   }
 }
-function evaluate(source) {
-  return vm.runInContext(source, context, { timeout: 3000 });
-}
 function bytesOf(source) {
-  return Array.from(evaluate("assembleProgram(" + JSON.stringify(source) + ").bytes"));
+  return Array.from(api.assemble(source).bytes);
 }
 function disassemble(bytes) {
-  return evaluate("disassembleBytes(" + JSON.stringify(bytes) + ")");
+  return api.disassemble(bytes);
 }
 function execute(source) {
-  evaluate("prepare(" + JSON.stringify(source) + ")");
-  evaluate("while (!halted && pc < ops.length) tick();");
-  return JSON.parse(evaluate("JSON.stringify(cpu)"));
+  return api.run(source);
 }
 function hex(bytes) {
   return bytes.map((b) => b.toString(16).padStart(2, "0").toUpperCase()).join(" ");
