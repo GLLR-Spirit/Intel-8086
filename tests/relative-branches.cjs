@@ -43,7 +43,7 @@ for(const [name,source,expected] of [
  ["forward +127","JMP TARGET\n"+nops(127)+"\nTARGET: HLT",[0xEB,0x7F]],
  ["backward -128","TOP: "+ "NOP\n"+nops(125)+"\nJMP TOP\nHLT",[0xEB,0x80]],
  ["forward +128 falls back to near","JMP TARGET\n"+nops(128)+"\nTARGET: HLT",[0xE9,0x80,0x00]],
- ["backward -129 falls back to near","TOP: NOP\n"+nops(125)+"\nJMP TOP\nHLT",[0xE9,0x7F,0xFF]]
+ ["backward -129 falls back to near","TOP: NOP\n"+nops(126)+"\nJMP TOP\nHLT",[0xE9,0x7E,0xFF]]
 ]) {
  test("JMP relaxation "+name,()=>{const all=assemble(source);const actual=name.startsWith("backward")?all.slice(all.lastIndexOf(expected[0]),all.lastIndexOf(expected[0])+expected.length):all.slice(0,expected.length);assert.deepEqual(actual,expected);});
  counts.short++;
