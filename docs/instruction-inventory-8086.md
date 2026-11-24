@@ -183,13 +183,13 @@ Les codes ci-dessous sont les opcodes primaires ou les groupes d'opcodes archite
 | Entrée(s) | Opcode(s) / groupe 8086 | Nature de l'encodage | Statut de graphie |
 |---|---|---|---|
 | AAA | 37h | Opcode fixe | Mnémotechnique d'instruction |
-| AAD | D5h ib (forme documentée usuelle D5 0A) | Opcode + immédiat base | Mnémotechnique d'instruction |
-| AAM | D4h ib (forme documentée usuelle D4 0A) | Opcode + immédiat base | Mnémotechnique d'instruction |
+| AAD | D5 0Ah dans la forme 8086 documentée (opcode D5h suivi de 0Ah) | Forme documentée base 10 ; ne pas extrapoler aux processeurs ultérieurs | Mnémotechnique d'instruction |
+| AAM | D4 0Ah dans la forme 8086 documentée (opcode D4h suivi de 0Ah) | Forme documentée base 10 ; ne pas extrapoler aux processeurs ultérieurs | Mnémotechnique d'instruction |
 | AAS | 3Fh | Opcode fixe | Mnémotechnique d'instruction |
 | ADC | 10h–15h ; groupe 80h/81h/83h, extension /2 | Registre/mémoire, accumulateur, immédiat | Mnémotechnique d'instruction |
 | ADD | 00h–05h ; groupe 80h/81h/83h, extension /0 | Registre/mémoire, accumulateur, immédiat | Mnémotechnique d'instruction |
 | AND | 20h–25h ; groupe 80h/81h/83h, extension /4 | Registre/mémoire, accumulateur, immédiat | Mnémotechnique d'instruction |
-| CALL | E8h ; FFh /2 (near indirect), FFh /3 (far indirect) | Relatif proche et indirect via r/m | Mnémotechnique d'instruction |
+| CALL | E8h (near relatif), 9Ah (far direct), FFh /2 (near indirect), FFh /3 (far indirect) | Relatif proche, direct intersegment et indirect via r/m | Mnémotechnique d'instruction |
 | CBW | 98h | Opcode fixe | Mnémotechnique d'instruction |
 | CLC | F8h | Opcode fixe | Mnémotechnique d'instruction |
 | CLD | FCh | Opcode fixe | Mnémotechnique d'instruction |
@@ -250,19 +250,19 @@ Les codes ci-dessous sont les opcodes primaires ou les groupes d'opcodes archite
 | POPF | 9Dh | Opcode fixe | Mnémotechnique d'instruction |
 | PUSH | 50h–57h (reg16), FFh /6 (r/m16), 06h/0Eh/16h/1Eh (segments) | Plusieurs formes | Mnémotechnique d'instruction |
 | PUSHF | 9Ch | Opcode fixe | Mnémotechnique d'instruction |
-| RCL | D0h/D1h (count 1), D2h/D3h (CL) ; C0h/C1h imm8 non-8086 | Groupe shift/rotate | Mnémotechnique d'instruction ; ne pas attribuer C0/C1 au 8086 |
-| RCR | D0h/D1h (count 1), D2h/D3h (CL) ; C0h/C1h imm8 non-8086 | Groupe shift/rotate | Mnémotechnique d'instruction ; ne pas attribuer C0/C1 au 8086 |
+| RCL | D0h/D1h, D2h/D3h ; groupe C0h/C1h immédiat absent du 8086 | ModR/M /2 ; compte 1 ou CL | Mnémotechnique d'instruction ; ne pas attribuer C0/C1 au 8086 |
+| RCR | D0h/D1h, D2h/D3h ; groupe C0h/C1h immédiat absent du 8086 | ModR/M /3 ; compte 1 ou CL | Mnémotechnique d'instruction ; ne pas attribuer C0/C1 au 8086 |
 | REP/REPE/REPNE | F3h/F3h/F2h | Préfixes appliqués aux instructions de chaîne | Préfixes, pas opérations autonomes |
 | RET | C3h (near), C2h iw (near + ajustement SP), CBh (far), CAh iw (far + ajustement SP) | Retour proche/lointain | Mnémotechnique Intel ; variantes syntaxiques assembleur à distinguer |
-| ROL | D0h/D1h (count 1), D2h/D3h (CL) ; C0h/C1h imm8 non-8086 | Groupe shift/rotate | Mnémotechnique d'instruction ; ne pas attribuer C0/C1 au 8086 |
-| ROR | D0h/D1h (count 1), D2h/D3h (CL) ; C0h/C1h imm8 non-8086 | Groupe shift/rotate | Mnémotechnique d'instruction ; ne pas attribuer C0/C1 au 8086 |
+| ROL | D0h/D1h, D2h/D3h ; groupe C0h/C1h immédiat absent du 8086 | ModR/M /0 ; compte 1 ou CL | Mnémotechnique d'instruction ; ne pas attribuer C0/C1 au 8086 |
+| ROR | D0h/D1h, D2h/D3h ; groupe C0h/C1h immédiat absent du 8086 | ModR/M /1 ; compte 1 ou CL | Mnémotechnique d'instruction ; ne pas attribuer C0/C1 au 8086 |
 | SAHF | 9Eh | Opcode fixe | Mnémotechnique d'instruction |
-| SAL/SHL | D0h/D1h (count 1), D2h/D3h (CL) ; C0h/C1h imm8 non-8086 | Groupe shift/rotate | Synonymes ; C0/C1 immédiat exclus du 8086 |
-| SAR | D0h/D1h (count 1), D2h/D3h (CL) ; C0h/C1h imm8 non-8086 | Groupe shift/rotate | Mnémotechnique d'instruction ; ne pas attribuer C0/C1 au 8086 |
+| SAL/SHL | D0h/D1h, D2h/D3h ; groupe C0h/C1h immédiat absent du 8086 | ModR/M /4 ; compte 1 ou CL | Synonymes ; C0/C1 immédiat exclus du 8086 |
+| SAR | D0h/D1h, D2h/D3h ; groupe C0h/C1h immédiat absent du 8086 | ModR/M /7 ; compte 1 ou CL | Mnémotechnique d'instruction ; ne pas attribuer C0/C1 au 8086 |
 | SBB | 18h–1Dh ; groupe 80h/81h/83h, extension /3 | Registre/mémoire, accumulateur, immédiat | Mnémotechnique d'instruction |
 | SCASB / SCASW | AEh / AFh | Opcode fixe, taille implicite | Mnémotechniques distinctes |
-| SHL | D0h/D1h (count 1), D2h/D3h (CL) ; C0h/C1h imm8 non-8086 | Groupe shift/rotate | Alias de SAL ; C0/C1 immédiat exclus du 8086 |
-| SHR | D0h/D1h (count 1), D2h/D3h (CL) ; C0h/C1h imm8 non-8086 | Groupe shift/rotate | Mnémotechnique d'instruction ; ne pas attribuer C0/C1 au 8086 |
+| SHL | D0h/D1h, D2h/D3h ; groupe C0h/C1h immédiat absent du 8086 | Alias de SAL, ModR/M /4 ; compte 1 ou CL | Alias de SAL ; C0/C1 immédiat exclus du 8086 |
+| SHR | D0h/D1h, D2h/D3h ; groupe C0h/C1h immédiat absent du 8086 | ModR/M /5 ; compte 1 ou CL | Mnémotechnique d'instruction ; ne pas attribuer C0/C1 au 8086 |
 | STC | F9h | Opcode fixe | Mnémotechnique d'instruction |
 | STD | FDh | Opcode fixe | Mnémotechnique d'instruction |
 | STI | FBh | Opcode fixe | Mnémotechnique d'instruction |
@@ -282,7 +282,16 @@ Les codes ci-dessous sont les opcodes primaires ou les groupes d'opcodes archite
 - Les alias de sauts conditionnels partagent un opcode et une condition ; leur présence séparée dans l'inventaire sert à vérifier la couverture lexicale, pas à compter des opcodes distincts.
 - Le tableau est une table de correspondance de premier niveau. Les formes exactes, champs ModR/M, directions, restrictions, octets additionnels et éventuelles variantes restent à documenter dans les fiches de formes.
 
-## 10. Protocole d'audit par entrée
+## 10. Traçabilité documentaire de cette passe
+
+- Intel, *8086 Family User's Manual*, octobre 1979, **Table 2-21 — Instruction Set Reference Data** : mnémotechniques, opérandes, effets FLAGS, cycles, transferts et octets par forme. La même documentation précise les coûts EA et les pénalités de transfert mémoire.
+- Intel, *8086 Family User's Manual*, section de codage matériel, notamment la table d'opcodes et les champs d'instruction : structure des octets, champs d'opcode et extensions.
+- Intel, *MCS-86 Macro Assembly Language Reference Manual*, septembre 1979 : syntaxe source, opérandes et formes admises par l'assembleur.
+- Intel, *ASM86 Language Reference Manual*, novembre 1983, section **The 8086/8087/8088 Instruction Set** et **Instruction Detail Tables** : corroboration secondaire Intel pour les formats, opcodes et variantes ; à ne pas utiliser pour attribuer au 8086 des extensions postérieures.
+
+Les pages exactes doivent être enregistrées dans les fiches détaillées lors de l'audit par forme. Le tableau ci-dessus constitue un rapprochement de premier niveau, pas une preuve suffisante pour chaque variante.
+
+## 11. Protocole d'audit par entrée
 
 Pour chaque graphie, consigner séparément :
 
