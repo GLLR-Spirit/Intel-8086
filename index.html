@@ -171,8 +171,7 @@ function runSelfTests(){var cases=[
 ["INT 21h DOS historique","MOV AH, 02h\nMOV DL, 65\nINT 21h\nHLT",function(s){return !s.error&&s.output==="A";}],
 ["IRET restaure les FLAGS modifiés dans le gestionnaire","VECTOR 36h, H\nMOV AX, 1\nCMP AX, 2\nINT 36h\nHLT\nH:\nCMP AX, AX\nIRET",function(s){return !s.error&&s.flags.CF===1&&s.stack.length===0;}],
 ["VECTOR refuse un numéro hors plage","VECTOR 100h, H\nHLT\nH:\nIRET",function(s){return !!s.error&&s.error.indexOf("Numéro de vecteur invalide")>=0;}],
-["VECTOR refuse une définition en double","VECTOR 37h, H\nVECTOR 37h, H\nHLT\nH:\nIRET",function(s){return !!s.error&&s.error.indexOf("Vecteur déjà défini")>=0;}]
-
+["VECTOR refuse une définition en double","VECTOR 37h, H\nVECTOR 37h, H\nHLT\nH:\nIRET",function(s){return !!s.error&&s.error.indexOf("Vecteur déjà défini")>=0;}],
 ["PUSHF et POPF restaurent FLAGS","STC\nSTD\nSTI\nPUSHF\nCLC\nCLD\nCLI\nPOPF\nHLT",function(s){return !!s.reg&&s.flags.CF===1&&s.flags.DF===1&&s.flags.IF===1;}],
 ["PUSHF écrit un mot little-endian à SS:SP","STC\nPUSHF\nHLT",function(s){return !!s.reg&&s.reg.SP===65532&&s.mem[65532]===3&&s.mem[65533]===0;}],
 ["POPF accepte un mot empilé par PUSH","MOV AX, 0601h\nPUSH AX\nPOPF\nHLT",function(s){return !!s.reg&&s.flags.CF===1&&s.flags.IF===1&&s.flags.DF===1;}],
