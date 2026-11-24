@@ -175,6 +175,113 @@ Les préfixes REP sont des octets d'instruction qui modifient le comportement de
 - **FWAIT, XLATB, RETF** : graphies d'assembleur ou synonymes historiques rencontrés selon les références et outils ; conserver dans le registre de vérification, mais ne pas les présenter comme graphies canoniques Intel sans confirmation primaire.
 - Les instructions du 80186 et des générations suivantes (PUSHA/POPA, ENTER/LEAVE, INS/OUTS, BOUND, décalages immédiats, PUSH immédiat) sont hors périmètre.
 
+
+## 11. Première réconciliation des opcodes — tables de référence
+
+Les codes ci-dessous sont les opcodes primaires ou les groupes d'opcodes architecturaux du 8086. Pour les familles utilisant ModR/M, le code indiqué ne suffit pas à décrire une instruction complète : le champ REG ou l'opcode-extension, la taille, le sens et les octets de déplacement/immédiat restent à relever dans la fiche de forme. Les intervalles de sauts conditionnels sont des opcodes courts relatifs.
+
+| Entrée(s) | Opcode(s) / groupe 8086 | Nature de l'encodage | Statut de graphie |
+|---|---|---|---|
+| AAA | 37h | Opcode fixe | Mnémotechnique d'instruction |
+| AAD | D5h ib (forme documentée usuelle D5 0A) | Opcode + immédiat base | Mnémotechnique d'instruction |
+| AAM | D4h ib (forme documentée usuelle D4 0A) | Opcode + immédiat base | Mnémotechnique d'instruction |
+| AAS | 3Fh | Opcode fixe | Mnémotechnique d'instruction |
+| ADC | 10h–15h ; groupe 80h/81h/83h, extension /2 | Registre/mémoire, accumulateur, immédiat | Mnémotechnique d'instruction |
+| ADD | 00h–05h ; groupe 80h/81h/83h, extension /0 | Registre/mémoire, accumulateur, immédiat | Mnémotechnique d'instruction |
+| AND | 20h–25h ; groupe 80h/81h/83h, extension /4 | Registre/mémoire, accumulateur, immédiat | Mnémotechnique d'instruction |
+| CALL | E8h ; FFh /2 (near indirect), FFh /3 (far indirect) | Relatif proche et indirect via r/m | Mnémotechnique d'instruction |
+| CBW | 98h | Opcode fixe | Mnémotechnique d'instruction |
+| CLC | F8h | Opcode fixe | Mnémotechnique d'instruction |
+| CLD | FCh | Opcode fixe | Mnémotechnique d'instruction |
+| CLI | FAh | Opcode fixe | Mnémotechnique d'instruction |
+| CMC | F5h | Opcode fixe | Mnémotechnique d'instruction |
+| CMP | 38h–3Dh ; groupe 80h/81h/83h, extension /7 | Registre/mémoire, accumulateur, immédiat | Mnémotechnique d'instruction |
+| CMPSB / CMPSW | A6h / A7h | Opcode fixe, taille implicite | Mnémotechniques distinctes |
+| CWD | 99h | Opcode fixe | Mnémotechnique d'instruction |
+| DAA | 27h | Opcode fixe | Mnémotechnique d'instruction |
+| DAS | 2Fh | Opcode fixe | Mnémotechnique d'instruction |
+| DEC | 48h–4Fh ; FEh /1 (byte), FFh /1 (word) | Registre compact 16 bits ou groupe ModR/M | Mnémotechnique d'instruction |
+| DIV | F6h /6 (byte), F7h /6 (word) | Groupe ModR/M | Mnémotechnique d'instruction |
+| ESC | D8h–DFh | Opcode + ModR/M | Mnémotechnique d'instruction/coprocesseur |
+| HLT | F4h | Opcode fixe | Mnémotechnique d'instruction |
+| IDIV | F6h /7 (byte), F7h /7 (word) | Groupe ModR/M | Mnémotechnique d'instruction |
+| IMUL | F6h /5 (byte), F7h /5 (word) | Groupe ModR/M | Mnémotechnique d'instruction |
+| IN | E4h/E5h (imm8), ECh/EDh (DX) | Port immédiat ou DX, AL/AX | Mnémotechnique d'instruction |
+| INC | 40h–47h ; FEh /0 (byte), FFh /0 (word) | Registre compact 16 bits ou groupe ModR/M | Mnémotechnique d'instruction |
+| INT | CCh (type 3), CDh ib (type immédiat) | Opcode fixe ou immédiat | Mnémotechnique d'instruction |
+| INTO | CEh | Opcode fixe | Mnémotechnique d'instruction |
+| IRET | CFh | Opcode fixe | Mnémotechnique d'instruction |
+| JA/JNBE | 77h | Saut conditionnel court | Alias de condition |
+| JAE/JNB/JNC | 73h | Saut conditionnel court | Alias de condition |
+| JB/JC/JNAE | 72h | Saut conditionnel court | Alias de condition |
+| JBE/JNA | 76h | Saut conditionnel court | Alias de condition |
+| JCXZ | E3h | Saut court relatif | Mnémotechnique d'instruction |
+| JE/JZ | 74h | Saut conditionnel court | Alias de condition |
+| JG/JNLE | 7Fh | Saut conditionnel court | Alias de condition |
+| JGE/JNL | 7Dh | Saut conditionnel court | Alias de condition |
+| JL/JNGE | 7Ch | Saut conditionnel court | Alias de condition |
+| JLE/JNG | 7Eh | Saut conditionnel court | Alias de condition |
+| JMP | E9h (near rel16), EBh (short rel8), EAh (far direct), FFh /4 (near indirect), FFh /5 (far indirect) | Plusieurs formes de transfert | Mnémotechnique d'instruction |
+| JNE/JNZ | 75h | Saut conditionnel court | Alias de condition |
+| JNO | 71h | Saut conditionnel court | Mnémotechnique d'instruction |
+| JNP/JPO | 7Bh | Saut conditionnel court | Alias de condition |
+| JNS | 79h | Saut conditionnel court | Mnémotechnique d'instruction |
+| JO | 70h | Saut conditionnel court | Mnémotechnique d'instruction |
+| JP/JPE | 7Ah | Saut conditionnel court | Alias de condition |
+| JS | 78h | Saut conditionnel court | Mnémotechnique d'instruction |
+| LAHF | 9Fh | Opcode fixe | Mnémotechnique d'instruction |
+| LDS | C5h | ModR/M, destination r16 et source mémoire m16:16 | Mnémotechnique d'instruction |
+| LEA | 8Dh | ModR/M, destination r16 et source mémoire effective | Mnémotechnique d'instruction |
+| LES | C4h | ModR/M, destination r16 et source mémoire m16:16 | Mnémotechnique d'instruction |
+| LOCK | F0h | Préfixe d'instruction | Préfixe, non-opération autonome |
+| LODSB / LODSW | ACh / ADh | Opcode fixe, taille implicite | Mnémotechniques distinctes |
+| LOOP | E2h | Saut court relatif | Mnémotechnique d'instruction |
+| LOOPE/LOOPZ | E1h | Saut court relatif | Synonymes |
+| LOOPNE/LOOPNZ | E0h | Saut court relatif | Synonymes |
+| MOV | 88h–8Bh, 8Ch–8Eh, A0h–A3h, B0h–BFh, C6h/C7h, etc. | Famille multi-formes ; détail ModR/M requis | Mnémotechnique d'instruction |
+| MOVSB / MOVSW | A4h / A5h | Opcode fixe, taille implicite | Mnémotechniques distinctes |
+| MUL | F6h /4 (byte), F7h /4 (word) | Groupe ModR/M | Mnémotechnique d'instruction |
+| NEG | F6h /3 (byte), F7h /3 (word) | Groupe ModR/M | Mnémotechnique d'instruction |
+| NOP | 90h | Opcode fixe | Mnémotechnique d'instruction |
+| NOT | F6h /2 (byte), F7h /2 (word) | Groupe ModR/M | Mnémotechnique d'instruction |
+| OR | 08h–0Dh ; groupe 80h/81h/83h, extension /1 | Registre/mémoire, accumulateur, immédiat | Mnémotechnique d'instruction |
+| OUT | E6h/E7h (imm8), EEh/EFh (DX) | Port immédiat ou DX, AL/AX | Mnémotechnique d'instruction |
+| POP | 58h–5Fh (reg16), 8Fh /0 (r/m16), 07h/17h/1Fh (segments) | Plusieurs formes | Mnémotechnique d'instruction |
+| POPF | 9Dh | Opcode fixe | Mnémotechnique d'instruction |
+| PUSH | 50h–57h (reg16), FFh /6 (r/m16), 06h/0Eh/16h/1Eh (segments) | Plusieurs formes | Mnémotechnique d'instruction |
+| PUSHF | 9Ch | Opcode fixe | Mnémotechnique d'instruction |
+| RCL | D0h/D1h (count 1), D2h/D3h (CL) ; C0h/C1h imm8 non-8086 | Groupe shift/rotate | Mnémotechnique d'instruction ; ne pas attribuer C0/C1 au 8086 |
+| RCR | D0h/D1h (count 1), D2h/D3h (CL) ; C0h/C1h imm8 non-8086 | Groupe shift/rotate | Mnémotechnique d'instruction ; ne pas attribuer C0/C1 au 8086 |
+| REP/REPE/REPNE | F3h/F3h/F2h | Préfixes appliqués aux instructions de chaîne | Préfixes, pas opérations autonomes |
+| RET | C3h (near), C2h iw (near + ajustement SP), CBh (far), CAh iw (far + ajustement SP) | Retour proche/lointain | Mnémotechnique Intel ; variantes syntaxiques assembleur à distinguer |
+| ROL | D0h/D1h (count 1), D2h/D3h (CL) ; C0h/C1h imm8 non-8086 | Groupe shift/rotate | Mnémotechnique d'instruction ; ne pas attribuer C0/C1 au 8086 |
+| ROR | D0h/D1h (count 1), D2h/D3h (CL) ; C0h/C1h imm8 non-8086 | Groupe shift/rotate | Mnémotechnique d'instruction ; ne pas attribuer C0/C1 au 8086 |
+| SAHF | 9Eh | Opcode fixe | Mnémotechnique d'instruction |
+| SAL/SHL | D0h/D1h (count 1), D2h/D3h (CL) ; C0h/C1h imm8 non-8086 | Groupe shift/rotate | Synonymes ; C0/C1 immédiat exclus du 8086 |
+| SAR | D0h/D1h (count 1), D2h/D3h (CL) ; C0h/C1h imm8 non-8086 | Groupe shift/rotate | Mnémotechnique d'instruction ; ne pas attribuer C0/C1 au 8086 |
+| SBB | 18h–1Dh ; groupe 80h/81h/83h, extension /3 | Registre/mémoire, accumulateur, immédiat | Mnémotechnique d'instruction |
+| SCASB / SCASW | AEh / AFh | Opcode fixe, taille implicite | Mnémotechniques distinctes |
+| SHL | D0h/D1h (count 1), D2h/D3h (CL) ; C0h/C1h imm8 non-8086 | Groupe shift/rotate | Alias de SAL ; C0/C1 immédiat exclus du 8086 |
+| SHR | D0h/D1h (count 1), D2h/D3h (CL) ; C0h/C1h imm8 non-8086 | Groupe shift/rotate | Mnémotechnique d'instruction ; ne pas attribuer C0/C1 au 8086 |
+| STC | F9h | Opcode fixe | Mnémotechnique d'instruction |
+| STD | FDh | Opcode fixe | Mnémotechnique d'instruction |
+| STI | FBh | Opcode fixe | Mnémotechnique d'instruction |
+| STOSB / STOSW | AAh / ABh | Opcode fixe, taille implicite | Mnémotechniques distinctes |
+| SUB | 28h–2Dh ; groupe 80h/81h/83h, extension /5 | Registre/mémoire, accumulateur, immédiat | Mnémotechnique d'instruction |
+| TEST | 84h/85h, A8h/A9h, F6h/F7h /0 | Registre/mémoire et accumulateur immédiat | Mnémotechnique d'instruction |
+| WAIT | 9Bh | Opcode fixe de synchronisation | Mnémotechnique Intel ; FWAIT est une graphie alternative d'assembleur à confirmer |
+| XCHG | 86h/87h (r/m,r), 90h–97h (AX,r16) | ModR/M ou opcode compact | Mnémotechnique d'instruction |
+| XLAT | D7h | Opcode fixe | Mnémotechnique Intel ; XLATB est un alias d'assembleur à confirmer |
+| XOR | 30h–35h ; groupe 80h/81h/83h, extension /6 | Registre/mémoire, accumulateur, immédiat | Mnémotechnique d'instruction |
+
+### Points importants de cette réconciliation
+
+- Les instructions de décalage/rotation du 8086 utilisent le compte implicite 1 ou le registre CL. Les opcodes C0h/C1h pour compte immédiat appartiennent aux générations ultérieures : ils ne doivent pas être présentés comme encodages 8086.
+- Le 8086 encode les retours proches et lointains avec la famille RET ; RETF est une graphie de certains assembleurs, pas une entrée d'opcode indépendante dans cette table.
+- LOCK, REP, REPE et REPNE sont des préfixes, pas des opérations indépendantes. Les graphies REPZ et REPNZ sont des synonymes d'assembleur à documenter comme tels.
+- Les alias de sauts conditionnels partagent un opcode et une condition ; leur présence séparée dans l'inventaire sert à vérifier la couverture lexicale, pas à compter des opcodes distincts.
+- Le tableau est une table de correspondance de premier niveau. Les formes exactes, champs ModR/M, directions, restrictions, octets additionnels et éventuelles variantes restent à documenter dans les fiches de formes.
+
 ## 10. Protocole d'audit par entrée
 
 Pour chaque graphie, consigner séparément :
