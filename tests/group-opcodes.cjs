@@ -133,7 +133,9 @@ const unaryVectors = [
   ["DIV SI", [0xF7, 0xF6]],
   ["IDIV DI", [0xF7, 0xFF]],
   ["TEST AL, 5Ah", [0xA8, 0x5A]],
-  ["TEST AX, 1234h", [0xA9, 0x34, 0x12]]
+  ["TEST AX, 1234h", [0xA9, 0x34, 0x12]],
+  ["TEST BL, 5Ah", [0xF6, 0xC3, 0x5A]],
+  ["TEST WORD PTR [BX], 1234h", [0xF7, 0x07, 0x34, 0x12]]
 ];
 for (const [source, expected] of unaryVectors) {
   test("F6/F7 assembler " + source, () => assert.deepEqual(assemble(source), expected));
