@@ -16,7 +16,7 @@ La documentation ne modifie pas le moteur CPU. Les statuts affichés distinguent
 
 ## Inventaire canonique et audit
 
-Un registre distinct des instructions, synonymes, préfixes et éléments hors périmètre est maintenu dans [docs/instruction-inventory-8086.md](docs/instruction-inventory-8086.md). Une première réconciliation ajoute les opcodes et groupes ModR/M de référence, et classe provisoirement les alias et préfixes. Les graphies d'assembleur historiques restent « à confirmer » ; les tableaux ne remplacent pas encore l'audit de chaque forme exacte. Cet inventaire n'est pas une certification d'exhaustivité.
+Un registre distinct des instructions, synonymes, préfixes et éléments hors périmètre est maintenu dans [docs/instruction-inventory-8086.md](docs/instruction-inventory-8086.md). Une première réconciliation ajoute les opcodes et groupes ModR/M de référence, et classe provisoirement les alias et préfixes. La première matrice des formes d'opérandes et encodages pour MOV, ADD, ADC, SUB, SBB et CMP est consignée dans [docs/operand-encoding-8086.md](docs/operand-encoding-8086.md). Les graphies d'assembleur historiques restent « à confirmer » ; les tableaux ne remplacent pas encore l'audit de chaque forme exacte. Cet inventaire n'est pas une certification d'exhaustivité.
 
 ## Audit de la référence
 
