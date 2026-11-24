@@ -55,3 +55,8 @@ Les timings de MOV, ADD, ADC et CMP sont rapprochés des références Intel disp
 ## Critère de clôture de l'audit
 
 L'audit ne sera considéré comme terminé que lorsque l'inventaire canonique aura une fiche traçable pour chaque instruction/alias pertinent, que chaque forme aura des opérandes/restrictions/FLAGS/cycles vérifiés, et que les statuts de support seront confirmés par des tests positifs et négatifs. Les entrées non applicables devront être explicitement marquées « sans objet », pas laissées ambiguës.
+
+
+## Mise à jour — ADC / SBB
+
+ADC et SBB ont été ajoutées au validateur, à l'interpréteur, à l'assembleur et au désassembleur. Le support est partiel : les formes principales registre/mémoire et immédiates 80h/81h sont implémentées ; l'encodage court 83h, les timings détaillés par forme et l'audit exhaustif des variantes restent à vérifier. Les tests indépendants doivent confirmer le comportement avant clôture de cette phase.
