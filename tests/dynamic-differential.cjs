@@ -789,6 +789,29 @@ test("Décalages 16 bits — frontières de signe, compte CL et retenue", () => 
         }
 });
 
+
+test("LOOPE/LOOPNE/JCXZ — limites rel8 exactes −128 et +127", () => {
+  const opcodes={LOOPNE:0xe0,LOOPE:0xe1,JCXZ:0xe3};
+  for(const [name,opcode] of Object.entries(opcodes)){
+    const positive=api.assemble(name+" TARGET\n"+"NOP\n".repeat(127)+"TARGET: HLT");
+    assert.equal(positive.bytes[0],opcode,name+" opcode +127");
+    assert.equal(positive.bytes[1],0x7f,name+" displacement +127");
+    const negative=api.assemble("TARGET: "+"NOP\n".repeat(126)+name+" TARGET\nHLT");
+    const row=negative.rows.find(x=>x.instruction.startsWith(name+" "));
+    assert.ok(row,name+" negative branch row");
+    assert.equal(row.bytes[0],opcode,name+" opcode -128");
+    assert.equal(row.bytes[1],0x80,name+" displacement -128");
+  }
+  assert.throws(()=>api.assemble("NOP\n".repeat(127)+"JCXZ TARGET\n"+"NOP\n".repeat(129)+"TARGET: HLT"),/hors plage/);
+});
+test("SHL/SHR/SAR et rotations sur mémoire BYTE/WORD avec override ES", () => {
+  const source="MOV AX, 1000h\nMOV ES, AX\nMOV BX, 0100h\nMOV BYTE PTR ES:[BX], 81h\nMOV CL, 2\nROL BYTE PTR ES:[BX], CL\nMOV WORD PTR ES:[BX+2], 8001h\nSAR WORD PTR ES:[BX+2], 1\nSHR WORD PTR ES:[BX+2], CL\nHLT";
+  const {binaryState}=compareSourceBinary(source,[0x10100,0x10102,0x10103]);
+  assert.equal(binaryState.mem[0x10100],0x06);
+  assert.equal(binaryState.mem[0x10102]|(binaryState.mem[0x10103]<<8),0x2000);
+  assert.throws(()=>api.assemble("MOV AL, 1\nSHL AL, 2\nHLT"),/compteur immédiat/);
+});
+
 console.log("Audit différentiel arithmétique : " + categories.arithmetic + " vecteurs.");
 console.log("Logique et TEST : " + categories.logic + " vecteurs.");
 console.log("Registres : " + categories.registers + " vecteurs.");
