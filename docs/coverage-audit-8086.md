@@ -294,3 +294,13 @@ Le mode d'exécution est indiqué dans `state.execution.mode` : `binary-offset` 
 Nouvelle suite : [`byte-offset-execution.cjs`](../tests/byte-offset-execution.cjs), qui couvre les offsets, les branchements, CALL/RET et le rebouclage d'un segment complet de 64 Kio. Les tests de pile existants ont été adaptés pour utiliser des offsets binaires réels comme cibles des transferts indirects.
 
 Limites : il ne s'agit pas encore d'un chargeur de binaire externe ni d'un émulateur complet. Les transferts FAR ne chargent pas des images de code distinctes par segment CS ; les offsets sont résolus dans l'image source courante. Les transferts indirects doivent viser une frontière d'instruction connue.
+
+## Mise à jour — chargeur et exécution initiale d'un flux binaire (24 novembre 2026)
+
+Ajout d'un chemin `executeBinary(bytes, CS, IP)` et de contrôles d'interface pour charger/exécuter les octets saisis ou importés depuis un fichier `.bin`. Le flux est placé en mémoire à l'adresse physique `((CS << 4) + IP) mod 1 048 576`. Le décodeur existant construit une carte des débuts d'instructions ; les branches relatives sont résolues à travers cette carte et les cibles non alignées sont refusées.
+
+Nouvelle documentation : [audit du chargement binaire](audit-chargement-binaire-8086.md).
+
+La suite `tests/byte-offset-execution.cjs` est étendue pour tester le chargement CS:IP, les branches, CALL/RET, le passage d'IP=FFFFh, les octets en mémoire et la comparaison source/binaire.
+
+Limite fondamentale : cette première version effectue un décodage linéaire préalable. Elle ne lit pas encore chaque opcode depuis la mémoire au moment de son exécution et n'autorise pas encore les branchements vers des frontières découvertes dynamiquement. Ce sera le travail de la prochaine phase.
