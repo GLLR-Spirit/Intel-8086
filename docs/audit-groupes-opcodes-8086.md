@@ -53,11 +53,11 @@ La classification est établie à partir du *Intel 8086 Family User's Manual*, o
 - /7 reste invalide pour les quatre modes ModR/M.
 - Pour /0 et /1, le décodeur traite les formes FF mémoire ; les variantes registre utilisent les opcodes compacts INC/DEC. Les formes registre-direct FF /0 et /1 sont rendues comme données brutes dans cette version.
 
-### Limite d'exécution assumée
+### État d'exécution mis à jour
 
-Les formes near indirectes CALL/JMP sont assemblées et désassemblées, mais l'interpréteur pédagogique ne simule pas encore leur transfert de contrôle. Il émet une erreur explicite « non encore prise en charge » au lieu de traiter le registre ou l'opérande mémoire comme une étiquette. Les formes far indirectes sont décodées, mais ne sont pas assemblées ni exécutées.
+Les formes near indirectes CALL/JMP sont désormais exécutées pour les opérandes registre et mémoire. Les formes far indirectes FF /3 et /5 sont assemblées, désassemblées et exécutées à partir d'un pointeur mémoire m16:16. Les détails de la sémantique de pile, de CS:IP et les limites du modèle sont consignés dans [l'audit transferts et pile](audit-transferts-pile-8086.md).
 
-PUSH MEM16 via FF /6 est exécuté et vérifié avec un cycle PUSH mémoire / POP registre.
+PUSH MEM16 via FF /6 reste exécuté et vérifié avec un cycle PUSH mémoire / POP registre.
 
 ## 4. Groupes C6/C7 — MOV immédiat vers r/m
 
@@ -123,3 +123,12 @@ Aucun échec dans ce workflow.
 - Les effets FLAGS indéfinis des opérations MUL/IMUL/DIV/IDIV ne sont pas comparés comme s'ils avaient une valeur architecturale définie.
 
 **Règle de maintenance :** chaque extension doit être classée d'après la référence 8086 avant de choisir entre assemblage, décodage, exécution, conservation en DB ou rejet.
+
+
+## Mise à jour — transferts indirects et pile (24 novembre 2026)
+
+La nouvelle suite [`tests/control-stack.cjs`](../tests/control-stack.cjs) ajoute 304 vecteurs : 260 autour de POP r/m16, 24 encodages RET/RETF et transferts indirects, 8 flux tronqués, 9 tests d'exécution et 3 formes POP invalides.
+
+Le workflow [45482367409](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45482367409) a réussi sur le commit `04f7ee9c918f42cb7c25d8124ecf983ff0e9bcc4`. Les 304 nouveaux vecteurs passent ; le total agrégé du workflow est de **8 549 vérifications réussies, 0 échec**.
+
+Cette validation confirme le comportement du modèle d'interpréteur défini dans [audit-transferts-pile-8086.md](audit-transferts-pile-8086.md), pas l'équivalence avec un processeur matériel ni une exécution à offsets de code physiques.
