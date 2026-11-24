@@ -141,7 +141,7 @@ console.log("CALL / RET et adresses de retour : " + counts.calls + " tests.");
 console.log("Bouclage IP sur segment de 64 Kio : " + counts.wrap + " test.");
 console.log("Résultat cohérence binaire/exécution : " + passed + " réussis, " + failed + " échecs.");
 
-const countsBinary = { loading: 0, branches: 0, validation: 0, prefixes: 0, wrap: 0, selfModify: 0, opcodes: 0, modrm: 0 };
+const countsBinary = { loading: 0, branches: 0, validation: 0, prefixes: 0, wrap: 0, selfModify: 0, opcodes: 0, modrm: 0, indirect: 0 };
 function executeLoaded(bytes, cs, ip) {
   const result = api.executeBinary(bytes, cs, ip);
   assert.ok(!result.error, result.error || "binary execution failed");
@@ -311,4 +311,44 @@ test("all ModR/M values are checked across the principal opcode groups", () => {
 });
 countsBinary.modrm++;
 
+
+test("near indirect CALL through a register returns to the byte after CALL", () => {
+  const state = executeLoaded([0xB8,0x07,0x01,0xFF,0xD0,0xF4,0x90,0xC3],0x5600,0x0100);
+  assert.equal(state.reg.IP,0x0106);
+  assert.equal(state.reg.CS,0x5600);
+  assert.equal(state.stack.length,0);
+  assert.equal(state.steps,4);
+});
+countsBinary.indirect++;
+test("near indirect JMP through a register fetches its target", () => {
+  const state = executeLoaded([0xB8,0x05,0x01,0xFF,0xE0,0xF4],0x5700,0x0100);
+  assert.equal(state.reg.IP,0x0106);
+  assert.equal(state.steps,3);
+});
+countsBinary.indirect++;
+test("far indirect CALL reads an m16:16 pointer and RETF restores CS:IP", () => {
+  const bytes=Array(0x12).fill(0x90);
+  bytes.splice(0,5,0x2E,0xFF,0x1E,0x10,0x02);
+  bytes[5]=0xF4; bytes[7]=0x10; bytes[8]=0x01; bytes[9]=0x00; bytes[10]=0x56; bytes[0x10]=0xCB;
+  const state=executeLoaded(bytes,0x5600,0x0100);
+  assert.equal(state.reg.CS,0x5600);
+  assert.equal(state.reg.IP,0x0106);
+  assert.equal(state.stack.length,0);
+  assert.equal(state.steps,3);
+});
+countsBinary.indirect++;
+test("far indirect JMP reads an m16:16 pointer and changes CS:IP", () => {
+  const bytes=Array(0x12).fill(0x90);
+  bytes.splice(0,5,0x2E,0xFF,0x2E,0x10,0x02);
+  bytes[0x10]=0xF4;
+  const state=executeLoaded(bytes,0x5700,0x0100);
+  assert.equal(state.reg.CS,0x5700);
+  assert.equal(state.reg.IP,0x0111);
+  assert.equal(state.steps,2);
+});
+countsBinary.indirect++;
+
+console.log("Audit dynamique : "+passed+" réussis, "+failed+" échecs.");
+console.log("Décodage opcode : "+countsBinary.opcodes+" matrice(s) complète(s), ModR/M : "+countsBinary.modrm+".");
+console.log("Préfixes : "+countsBinary.prefixes+", branchements : "+countsBinary.branches+", transferts indirects : "+countsBinary.indirect+", auto-modification : "+countsBinary.selfModify+".");
 if (failed) process.exit(1);
