@@ -22,6 +22,12 @@ Un registre distinct des instructions, synonymes, préfixes et éléments hors p
 
 L'audit d'exhaustivité et de précision est en cours. Le suivi des vérifications, les anomalies ouvertes et les critères de clôture sont consignés dans [docs/audit-reference-8086.md](docs/audit-reference-8086.md). Les statuts de prise en charge sont corrigés lorsqu'une fiche documentaire ne correspond pas au code réel ; notamment, ADC et SBB sont documentées mais ne sont pas implémentées dans le simulateur, l'assembleur ou le désassembleur.
 
+## Tests de référence des instructions
+
+Les tests de fumée existants sont complétés par [tests/instruction-vectors.cjs](tests/instruction-vectors.cjs), qui utilise des octets de référence fixes pour contrôler séparément l'assembleur et le désassembleur, puis vérifie quelques résultats du simulateur. Le workflow CI exécute les deux suites.
+
+La couverture est volontairement déclarée partielle. Les tests exposent notamment que ADC et SBB ne sont pas encore implémentées dans le simulateur ni dans l'assembleur ; ils ne doivent pas être considérées comme validées.
+
 ## Objectif
 
 Intel 8086 Lab rassemble dans une seule page :
@@ -31,7 +37,7 @@ Intel 8086 Lab rassemble dans une seule page :
 - Un moteur pédagogique avec exécution complète et pas à pas
 - L'observation des registres, des indicateurs FLAGS et d'une mémoire segmentée pédagogique
 - Une référence d'instructions, des exercices et des idées de projets
-- Une suite de 354 tests rapides intégrée à la page pour contrôler des cas de calcul, FLAGS, sauts, boucles et pile
+- Une suite de tests rapides intégrée à la page pour contrôler des cas de calcul, FLAGS, sauts, boucles et pile
 - L'assembleur et le désassembleur couvrent `LEA r16, m` (`8Dh`), `LES r16, m16:16` (`C4h`) et `LDS r16, m16:16` (`C5h`). `LEA` charge l'offset effectif sans lire la mémoire ; `LES` et `LDS` lisent quatre octets consécutifs, d'abord l'offset puis le segment en little-endian, et mettent à jour respectivement ES et DS. Les destinations doivent être des registres généraux 16 bits ; les sources doivent être mémoire, et `LES`/`LDS` refusent les qualificateurs BYTE/WORD qui ne décrivent pas un pointeur 16:16. Les références binaires indépendantes et le désassemblage sont testés.
 - L'assembleur et le désassembleur prennent en charge `XCHG r/m8, r8` (`86h`) et `XCHG r/m16, r16` (`87h`), avec les formes registre/mémoire, les champs ModR/M, les déplacements et les préfixes de segment. Les échanges mémoire-mémoire, les immédiats, les registres de segment et les tailles incompatibles sont refusés. Les formes `XCHG AX, r16` conservent leurs opcodes compacts `90h`–`97h`.
 - L'assembleur et le désassembleur prennent en charge `MOV Sreg, r/m16` (`8Eh`) et `MOV r/m16, Sreg` (`8Ch`) pour ES, CS, SS et DS, avec les champs ModR/M et les adresses mémoire 16 bits. `MOV CS, r/m16` est refusé comme destination ; les champs de segment 4–7 sont conservés comme `DB` et FS/GS sont rejetés en mode 8086. Les références binaires `8E D8`, `8C D8`, `8E 07` et `8C 52 04` sont testées indépendamment de l'assembleur.
