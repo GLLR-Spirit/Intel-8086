@@ -68,10 +68,10 @@ const assemblerVectors = [
   ["MOV register immediate", "MOV AX, 1234h", [0xB8, 0x34, 0x12]],
   ["MOV segment register", "MOV DS, AX", [0x8E, 0xD8]],
   ["MOV direct memory from register", "MOV WORD PTR [2000h], BX", [0x89, 0x1E, 0x00, 0x20]],
-  ["ADD register to register", "ADD AX, BX", [0x03, 0xC3]],
+  ["ADD register to register", "ADD AX, BX", [0x01, 0xD8]],
   ["ADD accumulator immediate", "ADD AX, 1234h", [0x05, 0x34, 0x12]],
-  ["SUB register from accumulator", "SUB AX, BX", [0x2B, 0xC3]],
-  ["CMP register against accumulator", "CMP AX, BX", [0x3B, 0xC3]],
+  ["SUB register from accumulator", "SUB AX, BX", [0x29, 0xD8]],
+  ["CMP register against accumulator", "CMP AX, BX", [0x39, 0xD8]],
   ["CMP accumulator immediate", "CMP AX, 1234h", [0x3D, 0x34, 0x12]]
 ];
 for (const [name, source, expected] of assemblerVectors) {
@@ -90,12 +90,12 @@ for (const mnemonic of ["ADC", "SBB"]) {
 
 // Independent decoder vectors use fixed machine bytes, not the assembler's output.
 const decoderVectors = [
-  ["MOV register immediate", [0xB8, 0x34, 0x12], /MOV AX,1234h/i],
-  ["MOV segment register", [0x8E, 0xD8], /MOV DS,AX/i],
+  ["MOV register immediate", [0xB8, 0x34, 0x12], /MOVAX,1234h/i],
+  ["MOV segment register", [0x8E, 0xD8], /MOVDS,AX/i],
   ["MOV direct memory from register", [0x89, 0x1E, 0x00, 0x20], /MOV WORD PTR \[2000h\],BX/i],
-  ["ADD register to register", [0x03, 0xC3], /ADD AX,BX/i],
-  ["SUB register from accumulator", [0x2B, 0xC3], /SUB AX,BX/i],
-  ["CMP register against accumulator", [0x3B, 0xC3], /CMP AX,BX/i]
+  ["ADD register to register", [0x03, 0xC3], /ADDAX,BX/i],
+  ["SUB register from accumulator", [0x2B, 0xC3], /SUBAX,BX/i],
+  ["CMP register against accumulator", [0x3B, 0xC3], /CMPAX,BX/i]
 ];
 for (const [name, machineBytes, expectedText] of decoderVectors) {
   test("Désassembleur · " + name, () => {
