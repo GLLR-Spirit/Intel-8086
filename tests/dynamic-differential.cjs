@@ -985,6 +985,27 @@ test("PUSHF expose les bits réservés 12–15 à 1 sur 8086", () => {
 });
 categories.stack++;
 
+test("LOCK est réservé aux opérations verrouillables avec destination mémoire", () => {
+  const cases = [
+    { bytes:[0xf0,0x01,0x07], valid:true, name:"LOCK ADD [BX],AX" },
+    { bytes:[0xf0,0xff,0x07], valid:true, name:"LOCK INC [BX]" },
+    { bytes:[0xf0,0x87,0x07], valid:true, name:"LOCK XCHG [BX],AX" },
+    { bytes:[0xf0,0x89,0x07], valid:false, name:"LOCK MOV [BX],AX" },
+    { bytes:[0xf0,0x03,0x07], valid:false, name:"LOCK ADD AX,[BX]" },
+    { bytes:[0xf0,0x39,0x07], valid:false, name:"LOCK CMP [BX],AX" },
+    { bytes:[0xf0,0x01,0xc3], valid:false, name:"LOCK ADD BX,AX" },
+    { bytes:[0xf0,0x87,0xc3], valid:false, name:"LOCK XCHG BX,AX" }
+  ];
+  for (const item of cases) {
+    const decoded=api.disassemble(item.bytes);
+    assert.equal(decoded.rows.length,1,item.name+" one row");
+    const instruction=decoded.rows[0].instruction;
+    if(item.valid) assert.ok(instruction.startsWith("LOCK "),item.name+" accepted: "+instruction);
+    else assert.ok(instruction.startsWith("DB "),item.name+" must remain raw: "+instruction);
+  }
+});
+categories.invalid++;
+
 console.log("Audit différentiel arithmétique : " + categories.arithmetic + " vecteurs.");
 console.log("Logique et TEST : " + categories.logic + " vecteurs.");
 console.log("Registres : " + categories.registers + " vecteurs.");
