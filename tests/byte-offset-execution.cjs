@@ -354,9 +354,9 @@ countsBinary.indirect++;
 
 test("independent binary vectors verify arithmetic flags and taken control flow", () => {
   const vectors=[
-    {name:"MOV/ADD",bytes:[0xB8,0xFF,0x00,0x05,0x01,0x00,0xF4],ax:0x0100,ip:7,steps:3},
-    {name:"CMP/JZ",bytes:[0xB8,0x34,0x12,0x3D,0x34,0x12,0x74,0x03,0xB8,0xFF,0xFF,0xF4],ax:0x1234,ip:12,steps:4},
-    {name:"DEC/JNZ loop",bytes:[0xB9,0x02,0x00,0x49,0x75,0xFD,0xF4],cx:0,ip:7,steps:6}
+    {name:"MOV/ADD",bytes:[0xB8,0xFF,0x00,0x05,0x01,0x00,0xF4],ax:0x0100,ip:7,steps:3,flags:{CF:0,ZF:0,SF:0,OF:0,PF:1,AF:1}},
+    {name:"CMP/JZ",bytes:[0xB8,0x34,0x12,0x3D,0x34,0x12,0x74,0x03,0xB8,0xFF,0xFF,0xF4],ax:0x1234,ip:12,steps:4,flags:{CF:0,ZF:1,SF:0,OF:0,PF:1,AF:0}},
+    {name:"DEC/JNZ loop",bytes:[0xB9,0x02,0x00,0x49,0x75,0xFD,0xF4],cx:0,ip:7,steps:6,flags:{ZF:1}}
   ];
   for(const vector of vectors){
     const state=executeLoaded(vector.bytes,0x5800,0x0000);
@@ -364,6 +364,7 @@ test("independent binary vectors verify arithmetic flags and taken control flow"
     if(vector.cx!==undefined)assert.equal(state.reg.CX,vector.cx,vector.name+" CX");
     assert.equal(state.reg.IP,vector.ip,vector.name+" IP");
     assert.equal(state.steps,vector.steps,vector.name+" steps");
+    for(const [flag,value] of Object.entries(vector.flags))assert.equal(state.flags[flag],value,vector.name+" "+flag);
   }
 });
 countsBinary.independentVectors++;
