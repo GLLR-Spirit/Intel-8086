@@ -2,6 +2,18 @@
 
 **Un laboratoire interactif, gratuit et sans compte pour apprendre et pratiquer l'assembleur Intel 8086.**
 
+## Référence technique des instructions
+
+La rubrique « Instructions » propose désormais une recherche dans les descriptions, mnémotechniques, opcodes, formes d'opérandes et effets sur FLAGS, ainsi que des filtres par catégorie, taille d'opérande et état de prise en charge.
+
+- 58 entrées documentaires, dont des instructions matérielles, des familles d'instructions, des modes d'adressage et la directive pédagogique `VECTOR`.
+- 51 fiches disposent d'informations techniques enrichies : syntaxe, opérandes, restrictions propres au 8086, opcode/encodage, effets sur FLAGS, indication de cycles et état de prise en charge du simulateur, de l'assembleur et du désassembleur.
+- Les entrées dont la fiche n'est pas encore complète affichent explicitement les champs non documentés ; elles ne doivent pas être considérées comme une spécification exhaustive.
+- Les cycles sont des références théoriques Intel par forme d'instruction. Le coût `+EA`, les transferts de mots non alignés, les accès bus, la file de prélecture BIU et les conditions externes influencent le temps réel. Le laboratoire ne simule pas le chronométrage matériel.
+- Sources documentaires intégrées à la rubrique : *Intel 8086 Family User's Manual* (octobre 1979) et *MCS-86 Macro Assembly Language Reference Manual* (septembre 1979).
+
+La documentation ne modifie pas le moteur CPU. Les statuts affichés distinguent la prise en charge pédagogique de la documentation du jeu d'instructions réel.
+
 ## Objectif
 
 Intel 8086 Lab rassemble dans une seule page :
