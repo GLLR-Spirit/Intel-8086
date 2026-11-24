@@ -167,7 +167,7 @@ for (const opcode of [0xFE, 0xFF]) {
   for (let ext = 0; ext < 8; ext++) {
     const bytes = [opcode, modRM(3, ext, 0)];
     test("Validité · " + opcode.toString(16).toUpperCase() + " /" + ext, () => {
-      const invalid = opcode === 0xFE ? ext > 1 : (ext === 3 || ext === 5 || ext === 6 || ext === 7);
+      const invalid = opcode === 0xFE ? ext > 1 : (ext === 0 || ext === 1 || ext === 3 || ext === 5 || ext === 6 || ext === 7);
       assert.equal(isDB(bytes), invalid,
         opcode.toString(16).toUpperCase() + " /" + ext + " : " + hex(bytes));
     });
