@@ -1,60 +1,79 @@
-# Audit du chargement et de l'exécution d'un flux binaire 8086
+# Audit du décodage dynamique et de la cohérence mémoire 8086
 
 Date : 24 novembre 2026
 
-## Portée de cette phase
+## Verdict de cette phase
 
-Le laboratoire dispose maintenant d'un chemin distinct pour charger un flux d'octets et lancer son exécution depuis une adresse initiale `CS:IP`. Cette voie ne dépend pas de l'assembleur source pour produire les octets : elle reçoit un tableau d'octets, le désassemble avec le décodeur existant, puis prépare un programme exécutable à partir des instructions décodées.
+Le chemin d'exécution binaire effectue désormais un cycle **fetch → decode → execute** à partir de la mémoire simulée. Il ne construit plus une liste complète d'instructions en balayant le flux initial. Chaque instruction est relue et décodée à la demande à l'adresse courante `CS:IP`.
 
-## Fonctionnement
+Ce résultat fiabilise le modèle pédagogique de décodage dynamique, mais ne transforme pas le projet en émulateur matériel 8086 complet. La couverture s'applique aux opcodes et formes que le décodeur et l'interpréteur savent traiter.
 
-1. Validation de la taille du flux (1 à 65 536 octets), des octets et des registres initiaux CS/IP.
-2. Décodage linéaire du flux avec `disassembleBytes`.
-3. Construction de la correspondance entre chaque offset du flux et l'offset IP chargé : `(IP_initial + offset) mod 65536`.
-4. Résolution des destinations relatives vers des étiquettes internes uniquement si elles correspondent à un début d'instruction décodé.
-5. Écriture des octets dans `cpu.mem` à l'adresse physique `((CS << 4) + IP) mod 1 048 576`, avec bouclage du registre IP sur 16 bits.
-6. Exécution des instructions décodées, avec CS/IP initiaux, pile, mémoire et FLAGS du simulateur.
+## Cycle d'exécution
 
-L'état retourné expose `execution.mode = "loaded-binary"`, `codeSize`, `loadCS`, `loadIP` et `decodedInstructions`.
+Pour chaque étape :
 
-## Interface
+1. Calcul de la base physique du segment courant : `(CS << 4) & 0xFFFFF`.
+2. Lecture des octets depuis `cpu.mem` à `CS:(IP + n mod 65536)`, avec adresse physique 20 bits.
+3. Arrêt de la lecture anticipée au premier octet non initialisé, sans le remplacer artificiellement par zéro.
+4. Appel de `disassembleBytes(window, 1)` pour décoder une seule instruction.
+5. Conversion de la ligne décodée en opération exécutable.
+6. Exécution avec l'interpréteur existant.
+7. Mise à jour de IP selon la longueur décodée ou la destination d'un branchement/transfert.
+8. Reprise du fetch à la nouvelle adresse.
 
-Dans l'atelier, saisir des octets hexadécimaux ou charger un fichier `.bin` dans le désassembleur, renseigner CS et IP initiaux, puis utiliser **Exécuter le flux binaire**. Les valeurs de segment et d'offset sont des mots 16 bits.
+Le mode retourné est `execution.mode = "dynamic-binary"`. Le compteur `execution.decodedInstructions` compte les instructions réellement décodées pendant l'exécution.
 
-## Validation
+## Résultats de validation
 
-La suite `tests/byte-offset-execution.cjs` couvre :
-- chargement à une adresse CS:IP choisie et vérification de la mémoire physique ;
-- exécution de MOV/INC/HLT depuis les octets chargés ;
-- branchement conditionnel vers une frontière d'instruction décodée ;
-- refus d'une cible au milieu d'une instruction ;
-- refus explicite d'opcodes/formes restés DB dans le décodeur ;
-- validation de CS/IP ;
-- CALL/RET et adresse de retour binaire ;
-- chargement traversant IP=FFFFh ;
-- comparaison des registres et FLAGS entre l'exécution source assemblée et l'exécution binaire.
+La suite `tests/byte-offset-execution.cjs` valide notamment :
 
-## Passage au cycle fetch → decode → execute dynamique
+| Domaine | Couverture |
+|---|---|
+| Valeurs opcode | Les 256 valeurs de l'octet opcode passent par le décodeur à une instruction |
+| Extensions ModR/M | 3 072 combinaisons : 12 groupes × 256 valeurs ModR/M |
+| Troncature | Immédiat incomplet refusé au lieu d'un remplissage artificiel par zéro |
+| Limites IP | Instruction traversant `FFFFh → 0000h` |
+| Adresse physique | Repli 20 bits à `FFFFFh` |
+| Préfixes | CS, ES, SS et DS ; lectures et écritures dans le segment sélectionné |
+| Branchements | Positifs, négatifs, conditionnels et bouclage IP |
+| Transferts indirects | CALL/JMP near par registre et CALL/JMP FAR par pointeur mémoire |
+| Auto-modification | Modification d'un opcode et modification de deux octets d'une instruction |
+| Référence indépendante | Vecteurs binaires à résultats architecturaux attendus |
+| Comparaison | Concordance source assemblée / binaire sur les registres et FLAGS sélectionnés |
 
-Le chemin `executeBinary` a été remplacé par une boucle qui, à chaque étape :
+Les matrices opcode et ModR/M vérifient que le décodeur produit une seule ligne bornée et consomme des octets. Elles ne prouvent pas que chaque encodage est architecturalement valide, ni que chaque opcode est exécuté. Les formes non prises en charge restent explicitement refusées lorsqu'elles sont retournées sous forme `DB`.
 
-1. lit jusqu'à 32 octets depuis la mémoire simulée à partir de `CS:IP` (avec bouclage de l'offset 16 bits) ;
-2. demande au désassembleur de ne produire que la première instruction (`disassembleBytes(..., 1)`) ;
-3. convertit cette instruction décodée en opération exécutable ;
-4. exécute l'opération, puis choisit le prochain IP selon le flux séquentiel ou le transfert de contrôle ;
-5. recommence une lecture mémoire au nouvel IP.
+## Préfixes et mémoire
 
-Le flux initial est copié dans la mémoire, mais aucune liste complète d'instructions n'est préparée. Un branchement relatif peut donc viser un offset qui n'était pas une frontière dans un désassemblage linéaire antérieur. Les écritures mémoire qui touchent au code sont visibles à la prochaine lecture : il n'y a pas de cache d'instructions à invalider.
+Les préfixes de segment reconnus par le décodeur sont ES (`26h`), CS (`2Eh`), SS (`36h`) et DS (`3Eh`). Les tests vérifient que les instructions mémoire utilisent le segment sélectionné et que le calcul physique reste limité à 20 bits.
 
-Le mode est maintenant `execution.mode = "dynamic-binary"`; `decodedInstructions` indique le nombre d'instructions effectivement décodées pendant l'exécution. La fonction `disassembleBytes` accepte un paramètre optionnel `maxRows` afin de décoder une seule instruction sans analyser les octets qui suivent.
+Les préfixes répétés et les autres préfixes non implémentés ne sont pas déclarés pris en charge par cet audit. Il ne faut pas extrapoler les résultats aux préfixes REP/LOCK ou à toutes leurs combinaisons.
 
-## Limites explicites
+## Branchements et code auto-modifiable
 
-Cette version est un premier chargeur pédagogique, pas encore un moteur de décodage à la demande :
-- le décodeur et l'interpréteur ne couvrent toujours qu'un sous-ensemble des opcodes et formes 8086 ; les formes rendues sous forme DB sont refusées ;
-- les octets situés au-delà du flux importé sont lus comme des zéros si aucune valeur n'a été écrite à ces adresses ;
-- les écritures mémoire sont visibles par les fetchs suivants, mais les interactions de prélecture BIU et les cycles de bus ne sont pas modélisés ;
-- le sous-ensemble du décodeur/interpréteur reste limité ; les instructions rendues sous forme DB ne sont pas exécutées ;
-- les transferts FAR et le chargement de plusieurs segments de code indépendants restent à traiter.
+Un branchement relatif peut cibler une adresse qui n'était pas une frontière d'instruction dans un désassemblage linéaire préalable : aucun balayage linéaire global ne fixe les frontières d'instructions.
 
-La prochaine étape technique doit donc être un décodeur incrémental `fetch → decode → execute` qui lit directement la mémoire à CS:IP, avec un cache de décodage facultatif mais invalidable lors des écritures dans le code.
+Les écritures dans `cpu.mem` sont visibles au prochain fetch. Les tests couvrent le remplacement d'un opcode ainsi que la modification de deux octets d'une instruction avant son exécution. Aucun cache d'instructions n'est maintenu.
+
+Les transferts indirects near et FAR sont testés dans le modèle dynamique, y compris la restauration de CS:IP par CALL FAR / RETF.
+
+## Gestion des flux tronqués
+
+Le fetch construit sa fenêtre uniquement avec les octets effectivement initialisés. Si le décodeur a besoin d'octets supplémentaires et qu'ils ne sont pas disponibles, l'instruction est signalée comme tronquée. Les octets absents ne sont plus synthétisés en `00h`.
+
+Un fetch à une adresse non initialisée échoue explicitement. C'est une politique pédagogique déterministe ; elle ne prétend pas modéliser la valeur réelle de la RAM non initialisée sur une machine physique.
+
+## Limites qui restent
+
+- Le décodeur et l'interpréteur ne couvrent qu'un sous-ensemble du jeu d'instructions original 8086.
+- La matrice de décodage ne certifie pas l'exécution correcte des 256 opcodes ni toutes les formes ModR/M.
+- Les préfixes répétés, REP/LOCK et leurs interactions complètes ne sont pas couverts ici.
+- Le modèle ne simule pas la prélecture BIU, les files d'instructions, les cycles d'horloge, les bus ni les temps d'accès.
+- Les interruptions matérielles, DMA, périphériques, modes de fonctionnement et environnement DOS ne constituent pas une émulation complète.
+- Les instructions qui utilisent une forme non prise en charge restent refusées ; aucun comportement approximatif n'est revendiqué.
+
+## Conclusion technique
+
+Le critère central de cette phase est atteint : **l'instruction exécutée est décodée depuis les octets actuellement présents en mémoire à CS:IP**. Les branchements dynamiques et l'auto-modification ne dépendent plus d'une table de frontières préparée à l'avance.
+
+La prochaine étape ne devrait pas être d'ajouter massivement des instructions. Il faut d'abord poursuivre l'audit des formes non prises en charge, des préfixes, des effets mémoire et des vecteurs indépendants, puis étendre le jeu d'instructions par familles vérifiées.
