@@ -3,7 +3,7 @@ const vm = require("node:vm");
 const assert = require("node:assert/strict");
 
 const html = fs.readFileSync("index.html", "utf8");
-const match = html.match(/<script>([\s\S]*?)<\\/script>/);
+const match = html.match(/<script>([\s\S]*?)<\/script>/);
 assert.ok(match, "Inline application script must exist");
 const elements = new Map();
 function element(id) {
@@ -24,7 +24,7 @@ const injection = "\nglobalThis.__8086ControlApi = {" +
   "\n disassemble: function (bytes) { return disassembleBytes(bytes); }," +
   "\n execute: function (source) { return executeAll(source); }" +
   "\n};\n})();\n";
-const instrumented = match[1].replace(/\n\\}\)\(\);\\s*$/, injection);
+const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injection);
 assert.notEqual(instrumented, match[1], "Test API injection point must exist");
 vm.runInContext(instrumented, context, { timeout: 10000 });
 const api = context.__8086ControlApi;
