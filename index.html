@@ -661,7 +661,27 @@ function runSelfTests(){var cases=[
 ["POP CS est refusé par l'analyseur 8086 documenté", "POP CS\nHLT", function(s){return !!s.error&&s.error.indexOf("POP CS")>=0;}],
 ["POP CS n'est pas émis par l'assembleur binaire", "HLT", function(s){try{assembleProgram("POP CS");return false;}catch(e){return /POP CS/.test(e.message);}}],
 ["PUSH/POP ES fonctionne dans l'interpréteur pédagogique", "PUSH ES\nMOV AX, 1234h\nMOV ES, AX\nPOP ES\nHLT", function(s){return !s.error&&s.reg.ES===0&&s.reg.SP===65534;}],
-["PUSH/POP SS conserve un cadre cohérent", "PUSH SS\nPOP SS\nHLT", function(s){return !s.error&&s.reg.SS===0&&s.reg.SP===65534&&s.stack.length===0;}]
+["PUSH/POP SS conserve un cadre cohérent", "PUSH SS\nPOP SS\nHLT", function(s){return !s.error&&s.reg.SS===0&&s.reg.SP===65534&&s.stack.length===0;}],
+["MOV DS, AX : opcode 8E /3, ModR/M D8", "MOV AX, 1234h\nMOV DS, AX\nHLT", function(s){var a=assembleProgram("MOV DS, AX");return !s.error&&s.reg.DS===4660&&a.bytes.join(",")==="142,216";}],
+["MOV ES, [BX] : opcode 8E /0, ModR/M 07", "MOV BX, 100h\nMOV WORD PTR [BX], 5678h\nMOV ES, [BX]\nHLT", function(s){var a=assembleProgram("MOV ES, WORD PTR [BX]");return !s.error&&s.reg.ES===0x5678&&a.bytes.join(",")==="142,7";}],
+["MOV SS, [BP+SI+4] : ModR/M avec disp8", "MOV BP, 100h\nMOV SI, 10h\nMOV WORD PTR [BP+SI+4], 1234h\nMOV SS, WORD PTR [BP+SI+4]\nHLT", function(s){var a=assembleProgram("MOV SS, WORD PTR [BP+SI+4]");return !s.error&&s.reg.SS===0x1234&&a.bytes.join(",")==="142,82,4";}],
+["MOV AX, DS : opcode 8C /3, ModR/M D8", "MOV AX, 1234h\nMOV DS, AX\nMOV AX, DS\nHLT", function(s){var a=assembleProgram("MOV AX, DS");return !s.error&&s.reg.AX===0x1234&&a.bytes.join(",")==="140,216";}],
+["MOV [BX], ES : opcode 8C /0, ModR/M 07", "MOV BX, 100h\nMOV AX, 5678h\nMOV ES, AX\nMOV [BX], ES\nHLT", function(s){var a=assembleProgram("MOV WORD PTR [BX], ES");return !s.error&&s.mem[256]===0x78&&s.mem[257]===0x56&&a.bytes.join(",")==="140,7";}],
+["MOV [BP+SI+4], SS : ModR/M avec disp8", "MOV BP, 100h\nMOV SI, 10h\nMOV AX, 4321h\nMOV SS, AX\nMOV [BP+SI+4], SS\nHLT", function(s){var a=assembleProgram("MOV WORD PTR [BP+SI+4], SS");return !s.error&&a.bytes.join(",")==="140,82,4";}],
+["MOV CS, AX reste interdit", "MOV CS, AX\nHLT", function(s){return !!s.error&&/ne peut pas modifier CS/.test(s.error);}],
+["MOV AX, FS est refusé en mode 8086", "MOV AX, FS\nHLT", function(s){return !!s.error&&/FS et GS/.test(s.error);}],
+["MOV GS, AX est refusé en mode 8086", "MOV GS, AX\nHLT", function(s){return !!s.error&&/FS et GS/.test(s.error);}],
+["MOV DS, ES reste interdit", "MOV DS, ES\nHLT", function(s){return !!s.error&&/autre registre de segment/.test(s.error);}],
+["MOV DS, AL est refusé (taille 8 bits)", "MOV DS, AL\nHLT", function(s){return !!s.error;}],
+["MOV BYTE PTR [BX], DS est refusé", "MOV BYTE PTR [BX], DS\nHLT", function(s){return !!s.error;}],
+["Désassemblage indépendant MOV DS, AX = 8E D8", "HLT", function(s){var r=disassembleBytes([142,216]);return r.rows.length===1&&r.rows[0].instruction==="MOV DS, AX"&&r.rows[0].bytes.join(",")==="142,216";}],
+["Désassemblage indépendant MOV AX, DS = 8C D8", "HLT", function(s){var r=disassembleBytes([140,216]);return r.rows.length===1&&r.rows[0].instruction==="MOV AX, DS"&&r.rows[0].bytes.join(",")==="140,216";}],
+["Désassemblage indépendant MOV ES, [BX] = 8E 07", "HLT", function(s){var r=disassembleBytes([142,7]);return r.rows.length===1&&r.rows[0].instruction==="MOV ES, WORD PTR [BX]"&&r.rows[0].bytes.join(",")==="142,7";}],
+["Désassemblage indépendant MOV [BP+SI+4], SS = 8C 52 04", "HLT", function(s){var r=disassembleBytes([140,82,4]);return r.rows.length===1&&r.rows[0].instruction==="MOV WORD PTR [BP+SI+4], SS"&&r.rows[0].bytes.join(",")==="140,82,4";}],
+["Champ segment /4 non pris en charge reste DB", "HLT", function(s){var r=disassembleBytes([142,224]);return r.rows.length===1&&r.rows[0].instruction.indexOf("DB ")===0&&r.rows[0].bytes.join(",")==="142,224";}],
+["Chargement de CS via 8E /1 reste DB", "HLT", function(s){var r=disassembleBytes([142,200]);return r.rows.length===1&&r.rows[0].instruction.indexOf("DB ")===0&&r.rows[0].bytes.join(",")==="142,200";}],
+["MOV segment round-trip sur les quatre codes", "HLT", function(s){return encodingRoundTrip("MOV ES, AX\nMOV SS, CX\nMOV DS, DX\nMOV AX, ES\nMOV BX, CS\nMOV CX, SS\nMOV DX, DS");}],
+["MOV segment mémoire round-trip avec displacement", "HLT", function(s){return encodingRoundTrip("MOV ES, WORD PTR [BX+SI+4]\nMOV WORD PTR [BP+DI+8], DS");}]
 ];var out=[],ok=0;cases.forEach(function(t){var s=executeAll(t[1]),pass=t[2](s);if(pass)ok++;out.push((pass?"PASS":"FAIL")+" · "+t[0]+(s.error?" — "+s.error:""));});$("testResults").textContent=out.join("\n");$("testSummary").textContent=ok+"/"+cases.length+" tests réussis";$("testSummary").className="status "+(ok===cases.length?"success":"error");}
 $("runSelfTests").onclick=runSelfTests;
 $("reset").onclick=resetCPU;resetCPU();renderLessons();showLesson(0);renderInstructions("");renderExercises();renderProjects();stats();
