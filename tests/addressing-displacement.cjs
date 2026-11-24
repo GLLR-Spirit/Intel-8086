@@ -232,7 +232,7 @@ for (let ext = 0; ext < 8; ext++) {
   groupCases++;
   test("FF extension support · /" + ext, () => {
     const instruction = decodeInstruction(0xFF, ext);
-    const invalidRegisterForm = ext === 3 || ext === 5 || ext === 6 || ext === 7;
+    const invalidRegisterForm = [0, 1, 3, 5, 6, 7].includes(ext);
     assert.equal(instruction.startsWith("DB "), invalidRegisterForm, instruction);
     const architecturallyDefined = ext <= 6 && !invalidRegisterForm;
     assert.equal(architecturallyDefined, !instruction.startsWith("DB "));
