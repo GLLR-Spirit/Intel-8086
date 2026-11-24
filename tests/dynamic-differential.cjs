@@ -938,6 +938,21 @@ test("POP et POPF lisent une pile binaire brute sans métadonnées pédagogiques
 });
 categories.stack++;
 
+test("PUSH SP applique la sémantique particulière du 8086", () => {
+  const source=api.execute("PUSH SP\nHLT");
+  assert.ok(!source.error,source.error||"source PUSH SP");
+  assert.equal(source.reg.SP,0xfffc);
+  assert.equal(source.mem[0xfffc],0xfc);
+  assert.equal(source.mem[0xfffd],0xff);
+
+  const binary=api.executeBinary([0x54,0xf4],0,0);
+  assert.ok(!binary.error,binary.error||"binary PUSH SP");
+  assert.equal(binary.reg.SP,0xfffc);
+  assert.equal(binary.mem[0xfffc],0xfc);
+  assert.equal(binary.mem[0xfffd],0xff);
+});
+categories.stack++;
+
 console.log("Audit différentiel arithmétique : " + categories.arithmetic + " vecteurs.");
 console.log("Logique et TEST : " + categories.logic + " vecteurs.");
 console.log("Registres : " + categories.registers + " vecteurs.");
