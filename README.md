@@ -13,7 +13,7 @@ Intel 8086 Lab rassemble dans une seule page :
 - Une référence d'instructions, des exercices et des idées de projets
 - Une suite de 212 tests rapides intégrée à la page pour contrôler des cas de calcul, FLAGS, sauts, boucles et pile
 - Un générateur progressif d'octets machine 8086 couvre `MOV reg,imm`, `MOV reg,reg`, `MOV reg,r/m`, `MOV r/m,reg`, `MOV r/m,imm`, les formes registre/mémoire et immédiates de `ADD`, `OR`, `AND`, `SUB`, `XOR`, `CMP`, `TEST`, ainsi que `XCHG reg,reg` et plusieurs instructions fixes. Les formes mémoire utilisent les champs `MOD`, `REG`, `R/M`, les déplacements `disp8`/`disp16`, l'adressage direct et les préfixes de segment explicites. Les octets non pris en charge restent signalés comme non générés : il ne s'agit pas encore d'un assembleur complet.
-- Les plages des constantes immédiates sont contrôlées selon la taille de l'opérande (8 ou 16 bits). Les dépassements sont classés comme erreurs d'encodage, séparément des incompatibilités de taille.
+- Un assembleur binaire pédagogique en deux passes calcule les offsets, construit la table des symboles, résout les étiquettes, encode `JMP` near relatif, les sauts conditionnels courts, `LOOP`, `CALL` near et `RET`, puis produit un flux binaire contigu avec listing et table des symboles. La base d'assemblage est `0000h`; les instructions non encore encodables sont explicitement refusées. L'export `.bin` et le désassemblage restent à développer.\n- Les plages des constantes immédiates sont contrôlées selon la taille de l'opérande (8 ou 16 bits). Les dépassements sont classés comme erreurs d'encodage, séparément des incompatibilités de taille.
 - Un convertisseur binaire, décimal, hexadécimal et octal
 - Une sauvegarde locale dans le navigateur, sans compte ni serveur
 
