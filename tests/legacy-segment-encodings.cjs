@@ -49,20 +49,28 @@ function expectBytes(source, expected) {
     source + " expected " + expected.map(x => x.toString(16)).join(" "));
 }
 
-// The original 8086/8088 treats the 3-bit segment field as aliases:
-// 0/4=ES, 1/5=CS, 2/6=SS, 3/7=DS. Later x86 generations repurposed
-// selector values 4..7, so this suite is explicitly 8086-targeted.
+// Intel 8086 Table 4-13 specifies ModR/M REG as 0SR for 8C/8E.
+// Selectors 0..3 are ES/CS/SS/DS; selectors 4..7 are "not used".
 for (let selector = 0; selector < 8; selector++) {
-  const segment = canonical[selector & 3];
   for (let rm = 0; rm < 8; rm++) {
     const codeToRM = [0x8C, modrm(selector, rm)];
-    test("8C legacy selector " + selector + " → " + general[rm], () => {
-      assert.equal(decode(codeToRM), "MOV " + general[rm] + ", " + segment);
-    });
     const codeFromRM = [0x8E, modrm(selector, rm)];
-    test("8E legacy selector " + selector + " ← " + general[rm], () => {
-      assert.equal(decode(codeFromRM), "MOV " + segment + ", " + general[rm]);
-    });
+    if (selector < 4) {
+      const segment = canonical[selector];
+      test("8C canonical selector " + selector + " → " + general[rm], () => {
+        assert.equal(decode(codeToRM), "MOV " + general[rm] + ", " + segment);
+      });
+      test("8E canonical selector " + selector + " ← " + general[rm], () => {
+        assert.equal(decode(codeFromRM), "MOV " + segment + ", " + general[rm]);
+      });
+    } else {
+      test("8C reserved selector " + selector + " remains DB", () => {
+        assert.ok(decode(codeToRM).startsWith("DB "));
+      });
+      test("8E reserved selector " + selector + " remains DB", () => {
+        assert.ok(decode(codeFromRM).startsWith("DB "));
+      });
+    }
   }
 }
 
@@ -89,7 +97,7 @@ test("8086 MOV AX, CS fixed encoding", () => {
   assert.equal(decode([0x8C, 0xC8]), "MOV AX, CS");
 });
 
-console.log("Décodage legacy 8C/8E : 128 vecteurs fixes.");
+console.log("Décodage 8C/8E : 128 vecteurs fixes (64 valides, 64 sélecteurs réservés).");
 console.log("Assemblage canonique 8C/8E : 64 vecteurs.");
 console.log("Transferts CS : 2 vecteurs.");
 console.log("Résultat segment legacy : " + passed + " réussis, " + failed + " échecs.");
