@@ -39,17 +39,18 @@ Références de codage : manuel Intel 8086, table « Instruction Set Summary » 
 
 ## Résultats CI
 
-Workflow : https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45448321120
+Workflow final de cette phase : https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45449316634
 
 - LEA : 48 vérifications.
 - LES/LDS : 96 vérifications.
-- MOV registres de segment : 60 vérifications.
-- Encodages invalides : 43 vérifications.
+- MOV registres de segment : 69 vérifications.
+- Encodages invalides : 26 vérifications.
 - Flux tronqués : 20 vérifications.
-- Exécution : 2 vérifications.
-- Les compteurs de la suite ont évolué après la correction des sélecteurs ; consulter le dernier journal CI pour le total exact.
+- Exécution : 3 vérifications.
+- Sélecteurs legacy 8C/8E : 128 vecteurs fixes de désassemblage, 64 vecteurs d'assemblage canonique et 2 vecteurs CS.
+- Suite de contraintes : 274 réussites ; suite legacy : 194 réussites.
 
-Les suites précédentes restent vertes sur le commit antérieur ; le nouveau commit de correction doit être vérifié séparément :
+Validation CI finale sur le commit `a20a4c98a4a21983d51ba713ed7f50f2c3a4c70b` :
 - smoke : 354/354 ;
 - vecteurs indépendants : 114/114 ;
 - matrice ModR/M : 2 352 cas ;
@@ -60,4 +61,6 @@ Les suites précédentes restent vertes sur le commit antérieur ; le nouveau co
 
 Cette suite ne prouve pas l'exhaustivité de tout le jeu d'instructions 8086. Elle certifie uniquement les formes et les contraintes listées ci-dessus. Les extensions de groupes non encore décodées restent à traiter séparément. Une forme reconnue comme invalide par le désassembleur ne doit pas être confondue avec une forme valide mais non encore prise en charge.
 
-Une correction ciblée du désassembleur a ensuite été apportée dans `index.html` : les valeurs du champ segment sont interprétées modulo 4 et 8E /1 est rendu comme `MOV CS, ...`. Les tests internes ont été ajustés en conséquence.
+Le désassembleur interprète désormais les valeurs du champ segment modulo 4 et décode `8E /1` comme `MOV CS, ...`. L'assembleur accepte la forme, le validateur ne la rejette plus et l'interpréteur sait lire/écrire CS. Les tests internes ont été ajustés en conséquence.
+
+Bilan agrégé CI : 354 smoke + 114 vecteurs indépendants + 2 352 ModR/M + 187 adressage/déplacements + 3 412 FLAGS + 274 contraintes + 194 vecteurs legacy = **6 887 vérifications réussies**.
