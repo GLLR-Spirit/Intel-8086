@@ -361,3 +361,5 @@ Les opcodes 8086 concernés sont intégrés à l'assembleur et au désassembleur
 **Limites qui restent importantes :** les ports ne représentent aucun périphérique matériel ; WAIT ne modélise pas l'entrée TEST ; ESC ne simule pas un coprocesseur 8087 ; LOCK ne produit aucune atomicité observable dans le moteur mono-thread ; les interactions arbitraires de préfixes et tous les vecteurs de FLAGS ne sont pas exhaustivement validés. Les familles nouvellement ajoutées restent donc marquées **partielles**.
 
 Les tests spécialisés source/binaire et les validations CI associées déterminent le périmètre réellement vérifié. Cette extension ne constitue pas une certification d'émulation matérielle 8086 complète.
+
+Le modèle d'E/S est maintenant utilisable dans les deux chemins : directive pédagogique PORT en source et table `initialState.io` en binaire. PORT reste une directive hors ISA ; elle ne doit pas être comptée comme une instruction 8086.
