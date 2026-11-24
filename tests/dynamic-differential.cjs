@@ -737,7 +737,7 @@ test("Oracle indépendant exhaustif 8 bits — AAA/AAS et DAA/DAS", () => {
     assert.equal(state.flags.PF,parity8(expected),name+" PF");
     checked++;
   }
-  assert.equal(checked,256*2+256*2*2*2);
+  assert.equal(checked,256*2*2+256*2*2*2);
 });
 test("Oracle AAM base 10 sur les 256 valeurs possibles de AL", () => {
   for(let al=0;al<256;al++){
