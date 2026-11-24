@@ -158,6 +158,14 @@ var base=ins.op.replace(/^(REP|REPE|REPZ|REPNE|REPNZ)_/,""),a=ins.args;
 if(a.length===1){var unaryName=a[0].trim().toUpperCase(),unaryReg=encodingRegisterCode(unaryName),unaryInfo=info(unaryName),segmentOpcodes={ES:6,CS:14,SS:22,DS:30},segmentPopOpcodes={ES:7,SS:23,DS:31};if(base==="PUSH"&&segmentOpcodes[unaryName]!==undefined)return [segmentOpcodes[unaryName]];if(base==="POP"&&segmentPopOpcodes[unaryName]!==undefined)return [segmentPopOpcodes[unaryName]];if(unaryReg!==null&&unaryInfo&&unaryInfo.bits===16){if(base==="INC")return [64+unaryReg];if(base==="DEC")return [72+unaryReg];if(base==="PUSH")return [80+unaryReg];if(base==="POP")return [88+unaryReg];}if(base==="INC"||base==="DEC"){var unaryBits=encodingOperandBits(unaryName);if(unaryBits===8||unaryBits===16){var unaryRM=encodingModRM(base==="INC"?0:1,unaryName);if(unaryRM)return encodingPrefixFor(unaryName).concat([unaryBits===8?254:255],unaryRM);}}}
 if(a.length===2){
 var d=a[0].trim().toUpperCase(),q=a[1].trim().toUpperCase(),rd=encodingRegisterCode(d),rq=encodingRegisterCode(q),id=info(d),iq=info(q),dm=d.indexOf("[")>=0,qm=q.indexOf("[")>=0;
+if(base==="XCHG"&&(dm||qm)){
+var xchgBits=encodingOperandBits(d,q),xchgRM,xchgPrefix=[];
+if(!xchgBits)return null;
+if(dm){xchgRM=encodingModRM(rq,d);xchgPrefix=encodingPrefixFor(d);}
+else{xchgRM=encodingModRM(rd,q);xchgPrefix=encodingPrefixFor(q);}
+if(!xchgRM)return null;
+return xchgPrefix.concat([xchgBits===8?134:135],xchgRM);
+}
 if(base==="MOV"){
 var segCode={ES:0,CS:1,SS:2,DS:3},dstSeg=Object.prototype.hasOwnProperty.call(segCode,d),srcSeg=Object.prototype.hasOwnProperty.call(segCode,q);
 if(dstSeg&&(rq!==null||qm)){var segFromRM=encodingModRM(segCode[d],q);if(!segFromRM)return null;return encodingPrefixFor(q).concat([142],segFromRM);}
@@ -682,6 +690,24 @@ function runSelfTests(){var cases=[
 ["Chargement de CS via 8E /1 reste DB", "HLT", function(s){var r=disassembleBytes([142,200]);return r.rows.length===1&&r.rows[0].instruction.indexOf("DB ")===0&&r.rows[0].bytes.join(",")==="142,200";}],
 ["MOV segment round-trip sur les quatre codes", "HLT", function(s){return encodingRoundTrip("MOV ES, AX\nMOV SS, CX\nMOV DS, DX\nMOV AX, ES\nMOV BX, CS\nMOV CX, SS\nMOV DX, DS");}],
 ["MOV segment mémoire round-trip avec displacement", "HLT", function(s){return encodingRoundTrip("MOV ES, WORD PTR [BX+SI+4]\nMOV WORD PTR [BP+DI+8], DS");}]
+,
+["XCHG AL, [BX] opcode 86 /0", "MOV BX, 100h\nMOV AL, 12h\nMOV BYTE PTR [BX], 34h\nXCHG AL, BYTE PTR [BX]\nHLT", function(s){var a=assembleProgram("XCHG AL, BYTE PTR [BX]");return !s.error&&(s.reg.AX&255)===0x34&&s.mem[256]===0x12&&a.bytes.join(",")==="134,7";}],
+["XCHG AX, [BX] opcode 87 /0", "MOV BX, 100h\nMOV AX, 1234h\nMOV WORD PTR [BX], 5678h\nXCHG AX, WORD PTR [BX]\nHLT", function(s){var a=assembleProgram("XCHG AX, WORD PTR [BX]");return !s.error&&s.reg.AX===0x5678&&s.mem[256]===0x34&&s.mem[257]===0x12&&a.bytes.join(",")==="135,7";}],
+["XCHG [BP+SI+4], CX ModR/M disp8", "MOV BP, 100h\nMOV SI, 10h\nMOV CX, 1234h\nMOV WORD PTR [BP+SI+4], 5678h\nXCHG WORD PTR [BP+SI+4], CX\nHLT", function(s){var a=assembleProgram("XCHG WORD PTR [BP+SI+4], CX");return !s.error&&s.reg.CX===0x5678&&s.mem[0x114]===0x34&&s.mem[0x115]===0x12&&a.bytes.join(",")==="135,74,4";}],
+["XCHG mémoire avec préfixe ES", "HLT", function(s){var a=assembleProgram("XCHG AL, BYTE PTR ES:[BX]");return a.bytes.join(",")==="38,134,7"&&encodingRoundTrip("XCHG AL, BYTE PTR ES:[BX]");}],
+["XCHG mémoire-registre 8 bits round-trip", "HLT", function(s){return encodingRoundTrip("XCHG AL, BYTE PTR [BX]\nXCHG BYTE PTR [SI+4], CH\nXCHG DL, BYTE PTR [BP+DI-8]");}],
+["XCHG mémoire-registre 16 bits round-trip", "HLT", function(s){return encodingRoundTrip("XCHG AX, WORD PTR [BX]\nXCHG WORD PTR [BP+SI+4], CX\nXCHG DI, WORD PTR [1234h]");}],
+["XCHG ordre inverse produit même encodage", "HLT", function(s){var a=assembleProgram("XCHG AX, WORD PTR [BX]"),b=assembleProgram("XCHG WORD PTR [BX], AX");return a.bytes.join(",")==="135,7"&&b.bytes.join(",")==="135,7";}],
+["Désassemblage externe XCHG r/m8, r8 : 86 07", "HLT", function(s){var r=disassembleBytes([134,7]);return r.rows.length===1&&r.rows[0].instruction==="XCHG BYTE PTR [BX], AL";}],
+["Désassemblage externe XCHG r/m16, r16 : 87 07", "HLT", function(s){var r=disassembleBytes([135,7]);return r.rows.length===1&&r.rows[0].instruction==="XCHG WORD PTR [BX], AX";}],
+["Désassemblage externe XCHG [BP+SI+4], CX : 87 4A 04", "HLT", function(s){var r=disassembleBytes([135,74,4]);return r.rows.length===1&&r.rows[0].instruction==="XCHG WORD PTR [BP+SI+4], CX";}],
+["XCHG mémoire-mémoire interdit", "XCHG BYTE PTR [BX], BYTE PTR [SI]\nHLT", function(s){return !!s.error&&/mémoire-mémoire/.test(s.error);}],
+["XCHG immédiat interdit", "XCHG AX, 1234h\nHLT", function(s){return !!s.error&&/XCHG exige/.test(s.error);}],
+["XCHG registre de segment interdit", "XCHG AX, DS\nHLT", function(s){return !!s.error&&/registres de segment/.test(s.error);}],
+["XCHG FS/GS interdit en mode 8086", "XCHG AX, FS\nHLT", function(s){return !!s.error&&/FS et GS/.test(s.error);}],
+["XCHG tailles incompatibles interdites", "XCHG AL, WORD PTR [BX]\nHLT", function(s){return !!s.error&&/tailles d.opérandes incompatibles/.test(s.error);}],
+["XCHG mémoire déduit la taille du registre", "MOV BX, 100h\nMOV AX, 1234h\nMOV WORD PTR [BX], 5678h\nXCHG AX, [BX]\nHLT", function(s){return !s.error&&s.reg.AX===0x5678&&s.mem[256]===0x34&&s.mem[257]===0x12;}],
+["Round-trip XCHG registres et mémoire 8/16 bits", "HLT", function(s){return encodingRoundTrip("XCHG AL, BL\nXCHG AX, BX\nXCHG AL, BYTE PTR [BX]\nXCHG WORD PTR [BP+SI+4], CX\nXCHG DL, BYTE PTR ES:[DI]");}]
 ];var out=[],ok=0;cases.forEach(function(t){var s=executeAll(t[1]),pass=t[2](s);if(pass)ok++;out.push((pass?"PASS":"FAIL")+" · "+t[0]+(s.error?" — "+s.error:""));});$("testResults").textContent=out.join("\n");$("testSummary").textContent=ok+"/"+cases.length+" tests réussis";$("testSummary").className="status "+(ok===cases.length?"success":"error");}
 $("runSelfTests").onclick=runSelfTests;
 $("reset").onclick=resetCPU;resetCPU();renderLessons();showLesson(0);renderInstructions("");renderExercises();renderProjects();stats();
