@@ -221,11 +221,35 @@ for (const opcode of [0xC6, 0xC7]) {
     groupCases++;
   }
 }
-for (const opcode of [0xFE, 0xFF]) {
-  for (let ext = 0; ext < 8; ext++) {
-    test("FE/FF extension · " + opcode.toString(16) + " /" + ext, () => {
-      const instruction = decodeInstruction(opcode, ext);
-      assert.equal(instruction.startsWith("DB "), ext > 1, instruction);
+// FE: only /0 INC and /1 DEC are defined.
+// FF: /0..6 are defined; /3 and /5 require memory operands. The current
+// decoder implements only /0 and /1, so /2..6 intentionally remain DB bytes
+// here (unsupported != architecturally invalid). /7 is undefined.
+for (let ext = 0; ext < 8; ext++) {
+  test("FE extension · /" + ext, () => {
+    const instruction = decodeInstruction(0xFE, ext);
+    assert.equal(instruction.startsWith("DB "), ext > 1, instruction);
+  });
+  groupCases++;
+  test("FF extension support · /" + ext, () => {
+    const instruction = decodeInstruction(0xFF, ext);
+    assert.equal(instruction.startsWith("DB "), ext > 1, instruction);
+    const architecturallyDefined = ext <= 6;
+    const implementedByDecoder = ext <= 1;
+    assert.equal(architecturallyDefined, ext !== 7);
+    assert.equal(implementedByDecoder, !instruction.startsWith("DB "));
+  });
+  groupCases++;
+}
+// FF /3 CALL FAR and /5 JMP FAR require a memory operand; /2, /4 and /6
+// accept register or memory. The decoder currently leaves these forms raw.
+for (const ext of [2, 3, 4, 5, 6]) {
+  for (const mod of [0, 3]) {
+    test("FF architectural operand restriction · /" + ext + " mod=" + mod, () => {
+      const architecturallyDefined = ext === 3 || ext === 5 ? mod !== 3 : true;
+      const instruction = decodeInstruction(0xFF, ext, mod, 0);
+      assert.equal(architecturallyDefined, !(ext === 3 || ext === 5) || mod !== 3);
+      assert.ok(instruction.startsWith("DB "), "This form is not yet decoded: " + instruction);
     });
     groupCases++;
   }
