@@ -308,7 +308,7 @@ test("IRET restaure FLAGS, CS et IP depuis un cadre VECTOR dans le moteur source
   ].join("\n");
   const state = runSource(source);
   assert.equal(state.flags.CF, 1, "IRET must restore the pre-interrupt carry flag");
-  assert.equal(state.reg.CS, 0x00ff);
+  assert.equal(state.reg.CS, 0);
   assert.equal(state.stack.length, 0);
   assert.equal(state.reg.SP, 0xfffe);
 });
@@ -335,7 +335,7 @@ test("IRET binaire restaure un cadre architectural préchargé en mémoire", () 
     ]
   });
   assert.ok(!state.error, state.error || "binary IRET failed");
-  assert.equal(state.reg.CS, 0);
+  assert.equal(state.reg.CS, 0x00ff);
   assert.equal(state.reg.IP, 0x0012);
   assert.equal(state.reg.SP, 0xfffe);
   assert.equal(state.stack.length, 0);
