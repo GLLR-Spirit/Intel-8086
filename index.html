@@ -262,7 +262,8 @@ return decoded.size===assembled.size&&decoded.rows.length===assembled.rows.lengt
 function disassembleBytes(input){
 var bytes=Array.prototype.slice.call(input),rows=[],i=0,reg8=["AL","CL","DL","BL","AH","CH","DH","BH"],reg16=["AX","CX","DX","BX","SP","BP","SI","DI"],ea=["BX+SI","BX+DI","BP+SI","BP+DI","SI","DI","BP","BX"],segNames={38:"ES",46:"CS",54:"SS",62:"DS"},cond=["JO","JNO","JB","JAE","JE","JNE","JBE","JA","JS","JNS","JP","JNP","JL","JGE","JLE","JG"];
 if(bytes.length>65536)throw Error("Flux trop volumineux : limite pédagogique de 65 536 octets.");
-bytes.forEach(function(b,index){if(!Number.isInteger(b)||b<0||b>255)throw Error("Octet invalide à l’index "+index+" : valeur attendue entre 0 et 255.");});\nfunction hx(n,w){return (n>>>0).toString(16).toUpperCase().padStart(w||2,"0")+"h";}
+bytes.forEach(function(b,index){if(!Number.isInteger(b)||b<0||b>255)throw Error("Octet invalide à l’index "+index+" : valeur attendue entre 0 et 255.");});
+function hx(n,w){return (n>>>0).toString(16).toUpperCase().padStart(w||2,"0")+"h";}
 function signed(n,b){return n&(1<<(b-1))?n-(1<<b):n;}
 function need(n){if(i+n>bytes.length)throw Error("Flux tronqué à l'offset "+hx(i,4)+" : "+n+" octet(s) supplémentaire(s) requis.");}
 function read(){need(1);return bytes[i++];}
