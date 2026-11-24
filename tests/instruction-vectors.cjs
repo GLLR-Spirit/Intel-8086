@@ -92,7 +92,7 @@ for (const mnemonic of ["ADC", "SBB"]) {
 const decoderVectors = [
   ["MOV register immediate", [0xB8, 0x34, 0x12], /MOVAX,1234h/i],
   ["MOV segment register", [0x8E, 0xD8], /MOVDS,AX/i],
-  ["MOV direct memory from register", [0x89, 0x1E, 0x00, 0x20], /MOV WORD PTR \[2000h\],BX/i],
+  ["MOV direct memory from register", [0x89, 0x1E, 0x00, 0x20], /MOVWORDPTR\[2000h\],BX/i],
   ["ADD register to register", [0x03, 0xC3], /ADDAX,BX/i],
   ["SUB register from accumulator", [0x2B, 0xC3], /SUBAX,BX/i],
   ["CMP register against accumulator", [0x3B, 0xC3], /CMPAX,BX/i]
