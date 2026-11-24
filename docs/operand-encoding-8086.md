@@ -6,6 +6,10 @@
 
 Les octets ci-dessous sont les encodages 8086. Les préfixes de segment éventuels précèdent l'opcode et ne sont pas inclus dans les longueurs de base.
 
+## Registre de couverture par forme
+
+La matrice forme par forme, avec les statuts séparés de génération, décodage et tests indépendants, est maintenue dans [form-coverage-register-8086.md](form-coverage-register-8086.md). La présente fiche explique les encodages de la première famille ; le registre est la source de suivi des formes implémentées ou absentes.
+
 ## 1. Notation et structure ModR/M
 
 | Notation | Sens |
