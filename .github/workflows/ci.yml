@@ -42,3 +42,5 @@ jobs:
         run: node tests/relative-branches.cjs
       - name: Run byte-offset execution tests
         run: node tests/byte-offset-execution.cjs
+      - name: Run dynamic differential audit
+        run: node tests/dynamic-differential.cjs
