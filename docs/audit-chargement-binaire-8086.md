@@ -77,3 +77,23 @@ Un fetch à une adresse non initialisée échoue explicitement. C'est une politi
 Le critère central de cette phase est atteint : **l'instruction exécutée est décodée depuis les octets actuellement présents en mémoire à CS:IP**. Les branchements dynamiques et l'auto-modification ne dépendent plus d'une table de frontières préparée à l'avance.
 
 La prochaine étape ne devrait pas être d'ajouter massivement des instructions. Il faut d'abord poursuivre l'audit des formes non prises en charge, des préfixes, des effets mémoire et des vecteurs indépendants, puis étendre le jeu d'instructions par familles vérifiées.
+
+
+## Audit différentiel des moteurs — 24 novembre 2026
+
+Nouvelle suite : [`tests/dynamic-differential.cjs`](../tests/dynamic-differential.cjs), exécutée dans le workflow CI principal après l'audit du chargeur binaire.
+
+**29 tests réussis, 0 échec** sur le commit testé `8f0069c68ca794be47dc54582d1321796c7e47b0` :
+- 5 vecteurs arithmétiques ADD/ADC/SUB/SBB, comparés entre moteurs et à des formules indépendantes de CF, ZF, SF, OF, PF et AF ;
+- 4 cas AND/OR/XOR/TEST avec contrôle du résultat et des indicateurs définis ;
+- 4 cas de registres : INC/DEC, NOT/NEG, écritures AL/AH et XCHG ;
+- 5 cas mémoire/préfixes : DS par défaut, ES explicite, SS par défaut via BP, CS explicite, octet/mot et déplacement négatif ;
+- 5 cas de contrôle/pile : CALL/RET near direct, CALL/RET near indirect, CALL FAR/RETF, branchements conditionnels/LOOP et JMP near indirect ;
+- 2 cas IRET : restauration d'un cadre VECTOR dans le moteur source et rejet d'un IRET binaire sans cadre ;
+- 4 cas négatifs : cadres RET/RETF incompatibles, RET avec ajustement impair, extensions réservées et préfixes de segment répétés.
+
+La comparaison porte sur les registres, les indicateurs modélisés, le nombre d'instructions, la sortie, les métadonnées de pile et des adresses mémoire de données explicitement ciblées. Les octets de code chargés dans le moteur binaire ne sont pas assimilés à des écritures de données du moteur source.
+
+**Interprétation :** le test différentiel repère des divergences entre les deux chemins, mais les moteurs partagent certaines primitives et certaines règles d'interprétation. Les oracles indépendants ne couvrent que les vecteurs explicitement déclarés. Ce résultat ne constitue donc pas une preuve indépendante exhaustive de l'architecture 8086.
+
+Registre détaillé des statuts par famille : [`registre-validation-dynamique-8086.md`](registre-validation-dynamique-8086.md). Aucun mnémonique n'est déclaré entièrement validé dans toutes ses formes 8086 ; le statut général demeure partiel.
