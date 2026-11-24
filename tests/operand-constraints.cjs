@@ -142,16 +142,14 @@ for (const source of [
   counts.invalid++;
 }
 
-// D. Legacy 8086 segment-selector encodings.
-// On 8086/8088, selectors 4..7 alias ES/CS/SS/DS (0..3), and MOV CS is
-// accepted. The disassembler normalizes aliases to their canonical names.
+// D. Intel 8086 Table 4-13 segment-selector encodings.
+// The field is 0SR: /0..3 are ES/CS/SS/DS; /4..7 are marked "not used".
+// MOV CS (/1) is valid on the original 8086.
 for (const opcode of [0x8C, 0x8E]) {
   for (let ext = 4; ext < 8; ext++) {
-    test("MOV segment alias 8086 · " + opcode.toString(16) + " /" + ext, () => {
+    test("MOV segment reserved selector 8086 · " + opcode.toString(16) + " /" + ext, () => {
       const instruction = decoded([opcode, modrm(3, ext, 0)]);
-      const expected = ["ES", "CS", "SS", "DS"][ext & 3];
-      assert.ok(instruction.includes(expected), instruction);
-      assert.ok(!instruction.startsWith("DB "), instruction);
+      assert.ok(instruction.startsWith("DB "), instruction);
     });
   }
 }
