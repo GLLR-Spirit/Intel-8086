@@ -50,4 +50,13 @@ const categoryFilter = element("filterCategory");
 categoryFilter.value = "Chaînes";
 categoryFilter.onchange();
 assert.ok(element("instructionCount").textContent.startsWith("6 entrée(s)"), "Category filter must find the string instruction family");
+categoryFilter.value = "";
+categoryFilter.onchange();
+instructionSearch.value = "ADC";
+instructionSearch.oninput();
+assert.ok(element("instructionGrid").innerHTML.includes("Simulateur : Non pris en charge"), "ADC must not be advertised as simulator-supported");
+instructionSearch.value = "SBB";
+instructionSearch.oninput();
+assert.ok(element("instructionGrid").innerHTML.includes("Simulateur : Non pris en charge"), "SBB must not be advertised as simulator-supported");
+
 
