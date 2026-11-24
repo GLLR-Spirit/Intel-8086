@@ -20,11 +20,11 @@ Les fiches doivent être auditées au niveau de chaque forme d'encodage, et non 
 
 La fiche [operand-encoding-8086.md](operand-encoding-8086.md) détaille une première passe sur MOV, ADD, ADC, SUB, SBB et CMP : formes registre/mémoire, formes immédiates, opcodes, champs ModR/M, restrictions et FLAGS. Elle corrige également une confusion d'indexation : 8Dh correspond à LEA, et ne doit pas être inclus dans la plage des opcodes MOV.
 
-Les timings de MOV, ADD, ADC et CMP sont rapprochés des références Intel disponibles. La vérification individuelle des timings SUB/SBB reste ouverte. Une suite de vecteurs indépendants est maintenant ajoutée dans `tests/instruction-vectors.cjs` et appelée par le workflow CI ; elle couvre les formes principales de MOV, ADD, SUB et CMP, ainsi que les limites actuelles ADC/SBB. Cette couverture reste partielle et ne clôt pas l'audit. Le run CI 196 (commit `46b4c66`) a validé les 354 tests de fumée et les 24 vecteurs indépendants.
+La suite indépendante couvre désormais MOV, ADD, SUB, CMP, ADC et SBB avec des octets fixes pour l'assembleur et le désassembleur, ainsi que des tests sémantiques du simulateur. Le run CI 210 (24 novembre 2026, commit `48ae8aadf86354dc74283591059e5c7ec2548129`) a validé 354/354 tests de fumée et 40/40 vecteurs indépendants. Cette couverture reste partielle et ne clôt pas l'audit.
 
 ## Corrections effectuées
 
-- **ADC** et **SBB** : leur statut simulateur avait été indiqué à tort comme « Pris en charge ». Le validateur et l'interpréteur ne contiennent pas ces opérations ; leur statut est désormais « Non pris en charge » pour le simulateur, l'assembleur et le désassembleur.
+- **ADC et SBB** : implémentées dans le validateur et l'interpréteur, et dans les formes binaires principales du générateur/désassembleur. Les formes 83h à immédiat signé court et l'exhaustivité des formes restent à auditer.
 - Les tests dédiés consignent explicitement cette absence de support ; ils ne la corrigent pas.\n- Aucun changement n'a été apporté au moteur CPU pendant cette phase de tests.
 
 ## Points de contrôle à appliquer à chaque fiche
@@ -60,3 +60,6 @@ L'audit ne sera considéré comme terminé que lorsque l'inventaire canonique au
 ## Mise à jour — ADC / SBB
 
 ADC et SBB ont été ajoutées au validateur, à l'interpréteur, à l'assembleur et au désassembleur. Le support est partiel : les formes principales registre/mémoire et immédiates 80h/81h sont implémentées ; l'encodage court 83h, les timings détaillés par forme et l'audit exhaustif des variantes restent à vérifier. Les tests indépendants doivent confirmer le comportement avant clôture de cette phase.
+
+
+**Validation de la phase ADC/SBB :** run CI 210 réussi — 354 tests de fumée et 40 vecteurs indépendants. Les timings exacts SUB/SBB et l'exhaustivité de la couverture 8086 restent ouverts.
