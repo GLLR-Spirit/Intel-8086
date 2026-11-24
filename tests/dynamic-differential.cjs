@@ -649,7 +649,7 @@ test("INTO — aucun vecteur requis lorsque OF=0", () => {
 test("LOCK + override ES — préfixes combinés sur mémoire", () => {
   const source="MOV AX, 1000h\nMOV ES, AX\nMOV BX, 0100h\nMOV WORD PTR ES:[BX], 1\nMOV AX, 2\nES: LOCK ADD WORD PTR [BX], AX\nHLT";
   const {assembled,binaryState}=compareSourceBinary(source,[0x10100,0x10101]);
-  const row=assembled.rows.find(x=>x.instruction.startsWith("LOCK"));
+  const row=assembled.rows.find(x=>x.instruction.includes("LOCK"));
   assert.deepEqual(Array.from(row.bytes.slice(0,4)),[0xf0,0x26,0x01,0x07]);
   assert.equal(binaryState.mem[0x10100]|(binaryState.mem[0x10101]<<8),3);
 });
