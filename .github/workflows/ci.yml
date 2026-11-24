@@ -25,9 +25,9 @@ jobs:
       - name: Run independent instruction vectors
         run: node tests/instruction-vectors.cjs
       - name: Run exhaustive ModR/M matrix
+        run: node tests/modrm-matrix.cjs
       - name: Run all-opcode and ModR/M structural sweeps
         run: node tests/opcode-byte-sweep.cjs
-        run: node tests/modrm-matrix.cjs
       - name: Run addressing and displacement tests
         run: node tests/addressing-displacement.cjs
       - name: Run FLAGS differential vectors
