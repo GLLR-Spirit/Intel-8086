@@ -587,6 +587,83 @@ test("oracle indépendant FLAGS 16 bits sur les frontières et les retenues", ()
 });
 categories.arithmetic++;
 
+
+test("LOOPE, LOOPNE et JCXZ — source, assembleur, désassembleur et exécution binaire", () => {
+  const programs = [
+    "MOV CX, 2\nMOV AX, 0\nCMP AX, 0\nLOOPE AGAIN\nHLT\nAGAIN: INC BX\nCMP AX, 0\nLOOPE AGAIN\nHLT",
+    "MOV CX, 2\nMOV AX, 1\nCMP AX, 0\nLOOPNE AGAIN\nHLT\nAGAIN: INC BX\nCMP AX, 0\nLOOPNE AGAIN\nHLT",
+    "MOV CX, 0\nJCXZ ZERO\nMOV DX, 1\nJMP END\nZERO: MOV DX, 2\nEND: HLT"
+  ];
+  for (const source of programs) compareSourceBinary(source);
+});
+test("CBW et CWD — extension de signe 8/16 bits", () => {
+  const {binaryState}=compareSourceBinary("MOV AL, 80h\nCBW\nMOV BX, AX\nCWD\nHLT");
+  assert.equal(binaryState.reg.AX,0xff80);
+  assert.equal(binaryState.reg.BX,0xff80);
+  assert.equal(binaryState.reg.DX,0xffff);
+});
+test("AAA, AAS, AAM, AAD, DAA et DAS — ajustements décimaux", () => {
+  const source="MOV AX, 000Bh\nAAA\nMOV BX, AX\nMOV AX, 000Bh\nAAS\nMOV CX, AX\nMOV AL, 29\nAAM\nMOV DX, AX\nMOV AX, 0209h\nAAD\nMOV SI, AX\nMOV AL, 9Bh\nDAA\nMOV DI, AX\nMOV AL, 9Bh\nSTC\nDAS\nHLT";
+  const {binaryState}=compareSourceBinary(source);
+  assert.equal(binaryState.reg.BX,0x0101);
+  assert.equal(binaryState.reg.CX,0xff05);
+  assert.equal(binaryState.reg.DX,0x0209);
+  assert.equal(binaryState.reg.SI,29);
+  assert.equal(binaryState.reg.DI&255,1);
+});
+test("ROL, ROR, RCL, RCR, SAR, SHL et SHR — registres et compte CL", () => {
+  const source="MOV AL, 81h\nROL AL, 1\nMOV CL, 2\nROR AL, CL\nSTC\nRCL AL, 1\nRCR AL, 1\nSAR AL, 1\nSHL AL, 1\nSHR AL, 1\nHLT";
+  compareSourceBinary(source);
+});
+test("LAHF et SAHF — transfert des FLAGS via AH", () => {
+  const {binaryState}=compareSourceBinary("MOV AH, 0D5h\nSAHF\nLAHF\nHLT");
+  assert.equal(binaryState.reg.AX>>8,0xd7);
+  for (const flag of ["CF","PF","AF","ZF","SF"]) assert.equal(binaryState.flags[flag],1);
+});
+test("XLAT — lecture DS:[BX+AL] et mise à jour de AL", () => {
+  const {binaryState}=compareSourceBinary("MOV BX, 0100h\nMOV AL, 2\nMOV BYTE PTR [0102h], 5Ah\nXLAT\nHLT");
+  assert.equal(binaryState.reg.AX&255,0x5a);
+});
+test("REP MOVSB — préfixe binaire, répétition CX et transfert mémoire", () => {
+  const source="MOV SI, 0100h\nMOV DI, 0200h\nMOV CX, 3\nMOV BYTE PTR [0100h], 11h\nMOV BYTE PTR [0101h], 22h\nMOV BYTE PTR [0102h], 33h\nREP MOVSB\nHLT";
+  const {assembled,binaryState}=compareSourceBinary(source,[0x200,0x201,0x202]);
+  assert.deepEqual(assembled.bytes.slice(-3),[0xf3,0xa4,0xf4]);
+  assert.deepEqual([binaryState.mem[0x200],binaryState.mem[0x201],binaryState.mem[0x202]],[0x11,0x22,0x33]);
+});
+test("LOCK ADD mémoire — préfixe F0, validation et round-trip", () => {
+  const source="MOV BX, 0100h\nMOV AX, 2\nMOV WORD PTR [BX], 1\nLOCK ADD WORD PTR [BX], AX\nHLT";
+  const {assembled,binaryState}=compareSourceBinary(source,[0x100,0x101]);
+  const lockRow=assembled.rows.find(row=>row.instruction.startsWith("LOCK"));
+  assert.deepEqual(lockRow.bytes.slice(0,2),[0xf0,0x01]);
+  assert.equal(binaryState.mem[0x100]|(binaryState.mem[0x101]<<8),3);
+  assert.throws(()=>api.assemble("LOCK CMP WORD PTR [BX], AX\nHLT"),/LOCK/);
+});
+test("WAIT et ESC — opcodes reconnus, sans coprocesseur externe simulé", () => {
+  const {assembled,binaryState}=compareSourceBinary("MOV AX, 1234h\nWAIT\nESC 0, AX\nHLT");
+  assert.equal(binaryState.reg.AX,0x1234);
+  assert.ok(assembled.bytes.includes(0x9b));
+  assert.ok(assembled.bytes.includes(0xd8));
+});
+test("IN/OUT — ports 8/16 bits et état initial explicite", () => {
+  const source="IN AL, 20h\nOUT 21h, AL\nMOV DX, 30h\nIN AX, DX\nOUT DX, AX\nHLT";
+  const assembled=api.assemble(source);
+  const state=api.executeBinary(Array.from(assembled.bytes),0,0,{io:{"32":0x5a,"48":0x1234}});
+  assert.ok(!state.error,state.error||"binary I/O failed");
+  assert.equal(state.io[33],0x5a);
+  assert.equal(state.io[48],0x1234);
+  assert.equal(state.reg.AX,0x1234);
+});
+test("INTO — vecteur 4, gestionnaire IVT et retour IRET en binaire", () => {
+  const source="MOV AX, 7FFFh\nADD AX, 1\nINTO\nHLT\nHANDLER: MOV BX, 1\nIRET";
+  const assembled=api.assemble(source),handler=assembled.symbols.HANDLER;
+  const memory={"16":handler&255,"17":(handler>>8)&255,"18":0,"19":0};
+  const state=api.executeBinary(Array.from(assembled.bytes),0,0,{mem:memory});
+  assert.ok(!state.error,state.error||"INTO/IRET failed");
+  assert.equal(state.reg.BX,1);
+  assert.equal(state.reg.IP,assembled.size);
+  assert.equal(state.reg.SP,0xfffe);
+});
+
 console.log("Audit différentiel arithmétique : " + categories.arithmetic + " vecteurs.");
 console.log("Logique et TEST : " + categories.logic + " vecteurs.");
 console.log("Registres : " + categories.registers + " vecteurs.");
