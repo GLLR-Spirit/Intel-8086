@@ -204,4 +204,15 @@ test("binary loading wraps IP at FFFFh and physical memory follows 20-bit addres
 });
 countsBinary.loading++;
 
+
+test("assembled source and loaded binary produce matching architectural state", () => {
+  const source = ["MOV AX, 7", "ADD AX, 5", "CMP AX, 12", "JE DONE", "MOV BX, 1", "DONE: HLT"].join("\n");
+  const assembled = api.assemble(source);
+  const sourceState = execute(source);
+  const binaryState = executeLoaded(Array.from(assembled.bytes),0x4000,0x0080);
+  for (const register of ["AX","BX","CX","DX","CS","IP"]) assert.equal(binaryState.reg[register],register==="CS"?0x4000:register==="IP"?0x0080+assembled.size:sourceState.reg[register],register);
+  for (const flag of ["CF","ZF","SF","OF","PF","AF"]) assert.equal(binaryState.flags[flag],sourceState.flags[flag],flag);
+});
+countsBinary.branches++;
+
 if (failed) process.exit(1);
