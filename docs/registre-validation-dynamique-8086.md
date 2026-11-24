@@ -135,3 +135,16 @@ Les tests différentiels ajoutés couvrent les cas nominaux source/binaire et le
 ### Environnement d'E/S déterministe
 
 La directive pédagogique `PORT imm16, imm16` permet d'initialiser les ports pour l'exécution source ; elle n'est pas un opcode Intel et n'est pas émise dans le flux binaire. L'assembleur expose la table dans ses métadonnées `ports`. Le moteur binaire reçoit cette table par `initialState.io` ; l'interface binaire la reprend depuis les directives PORT présentes dans l'éditeur. Les huit formes IN/OUT immédiat/DX et AL/AX sont testées. Cette abstraction ne simule pas les périphériques ni les cycles matériels.
+
+
+## Correctifs additionnels validés — pile binaire et PUSH SP (25 novembre 2026)
+
+Le moteur binaire dynamique a été corrigé sur les opérations de pile qui doivent fonctionner à partir de la mémoire réelle, sans dépendre des métadonnées ajoutées par l'interface pédagogique : POP, POPF, RET et RETF lisent maintenant les mots bruts à SS:SP lorsque la pile typée est absente. Le chemin avec métadonnées conserve ses contrôles de cohérence.
+
+PUSH SP reproduit désormais le comportement spécifique du 8086 original : la valeur empilée correspond au SP décrémenté. Ce point différencie le 8086 des générations ultérieures.
+
+Tests de régression ajoutés dans tests/dynamic-differential.cjs : POP/POPF bruts, RET/RETF bruts et PUSH SP source/binaire.
+
+CI vérifiée : https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45511311367, commit 915d12868de2c91ce8a3cd11f0432c43b3b95256, job simulator-smoke-tests success ; toutes les étapes, y compris l'audit différentiel dynamique, ont réussi.
+
+Ces corrections augmentent la fidélité des opérations de pile, mais ne changent pas le statut global : toutes les formes du jeu d'instructions et tous les effets matériels ne sont pas encore validés indépendamment.
