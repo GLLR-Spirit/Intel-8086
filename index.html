@@ -415,7 +415,10 @@ else if(op>=145&&op<=151)ins="XCHG AX, "+reg16[op-144];
 else if(op===141||op===196||op===197){modrm=read();rm=decodeRM(modrm,16,prefix);if(rm.memory){var leaReg=reg16[(modrm>>3)&7],leaAddress=rm.text.replace(/^WORD PTR /,"");ins=op===141?"LEA "+leaReg+", "+leaAddress:(op===196?"LES ":"LDS ")+leaReg+", "+leaAddress;}}
 else if(op===140||op===142){
 modrm=read();reg=(modrm>>3)&7;rm=decodeRM(modrm,16,prefix);var segmentNames=["ES","CS","SS","DS"];
-if(reg<4&&!(op===142&&reg===1))ins=op===142?"MOV "+segmentNames[reg]+", "+rm.text:"MOV "+rm.text+", "+segmentNames[reg];
+// Original 8086/8088 alias selector values 4..7 to 0..3. Unlike
+// later x86 generations, 8E /1 (MOV CS, r/m16) is also decodable here.
+var segmentName=segmentNames[reg&3];
+ins=op===142?"MOV "+segmentName+", "+rm.text:"MOV "+rm.text+", "+segmentName;
 }
 else if([136,137,138,139,134,135,132,133].indexOf(op)>=0){
 bits=(op&1)?16:8;modrm=read();rm=decodeRM(modrm,bits,prefix);reg=(bits===8?reg8:reg16)[(modrm>>3)&7];
