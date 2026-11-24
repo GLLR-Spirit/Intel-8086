@@ -150,7 +150,7 @@ function executeLoaded(bytes, cs, ip) {
 test("loads bytes at the selected CS:IP and executes decoded instructions", () => {
   const bytes = [0xB8,0x34,0x12,0x40,0xF4];
   const state = executeLoaded(bytes, 0x1000, 0x0100);
-  assert.equal(state.execution.mode, "loaded-binary");
+  assert.equal(state.execution.mode, "dynamic-binary");
   assert.equal(state.execution.loadCS, 0x1000);
   assert.equal(state.execution.loadIP, 0x0100);
   assert.equal(state.reg.CS, 0x1000);
@@ -164,7 +164,7 @@ test("binary conditional branch resolves to a decoded target instruction", () =>
   const state = executeLoaded(bytes, 0x2000, 0x0200);
   assert.equal(state.reg.AX, 0);
   assert.equal(state.reg.IP, 0x020C);
-  assert.equal(state.execution.decodedInstructions, 5);
+  assert.equal(state.execution.decodedInstructions, 4);
 });
 countsBinary.branches++;
 test("rejects a branch target in the middle of an instruction", () => {
@@ -212,6 +212,29 @@ test("assembled source and loaded binary produce matching architectural state", 
   const binaryState = executeLoaded(Array.from(assembled.bytes),0x4000,0x0080);
   for (const register of ["AX","BX","CX","DX","CS","IP"]) assert.equal(binaryState.reg[register],register==="CS"?0x4000:register==="IP"?0x0080+assembled.size:sourceState.reg[register],register);
   for (const flag of ["CF","ZF","SF","OF","PF","AF"]) assert.equal(binaryState.flags[flag],sourceState.flags[flag],flag);
+});
+countsBinary.branches++;
+
+
+test("dynamic branch fetches an instruction inside bytes previously decoded as an immediate", () => {
+  const state = executeLoaded([0xEB,0x01,0xB8,0xF4,0x00],0x2100,0x0300);
+  assert.equal(state.steps,2);
+  assert.equal(state.reg.IP,0x0304);
+  assert.equal(state.execution.fetchDecodeExecute,true);
+});
+countsBinary.branches++;
+test("self-modifying code is fetched again from memory after a write", () => {
+  const state = executeLoaded([0xC6,0x06,0x08,0x00,0xF4,0xEB,0x01,0x90,0x90],0x2200,0x0400);
+  assert.equal(state.steps,3);
+  assert.equal(state.reg.IP,0x0409);
+  assert.equal(state.mem[0x22008],0xF4);
+});
+countsBinary.branches++;
+test("relative branches after the first instruction use the current IP as their base", () => {
+  const state = executeLoaded([0x40,0xEB,0x01,0xB8,0xF4,0x00],0x2300,0x0500);
+  assert.equal(state.reg.AX,0);
+  assert.equal(state.reg.IP,0x0504);
+  assert.equal(state.steps,3);
 });
 countsBinary.branches++;
 
