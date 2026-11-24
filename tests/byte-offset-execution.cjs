@@ -256,9 +256,9 @@ test("CS override reads data from the selected code segment", () => {
   const bytes = [0x2E,0xA1,0x10,0x00,0xF4];
   bytes.length = 0x13;
   bytes[0x10] = 0x34; bytes[0x11] = 0x12; bytes[0x12] = 0x90;
-  const state = executeLoaded(bytes,0x5200,0x0200);
+  const state = executeLoaded(bytes,0x5200,0x0000);
   assert.equal(state.reg.AX,0x1234);
-  assert.equal(state.reg.IP,0x0205);
+  assert.equal(state.reg.IP,0x0005);
 });
 countsBinary.prefixes++;
 test("relative negative branch executes dynamically and exits when condition changes", () => {
