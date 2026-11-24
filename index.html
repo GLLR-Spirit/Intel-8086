@@ -158,13 +158,14 @@ if(a.length===2){
 var d=a[0].trim().toUpperCase(),q=a[1].trim().toUpperCase(),rd=encodingRegisterCode(d),rq=encodingRegisterCode(q),id=info(d),iq=info(q),dm=d.indexOf("[")>=0,qm=q.indexOf("[")>=0;
 if(base==="MOV"){
 if(rd!==null&&iq===null&&!qm){var movImm=encodingImmediate(q,id.bits);if(movImm)return [(id.bits===8?176:184)+rd].concat(movImm);}
+if(rd!==null&&rq!==null&&id.bits===iq.bits){var regRm=encodingModRM(rd,q);return [id.bits===8?138:139].concat(regRm);}
 if((rd!==null||dm)&&(rq!==null||qm)){
 var widthBits=rd!==null?id.bits:rq!==null?iq.bits:encodingOperandBits(d,q);
 if(!widthBits)return null;
-var prefix=[],body=[],rm;
-if(rq!==null&&(rd!==null||dm)){rm=encodingModRM(rq,d);if(!rm)return null;body=[widthBits===8?136:137].concat(rm);}
-else if(rd!==null&&(rq!==null||qm)){rm=encodingModRM(rd,q);if(!rm)return null;body=[widthBits===8?138:139].concat(rm);}
-if(body.length){if(dm){var md=encodingMemory(d);if(md&&md.prefix!==null)prefix=[md.prefix];}else if(qm){var mq=encodingMemory(q);if(mq&&mq.prefix!==null)prefix=[mq.prefix];}return prefix.concat(body);}
+var body=[],rm;
+if(rq!==null&&dm){rm=encodingModRM(rq,d);if(!rm)return null;body=[widthBits===8?136:137].concat(rm);}
+else if(rd!==null&&qm){rm=encodingModRM(rd,q);if(!rm)return null;body=[widthBits===8?138:139].concat(rm);}
+if(body.length)return body;
 }
 if((dm||rd!==null)&&parseNumber(q)!==null){var memBits=encodingOperandBits(d,q);if(!memBits)return null;var imm=encodingImmediate(q,memBits);if(!imm)return null;rm=encodingModRM(0,d);if(!rm)return null;return [memBits===8?198:199].concat(rm,imm);}
 }
