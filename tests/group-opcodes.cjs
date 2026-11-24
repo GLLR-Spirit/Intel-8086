@@ -147,7 +147,7 @@ for (const [source, expected] of unaryVectors) {
 
 // All FF extensions: /0 INC, /1 DEC, /2 near CALL, /3 far CALL
 // (memory only), /4 near JMP, /5 far JMP (memory only), /6 PUSH,
-// /7 reserved. Check all 256 ModR/M values.
+// /6 PUSH memory-only, /7 reserved. Check all 256 ModR/M values.
 const ffNames = ["INC", "DEC", "CALL", "CALL FAR", "JMP", "JMP FAR", "PUSH", null];
 for (let ext = 0; ext < 8; ext++) {
   for (let mod = 0; mod < 4; mod++) {
@@ -159,7 +159,7 @@ for (let ext = 0; ext < 8; ext++) {
         assert.equal(result.rows.length, 1);
         assert.deepEqual(Array.from(result.rows[0].bytes), code);
         const instruction = result.rows[0].instruction;
-        if (ext === 7 || ((ext === 3 || ext === 5) && mod === 3)) {
+        if (ext === 7 || ((ext === 3 || ext === 5 || ext === 6) && mod === 3)) {
           assert.ok(instruction.startsWith("DB "), instruction);
         } else {
           assert.ok(instruction.startsWith(ffNames[ext] + " "), instruction);
@@ -178,6 +178,7 @@ const ffVectors = [
   ["JMP DX", [0xFF, 0xE2]],
   ["JMP WORD PTR [BP+SI+4]", [0xFF, 0x62, 0x04]],
   ["PUSH WORD PTR [BX]", [0xFF, 0x37]],
+  ["PUSH AX", [0x50]],
   ["PUSH WORD PTR [DI+256]", [0xFF, 0xB5, 0x00, 0x01]]
 ];
 for (const [source, expected] of ffVectors) {
