@@ -423,7 +423,7 @@ else if(op===138||op===139)ins="MOV "+reg+", "+rm.text;
 else if(op===134||op===135)ins="XCHG "+rm.text+", "+reg;
 else ins="TEST "+rm.text+", "+reg;
 }
-else if(op===160||op===161||op===162||op===163){bits=(op===160||op===162)?8:16;val=word();var moffsMem=(prefix?prefix+":":"")+"["+hx(val,4)+"]";ins=op===160?"MOV "+(bits===8?"AL":"AX")+", "+(bits===8?"BYTE":"WORD")+" PTR "+moffsMem:"";if(op===162||op===163)ins="MOV "+(bits===8?"BYTE":"WORD")+" PTR "+moffsMem+", "+(bits===8?"AL":"AX");}
+else if(op===160||op===161||op===162||op===163){bits=(op===160||op===162)?8:16;val=word();var moffsMem=(prefix?prefix+":":"")+"["+hx(val,4)+"]";if(op===160||op===161)ins="MOV "+(bits===8?"AL":"AX")+", "+(bits===8?"BYTE":"WORD")+" PTR "+moffsMem;else ins="MOV "+(bits===8?"BYTE":"WORD")+" PTR "+moffsMem+", "+(bits===8?"AL":"AX");}
 else if(op===198||op===199){bits=op===198?8:16;modrm=read();ext=(modrm>>3)&7;rm=decodeRM(modrm,bits,prefix);val=bits===8?read():word();if(ext===0)ins="MOV "+rm.text+", "+imm(val,bits);}
 else if(op===128||op===129){bits=op===128?8:16;modrm=read();ext=(modrm>>3)&7;rm=decodeRM(modrm,bits,prefix);val=bits===8?read():word();base=["ADD","OR","ADC","SBB","AND","SUB","XOR","CMP"][ext];ins=base+" "+rm.text+", "+imm(val,bits);}
 else if(op===246||op===247){bits=op===246?8:16;modrm=read();ext=(modrm>>3)&7;rm=decodeRM(modrm,bits,prefix);if(ext===0){val=bits===8?read():word();ins="TEST "+rm.text+", "+imm(val,bits);}}
