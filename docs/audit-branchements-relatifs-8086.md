@@ -50,14 +50,31 @@ Les tests différentiels calculent indépendamment les FLAGS attendus d'une sous
 
 `LOOP rel8` décrémente CX modulo 65536 et branche si le résultat n'est pas nul. Il ne modifie pas les FLAGS. Le cas initial CX=0 est explicitement vérifié : CX devient FFFFh et le branchement est pris.
 
-## 6. Limites du modèle
+## 6. Cohérence entre octets et exécution
 
-L'assembleur et le désassembleur travaillent sur de véritables offsets octet dans le flux produit. En revanche, l'interpréteur pédagogique continue de représenter son IP comme un indice logique dans la liste des instructions analysées. L'exécution des branches directes utilise les étiquettes résolues du programme, et ne constitue donc pas encore une simulation complète de CS:IP sur un segment de code binaire chargé.
+Lorsque toutes les instructions d'un programme sont encodables, l'interpréteur construit une image d'exécution à partir du listing de `assembleProgram` :
+
+- `offsets[index]` associe chaque indice d'instruction à son offset binaire ;
+- `offsetToIndex[offset]` retrouve l'instruction qui commence à un offset donné ;
+- les étiquettes sont résolues par le chemin étiquette → offset octet → indice d'instruction ;
+- `IP` est actualisé avec l'offset octet de l'instruction courante, puis avec celui de la prochaine instruction.
+
+Les branchements directs conditionnels, JMP, LOOP, CALL et les gestionnaires VECTOR passent par cette table. Les transferts indirects near interprètent leur cible comme un offset IP et refusent une adresse qui ne correspond pas au début d'une instruction. CALL near empile l'offset octet suivant CALL ; RET dépile cet offset et le résout en indice d'instruction. Les cadres IRET utilisent également des offsets octet. CALL FAR/RETF conservent l'ordre CS:IP et résolvent l'offset de retour dans l'image de code du laboratoire.
+
+Pour un flux de exactement 65 536 octets, le passage séquentiel de l'octet FFFFh au suivant fait revenir IP à 0000h et l'exécution reprend au premier octet. Pour les images plus petites, atteindre la fin du programme reste une fin d'exécution pédagogique et ne provoque pas un rebouclage artificiel.
+
+Si une instruction n'est pas encodable par le sous-ensemble de l'assembleur, l'exécution utilise explicitement le mode de repli `logical-fallback` (IP logique). Le résultat expose `execution.mode` et `execution.codeSize` pour distinguer les deux modèles.
+
+### Limites restantes
+
+Ce changement n'est pas un chargement de binaire brut ni un émulateur matériel complet. L'image d'exécution est reconstruite à partir du source assemblé et ne représente qu'un segment de code pédagogique. Les transferts FAR peuvent changer CS, mais le laboratoire ne charge pas une image mémoire indépendante pour chaque valeur de CS : la résolution de l'offset reste liée à l'image source courante. Les cibles indirectes doivent être des frontières d'instructions connues ; les préfixes, les octets de données mélangés au code, les recouvrements de flux et le comportement de prélecture BIU ne sont pas simulés.
 
 La relaxation automatique ne propose pas de syntaxe pour forcer un JMP near lorsque la cible est également accessible en short ; l'assembleur privilégie EB dans ce cas. E9 reste utilisé dès que rel8 ne suffit pas.
 
 ## 7. Batterie de tests
 
-Suite dédiée : [`tests/relative-branches.cjs`](../tests/relative-branches.cjs).
+- [`tests/relative-branches.cjs`](../tests/relative-branches.cjs) : relaxation JMP, limites rel8/rel16, seize conditions, FLAGS, LOOP et flux tronqués (**187 vecteurs**).
+- [`tests/byte-offset-execution.cjs`](../tests/byte-offset-execution.cjs) : table d'offsets, IP séquentiel, branchements, CALL/RET et segment de 65 536 octets (**7 scénarios indépendants**).
+- [`tests/control-stack.cjs`](../tests/control-stack.cjs) : transferts indirects near/far, pile, retours et contraintes POP/RET.
 
-Elle couvre la relaxation JMP, les limites rel8, les limites rel16, les seize conditions et leurs FLAGS, LOOP, les offsets de désassemblage et les flux tronqués. Le workflow CI [45484177621](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45484177621) a réussi sur le commit `aa8b455e9cce132c0c437b2fc1f1ce30306b1f51`. Les **187 vecteurs** de cette suite passent, et le workflow complet valide **8 736 vérifications avec 0 échec**.
+Le total CI doit être lu sur le dernier workflow validé pour le commit concerné ; les résultats antérieurs de la phase relative ne valident pas cette phase d'intégration.
