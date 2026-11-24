@@ -189,7 +189,7 @@ function runSelfTests(){var cases=[
 ["CLI refuse un opérande","CLI AX\nHLT",function(s){return !!s.error&&s.error.indexOf("ne prend aucun opérande")>=0;}],
 ["Pile physique respecte le segment SS","MOV AX, 1000h\nMOV SS, AX\nPUSH 1234h\nHLT",function(s){return !!s.reg&&s.mem[0x1FFFC]===0x34&&s.mem[0x1FFFD]===0x12&&s.reg.SP===65532;}],
 ["IRET restaure FLAGS depuis la pile mémoire","VECTOR 38h, H\nSTI\nINT 38h\nHLT\nH:\nCLI\nIRET",function(s){return !!s.reg&&!s.error&&s.flags.IF===1&&s.reg.SP===65534;}],
-["POP détecte une modification de SP","MOV AX, 1234h\nPUSH AX\nMOV SP, 0FFFCh\nPOP BX\nHLT",function(s){return !!s.error&&s.error.indexOf("SS:SP")>=0;}],
+["POP détecte une modification de SP","MOV AX, 1234h\nPUSH AX\nMOV SP, 0FFFEh\nPOP BX\nHLT",function(s){return !!s.error&&s.error.indexOf("SS:SP")>=0;}],
 ["POP détecte une modification de SS","MOV AX, 1234h\nPUSH AX\nMOV SS, 1000h\nPOP BX\nHLT",function(s){return !!s.error&&s.error.indexOf("SS:SP")>=0;}],
 ["POP lit la valeur réellement stockée en mémoire","MOV AX, 1234h\nPUSH AX\nMOV BYTE PTR SS:[FFFCh], 78h\nPOP BX\nHLT",function(s){return !s.error&&s.reg.BX===0x1278;}],
 ["Pile gère le bouclage de l’offset 16 bits","MOV SP, 0001h\nMOV AX, 0BEEFh\nPUSH AX\nPOP BX\nHLT",function(s){return !s.error&&s.reg.BX===0xBEEF&&s.reg.SP===1;}],
