@@ -328,7 +328,7 @@ var candidateIndirect=(info(candidate.args[0])||memoryOperand(candidate.args[0])
 if(candidateIndirect)continue;
 var candidateIndex=parsed.labels[candidate.args[0].toUpperCase()];
 if(candidateIndex===undefined)assemblerFailure("Étiquette inconnue : "+candidate.args[0]+".",candidate);
-var candidateDelta=offsets[candidateIndex]-(offsets[bi]+2);
+var candidateDelta=offsets[candidateIndex]-(offsets[bi]+2)-(candidateIndex>bi?1:0);
 candidateDelta=((candidateDelta+32768)&65535)-32768;
 if(candidateDelta>=-128&&candidateDelta<=127){candidate._shortBranch=true;candidate._binarySize=2;changed=true;}
 }
