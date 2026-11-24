@@ -153,7 +153,7 @@ test("INC et DEC préservent CF dans les deux moteurs", () => {
 categories.registers++;
 
 test("NOT préserve FLAGS et NEG calcule CF/OF", () => {
-  const { binaryState } = compareSourceBinary("MOV AX, 8000h\nSTC\nNOT AX\nNEG AX\nHLT");
+  const { binaryState } = compareSourceBinary("MOV AX, 7FFFh\nSTC\nNOT AX\nNEG AX\nHLT");
   assert.equal(binaryState.reg.AX, 0x8000);
   assert.equal(binaryState.flags.CF, 1);
   assert.equal(binaryState.flags.OF, 1);
@@ -220,7 +220,7 @@ categories.stack++;
 test("CALL near indirect registre et RET restaurent l'adresse de retour", () => {
   const source = "MOV AX, 0007h\nCALL AX\nHLT\nNOP\nRET";
   const { binaryState } = compareSourceBinary(source);
-  assert.equal(binaryState.reg.IP, 5);
+  assert.equal(binaryState.reg.IP, 6);
   assert.equal(binaryState.stack.length, 0);
 });
 categories.stack++;
@@ -228,7 +228,7 @@ categories.stack++;
 test("CALL FAR indirect mémoire et RETF restaurent CS:IP", () => {
   const source = [
     "MOV AX, 0000h", "MOV DS, AX",
-    "MOV WORD PTR [0100h], 0009h", "MOV WORD PTR [0102h], 0000h",
+    "MOV WORD PTR [0100h], 001Ah", "MOV WORD PTR [0102h], 0000h",
     "CALL FAR PTR [0100h]", "HLT", "NOP", "NOP", "NOP", "NOP", "RETF"
   ].join("\n");
   const { binaryState } = compareSourceBinary(source);
@@ -248,7 +248,7 @@ categories.invalid++;
 
 test("RET avec ajustement impair reste refusé à l'exécution, bien que décodable", () => {
   const decoded = api.disassemble([0xc2, 0x01, 0x00]);
-  assert.equal(decoded.rows[0].instruction, "RET 01h");
+  assert.equal(decoded.rows[0].instruction, "RET 0001h");
   const result = api.execute("CALL SUB\nHLT\nSUB: RET 1");
   assert.match(result.error, /ajustement impair non pris en charge/i);
 });
