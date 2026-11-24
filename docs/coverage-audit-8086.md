@@ -366,7 +366,7 @@ Le modèle d'E/S est maintenant utilisable dans les deux chemins : directive pé
 
 ## Validation finale de l'extension des familles — 25 novembre 2026
 
-Le workflow CI [45509443384](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45509443384) a terminé en **success** sur le commit `a67351dd0a603af4c6065b0d0b020e067e31046e`.
+Le workflow CI [45509666769](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45509666769) a terminé en **success** sur le commit `87b11ecc17742d5fc33d16bb574243808bb043d0`.
 
 - Suite différentielle : **65/65 tests réussis**.
 - Vecteurs indépendants : **114 tests réussis**.
