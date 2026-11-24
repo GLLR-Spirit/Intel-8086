@@ -81,3 +81,18 @@ La suite est exécutée dans le workflow CI principal. Le run [45482367409](http
 ## 7. Conclusion
 
 Cette phase étend la couverture de POP, RET proche/lointain et des transferts indirects. Elle conserve une distinction stricte entre encodages réservés, formes valides, décodage disponible et sémantique réellement simulée. La limite majeure restante est l'absence d'un modèle d'exécution basé sur les offsets octet réels d'un segment de code chargé.
+
+
+## Correctifs de pile — lecture mémoire brute et particularité 8086 (25 novembre 2026)
+
+Une nouvelle passe corrige trois écarts entre le suivi pédagogique de pile et le comportement attendu sur un flux binaire chargé :
+
+- **POP r16 et POPF** peuvent maintenant dépiler un mot depuis SS:SP en mémoire initialisée même si aucune métadonnée pédagogique de pile n'existe. Le mot est lu en little-endian et SP avance de deux octets.
+- **RET et RETF** acceptent également des adresses de retour stockées dans la mémoire brute. RET dépile IP ; RETF dépile IP puis CS. Les vérifications de types restent actives lorsque le laboratoire dispose de métadonnées de pile typées.
+- **PUSH SP** respecte la particularité historique du 8086 : la valeur écrite est le SP après décrémentation de deux, contrairement aux processeurs ultérieurs qui empilent l'ancienne valeur.
+
+Les nouveaux tests binaires couvrent POP, POPF, RET, RETF sans métadonnées, et PUSH SP sur les chemins source et binaire. Les tests de pile typée et les contrôles de cohérence existants sont conservés.
+
+Validation du workflow : https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45511311367 — commit 915d12868de2c91ce8a3cd11f0432c43b3b95256 — **success**, toutes les étapes CI réussies.
+
+Limite maintenue : la pile reste bornée par le modèle d'adressage et le suivi du laboratoire ; les cycles de bus et les effets de concurrence ne sont pas modélisés.
