@@ -246,7 +246,7 @@ for (const opcode of [0xF6, 0xF7]) {
   const tail = opcode === 0xF6 ? [0x01] : [0x01, 0x00];
   for (let ext = 0; ext < 8; ext++) {
     test("F6/F7 extension · " + opcode.toString(16) + " /" + ext, () => {
-      const instruction = decodeInstruction(opcode, ext, 3, 0, tail);
+      const instruction = decodeInstruction(opcode, ext, 3, 0, ext === 0 ? tail : []);
       if (ext === 0 || ext === 1) assert.ok(instruction.startsWith("TEST ") === (ext === 0), instruction);
       else assert.ok(instruction.startsWith("DB "), instruction);
     });
