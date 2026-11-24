@@ -203,7 +203,7 @@ if(a.length===0){var fixed={NOP:[144],HLT:[244],CLC:[248],STC:[249],CMC:[241],CL
 return null;
 }
 function relativeBranchOpcode(op){
-var codes={JNE:117,JNZ:117,JE:116,JZ:116,JC:114,JB:114,JNC:115,JAE:115,JO:112,JNO:113,JS:120,JNS:121,JP:122,JNP:123,JL:124,JGE:125,JLE:126,JG:127,JA:119,JBE:118,JMP:235,LOOP:226};
+var codes={JNE:117,JNZ:117,JE:116,JZ:116,JC:114,JB:114,JNC:115,JAE:115,JO:112,JNO:113,JS:120,JNS:121,JP:122,JNP:123,JL:124,JGE:125,JLE:126,JG:127,JA:119,JBE:118,JMP:233,LOOP:226};
 return codes[op]===undefined?null:codes[op];
 }
 function assemblerFailure(message,ins){throw makeDiagnostic(Error(message),ins&&ins.line,ins&&(ins.raw||ins.op));}
@@ -213,7 +213,7 @@ var parsed=parseProgram(src),ops=parsed.ops,offsets=[],symbolOffsets={},size=0,r
 for(var i=0;i<ops.length;i++){
 var ins=ops[i],op=ins.op,branch=relativeOps.indexOf(op)>=0,bytes=null;
 offsets[i]=size;
-if(branch)bytes=op==="CALL"?[232,0,0]:[0,0];else bytes=encodingBytes(ins);
+if(branch)bytes=(op==="CALL"||op==="JMP")?[op==="CALL"?232:233,0,0]:[0,0];else bytes=encodingBytes(ins);
 if(!bytes)assemblerFailure("Encodage binaire non pris en charge pour "+ins.raw+". Aucune sortie partielle n'est produite.",ins);
 ins._binaryOffset=size;ins._binarySize=bytes.length;size+=bytes.length;
 if(size>65536)assemblerFailure("Programme trop volumineux : la taille dépasse 65 536 octets.",ins);
@@ -228,7 +228,7 @@ if(opcode!==null||mn==="CALL"){
 targetIndex=parsed.labels[current.args[0].toUpperCase()];
 if(targetIndex===undefined)assemblerFailure("Étiquette inconnue : "+current.args[0]+".",current);
 targetOffset=offsets[targetIndex];
-if(mn==="CALL"){delta=(targetOffset-(offsets[j]+3))&65535;encoded=[232,delta&255,(delta>>8)&255];}
+if(mn==="CALL"||mn==="JMP"){delta=(targetOffset-(offsets[j]+3))&65535;encoded=[mn==="CALL"?232:233,delta&255,(delta>>8)&255];}
 else{delta=targetOffset-(offsets[j]+2);if(delta< -128||delta>127)assemblerFailure("Déplacement relatif hors plage pour "+mn+" : "+delta+" octets (plage autorisée : -128 à +127).",current);encoded=[opcode,delta&255];}
 }else encoded=encodingBytes(current);
 if(!encoded||encoded.length!==current._binarySize)assemblerFailure("Taille d'encodage incohérente pour "+current.raw+".",current);
@@ -467,7 +467,7 @@ function runSelfTests(){var cases=[
 ["ADD registre général immédiat WORD","ADD CX, 1234h",function(s){return JSON.stringify(encodingBytes(parseProgram("ADD CX, 1234h").ops[0]))===JSON.stringify([129,193,52,18]);}],
 ["ADD n'utilise pas l'extension 83h 80186","ADD CX, 7Fh",function(s){return JSON.stringify(encodingBytes(parseProgram("ADD CX, 7Fh").ops[0]))===JSON.stringify([129,193,127,0]);}],
 ["Assembleur deux passes : offsets et flux contigu","MOV AX, 1234h\nMOV BX, 1\nHLT",function(s){var r=assembleProgram("MOV AX, 1234h\nMOV BX, 1\nHLT");return r.size===7&&JSON.stringify(r.bytes)===JSON.stringify([184,52,18,187,1,0,244])&&r.rows[1].offset===3;}],
-["Table des symboles : étiquette sur instruction suivante","JMP SUITE\nSUITE: NOP\nHLT",function(s){var r=assembleProgram("JMP SUITE\nSUITE: NOP\nHLT");return r.symbols.SUITE===2&&JSON.stringify(r.bytes)===JSON.stringify([235,0,144,244]);}],
+["Table des symboles : étiquette sur instruction suivante","JMP SUITE\nSUITE: NOP\nHLT",function(s){var r=assembleProgram("JMP SUITE\nSUITE: NOP\nHLT");return r.symbols.SUITE===3&&JSON.stringify(r.bytes)===JSON.stringify([233,0,0,144,244]);}],
 ["Encodage JE relatif court","JE CIBLE\nNOP\nCIBLE: HLT",function(s){return JSON.stringify(assembleProgram("JE CIBLE\nNOP\nCIBLE: HLT").bytes)===JSON.stringify([116,1,144,244]);}],
 ["Encodage JNE relatif court arrière","HLT",function(s){return JSON.stringify(assembleProgram("DEBUT: NOP\nJNE DEBUT").bytes)===JSON.stringify([144,117,253]);}],
 ["Encodage des alias de sauts conditionnels","HLT",function(s){return JSON.stringify(assembleProgram("JZ FIN\nJNC FIN\nFIN: RET").bytes)===JSON.stringify([116,2,115,0,195]);}],
