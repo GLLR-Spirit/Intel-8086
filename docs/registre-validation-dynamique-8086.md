@@ -24,17 +24,24 @@ La suite compare les états des deux moteurs sur :
 - le nombre d'instructions, la sortie et les métadonnées de pile ;
 - des adresses mémoire explicitement sélectionnées, sans comparer les octets de code chargés comme s'il s'agissait d'écritures de données du moteur source.
 
-Elle utilise également des oracles arithmétiques indépendants pour ADD, ADC, SUB et SBB, des résultats fixes pour AND/OR/XOR/TEST, ainsi que des cas de branchement, de pile, de préfixes et d'encodages invalides.
+Elle utilise désormais trois niveaux de vérification arithmétique :
 
-Dernier résultat vérifié pour cette suite : **29/29 tests réussis**, sans échec, dans le run CI [45503831908](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45503831908), commit `8f0069c68ca794be47dc54582d1321796c7e47b0`.
+1. Formules de référence indépendantes dans le fichier de test, pour les résultats et CF/ZF/SF/OF/PF/AF.
+2. Balayage exhaustif des couples d'opérandes 8 bits pour ADD, ADC, SUB et SBB, avec les deux états de retenue pertinents.
+3. Vecteurs binaires bruts : octets machine constants, sans passer par l'assembleur du laboratoire, puis comparaison des résultats avec l'oracle.
+
+Le lot étendu comprend également un cadre IRET brut en mémoire, sans métadonnées de pile, avec restauration d'un CS différent et bouclage de SP. Le résultat final doit être pris dans le dernier run CI associé au commit de ce document.
 
 ### Limites méthodologiques
 
-- Comparer deux moteurs partageant le même parseur, les mêmes primitives arithmétiques ou le même interpréteur détecte des divergences entre chemins, mais ne prouve pas à lui seul la justesse de leur implémentation commune.
-- Les oracles indépendants couvrent les cas explicitement codés ; ils ne constituent pas une preuve exhaustive sur toutes les valeurs d'opérandes.
+- Les deux moteurs partagent encore des primitives d'exécution. La comparaison source/binaire ne constitue donc pas un oracle indépendant à elle seule.
+- Les formules de référence arithmétiques sont indépendantes du simulateur. Le balayage 8 bits est exhaustif pour les quatre opérations et les indicateurs définis ; les vecteurs 16 bits ciblent les frontières et ne couvrent pas les 2^32 couples d'opérandes.
+- Les vecteurs binaires bruts vérifient aussi le décodage et le chemin fetch/decode/execute sur un sous-ensemble représentatif, mais ne constituent pas un second émulateur complet.
 - La mémoire n'est comparée qu'aux adresses listées par chaque vecteur. Ce n'est pas une comparaison exhaustive du Mio de mémoire.
 - Le chemin source peut utiliser des directives pédagogiques comme `VECTOR`, qui ne sont pas présentes dans un flux binaire brut.
-- `IRET` est vérifié dans le moteur source avec un cadre `VECTOR`. Dans le chargeur binaire brut, aucun cadre d'interruption n'est fourni automatiquement ; un `IRET` sans cadre doit donc être refusé.
+- `IRET` fonctionne désormais dans le flux binaire lorsque le programme a un cadre architectural présent en mémoire à `SS:SP`. Le chargeur n'invente toujours pas de cadre : sans trois mots initialisés (IP, CS, FLAGS), l'exécution échoue explicitement.
+- Le paramètre facultatif `initialState` de `executeBinary` permet aux tests de précharger les registres, FLAGS et octets mémoire. Le cadre IRET brut ne requiert pas les métadonnées pédagogiques de pile ; si celles-ci existent, leurs types et leur cohérence sont vérifiés.
+- La prise en charge d'IRET ne signifie pas que le processeur d'interruptions est complet : le chargement automatique de l'IVT, l'arbitrage matériel, les interruptions externes et les événements asynchrones ne sont pas simulés.
 - Les effets de FLAGS architecturaux indéfinis ne doivent jamais être comparés comme s'ils avaient une valeur prescrite.
 
 ## 3. Registre par famille
@@ -51,7 +58,7 @@ Dernier résultat vérifié pour cette suite : **29/29 tests réussis**, sans é
 | PUSH, POP, PUSHF, POPF | Oui, sous-ensemble | Oui, sous-ensemble | Oui, sous-ensemble | Oui pour formes reconnues | Partiel |
 | CALL/JMP directs relatifs, Jcc 70h–7Fh, LOOP E2h | Oui | Oui | Oui | Oui | Partiel |
 | CALL/JMP indirects near et far ; RET/RETF | Oui, sous-ensemble | Oui, sous-ensemble | Oui, sous-ensemble | Oui pour formes reconnues | Partiel |
-| IRET | Oui avec cadre pédagogique `VECTOR` | Non autonome | Opcode décodé | Décodé, mais nécessite un cadre déjà présent | Partiel |
+| IRET | Oui avec cadre `VECTOR` et pile typée | Pas de directive binaire équivalente à `VECTOR` | Opcode décodé | Exécuté depuis un cadre brut `SS:SP` préchargé en mémoire | Partiel |
 | NOP, HLT, CLC, STC, CMC, CLI, STI, CLD, STD | Oui | Oui pour les formes présentes | Oui pour les formes présentes | Oui pour les formes présentes | Partiel |
 | MOVSB/MOVSW, CMPSB/CMPSW, SCASB/SCASW, LODSB/LODSW, STOSB/STOSW | Oui en mode source | Pas de génération binaire complète | Pas de décodage binaire complet | Non | Partiel source ; non pris en charge en binaire |
 | REP/REPE/REPZ/REPNE/REPNZ avec chaînes | Oui en mode source, sous-ensemble | Pas de génération complète | Préfixes non pris en charge | Non | Partiel source ; non pris en charge en binaire |
@@ -84,14 +91,14 @@ Les flux incomplets sont une classe distincte : ils doivent produire une erreur 
 - JMP near indirect par registre : comparaison source/binaire.
 - Les transferts far ne constituent pas un mécanisme de chargement de plusieurs images indépendantes par segment. Les alias physiques et le contenu réellement présent en mémoire restent déterminants.
 - RET/RETF avec ajustement impair : forme encodable/décodable mais refusée par le suivi pédagogique de pile, qui travaille par mots.
-- IRET : test source avec cadre `VECTOR`, plus test de rejet du flux binaire sans cadre. L'équivalence complète d'un environnement d'interruptions matériel n'est pas revendiquée.
+- IRET : test source avec cadre `VECTOR` et test binaire avec trois mots bruts en mémoire (`IP`, `CS`, `FLAGS`), restauration d'un CS différent et bouclage 16 bits de SP. L'équivalence complète d'un environnement d'interruptions matériel n'est pas revendiquée.
 
 ## 6. Validation CI
 
-Le workflow principal [45503831908](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45503831908) a terminé avec le statut **success** sur le commit `8f0069c68ca794be47dc54582d1321796c7e47b0`. L'étape différentielle rapporte **29 réussites et 0 échec**. Les autres suites du workflow sont également passées. Une nouvelle exécution est déclenchée par les mises à jour documentaires de ce registre ; la validation finale du commit documentaire doit être lue dans Actions.
+Le résultat final de ce registre doit être associé au commit exact et au run CI le plus récent. Ne pas réutiliser un succès historique après modification des tests ou du moteur. Le rapport doit être mis à jour après le passage vert du workflow déclenché par ce commit.
 
 ## 7. Conclusion et seuil d'arrêt
 
-La suite différentielle renforce la confiance dans les scénarios comparés. **Elle ne rend pas la vérification parfaite** : il manque encore une validation indépendante exhaustive de toutes les formes, des valeurs ModR/M, des déplacements, des états initiaux, des effets de pile, des interruptions et des cas limites de mémoire.
+La suite différentielle est renforcée par un oracle indépendant exhaustif pour l'ALU 8 bits et des vecteurs machine bruts. **Cela ne certifie toujours pas l'ensemble du 8086** : toutes les formes d'instruction, tous les états ModR/M, les déplacements, l'ensemble des états mémoire et les périphériques ne sont pas couverts par une référence indépendante exhaustive.
 
 Le seuil « parfait » demandé n'est donc pas atteint. La phase peut être déclarée réussie pour son périmètre de tests uniquement lorsque le workflow CI final est vert ; le laboratoire, lui, doit rester classé comme interpréteur pédagogique partiellement validé, et non comme simulateur 8086 exhaustif.
