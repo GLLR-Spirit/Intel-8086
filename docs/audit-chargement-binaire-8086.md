@@ -109,6 +109,6 @@ Le nouveau vecteur IRET place un cadre brut dans la mémoire, change réellement
 
 La suite différentielle ajoute aussi un oracle de référence arithmétique indépendant : balayage exhaustif de **393 216** combinaisons 8 bits pour ADD, ADC, SUB et SBB avec les états de retenue pertinents, **800** vecteurs 16 bits aux frontières, et **1 350** exécutions binaires ALU à partir d'octets machine bruts, sans passer par l'assembleur du laboratoire.
 
-Validation CI : [run 45505098359](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45505098359), commit `daaab3856e0c0b5f017fa11dd12eeffc4cb35252`, workflow **success** ; suite différentielle **34/34 réussites**.
+L'audit différentiel a été étendu à 768 combinaisons registre-direct 8/16 bits, 512 cas couvrant les 16 conditions Jcc sur les 32 combinaisons CF/ZF/SF/OF/PF, les huit formes d'adressage mémoire et les quatre overrides de segment. Validation CI : [run 45505436864](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45505436864), commit `08208ea6dc2cbe867b33e8bc1dc61ce3c6b22857`, workflow **success** ; suite différentielle **37/37 réussites**.
 
 La portée reste bornée : ce renforcement ne transforme pas le moteur en émulateur matériel complet et ne prouve pas les formes qui ne sont pas implémentées.
