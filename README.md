@@ -20,7 +20,7 @@ Un registre distinct des instructions, synonymes, préfixes et éléments hors p
 
 ## Audit de la référence
 
-L'audit d'exhaustivité et de précision est en cours. Le suivi des vérifications, les anomalies ouvertes et les critères de clôture sont consignés dans [docs/audit-reference-8086.md](docs/audit-reference-8086.md). Les statuts de prise en charge sont corrigés lorsqu'une fiche documentaire ne correspond pas au code réel ; notamment, ADC et SBB sont désormais implémentées dans le simulateur, l'assembleur et le désassembleur pour un sous-ensemble de formes ; les variantes 83h restent hors périmètre.
+L'audit d'exhaustivité et de précision est en cours. Le suivi des vérifications, les anomalies ouvertes et les critères de clôture sont consignés dans [docs/audit-reference-8086.md](docs/audit-reference-8086.md). La matrice de couverture séparant documentation, simulateur, assembleur, désassembleur et tests est publiée dans [docs/coverage-audit-8086.md](docs/coverage-audit-8086.md). Les statuts de prise en charge sont corrigés lorsqu'une fiche documentaire ne correspond pas au code réel ; notamment, ADC et SBB sont désormais implémentées dans le simulateur, l'assembleur et le désassembleur pour un sous-ensemble de formes ; les variantes 83h restent hors périmètre.
 
 ## Tests de référence des instructions
 
