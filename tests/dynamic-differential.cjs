@@ -808,7 +808,7 @@ test("SHL/SHR/SAR et rotations sur mémoire BYTE/WORD avec override ES", () => {
   const source="MOV AX, 1000h\nMOV ES, AX\nMOV BX, 0100h\nMOV BYTE PTR ES:[BX], 81h\nMOV CL, 2\nROL BYTE PTR ES:[BX], CL\nMOV WORD PTR ES:[BX+2], 8001h\nSAR WORD PTR ES:[BX+2], 1\nSHR WORD PTR ES:[BX+2], CL\nHLT";
   const {binaryState}=compareSourceBinary(source,[0x10100,0x10102,0x10103]);
   assert.equal(binaryState.mem[0x10100],0x06);
-  assert.equal(binaryState.mem[0x10102]|(binaryState.mem[0x10103]<<8),0x2000);
+  assert.equal(binaryState.mem[0x10102]|(binaryState.mem[0x10103]<<8),0x3000);
   assert.throws(()=>api.assemble("MOV AL, 1\nSHL AL, 2\nHLT"),/compteur immédiat/);
 });
 
