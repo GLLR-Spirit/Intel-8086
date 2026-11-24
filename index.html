@@ -123,9 +123,83 @@ if(op==="INT"){if(a.length!==1)throw Error("INT attend un numéro de vecteur.");
 throw Error("Instruction non prise en charge : "+op);}
 function encodingRegisterCode(name){var n=name.trim().toUpperCase(),r=info(n);if(!r||["CS","DS","ES","SS"].indexOf(n)>=0)return null;if(r.bits===8){var b=["AL","CL","DL","BL","AH","CH","DH","BH"].indexOf(n);return b<0?null:b;}return ["AX","CX","DX","BX","SP","BP","SI","DI"].indexOf(n);}
 function encodingImmediate(value,bits){var n=parseNumber(value);if(n===null)return null;var max=bits===8?255:65535,min=bits===8?-128:-32768;if(n<min||n>max)return null;n=n& (bits===8?255:65535);return bits===8?[n]:[n&255,(n>>8)&255];}
-function encodingBytes(ins){var op=ins.op,a=ins.args,base=op.replace(/^(REP|REPE|REPZ|REPNE|REPNZ)_/,"");if(a.length===2){var d=a[0].trim().toUpperCase(),q=a[1].trim().toUpperCase(),rd=encodingRegisterCode(d),rq=encodingRegisterCode(q),id=info(d),iq=info(q),bits=id&&id.bits;if(base==="MOV"&&rd!==null&&iq===null){var imm=encodingImmediate(q,bits);if(imm)return [(bits===8?176:184)+rd].concat(imm);}if(rd!==null&&rq!==null&&id.bits===iq.bits){var w=id.bits===16?1:0,modrm;if(base==="MOV")return [w?139:138,192|(rd<<3)|rq];if(base==="XCHG"){if(w&&d==="AX")return [144+rq];if(w&&q==="AX")return [144+rd];return [w?135:134,192|(rq<<3)|rd];}var opcodes={ADD:w?1:0,SUB:w?41:40,AND:w?33:32,OR:w?9:8,XOR:w?49:48,CMP:w?57:56,TEST:w?133:132};if(opcodes[base]!==undefined){modrm=192|(rq<<3)|rd;return [opcodes[base],modrm];}}if((base==="ADD"||base==="SUB"||base==="AND"||base==="OR"||base==="XOR"||base==="CMP"||base==="TEST")&&(d==="AL"||d==="AX")){var accBits=d==="AL"?8:16,immBytes=encodingImmediate(q,accBits),accOpc={ADD:4,SUB:44,AND:36,OR:12,XOR:52,CMP:60,TEST:accBits===8?168:169};if(immBytes)return [accOpc[base]+(accBits===16&&base!=="TEST"?1:0)].concat(immBytes);}}
+function encodingWord(value){var n=value&65535;return [n&255,(n>>8)&255];}
+function encodingMemory(raw,regField){
+var text=raw.trim().toUpperCase(),explicit=null,m=text.match(/^(BYTE|WORD)\s+PTR\s+(.+)$/);if(m)text=m[2].trim();
+var sm=text.match(/^(ES|CS|SS|DS)\s*:\s*(\[.*\])$/);if(sm){explicit=sm[1];text=sm[2];}
+if(!/^\[.*\]$/.test(text))return null;
+var expr=text.slice(1,-1).replace(/\s+/g,""),parts=expr.match(/[+-]?[^+-]+/g);if(!parts||!parts.length)return null;
+var regs=[],disp=0;parts.forEach(function(p){var sign=p.charAt(0)==="-"?-1:1,t=p.replace(/^[+-]/,"");if(["BX","BP","SI","DI"].indexOf(t)>=0)regs.push(t);else{var n=parseNumber(t);if(n===null)throw Error("Déplacement non encodable : "+t);disp+=sign*n;}});
+var rmMap={"BX+SI":0,"SI+BX":0,"BX+DI":1,"DI+BX":1,"BP+SI":2,"SI+BP":2,"BP+DI":3,"DI+BP":3,"SI":4,"DI":5,"BP":6,"BX":7};
+var key=regs.slice().sort(function(a,b){return ["BX","BP","SI","DI"].indexOf(a)-["BX","BP","SI","DI"].indexOf(b);}).join("+");
+if(regs.length>2||!Object.prototype.hasOwnProperty.call(rmMap,key))throw Error("Adresse effective non encodable en ModR/M 8086.");
+var rm=rmMap[key],mod,tail=[];
+if(regs.length===0){if(disp<0||disp>65535)throw Error("Adresse directe hors plage 16 bits.");mod=0;rm=6;tail=encodingWord(disp);}
+else if(disp===0&&rm!==6){mod=0;}
+else if(disp>=-128&&disp<=127){mod=1;tail=[disp&255];}
+else{if(disp< -32768||disp>65535)throw Error("Déplacement hors plage 16 bits.");mod=2;tail=encodingWord(disp);}
+var defaultSeg=regs.indexOf("BP")>=0?"SS":"DS",prefix=explicit&&explicit!==defaultSeg?({"ES":38,"CS":46,"SS":54,"DS":62}[explicit]):null;
+return {mod:mod,rm:rm,tail:tail,prefix:prefix,defaultSegment:defaultSeg,explicitSegment:explicit};
+}
+function encodingModRM(regField,operand){
+var r=encodingRegisterCode(operand);if(r!==null)return [192|((regField&7)<<3)|r];
+var m=encodingMemory(operand);if(!m)return null;
+return (m.prefix===null?[]:[m.prefix]).concat([(m.mod<<6)|((regField&7)<<3)|m.rm],m.tail);
+}
+function encodingOperandBits(raw,other){
+var r=info(raw.trim().toUpperCase());if(r)return r.bits;
+var m=memoryOperand(raw);if(m&&m.bits)return m.bits;
+var peer=other?info(other.trim().toUpperCase()):null;if(peer)return peer.bits;
+return null;
+}
+function encodingBytes(ins){
+var base=ins.op.replace(/^(REP|REPE|REPZ|REPNE|REPNZ)_/,""),a=ins.args;
+if(a.length===2){
+var d=a[0].trim().toUpperCase(),q=a[1].trim().toUpperCase(),rd=encodingRegisterCode(d),rq=encodingRegisterCode(q),id=info(d),iq=info(q),dm=d.indexOf("[")>=0,qm=q.indexOf("[")>=0;
+if(base==="MOV"){
+if(rd!==null&&iq===null&&!qm){var movImm=encodingImmediate(q,id.bits);if(movImm)return [(id.bits===8?176:184)+rd].concat(movImm);}
+if((rd!==null||dm)&&(rq!==null||qm)){
+var widthBits=rd!==null?id.bits:rq!==null?iq.bits:encodingOperandBits(d,q);
+if(!widthBits)return null;
+var prefix=[],body=[],rm;
+if(rq!==null&&(rd!==null||dm)){rm=encodingModRM(rq,d);if(!rm)return null;body=[widthBits===8?136:137].concat(rm);}
+else if(rd!==null&&(rq!==null||qm)){rm=encodingModRM(rd,q);if(!rm)return null;body=[widthBits===8?138:139].concat(rm);}
+if(body.length){if(dm){var md=encodingMemory(d);if(md&&md.prefix!==null)prefix=[md.prefix];}else if(qm){var mq=encodingMemory(q);if(mq&&mq.prefix!==null)prefix=[mq.prefix];}return prefix.concat(body);}
+}
+if((dm||rd!==null)&&parseNumber(q)!==null){var memBits=encodingOperandBits(d,q);if(!memBits)return null;var imm=encodingImmediate(q,memBits);if(!imm)return null;rm=encodingModRM(0,d);if(!rm)return null;return [memBits===8?198:199].concat(rm,imm);}
+}
+var arithmeticCodes={ADD:0,OR:1,AND:4,SUB:5,XOR:6,CMP:7};
+if(base==="TEST"||Object.prototype.hasOwnProperty.call(arithmeticCodes,base)){
+var wBits=encodingOperandBits(d,q);if(!wBits)wBits=encodingOperandBits(q,d);
+if(!wBits)return null;
+if(rq!==null&&(rd!==null||dm)){
+var rmDst=encodingModRM(rq,d);if(!rmDst)return null;
+var op1=base==="TEST"?(wBits===8?132:133):(arithmeticCodes[base]*8+(wBits===8?0:1));
+return op1===undefined?null:[op1].concat(rmDst);
+}
+if(rd!==null&&(rq!==null||qm)){
+if(base==="TEST"){var rmTest=encodingModRM(rq,q);if(!rmTest)return null;return [wBits===8?132:133].concat(rmTest);}
+var rmSrc=encodingModRM(rd,q);if(!rmSrc)return null;
+return [arithmeticCodes[base]*8+(wBits===8?2:3)].concat(rmSrc);
+}
+if((rd!==null||dm)&&parseNumber(q)!==null){
+var immBytes=encodingImmediate(q,wBits);if(!immBytes)return null;
+if(rd!==null&&(d==="AL"||d==="AX")){
+var accOps={ADD:4,OR:12,AND:36,SUB:44,XOR:52,CMP:60,TEST:168};
+return [accOps[base]+(wBits===16&&base!=="TEST"?1:0)].concat(immBytes);
+}
+var ext=base==="TEST"?0:arithmeticCodes[base],rmImm=encodingModRM(ext,d);if(!rmImm)return null;
+return [base==="TEST"?(wBits===8?246:247):(wBits===8?128:129)].concat(rmImm,immBytes);
+}
+}
+if(rd!==null&&rq!==null&&id.bits===iq.bits&&base==="XCHG"){
+if(id.bits===16&&d==="AX")return [144+rq];if(id.bits===16&&q==="AX")return [144+rd];
+return [id.bits===8?134:135,192|(rq<<3)|rd];
+}
+}
 if(a.length===0){var fixed={NOP:[144],HLT:[244],CLC:[248],STC:[249],CMC:[241],CLI:[250],STI:[251],CLD:[252],STD:[253],PUSHF:[156],POPF:[157],RET:[195],IRET:[207]};if(fixed[base])return fixed[base];}
-return null;}
+return null;
+}
 function encodingForm(ins){var base=ins.op.replace(/^(REP|REPE|REPZ|REPNE|REPNZ)_/,""),a=ins.args;return a.map(function(raw,index){var x=raw.trim().toUpperCase(),r=info(x);if(r)return "reg"+r.bits;if(x.indexOf("[")>=0){var m=memoryOperand(x),bits=m&&m.bits;if(!bits&&a.length===2){var other=info(a[index===0?1:0]);if(other)bits=other.bits;}return bits?"r/m"+bits:"r/m?";}if(parseNumber(x)!==null){var bits=null;if(base==="INT")bits=8;else if(base==="SHL"||base==="SAL"||base==="SHR")bits=8;else if(a.length===2){var peer=info(a[index===0?1:0]);if(peer)bits=peer.bits;else{var pm=memoryOperand(a[index===0?1:0]);if(pm)bits=pm.bits;}}return bits?"imm"+bits:"imm?";}if(/^[A-Za-z_]\w*$/.test(x))return "rel?";return "autre";}).join(", ");}
 function renderEncodingReport(src){var node=$("encodingReport");if(!node)return;try{var p=parseProgram(src),rows=p.ops.map(function(ins){var bytes=encodingBytes(ins);return "L"+ins.line+"  "+ins.raw+"  | forme : "+(encodingForm(ins)||"aucune")+"  | octets : "+(bytes?bytes.map(function(b){return b.toString(16).toUpperCase().padStart(2,"0")+"h";}).join(" "):"non générés / non déterminés");});node.textContent=rows.length?rows.join("\n"):"Aucune instruction à analyser."; }catch(e){node.textContent="Analyse indisponible : "+(e.diagnostic?formatDiagnostic(e.diagnostic):e.message);}}
 function prepare(src){var p=parseProgram(src);ops=p.ops;labels=p.labels;vectors=p.vectors;pc=0;halted=false;history=[];cpu=fresh();renderEncodingReport(src);}
