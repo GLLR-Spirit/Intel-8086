@@ -124,3 +124,19 @@ Les opcodes 8086 concernés sont intégrés à l'assembleur et au désassembleur
 **Limites qui restent importantes :** les ports ne représentent aucun périphérique matériel ; WAIT ne modélise pas l'entrée TEST ; ESC ne simule pas un coprocesseur 8087 ; LOCK ne produit aucune atomicité observable dans le moteur mono-thread ; les interactions arbitraires de préfixes et tous les vecteurs de FLAGS ne sont pas exhaustivement validés. Les familles nouvellement ajoutées restent donc marquées **partielles**.
 
 Les tests spécialisés source/binaire et les validations CI associées déterminent le périmètre réellement vérifié. Cette extension ne constitue pas une certification d'émulation matérielle 8086 complète.
+
+## Validation finale de l'extension des familles — 25 novembre 2026
+
+Le workflow CI [45509443384](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45509443384) a terminé en **success** sur le commit `a67351dd0a603af4c6065b0d0b020e067e31046e`.
+
+- Suite différentielle : **65/65 tests réussis**.
+- Vecteurs indépendants : **114 tests réussis**.
+- Oracle ALU : 393 216 cas 8 bits et 800 cas 16 bits.
+- Décalages/rotations : 20 736 cas 8 bits et 504 cas 16 bits.
+- Ajustements : 3 072 cas AAA/AAS/DAA/DAS, 256 AAM et 65 536 AAD.
+- Extension de signe : 256 CBW et 65 536 CWD ; SAHF/LAHF : 32 combinaisons ; ESC : 64 codes.
+- Les tests de formes comprennent les branches rel8 aux limites, les huit formes IN/OUT, les instructions de chaîne répétées, les overrides de segment, LOCK et INTO.
+
+Les familles précédemment absentes sont désormais présentes dans les chemins ciblés de l'exécution source, de l'assembleur, du désassembleur et du moteur binaire. Elles restent classées **partielles** dans le registre : le modèle des ports est logiciel, WAIT ne simule pas TEST, ESC ne simule pas le coprocesseur, LOCK ne simule pas l'atomicité du bus, et les matrices exhaustives de toutes les formes/FLAGS/interactions de préfixes ne sont pas achevées.
+
+Ce résultat valide les tests déclarés, pas l'exhaustivité matérielle de l'Intel 8086.
