@@ -4,7 +4,7 @@
 **Périmètre :** instructions du processeur Intel 8086 d'origine (pas 80186/80286+), avec séparation entre mnémotechniques principales, synonymes documentés et préfixes.  
 **Règle de comptage :** une ligne = une graphie mnémotechnique ; les alias restent des entrées propres afin de pouvoir les auditer individuellement.
 
-Cet inventaire est indépendant des 58 cartes de l'interface. Il ne déduit aucun statut de support du simulateur, de l'assembleur ou du désassembleur.
+Cet inventaire est indépendant des 58 cartes de l'interface. Cette première passe n'est pas encore garantie exhaustive : elle doit notamment être rapprochée de chaque tableau d'opcodes Intel pour détecter les omissions. Il ne déduit aucun statut de support du simulateur, de l'assembleur ou du désassembleur.
 
 ## 1. Instructions et variantes de chaîne
 
@@ -22,6 +22,9 @@ Cet inventaire est indépendant des 58 cartes de l'interface. Il ne déduit aucu
 | STOSB | Stockage dans chaîne, octet | — | À auditer |
 | STOSW | Stockage dans chaîne, mot | — | À auditer |
 | XCHG | Échange | — | À auditer |
+| LEA | Chargement de l'adresse effective | — | À auditer |
+| LES | Chargement d'un pointeur far vers ES:registre | — | À auditer |
+| LDS | Chargement d'un pointeur far vers DS:registre | — | À auditer |
 | XLAT | Traduction par table | XLATB (synonyme rencontré dans des assembleurs/documentations postérieurs ; statut canonique à confirmer) | À auditer |
 
 ## 2. Arithmétique, ajustement et comparaison
@@ -146,6 +149,7 @@ Chaque graphie ci-dessous est conservée comme entrée autonome. Les synonymes n
 |---|---|---|---|
 | IN | Lecture d'un port d'E/S | — | À auditer |
 | OUT | Écriture vers un port d'E/S | — | À auditer |
+| NOP | Aucune opération architecturale | — | À auditer |
 | HLT | Arrêt du processeur jusqu'à événement de réveil | — | À auditer |
 | WAIT | Attente de synchronisation avec le coprocesseur | FWAIT (synonyme de syntaxe à documenter séparément selon l'assembleur) | À auditer |
 | ESC | Transfert/échappement vers coprocesseur | — | À auditer |
