@@ -655,16 +655,21 @@ test("WAIT et ESC — opcodes reconnus, sans coprocesseur externe simulé", () =
   assert.ok(assembled.bytes.includes(0x9b));
   assert.ok(assembled.bytes.includes(0xd8));
 });
-test("IN/OUT — les huit formes immédiat/DX et AL/AX", () => {
-  const source="IN AL, 20h\nOUT 21h, AL\nIN AX, 22h\nOUT 23h, AX\nMOV DX, 30h\nIN AX, DX\nOUT DX, AX\nMOV DX, 31h\nIN AL, DX\nOUT DX, AL\nHLT";
+test("IN/OUT — les huit formes immédiat/DX et AL/AX avec ports source", () => {
+  const source="PORT 20h, 5Ah\nPORT 22h, ABCDh\nPORT 30h, 1234h\nPORT 31h, 66h\nIN AL, 20h\nOUT 21h, AL\nIN AX, 22h\nOUT 23h, AX\nMOV DX, 30h\nIN AX, DX\nOUT DX, AX\nMOV DX, 31h\nIN AL, DX\nOUT DX, AL\nHLT";
+  const sourceState=runSource(source);
   const assembled=api.assemble(source);
-  const state=api.executeBinary(Array.from(assembled.bytes),0,0,{io:{"32":0x5a,"34":0xabcd,"48":0x1234,"49":0x66}});
+  const state=api.executeBinary(Array.from(assembled.bytes),0,0,{io:assembled.ports});
   assert.ok(!state.error,state.error||"binary I/O failed");
+  for(const register of Object.keys(sourceState.reg))assert.equal(state.reg[register],sourceState.reg[register],register);
+  for(const port of Object.keys(sourceState.io))assert.equal(state.io[port],sourceState.io[port],"port "+port);
+  assert.equal(state.output,sourceState.output);
   assert.equal(state.io[33],0x5a);
   assert.equal(state.io[35],0xabcd);
   assert.equal(state.io[48],0x1234);
   assert.equal(state.io[49],0x66);
   assert.equal(state.reg.AX,0x1266);
+  assert.throws(()=>api.assemble("PORT 10000h, 1\nHLT"),/PORT/);
 });
 test("REP MOVSW/LODSB/STOSB et REPE/REPNE CMPS/SCAS", () => {
   const programs=[
