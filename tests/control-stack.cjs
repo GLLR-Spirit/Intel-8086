@@ -163,7 +163,7 @@ counts.execution++;
 
 test("JMP r/m16 reads a near target from memory", () => {
   const s = execution([
-    "MOV BX, 0100h", "MOV WORD PTR [BX], 14", "JMP WORD PTR [BX]",
+    "MOV BX, 0100h", "MOV WORD PTR [BX], 12", "JMP WORD PTR [BX]",
     "MOV CX, 0", "TARGET: MOV CX, 9", "HLT"
   ].join("\n"));
   assert.equal(s.reg.CX, 9);
