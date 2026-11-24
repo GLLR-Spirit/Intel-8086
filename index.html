@@ -254,8 +254,8 @@ if(base==="MOV"){
 var segCode={ES:0,CS:1,SS:2,DS:3},dstSeg=Object.prototype.hasOwnProperty.call(segCode,d),srcSeg=Object.prototype.hasOwnProperty.call(segCode,q);
 if(dstSeg&&(rq!==null||qm)){var segFromRM=encodingModRM(segCode[d],q);if(!segFromRM)return null;return encodingPrefixFor(q).concat([142],segFromRM);}
 if(srcSeg&&(rd!==null||dm)){var segToRM=encodingModRM(segCode[q],d);if(!segToRM)return null;return encodingPrefixFor(d).concat([140],segToRM);}
-if((d==="AL"||d==="AX")&&qm&&!/^(BYTE|WORD)\s+PTR\\s+/i.test(q)){var moffsIn=encodingMemory(q),moffsBits=id.bits;if(moffsIn&&moffsIn.mod===0&&moffsIn.rm===6&&moffsIn.tail.length===2){return (moffsIn.prefix!==null?[moffsIn.prefix]:[]).concat([moffsBits===8?160:161],moffsIn.tail);}}
-if((q==="AL"||q==="AX")&&dm&&!/^(BYTE|WORD)\s+PTR\\s+/i.test(d)){var moffsOut=encodingMemory(d),moffsOutBits=iq.bits;if(moffsOut&&moffsOut.mod===0&&moffsOut.rm===6&&moffsOut.tail.length===2){return (moffsOut.prefix!==null?[moffsOut.prefix]:[]).concat([moffsOutBits===8?162:163],moffsOut.tail);}}
+if((d==="AL"||d==="AX")&&qm&&!/^(BYTE|WORD)\s+PTR\s+/i.test(q)){var moffsIn=encodingMemory(q),moffsBits=id.bits;if(moffsIn&&moffsIn.mod===0&&moffsIn.rm===6&&moffsIn.tail.length===2){return (moffsIn.prefix!==null?[moffsIn.prefix]:[]).concat([moffsBits===8?160:161],moffsIn.tail);}}
+if((q==="AL"||q==="AX")&&dm&&!/^(BYTE|WORD)\s+PTR\s+/i.test(d)){var moffsOut=encodingMemory(d),moffsOutBits=iq.bits;if(moffsOut&&moffsOut.mod===0&&moffsOut.rm===6&&moffsOut.tail.length===2){return (moffsOut.prefix!==null?[moffsOut.prefix]:[]).concat([moffsOutBits===8?162:163],moffsOut.tail);}}
 if(rd!==null&&iq===null&&!qm){var movImm=encodingImmediate(q,id.bits);if(movImm)return [(id.bits===8?176:184)+rd].concat(movImm);}
 if(rd!==null&&rq!==null&&id.bits===iq.bits){var regRm=encodingModRM(rd,q);return [id.bits===8?138:139].concat(regRm);}
 if((rd!==null||dm)&&(rq!==null||qm)){
