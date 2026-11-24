@@ -97,9 +97,9 @@ Les flux incomplets sont une classe distincte : ils doivent produire une erreur 
 
 ## 6. Validation CI — extension des familles manquantes
 
-Le workflow principal [45509976522](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45509976522) a terminé avec le statut **success** sur le commit `99d0da55965f7d020199184c4eaf609e1f3ebbb8`.
+Le workflow principal [45510201993](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45510201993) a terminé avec le statut **success** sur le commit `5386d592b773753b2e23eb3e2340d9279ead2a06`.
 
-- Suite différentielle : **66/66 tests réussis, 0 échec**.
+- Suite différentielle : **68/68 tests réussis, 0 échec**.
 - Vecteurs indépendants de l'instruction : **114 tests réussis**.
 - Oracle ALU déjà présent : **393 216** cas exhaustifs 8 bits et **800** cas de frontière 16 bits.
 - Décalages/rotations : **20 736** cas 8 bits et **504** cas 16 bits.
