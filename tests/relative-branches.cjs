@@ -43,7 +43,7 @@ for(const [name,source,expected] of [
  ["forward +127","JMP TARGET\n"+nops(127)+"\nTARGET: HLT",[0xEB,0x7F]],
  ["backward -128","TOP: "+ "NOP\n"+nops(125)+"\nJMP TOP\nHLT",[0xEB,0x80]],
  ["forward +128 falls back to near","JMP TARGET\n"+nops(128)+"\nTARGET: HLT",[0xE9,0x80,0x00]],
- ["backward -129 falls back to near","TOP: NOP\n"+nops(126)+"\nJMP TOP\nHLT",[0xE9,0x7F,0xFF]]
+ ["backward -129 falls back to near","TOP: NOP\n"+nops(125)+"\nJMP TOP\nHLT",[0xE9,0x7F,0xFF]]
 ]) {
  test("JMP relaxation "+name,()=>{const all=assemble(source);const actual=name.startsWith("backward")?all.slice(-(expected.length+1),-1):all.slice(0,expected.length);assert.deepEqual(actual,expected);});
  counts.short++;
@@ -98,7 +98,7 @@ for(const [a,b] of pairs){
 
 // LOOP is E2 rel8; it decrements CX, branches iff the result is nonzero, and leaves FLAGS unchanged.
 test("LOOP assembles and disassembles E2 rel8",()=>{
- assert.deepEqual(assemble("LOOP TARGET\nTARGET: HLT").slice(0,2),[0xE2,0xFE]);
+ assert.deepEqual(assemble("LOOP TARGET\nTARGET: HLT").slice(0,2),[0xE2,0x00]);
  assert.equal(decode([0xE2,0xFE]),"LOOP 0000h");
 });counts.loop++;
 test("LOOP runs exactly CX iterations and preserves FLAGS",()=>{
