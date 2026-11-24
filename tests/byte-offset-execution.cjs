@@ -256,7 +256,10 @@ test("CS override reads data from the selected code segment", () => {
   const bytes = [0x2E,0xA1,0x10,0x00,0xF4];
   bytes.length = 0x13;
   bytes[0x10] = 0x34; bytes[0x11] = 0x12; bytes[0x12] = 0x90;
+  assert.equal(api.decodeOne(bytes).rows[0].instruction,"MOV AX, WORD PTR CS:[0010h]");
   const state = executeLoaded(bytes,0x5200,0x0000);
+  assert.equal(state.mem[0x52010],0x34);
+  assert.equal(state.mem[0x52011],0x12);
   assert.equal(state.reg.AX,0x1234);
   assert.equal(state.reg.IP,0x0005);
 });
@@ -340,7 +343,7 @@ countsBinary.indirect++;
 test("far indirect JMP reads an m16:16 pointer and changes CS:IP", () => {
   const bytes=Array(0x12).fill(0x90);
   bytes.splice(0,5,0x2E,0xFF,0x2E,0x07,0x01);
-  bytes[0x10]=0xF4;
+  bytes[7]=0x10; bytes[8]=0x01; bytes[9]=0x00; bytes[10]=0x57; bytes[0x10]=0xF4;
   const state=executeLoaded(bytes,0x5700,0x0100);
   assert.equal(state.reg.CS,0x5700);
   assert.equal(state.reg.IP,0x0111);
