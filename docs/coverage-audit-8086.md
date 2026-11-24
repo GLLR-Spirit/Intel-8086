@@ -255,4 +255,6 @@ Les groupes ont été intégrés au générateur, au décodeur et, pour les opé
 - **FF** : /0 INC, /1 DEC, /2 CALL near indirect (registre/mémoire), /3 CALL far indirect (mémoire seulement), /4 JMP near indirect (registre/mémoire), /5 JMP far indirect (mémoire seulement), /6 PUSH MEM16 (mémoire seulement selon la table Intel 8086), /7 réservé. Les formes /2, /4 et /6 mémoire sont générées et décodées ; /3 et /5 sont décodées en mémoire uniquement. L'interpréteur ne simule pas les transferts indirects CALL/JMP ; il les signale explicitement comme non pris en charge.
 - **C6/C7** : /0 MOV r/m,imm valide ; /1..7 réservés. Les 256 valeurs ModR/M par opcode sont testées côté décodeur, avec conservation des octets des extensions invalides.
 
-**Validation CI du commit précédent à cette mise à jour documentaire** : run 45451225859, commit `5d4e07f2897c7ad6efb3dfa81578897719d16e9c`, 1 348 vérifications dans la suite de groupes. Les quatre vecteurs TEST r/m,imm et les quatre tests de frontière d'exécution ajoutés ensuite seront comptés dans la prochaine exécution CI.
+Audit détaillé : [audit-groupes-opcodes-8086.md](audit-groupes-opcodes-8086.md), qui précise les contraintes des extensions FF, y compris les formes mémoire uniquement.
+
+**Validation CI vérifiée** : run 45452066068, commit testé `1b8fc8e8ed19655fba655e33a207e122a035b34f`. La suite de groupes atteint **1 358/1 358** réussites ; le total agrégé du workflow est **8 245 vérifications réussies, 0 échec**.
