@@ -23,8 +23,8 @@ vm.createContext(context);
 const injection = "\nglobalThis.__8086DifferentialApi = {" +
   "\n assemble: source => assembleProgram(source)," +
   "\n execute: source => executeAll(source)," +
-  "\n executeBinary: (bytes, cs, ip) => executeBinary(bytes, cs, ip)," +
-  "\n disassemble: bytes => disassembleBytes(bytes)" +
+  "\n executeBinary: (bytes, cs, ip, initialState) => executeBinary(bytes, cs, ip, initialState)," +
+  "\n disassemble: bytes => disassembleBytes(bytes),\n arithmeticProbe: (a,b,kind,bits,carry) => { var old=cpu,state=fresh(); cpu=state; try { state.flags.CF=carry; var result=arithmetic(a,b,kind,bits); return {result,flags:Object.assign({},state.flags)}; } finally { cpu=old; } }" +
   "\n};\n})();\n";
 const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injection);
 assert.notEqual(instrumented, match[1], "Test API injection point must exist");
@@ -314,6 +314,49 @@ test("IRET restaure FLAGS, CS et IP depuis un cadre VECTOR dans le moteur source
 });
 categories.iret++;
 
+test("IRET binaire restaure un cadre architectural préchargé en mémoire", () => {
+  const ss = 0x1000, sp = 0xfff8, flagsWord = 0x0fd5;
+  const physical = offset => ((ss << 4) + offset) & 0xfffff;
+  const putWord = (mem, offset, value) => {
+    mem[physical(offset)] = value & 255;
+    mem[physical((offset + 1) & 65535)] = (value >> 8) & 255;
+  };
+  const mem = {};
+  putWord(mem, 0xfffc, flagsWord);
+  putWord(mem, 0xfffa, 0x0000);
+  putWord(mem, 0xfff8, 0x0001);
+  const state = api.executeBinary([0xcf, 0xf4], 0, 0, {
+    reg: { SS: ss, SP: sp },
+    mem,
+    stack: [
+      { value: flagsWord, kind: "iret-flags", address: 0xfffc, segment: ss },
+      { value: 0, kind: "iret-cs", address: 0xfffa, segment: ss },
+      { value: 1, kind: "iret-ip", address: 0xfff8, segment: ss }
+    ]
+  });
+  assert.ok(!state.error, state.error || "binary IRET failed");
+  assert.equal(state.reg.CS, 0);
+  assert.equal(state.reg.IP, 2);
+  assert.equal(state.reg.SP, 0xfffe);
+  assert.equal(state.stack.length, 0);
+  for (const flag of ["CF","PF","AF","ZF","SF","TF","IF","DF","OF"]) assert.equal(state.flags[flag], 1, flag);
+});
+categories.iret++;
+
+test("état initial binaire refuse les registres, FLAGS, octets et cadres invalides", () => {
+  for (const seed of [
+    { reg: { BAD: 1 } },
+    { flags: { CF: 2 } },
+    { mem: { "1048576": 0 } },
+    { mem: { "10": 256 } },
+    { stack: [{ value: 1, kind: "bad", address: 0x10000, segment: 0 }] }
+  ]) {
+    const state = api.executeBinary([0xf4], 0, 0, seed);
+    assert.ok(state.error, JSON.stringify(seed));
+  }
+});
+categories.invalid++;
+
 test("IRET en binaire sans cadre d'interruption est refusé explicitement", () => {
   const result = api.executeBinary([0xcf], 0, 0);
   assert.ok(result.error);
@@ -341,6 +384,49 @@ test("préfixes de segment répétés sont refusés au lieu d'être interprété
 });
 categories.invalid++;
 
+test("oracle indépendant exhaustif des opérations arithmétiques 8 bits", () => {
+  const kinds = [
+    { kind: "ADD", carry: 0, add: true },
+    { kind: "ADC", carry: 0, add: true },
+    { kind: "ADC", carry: 1, add: true },
+    { kind: "SUB", carry: 0, add: false },
+    { kind: "SBB", carry: 0, add: false },
+    { kind: "SBB", carry: 1, add: false }
+  ];
+  let checked = 0;
+  for (const spec of kinds) {
+    for (let a = 0; a < 256; a++) for (let b = 0; b < 256; b++) {
+      const actual = api.arithmeticProbe(a, b, spec.kind, 8, spec.carry);
+      const expected = spec.add ? addFlags(a, b, spec.carry, 8) : subFlags(a, b, spec.carry, 8);
+      const raw = spec.add ? a + b + spec.carry : a - b - spec.carry;
+      if (actual.result !== (raw & 255)) throw new Error(spec.kind+" résultat "+a+","+b+","+spec.carry);
+      for (const [flag,value] of Object.entries(expected)) {
+        if (actual.flags[flag] !== value) throw new Error(spec.kind+" "+flag+" "+a+","+b+","+spec.carry+" attendu "+value+" obtenu "+actual.flags[flag]);
+      }
+      checked++;
+    }
+  }
+  assert.equal(checked, 393216);
+});
+categories.arithmetic++;
+
+test("oracle indépendant FLAGS 16 bits sur les frontières et les retenues", () => {
+  const values = [0,1,0x000f,0x0010,0x007f,0x0080,0x7fff,0x8000,0xfffe,0xffff];
+  let checked = 0;
+  for (const kind of ["ADD","ADC","SUB","SBB"]) for (const carry of [0,1])
+    for (const a of values) for (const b of values) {
+      const actual = api.arithmeticProbe(a,b,kind,16,carry);
+      const add = kind==="ADD"||kind==="ADC", cin = (kind==="ADC"||kind==="SBB")?carry:0;
+      const expected = add ? addFlags(a,b,cin,16) : subFlags(a,b,cin,16);
+      const raw = add ? a+b+cin : a-b-cin;
+      assert.equal(actual.result, raw & 65535, kind+" result");
+      for (const [flag,value] of Object.entries(expected)) assert.equal(actual.flags[flag],value,kind+" "+flag);
+      checked++;
+    }
+  assert.equal(checked,800);
+});
+categories.arithmetic++;
+
 console.log("Audit différentiel arithmétique : " + categories.arithmetic + " vecteurs.");
 console.log("Logique et TEST : " + categories.logic + " vecteurs.");
 console.log("Registres : " + categories.registers + " vecteurs.");
@@ -348,5 +434,5 @@ console.log("Mémoire et préfixes : " + categories.memory + " vecteurs.");
 console.log("Pile et transferts : " + categories.stack + " vecteurs.");
 console.log("IRET : " + categories.iret + " vecteurs.");
 console.log("Encodages invalides / limites : " + categories.invalid + " vecteurs.");
-console.log("Résultat audit différentiel : " + passed + " réussis, " + failed + " échecs.");
+console.log("Oracle arithmétique indépendant : 393 216 vecteurs exhaustifs 8 bits + 800 vecteurs frontières 16 bits.");\nconsole.log("Résultat audit différentiel : " + passed + " réussis, " + failed + " échecs.");
 if (failed) process.exit(1);
