@@ -16,6 +16,12 @@ L'interface actuelle expose 58 entrées documentaires. Ce nombre correspond aux 
 
 Les fiches doivent être auditées au niveau de chaque forme d'encodage, et non uniquement au niveau du mnémotechnique. Une fiche regroupée ne prouve donc pas que toutes les variantes sont décrites.
 
+## Première matrice des formes d'opérandes
+
+La fiche [operand-encoding-8086.md](operand-encoding-8086.md) détaille une première passe sur MOV, ADD, ADC, SUB, SBB et CMP : formes registre/mémoire, formes immédiates, opcodes, champs ModR/M, restrictions et FLAGS. Elle corrige également une confusion d'indexation : 8Dh correspond à LEA, et ne doit pas être inclus dans la plage des opcodes MOV.
+
+Les timings de MOV, ADD, ADC et CMP sont rapprochés des références Intel disponibles. La vérification individuelle des timings SUB/SBB, les vecteurs binaires indépendants et les tests distincts simulateur/assembleur/désassembleur restent à faire. Les vecteurs consignés dans la fiche sont des cas proposés, pas des tests exécutés.
+
 ## Corrections effectuées
 
 - **ADC** et **SBB** : leur statut simulateur avait été indiqué à tort comme « Pris en charge ». Le validateur et l'interpréteur ne contiennent pas ces opérations ; leur statut est désormais « Non pris en charge » pour le simulateur, l'assembleur et le désassembleur.
@@ -35,7 +41,7 @@ Les fiches doivent être auditées au niveau de chaque forme d'encodage, et non 
 ## Anomalies et limites encore ouvertes
 
 1. **Exhaustivité des mnémoniques et alias :** un premier inventaire distinct est maintenant consigné dans instruction-inventory-8086.md. Il reste à le confronter ligne par ligne aux tables Intel et à décider explicitement du statut des graphies historiques/propres aux assembleurs avant de calculer un taux de couverture.
-2. **Formes d'opérandes :** les descriptions actuelles sont souvent synthétiques (par exemple `r/m`). Elles ne constituent pas encore une matrice complète par opcode et direction.
+2. **Formes d'opérandes :** une première matrice détaillée existe maintenant pour MOV, ADD, ADC, SUB, SBB et CMP dans operand-encoding-8086.md. Les autres familles restent à décomposer ; même pour ces six instructions, les vecteurs de test indépendants et la vérification finale des temps SUB/SBB restent ouverts.
 3. **FLAGS indéfinis :** certaines fiches mentionnent les indicateurs indéfinis, mais il faut vérifier chaque instruction et chaque variante contre la table Intel. « Indéfini » ne signifie ni « conservé » ni « égal à zéro ».
 4. **Cycles :** les valeurs regroupées ou formulées « variable » restent insuffisantes pour une référence de précision. Les coûts EA doivent être appliqués uniquement aux formes mémoire concernées. Les effets de prélecture BIU, les transferts de mots non alignés et les branchements doivent rester des notes distinctes.
 5. **Statuts de support :** les statuts doivent être testés par forme exacte. Une instruction interprétée mais non encodée n'est pas « prise en charge » par l'assembleur ; un opcode reconnu partiellement n'est pas un désassembleur complet.
