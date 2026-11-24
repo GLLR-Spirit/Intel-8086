@@ -140,3 +140,14 @@ Le workflow CI [45510201993](https://github.com/GLLR-Spirit/Intel-8086/actions/r
 Les familles précédemment absentes sont désormais présentes dans les chemins ciblés de l'exécution source, de l'assembleur, du désassembleur et du moteur binaire. Elles restent classées **partielles** dans le registre : le modèle des ports est logiciel, WAIT ne simule pas TEST, ESC ne simule pas le coprocesseur, LOCK ne simule pas l'atomicité du bus, et les matrices exhaustives de toutes les formes/FLAGS/interactions de préfixes ne sont pas achevées.
 
 Ce résultat valide les tests déclarés, pas l'exhaustivité matérielle de l'Intel 8086.
+
+
+## Correctifs de pile binaire — 25 novembre 2026
+
+Le moteur dynamique prend désormais en charge les opérations de dépilement depuis une pile initialisée directement en mémoire, sans exiger les métadonnées de pile du simulateur : POP, POPF, RET et RETF. Les mots sont lus à SS:SP en little-endian et SP est ajusté selon la forme. Lorsque des métadonnées existent, les contrôles pédagogiques de cohérence restent appliqués.
+
+Le comportement spécifique du 8086 pour PUSH SP est également respecté : le mot empilé est la valeur de SP après décrémentation.
+
+Tests ajoutés : cas bruts POP/POPF/RET/RETF et PUSH SP source/binaire dans tests/dynamic-differential.cjs.
+
+Validation : workflow run 45511311367, commit 915d12868de2c91ce8a3cd11f0432c43b3b95256 — job CI success.
