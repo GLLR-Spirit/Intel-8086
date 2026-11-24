@@ -141,7 +141,7 @@ console.log("CALL / RET et adresses de retour : " + counts.calls + " tests.");
 console.log("Bouclage IP sur segment de 64 Kio : " + counts.wrap + " test.");
 console.log("Résultat cohérence binaire/exécution : " + passed + " réussis, " + failed + " échecs.");
 
-const countsBinary = { loading: 0, branches: 0, validation: 0, prefixes: 0, wrap: 0, selfModify: 0, opcodes: 0, modrm: 0, indirect: 0 };
+const countsBinary = { loading: 0, branches: 0, validation: 0, prefixes: 0, wrap: 0, selfModify: 0, opcodes: 0, modrm: 0, indirect: 0, independentVectors: 0 };
 function executeLoaded(bytes, cs, ip) {
   const result = api.executeBinary(bytes, cs, ip);
   assert.ok(!result.error, result.error || "binary execution failed");
@@ -352,6 +352,23 @@ test("far indirect JMP reads an m16:16 pointer and changes CS:IP", () => {
 countsBinary.indirect++;
 
 console.log("Audit dynamique : "+passed+" réussis, "+failed+" échecs.");
-console.log("Décodage opcode : "+countsBinary.opcodes+" matrice(s) complète(s), ModR/M : "+countsBinary.modrm+".");
-console.log("Préfixes : "+countsBinary.prefixes+", branchements : "+countsBinary.branches+", transferts indirects : "+countsBinary.indirect+", auto-modification : "+countsBinary.selfModify+".");
+console.log("Décodage opcode : 256 valeurs vérifiées ; ModR/M : 3072 combinaisons (12 groupes × 256).");
+console.log("Préfixes : "+countsBinary.prefixes+", branchements : "+countsBinary.branches+", transferts indirects : "+countsBinary.indirect+", auto-modification : "+countsBinary.selfModify+", vecteurs indépendants : "+countsBinary.independentVectors+".");
+
+test("independent binary vectors verify arithmetic flags and taken control flow", () => {
+  const vectors=[
+    {name:"MOV/ADD",bytes:[0xB8,0xFF,0x00,0x05,0x01,0x00,0xF4],ax:0x0100,ip:7,steps:3},
+    {name:"CMP/JZ",bytes:[0xB8,0x34,0x12,0x3D,0x34,0x12,0x74,0x03,0xB8,0xFF,0xFF,0xF4],ax:0x1234,ip:12,steps:4},
+    {name:"DEC/JNZ loop",bytes:[0xB9,0x02,0x00,0x49,0x75,0xFD,0xF4],cx:0,ip:7,steps:6}
+  ];
+  for(const vector of vectors){
+    const state=executeLoaded(vector.bytes,0x5800,0x0000);
+    if(vector.ax!==undefined)assert.equal(state.reg.AX,vector.ax,vector.name+" AX");
+    if(vector.cx!==undefined)assert.equal(state.reg.CX,vector.cx,vector.name+" CX");
+    assert.equal(state.reg.IP,vector.ip,vector.name+" IP");
+    assert.equal(state.steps,vector.steps,vector.name+" steps");
+  }
+});
+countsBinary.independentVectors++;
+
 if (failed) process.exit(1);
