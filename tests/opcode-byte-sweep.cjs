@@ -46,7 +46,7 @@ function verifyStream(bytes, label) {
 // padded stream. This detects crashes, zero-length rows, skipped bytes and
 // over-consumption; it does NOT claim that the decoded mnemonic is correct.
 for (let opcode = 0; opcode < 256; opcode++) {
-  verifyStream([opcode, ...Array(31).fill(0)], "primary opcode " + opcode.toString(16).padStart(2, "0"));
+  verifyStream([opcode, ...Array(256).fill(0x90)], "primary opcode " + opcode.toString(16).padStart(2, "0"));
 }
 
 // Exhaust every ModR/M byte for every original-8086 opcode family whose
@@ -66,7 +66,7 @@ const modrmFamilies = [
 ];
 for (const opcode of modrmFamilies) {
   for (let modrm = 0; modrm < 256; modrm++) {
-    verifyStream([opcode, modrm, ...Array(30).fill(0)],
+    verifyStream([opcode, modrm, ...Array(32).fill(0x90)],
       "ModR/M opcode " + opcode.toString(16).padStart(2, "0") +
       " byte " + modrm.toString(16).padStart(2, "0"));
   }
