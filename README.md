@@ -11,7 +11,7 @@ Intel 8086 Lab rassemble dans une seule page :
 - Un moteur pédagogique avec exécution complète et pas à pas
 - L'observation des registres, des indicateurs FLAGS et d'une mémoire segmentée pédagogique
 - Une référence d'instructions, des exercices et des idées de projets
-- Une suite de 110 tests rapides intégrée à la page pour contrôler des cas de calcul, FLAGS, sauts, boucles et pile
+- Une suite de 122 tests rapides intégrée à la page pour contrôler des cas de calcul, FLAGS, sauts, boucles et pile
 - Un convertisseur binaire, décimal, hexadécimal et octal
 - Une sauvegarde locale dans le navigateur, sans compte ni serveur
 
@@ -25,6 +25,10 @@ Pour activer GitHub Pages :
 3. Dans **Build and deployment**, choisis **Deploy from a branch**.
 4. Sélectionne la branche **main** et le dossier **/(root)**.
 5. Enregistre. GitHub publiera ensuite le site à l'adresse ci-dessus.
+
+## Validation sémantique
+
+L'analyseur contrôle notamment les restrictions 8086 des registres de segment : `CS` ne peut pas être modifié par `MOV`, les constantes immédiates ne peuvent pas être transférées directement vers un registre de segment, les transferts segment/segment sont rejetés, et les opérations arithmétiques/logiques sur ces registres sont interdites. Les transferts entre registre de segment et registre général 16 bits ou mémoire `WORD` sont contrôlés. `POP CS` est également refusé. Cette validation reste un sous-ensemble pédagogique et ne constitue pas une compatibilité complète MASM/TASM.
 
 ## Simulateur : périmètre actuel
 
