@@ -109,21 +109,13 @@ for (let s = 0; s < 4; s++) {
       assert.ok(decoded(toGeneral).startsWith("MOV " + regs[r] + ", " + seg[s]));
     });
     counts.movSegment++;
-    if (s !== 1) {
-      const toSegment = [0x8E, modrm(3, s, r)];
-      test("MOV registre vers segment · " + regs[r] + " → " + seg[s], () => {
-        same(bytes("MOV " + seg[s] + ", " + regs[r]), toSegment,
-          "MOV " + seg[s] + ", " + regs[r]);
-        assert.ok(decoded(toSegment).startsWith("MOV " + seg[s] + ", " + regs[r]));
-      });
-      counts.movSegment++;
-    } else {
-      test("MOV vers CS refusé · " + regs[r], () => {
-        assert.throws(() => bytes("MOV CS, " + regs[r]));
-        assert.ok(decoded([0x8E, modrm(3, 1, r)]).startsWith("DB "));
-      });
-      counts.invalid++;
-    }
+    const toSegment = [0x8E, modrm(3, s, r)];
+    test("MOV registre vers segment · " + regs[r] + " → " + seg[s], () => {
+      same(bytes("MOV " + seg[s] + ", " + regs[r]), toSegment,
+        "MOV " + seg[s] + ", " + regs[r]);
+      assert.ok(decoded(toSegment).startsWith("MOV " + seg[s] + ", " + regs[r]));
+    });
+    counts.movSegment++;
   }
 }
 
@@ -132,7 +124,8 @@ const segmentMemory = [
   { source: "MOV WORD PTR [BX], CS", code: [0x8C, 0x0F] },
   { source: "MOV WORD PTR [BP+SI+4], SS", code: [0x8C, 0x52, 0x04] },
   { source: "MOV DS, WORD PTR [BX]", code: [0x8E, 0x1F] },
-  { source: "MOV ES, WORD PTR [BP+DI+4]", code: [0x8E, 0x43, 0x04] }
+  { source: "MOV ES, WORD PTR [BP+DI+4]", code: [0x8E, 0x43, 0x04] },
+  { source: "MOV CS, WORD PTR [BX]", code: [0x8E, 0x0F] }
 ];
 for (const item of segmentMemory) {
   test("MOV segment/mémoire · " + item.source, () => {
@@ -143,8 +136,7 @@ for (const item of segmentMemory) {
 }
 for (const source of [
   "MOV BYTE PTR [BX], DS",
-  "MOV DS, BYTE PTR [BX]",
-  "MOV CS, WORD PTR [BX]"
+  "MOV DS, BYTE PTR [BX]"
 ]) {
   test("MOV segment restriction · " + source, () => assert.throws(() => bytes(source)));
   counts.invalid++;
