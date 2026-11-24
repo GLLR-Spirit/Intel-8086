@@ -664,7 +664,7 @@ test("IN/OUT — les huit formes immédiat/DX et AL/AX", () => {
   assert.equal(state.io[35],0xabcd);
   assert.equal(state.io[48],0x1234);
   assert.equal(state.io[49],0x66);
-  assert.equal(state.reg.AX,0x66);
+  assert.equal(state.reg.AX,0x1266);
 });
 test("REP MOVSW/LODSB/STOSB et REPE/REPNE CMPS/SCAS", () => {
   const programs=[
