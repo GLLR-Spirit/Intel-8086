@@ -177,7 +177,8 @@ for (const opcode of [0xFE, 0xFF]) {
 for (const opcode of [0x8C, 0x8E]) {
   for (let seg = 0; seg < 8; seg++) {
     const bytes = [opcode, modRM(3, seg, 0)];
-    const expectedInvalid = seg > 3 || (opcode === 0x8E && seg === 1);
+    // 8086/8088 legacy behavior: selector 4..7 aliases 0..3; 8E /1 (CS) is accepted.
+    const expectedInvalid = false;
     test("Validité · " + opcode.toString(16).toUpperCase() + " segment /" + seg, () => {
       assert.equal(isDB(bytes), expectedInvalid,
         opcode.toString(16).toUpperCase() + " /" + seg + " : " + hex(bytes));
