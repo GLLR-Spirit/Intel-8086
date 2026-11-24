@@ -379,3 +379,14 @@ Le workflow CI [45510201993](https://github.com/GLLR-Spirit/Intel-8086/actions/r
 Les familles précédemment absentes sont désormais présentes dans les chemins ciblés de l'exécution source, de l'assembleur, du désassembleur et du moteur binaire. Elles restent classées **partielles** dans le registre : le modèle des ports est logiciel, WAIT ne simule pas TEST, ESC ne simule pas le coprocesseur, LOCK ne simule pas l'atomicité du bus, et les matrices exhaustives de toutes les formes/FLAGS/interactions de préfixes ne sont pas achevées.
 
 Ce résultat valide les tests déclarés, pas l'exhaustivité matérielle de l'Intel 8086.
+
+
+## Extension des tests structurels et correction des sélecteurs segment — 25 novembre 2026
+
+Une batterie supplémentaire `tests/opcode-byte-sweep.cjs` est exécutée par CI. Elle balaie les 256 octets possibles en position d'opcode primaire, puis toutes les 256 valeurs ModR/M pour chacune des 67 familles ModR/M du décodeur, soit 17 152 combinaisons ModR/M et 17 408 flux vérifiés au total. Les assertions portent sur la robustesse du parseur, les frontières des instructions, les offsets continus et la consommation exacte du flux ; elles ne prétendent pas certifier la sémantique de chaque opcode.
+
+Une anomalie de référence a également été corrigée : pour `MOV Sreg` (`8C`/`8E`), Intel table 4-13 définit le champ comme `0SR`. Les sélecteurs `/4` à `/7` sont non utilisés et doivent rester `DB`; `/0` à `/3` restent ES/CS/SS/DS, y compris `MOV CS` via `8E /1` sur le 8086 original. Le décodeur, la matrice ModR/M, les tests d'adressage et les tests de contraintes ont été alignés sur cette règle.
+
+Le préfixe LOCK est désormais contrôlé de manière cohérente entre le désassembleur et le sous-ensemble de formes accepté par l'analyseur. Le verrouillage réel du bus, les autres maîtres de bus et l'atomicité matérielle ne sont toujours pas simulés.
+
+Validation : run 45512297498 — commit `f0573072cf57ad741a0b6e33165f0ffa61d9cd75`, CI success.
