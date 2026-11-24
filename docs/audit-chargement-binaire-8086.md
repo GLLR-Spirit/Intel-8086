@@ -114,3 +114,13 @@ L'audit différentiel a été étendu à 768 combinaisons registre-direct 8/16 b
 Validation CI : [run 45505775488](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45505775488), commit `39b342f1611e5f323c951e02830f8274b7109839`, workflow **success** ; suite différentielle **39/39 réussites**.
 
 La portée reste bornée : ce renforcement ne transforme pas le moteur en émulateur matériel complet et ne prouve pas les formes qui ne sont pas implémentées.
+
+## Extension du sous-ensemble binaire — 25 novembre 2026
+
+Une passe d'implémentation couvre maintenant les familles précédemment absentes : LOOPE/LOOPNE/JCXZ, ajustements ASCII/BCD, CBW/CWD, rotations et décalages, IN/OUT, INTO, XLAT, LAHF/SAHF, WAIT, ESC et les préfixes REP/LOCK.
+
+Les opcodes 8086 concernés sont intégrés à l'assembleur et au désassembleur ; l'exécution source et le fetch/décodage/exécution binaire prennent en charge les formes ciblées. Les chaînes sont répétées dynamiquement par CX et les conditions ZF appropriées ; IN/OUT utilisent une carte de ports logicielle initialisable explicitement.
+
+**Limites qui restent importantes :** les ports ne représentent aucun périphérique matériel ; WAIT ne modélise pas l'entrée TEST ; ESC ne simule pas un coprocesseur 8087 ; LOCK ne produit aucune atomicité observable dans le moteur mono-thread ; les interactions arbitraires de préfixes et tous les vecteurs de FLAGS ne sont pas exhaustivement validés. Les familles nouvellement ajoutées restent donc marquées **partielles**.
+
+Les tests spécialisés source/binaire et les validations CI associées déterminent le périmètre réellement vérifié. Cette extension ne constitue pas une certification d'émulation matérielle 8086 complète.
