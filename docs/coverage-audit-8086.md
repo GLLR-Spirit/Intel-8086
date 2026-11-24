@@ -141,7 +141,7 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 Le moteur interprète les principales familles arithmétiques/logiques, les transferts de données, les opérations de pile, les instructions de chaîne et plusieurs contrôles de flux. Il modélise également les interruptions au moyen de la directive pédagogique `VECTOR` et un service DOS limité.
 
 Limites notables :
-- `JMP`, `CALL` et `RET` restent exécutés uniquement sous forme proche par étiquette. Les formes indirectes FF /2 et /4 sont encodées/décodées mais leur exécution n'est pas simulée ; les transferts lointains ne sont pas exécutés.
+- `CALL` et `JMP` directs par étiquette et indirects near/far sont exécutés. `RET` et `RETF` restaurent respectivement IP et IP:CS. L'IP de l'interpréteur reste un indice logique d'instruction, pas un offset octet réel ; les cibles indirectes doivent donc viser un indice du programme analysé.
 - `INT` est une simulation pédagogique des gestionnaires `VECTOR` et de quelques services ; ce n'est pas le matériel d'interruption complet.
 - `HLT` termine l'exécution pédagogique ; il ne modélise pas le réveil matériel par interruption.
 - `LOOPE`, `LOOPNE`, `JCXZ`, `IN`, `OUT`, `INTO`, `XLAT`, les ajustements ASCII/BCD, les rotations, `SAR`, `LAHF`, `SAHF`, `WAIT` et `ESC` ne sont pas exécutés. `NEG` est désormais simulé.
@@ -153,9 +153,9 @@ Le générateur binaire reste partiel. Il émet notamment MOV, arithmétique/log
 Limites observées dans le code :
 - Les groupes immédiats `80h/81h` sont générés pour l'arithmétique/logique ; la forme signée courte `83h` n'est pas générée.
 - `MOV` ne couvre pas toutes les variantes/opcodes, notamment les formes accumulator/moffs dédiées.
-- `PUSH MEM16` via FF /6 est généré pour les formes mémoire ; le registre utilise l'encodage compact `50+reg`. `POP r/m16` mémoire n'est pas généré.
+- `PUSH MEM16` via FF /6 est généré pour les formes mémoire ; le registre utilise l'encodage compact `50+reg`. `POP r/m16` mémoire est généré via 8F /0 ; /1–/7 sont réservés.
 - `JMP` et `CALL` directs restent assemblés en near relatif 16 bits ; les formes near indirectes FF /2 et /4 sont également générées. Les formes far indirectes ne sont pas assemblées.
-- `RET` ne génère que le retour proche sans ajustement de pile ; les formes far et avec immédiat manquent.
+- `RET` C2/C3 et `RETF` CA/CB sont générés, avec ou sans immédiat. Les formes far indirectes FF /3 et /5 sont assemblées via `FAR PTR [mem]`.
 - Les groupes F6/F7 (TEST r/m, immédiat ; NOT, NEG, MUL, IMUL, DIV, IDIV) et FF /6 PUSH sont encodés. Les chaînes, `REP`, les E/S, shifts/rotations et plusieurs instructions fixes restent absents.
 
 ### 3.3 Désassembleur
@@ -165,7 +165,7 @@ Le décodeur reconnaît un sous-ensemble des familles précédentes, mais ne con
 Limites observées :
 - Les opcodes de chaîne et préfixes REP ne sont pas décodés comme instructions.
 - Les formes near indirectes FF /2 et /4 sont décodées ; FF /3 et /5 sont décodées uniquement avec un opérande mémoire. Les formes short et directes far restent hors couverture.
-- Les formes `RET` far et avec ajustement de pile ne sont pas décodées.
+- `RET` C2/C3 et `RETF` CA/CB sont désormais décodés, immédiats compris. Les extensions FF /3 et /5 restent décodées uniquement en mémoire.
 - Les groupes F6/F7 et FF sont partiellement couverts ; les opcodes E/S, shifts/rotations, ajustements, `INT`, `INTO`, `WAIT`, `ESC`, `XLAT`, `LAHF` et `SAHF` restent hors couverture.
 - Le décodage d'un opcode isolé ou d'une extension ModR/M non prise en charge doit rester strictement distingué d'une désassemblage complet : le décodeur peut émettre `DB` pour les octets qu'il ne sait pas interpréter.
 
