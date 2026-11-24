@@ -11,7 +11,7 @@ Intel 8086 Lab rassemble dans une seule page :
 - Un moteur pédagogique avec exécution complète et pas à pas
 - L'observation des registres, des indicateurs FLAGS et d'une mémoire segmentée pédagogique
 - Une référence d'instructions, des exercices et des idées de projets
-- Une suite de 188 tests rapides intégrée à la page pour contrôler des cas de calcul, FLAGS, sauts, boucles et pile
+- Une suite de 191 tests rapides intégrée à la page pour contrôler des cas de calcul, FLAGS, sauts, boucles et pile
 - Une analyse pédagogique des encodages machine affiche les octets uniquement pour les formes explicitement déterminées : `MOV` registre-immediate, transferts registre-registre, `XCHG` registre-registre, opérations arithmétiques/logiques registre-registre et quelques instructions sans opérande. Les autres formes sont signalées comme non générées/non déterminées : le simulateur ne prétend pas produire un binaire complet.
 - Les plages des constantes immédiates sont contrôlées selon la taille de l'opérande (8 ou 16 bits). Les dépassements sont classés comme erreurs d'encodage, séparément des incompatibilités de taille.
 - Un convertisseur binaire, décimal, hexadécimal et octal
