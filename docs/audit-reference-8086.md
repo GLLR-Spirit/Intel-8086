@@ -2,6 +2,10 @@
 
 **État :** audit en cours — ne pas présenter la rubrique comme une encyclopédie exhaustive.
 
+## Inventaire canonique — première passe
+
+Le registre distinct des graphies mnémotechniques, synonymes, préfixes et éléments hors périmètre est maintenu dans [instruction-inventory-8086.md](instruction-inventory-8086.md). Il sert de base au décompte de couverture ; les 58 cartes de l'interface ne sont pas utilisées comme dénominateur. Les graphies dont le statut historique est incertain (notamment FWAIT, XLATB et RETF) restent explicitement à confirmer et ne sont pas déclarées instructions canoniques sur la seule base de leur présence dans des assembleurs.
+
 ## Périmètre vérifié dans cette passe
 
 L'interface actuelle expose 58 entrées documentaires. Ce nombre correspond aux cartes affichées, pas au nombre de mnémotechniques distincts : plusieurs cartes regroupent des alias ou des familles, et certaines décrivent des concepts non-instructions (adressage mémoire, directive pédagogique `VECTOR`).
@@ -26,7 +30,7 @@ Les fiches doivent être auditées au niveau de chaque forme d'encodage, et non 
 
 ## Anomalies et limites encore ouvertes
 
-1. **Exhaustivité des mnémoniques et alias :** la liste de 58 cartes est regroupée. Il faut établir un inventaire canonique distinct des instructions, alias, préfixes et variantes historiques avant de calculer un taux de couverture.
+1. **Exhaustivité des mnémoniques et alias :** un premier inventaire distinct est maintenant consigné dans instruction-inventory-8086.md. Il reste à le confronter ligne par ligne aux tables Intel et à décider explicitement du statut des graphies historiques/propres aux assembleurs avant de calculer un taux de couverture.
 2. **Formes d'opérandes :** les descriptions actuelles sont souvent synthétiques (par exemple `r/m`). Elles ne constituent pas encore une matrice complète par opcode et direction.
 3. **FLAGS indéfinis :** certaines fiches mentionnent les indicateurs indéfinis, mais il faut vérifier chaque instruction et chaque variante contre la table Intel. « Indéfini » ne signifie ni « conservé » ni « égal à zéro ».
 4. **Cycles :** les valeurs regroupées ou formulées « variable » restent insuffisantes pour une référence de précision. Les coûts EA doivent être appliqués uniquement aux formes mémoire concernées. Les effets de prélecture BIU, les transferts de mots non alignés et les branchements doivent rester des notes distinctes.
