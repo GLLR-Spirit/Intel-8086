@@ -371,4 +371,23 @@ test("independent binary vectors verify arithmetic flags and taken control flow"
 });
 countsBinary.independentVectors++;
 
+
+test("ES SS and DS overrides read and write their selected segment in dynamic execution", () => {
+  const cases=[
+    {name:"ES",prefix:0x26,modrm:0xC0},
+    {name:"SS",prefix:0x36,modrm:0xD0},
+    {name:"DS",prefix:0x3E,modrm:0xD8}
+  ];
+  for(const item of cases){
+    const bytes=[0xB8,0x00,0x60,0x8E,item.modrm,0xB8,0x34,0x12,item.prefix,0xA3,0x10,0x00,0xB8,0x00,0x00,item.prefix,0xA1,0x10,0x00,0xF4];
+    const state=executeLoaded(bytes,0x5900,0x0000);
+    assert.equal(state.reg[item.name],0x6000,item.name+" selector");
+    assert.equal(state.reg.AX,0x1234,item.name+" readback");
+    assert.equal(state.mem[0x60010],0x34,item.name+" low byte");
+    assert.equal(state.mem[0x60011],0x12,item.name+" high byte");
+    assert.equal(state.reg.IP,0x0014,item.name+" IP");
+  }
+});
+countsBinary.prefixes++;
+
 if (failed) process.exit(1);
