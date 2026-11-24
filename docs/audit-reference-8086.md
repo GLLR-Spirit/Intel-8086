@@ -18,7 +18,7 @@ Les fiches doivent être auditées au niveau de chaque forme d'encodage, et non 
 
 ## Première matrice des formes d'opérandes
 
-La fiche [operand-encoding-8086.md](operand-encoding-8086.md) détaille une première passe sur MOV, ADD, ADC, SUB, SBB et CMP : formes registre/mémoire, formes immédiates, opcodes, champs ModR/M, restrictions et FLAGS. Elle corrige également une confusion d'indexation : 8Dh correspond à LEA, et ne doit pas être inclus dans la plage des opcodes MOV.
+La fiche [operand-encoding-8086.md](operand-encoding-8086.md) détaille une première passe sur MOV, ADD, ADC, SUB, SBB et CMP : formes registre/mémoire, formes immédiates, opcodes, champs ModR/M, restrictions et FLAGS. Le registre [form-coverage-register-8086.md](form-coverage-register-8086.md) décompose maintenant ces six mnémotechniques en 59 formes documentaires distinctes et distingue présence du code et validation indépendante. Elle corrige également une confusion d'indexation : 8Dh correspond à LEA, et ne doit pas être inclus dans la plage des opcodes MOV.
 
 La suite indépendante couvre désormais MOV, ADD, SUB, CMP, ADC et SBB avec des octets fixes pour l'assembleur et le désassembleur, ainsi que des tests sémantiques du simulateur. Le run CI 210 (24 novembre 2026, commit `48ae8aadf86354dc74283591059e5c7ec2548129`) a validé 354/354 tests de fumée et 40/40 vecteurs indépendants. Cette couverture reste partielle et ne clôt pas l'audit.
 
