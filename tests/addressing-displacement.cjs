@@ -99,7 +99,7 @@ test("Exécution EA · huit modes et segments DS/SS", () => {
     "MOV AX, 1000h", "MOV DS, AX",
     "MOV AX, 2000h", "MOV SS, AX",
     "MOV BX, 0010h", "MOV BP, 0020h",
-    "MOV SI, 0030h", "MOV DI, 0040h",
+    "MOV SI, 0030h", "MOV DI, 0050h",
     "MOV AX, 1111h", "MOV WORD PTR [BX+SI], AX",
     "MOV AX, 2222h", "MOV WORD PTR [BX+DI], AX",
     "MOV AX, 3333h", "MOV WORD PTR [BP+SI], AX",
