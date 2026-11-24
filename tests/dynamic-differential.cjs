@@ -976,6 +976,15 @@ test("RET et RETF restaurent les adresses depuis une pile binaire brute", () => 
 });
 categories.stack++;
 
+test("PUSHF expose les bits réservés 12–15 à 1 sur 8086", () => {
+  const state=api.execute("PUSHF\nHLT");
+  assert.ok(!state.error,state.error||"PUSHF");
+  const word=state.mem[state.reg.SP]|(state.mem[(state.reg.SP+1)&0xffff]<<8);
+  assert.equal(word&0xf000,0xf000);
+  assert.equal(word&0x0002,0x0002);
+});
+categories.stack++;
+
 console.log("Audit différentiel arithmétique : " + categories.arithmetic + " vecteurs.");
 console.log("Logique et TEST : " + categories.logic + " vecteurs.");
 console.log("Registres : " + categories.registers + " vecteurs.");
