@@ -221,3 +221,10 @@ Les octets de référence du désassembleur doivent être écrits indépendammen
 2. Intel, MCS-86 Macro Assembly Language Reference Manual, septembre 1979 : chapitre 4 pour opérandes et modes d'adressage ; chapitre 5, entrées MOV, ADC, ADD et CMP pour formes, encodages et notations. https://bitsavers.org/pdf/intel/ISIS_II/9800640-02_MCS-86_Macro_Assembly_Language_Manual_Sep79.pdf
 
 Les points marqués ouverts ne doivent pas être transformés en affirmations définitives.
+
+
+## Mise à jour — implémentation ADC et SBB
+
+ADC et SBB sont désormais intégrées au simulateur, à l'assembleur et au désassembleur pour les formes registre/mémoire, accumulateur-immédiat et immédiat vers r/m avec les opcodes de groupe 80h/81h. Les formes 83h à immédiat signé court ne sont pas encore générées/décodées.
+
+Le simulateur lit CF entrant avant le calcul : ADC effectue DEST + SRC + CF ; SBB effectue DEST − SRC − CF. Les indicateurs AF, CF, OF, PF, SF et ZF sont recalculés à partir du résultat. Les vecteurs indépendants couvrent CF entrant à 0 et à 1, les cas 8/16 bits, retenue/emprunt sortants, débordement signé, encodages accumulateur et mémoire immédiate, et décodage de flux binaires fixes. Le statut de CI doit être consulté avant de considérer cette phase validée.
