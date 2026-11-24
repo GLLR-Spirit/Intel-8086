@@ -208,7 +208,7 @@ function encodingRegisterCode(name){var n=name.trim().toUpperCase(),r=info(n);if
 function encodingImmediate(value,bits){var n=parseNumber(value);if(n===null)return null;var max=bits===8?255:65535,min=bits===8?-128:-32768;if(n<min||n>max)return null;n=n& (bits===8?255:65535);return bits===8?[n]:[n&255,(n>>8)&255];}
 function encodingWord(value){var n=value&65535;return [n&255,(n>>8)&255];}
 function encodingMemory(raw,regField){
-var text=raw.trim().toUpperCase(),explicit=null,m=text.match(/^(BYTE|WORD)\s+PTR\s+(.+)$/);if(m)text=m[2].trim();
+var text=raw.trim().toUpperCase(),explicit=null;if(/^FAR\s+PTR\s+/i.test(text))text=text.replace(/^FAR\s+PTR\s+/i,"");var m=text.match(/^(BYTE|WORD)\s+PTR\s+(.+)$/);if(m)text=m[2].trim();
 var sm=text.match(/^(ES|CS|SS|DS)\s*:\s*(\[.*\])$/);if(sm){explicit=sm[1];text=sm[2];}
 if(!/^\[.*\]$/.test(text))return null;
 var expr=text.slice(1,-1).replace(/\s+/g,""),parts=expr.match(/[+-]?[^+-]+/g);if(!parts||!parts.length)return null;
