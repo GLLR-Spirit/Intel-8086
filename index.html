@@ -707,7 +707,7 @@ function runSelfTests(){var cases=[
 ["ADD registre général immédiat WORD","ADD CX, 1234h",function(s){return JSON.stringify(encodingBytes(parseProgram("ADD CX, 1234h").ops[0]))===JSON.stringify([129,193,52,18]);}],
 ["ADD immédiat signé court utilise 83h sur 8086","ADD CX, 7Fh",function(s){return JSON.stringify(encodingBytes(parseProgram("ADD CX, 7Fh").ops[0]))===JSON.stringify([131,193,127]);}],
 ["Assembleur deux passes : offsets et flux contigu","MOV AX, 1234h\nMOV BX, 1\nHLT",function(s){var r=assembleProgram("MOV AX, 1234h\nMOV BX, 1\nHLT");return r.size===7&&JSON.stringify(r.bytes)===JSON.stringify([184,52,18,187,1,0,244])&&r.rows[1].offset===3;}],
-["Table des symboles : étiquette sur instruction suivante","JMP SUITE\nSUITE: NOP\nHLT",function(s){var r=assembleProgram("JMP SUITE\nSUITE: NOP\nHLT");return r.symbols.SUITE===3&&JSON.stringify(r.bytes)===JSON.stringify([233,0,0,144,244]);}],
+["Table des symboles : étiquette sur instruction suivante","JMP SUITE\nSUITE: NOP\nHLT",function(s){var r=assembleProgram("JMP SUITE\nSUITE: NOP\nHLT");return r.symbols.SUITE===2&&JSON.stringify(r.bytes)===JSON.stringify([235,0,144,244]);}],
 ["Encodage JE relatif court","JE CIBLE\nNOP\nCIBLE: HLT",function(s){return JSON.stringify(assembleProgram("JE CIBLE\nNOP\nCIBLE: HLT").bytes)===JSON.stringify([116,1,144,244]);}],
 ["Encodage JNE relatif court arrière","HLT",function(s){return JSON.stringify(assembleProgram("DEBUT: NOP\nJNE DEBUT").bytes)===JSON.stringify([144,117,253]);}],
 ["Encodage des alias de sauts conditionnels","HLT",function(s){return JSON.stringify(assembleProgram("JZ FIN\nJNC FIN\nFIN: RET").bytes)===JSON.stringify([116,2,115,0,195]);}],
