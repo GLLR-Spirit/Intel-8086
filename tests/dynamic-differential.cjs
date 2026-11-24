@@ -675,6 +675,21 @@ test("LOCK ADD mémoire — préfixe F0, validation et round-trip", () => {
   assert.equal(binaryState.mem[0x100]|(binaryState.mem[0x101]<<8),3);
   assert.throws(()=>api.assemble("LOCK CMP WORD PTR [BX], AX\nHLT"),/LOCK/);
 });
+test("SAL et alias LOOPZ/LOOPNZ — encodages 8086 identiques", () => {
+  compareSourceBinary("MOV AL, 80h\nSAL AL, 1\nHLT");
+  const loopz=api.assemble("LOOPZ TARGET\nTARGET: HLT");
+  const loopnz=api.assemble("LOOPNZ TARGET\nTARGET: HLT");
+  assert.deepEqual(Array.from(loopz.bytes.slice(0,1)),[0xe1]);
+  assert.deepEqual(Array.from(loopnz.bytes.slice(0,1)),[0xe0]);
+});
+test("ESC mémoire — forme ModR/M sans taille mémoire imposée", () => {
+  const assembled=api.assemble("MOV BX, 0100h\nESC 63, [BX]\nHLT");
+  assert.deepEqual(Array.from(assembled.bytes.slice(3,5)),[0xdf,0x3f]);
+  const decoded=api.disassemble(assembled.bytes).rows;
+  assert.equal(decoded[1].instruction,"ESC 63, [BX]");
+  const state=api.executeBinary(Array.from(assembled.bytes),0,0);
+  assert.ok(!state.error,state.error||"ESC memory");
+});
 test("WAIT et ESC — opcodes reconnus, sans coprocesseur externe simulé", () => {
   const {assembled,binaryState}=compareSourceBinary("MOV AX, 1234h\nWAIT\nESC 0, AX\nHLT");
   assert.equal(binaryState.reg.AX,0x1234);
@@ -822,7 +837,7 @@ test("Décalages 16 bits — frontières de signe, compte CL et retenue", () => 
 
 
 test("LOOPE/LOOPNE/JCXZ — limites rel8 exactes −128 et +127", () => {
-  const opcodes={LOOPNE:0xe0,LOOPE:0xe1,JCXZ:0xe3};
+  const opcodes={LOOPNE:0xe0,LOOPNZ:0xe0,LOOPE:0xe1,LOOPZ:0xe1,JCXZ:0xe3};
   for(const [name,opcode] of Object.entries(opcodes)){
     const positive=api.assemble(name+" TARGET\n"+"NOP\n".repeat(127)+"TARGET: HLT");
     assert.equal(positive.bytes[0],opcode,name+" opcode +127");
