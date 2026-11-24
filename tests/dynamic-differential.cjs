@@ -621,13 +621,13 @@ test("LAHF et SAHF — transfert des FLAGS via AH", () => {
   for (const flag of ["CF","PF","AF","ZF","SF"]) assert.equal(binaryState.flags[flag],1);
 });
 test("XLAT — lecture DS:[BX+AL] et mise à jour de AL", () => {
-  const {binaryState}=compareSourceBinary("MOV BX, 0100h\nMOV AL, 2\nMOV BYTE PTR [0102h], 5Ah\nXLAT\nHLT");
+  const {binaryState}=compareSourceBinary("MOV BX, 0100h\nMOV AL, 2\nMOV BYTE PTR [BX+2], 5Ah\nXLAT\nHLT");
   assert.equal(binaryState.reg.AX&255,0x5a);
 });
 test("REP MOVSB — préfixe binaire, répétition CX et transfert mémoire", () => {
   const source="MOV SI, 0100h\nMOV DI, 0200h\nMOV CX, 3\nMOV BYTE PTR [0100h], 11h\nMOV BYTE PTR [0101h], 22h\nMOV BYTE PTR [0102h], 33h\nREP MOVSB\nHLT";
   const {assembled,binaryState}=compareSourceBinary(source,[0x200,0x201,0x202]);
-  assert.deepEqual(assembled.bytes.slice(-3),[0xf3,0xa4,0xf4]);
+  assert.deepEqual(Array.from(assembled.bytes.slice(-3)),[0xf3,0xa4,0xf4]);
   assert.deepEqual([binaryState.mem[0x200],binaryState.mem[0x201],binaryState.mem[0x202]],[0x11,0x22,0x33]);
 });
 test("LOCK ADD mémoire — préfixe F0, validation et round-trip", () => {
