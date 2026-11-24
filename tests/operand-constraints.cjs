@@ -150,14 +150,23 @@ for (const source of [
   counts.invalid++;
 }
 
-// D. Invalid segment selector extensions in 8C/8E.
+// D. Legacy 8086 segment-selector encodings.
+// On 8086/8088, selectors 4..7 alias ES/CS/SS/DS (0..3). MOV CS is
+// accepted on the original 8086, although later x86 generations restrict it.
+// The current decoder intentionally does not yet render these legacy forms.
 for (const opcode of [0x8C, 0x8E]) {
   for (let ext = 4; ext < 8; ext++) {
-    test("MOV segment extension réservée · " + opcode.toString(16) + " /" + ext, () => {
+    test("MOV segment alias 8086 · " + opcode.toString(16) + " /" + ext, () => {
       assert.ok(decoded([opcode, modrm(3, ext, 0)]).startsWith("DB "));
     });
-    counts.invalid++;
   }
+}
+for (let ext = 0; ext < 4; ext++) {
+  const opcode = 0x8E;
+  test("MOV vers segment documenté 8086 · /" + ext, () => {
+    const instruction = decoded([opcode, modrm(3, ext, 0)]);
+    assert.equal(instruction.startsWith("DB "), false, instruction);
+  });
 }
 
 // E. Truncated encodings must fail explicitly, not silently produce a row.
