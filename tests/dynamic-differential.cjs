@@ -406,7 +406,7 @@ test("vecteurs binaires bruts ALU 8 bits comparés à l’oracle indépendant", 
       assert.equal(state.steps,5);
       checked++;
     }
-  assert.equal(checked,1125);
+  assert.equal(checked,1350);
 });
 categories.arithmetic++;
 
