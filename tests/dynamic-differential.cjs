@@ -338,6 +338,38 @@ test("IRET binaire lit un cadre brut en mémoire, restaure CS:IP et boucle SP", 
 });
 categories.iret++;
 
+test("INT binaire consulte l’IVT, empile FLAGS/CS/IP et revient par IRET", () => {
+  const mem = {
+    128:0x10, 129:0x00, 130:0x00, 131:0x01,
+    4112:0xb0, 4113:0x2a, 4114:0xcf
+  };
+  const state=api.executeBinary([0xcd,0x20,0xf4],0x0100,0,{
+    reg:{SS:0x2000,SP:0xfffe},
+    flags:{CF:1,IF:1,TF:1,DF:1},
+    mem
+  });
+  assert.ok(!state.error,state.error||"INT/IRET binary path failed");
+  assert.equal(state.reg.AX&255,0x2a);
+  assert.equal(state.reg.CS,0x0100);
+  assert.equal(state.reg.IP,3);
+  assert.equal(state.reg.SP,0xfffe);
+  assert.equal(state.stack.length,0);
+  assert.equal(state.flags.CF,1);
+  assert.equal(state.flags.IF,1);
+  assert.equal(state.flags.TF,1);
+  assert.equal(state.flags.DF,1);
+});
+categories.iret++;
+
+test("INT binaire refuse une entrée IVT absente ou tronquée", () => {
+  for(const mem of [{},{128:0x10,129:0x00,130:0x00}]){
+    const state=api.executeBinary([0xcd,0x20,0xf4],0,0,{mem});
+    assert.ok(state.error);
+    assert.match(state.error,/IVT non initialisée ou incomplète/i);
+  }
+});
+categories.invalid++;
+
 test("état initial binaire refuse les registres, FLAGS, octets et cadres invalides", () => {
   for (const seed of [
     { reg: { BAD: 1 } },
