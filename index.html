@@ -249,7 +249,7 @@ setTimeout(function(){URL.revokeObjectURL(url);},1000);
 return {size:data.length,name:a.download};
 }
 function parseHexBytes(src){
-var tokens=src.trim().split(/[\\s,;]+/).filter(Boolean),out=[];
+var tokens=src.trim().split(/[\s,;]+/).filter(Boolean),out=[];
 if(!tokens.length)throw Error("Aucun octet à désassembler.");
 tokens.forEach(function(t){var x=t.replace(/^0x/i,"").replace(/h$/i,"");if(!/^[0-9a-f]{1,2}$/i.test(x))throw Error("Octet hexadécimal invalide : "+t+". Utilise des valeurs de 00 à FF.");out.push(parseInt(x,16));});
 if(out.length>65536)throw Error("Flux trop volumineux : limite pédagogique de 65 536 octets.");
@@ -306,7 +306,7 @@ else if(op===138||op===139)ins="MOV "+reg+", "+rm.text;
 else if(op===134||op===135)ins="XCHG "+rm.text+", "+reg;
 else ins="TEST "+rm.text+", "+reg;
 }
-else if(op===198||op===199){bits=op===198?8:16;modrm=read();if(((modrm>>3)&7)!==0)throw Error("Extension ModR/M non prise en charge à "+hx(start,4)+".");rm=decodeRM(modrm,bits,prefix);val=bits===8?read():word();ins="MOV "+rm.text+", "+imm(val,bits);}
+else if(op===198||op===199){bits=op===198?8:16;modrm=read();ext=(modrm>>3)&7;rm=decodeRM(modrm,bits,prefix);val=bits===8?read():word();if(ext===0)ins="MOV "+rm.text+", "+imm(val,bits);}
 else if(op===128||op===129){bits=op===128?8:16;modrm=read();ext=(modrm>>3)&7;rm=decodeRM(modrm,bits,prefix);val=bits===8?read():word();base=["ADD","OR","ADC","SBB","AND","SUB","XOR","CMP"][ext];if(ext===2||ext===3)base=null;ins=base?base+" "+rm.text+", "+imm(val,bits):null;}
 else if(op===246||op===247){bits=op===246?8:16;modrm=read();ext=(modrm>>3)&7;rm=decodeRM(modrm,bits,prefix);if(ext===0){val=bits===8?read():word();ins="TEST "+rm.text+", "+imm(val,bits);}}
 else if(op===4||op===5||op===12||op===13||op===36||op===37||op===44||op===45||op===52||op===53||op===60||op===61||op===168||op===169){
