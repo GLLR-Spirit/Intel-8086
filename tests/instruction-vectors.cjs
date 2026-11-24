@@ -72,19 +72,18 @@ const assemblerVectors = [
   ["ADD accumulator immediate", "ADD AX, 1234h", [0x05, 0x34, 0x12]],
   ["SUB register from accumulator", "SUB AX, BX", [0x29, 0xD8]],
   ["CMP register against accumulator", "CMP AX, BX", [0x39, 0xD8]],
-  ["CMP accumulator immediate", "CMP AX, 1234h", [0x3D, 0x34, 0x12]]
+  ["CMP accumulator immediate", "CMP AX, 1234h", [0x3D, 0x34, 0x12]],
+  ["ADC register to register", "ADC AX, BX", [0x11, 0xD8]],
+  ["SBB register from accumulator", "SBB AX, BX", [0x19, 0xD8]],
+  ["ADC accumulator immediate", "ADC AL, 1", [0x14, 0x01]],
+  ["SBB accumulator immediate", "SBB AX, 1234h", [0x1D, 0x34, 0x12]],
+  ["ADC memory immediate", "ADC BYTE PTR [2000h], 1", [0x80, 0x16, 0x00, 0x20, 0x01]],
+  ["SBB memory immediate", "SBB WORD PTR [2000h], 1", [0x81, 0x1E, 0x00, 0x20, 0x01, 0x00]]
 ];
 for (const [name, source, expected] of assemblerVectors) {
   test("Assembler · " + name, () => {
     const actual = bytesOf(source);
     assert.deepEqual(actual, expected, "expected " + hex(expected) + ", got " + hex(actual));
-  });
-}
-
-// ADC/SBB are deliberately asserted as unsupported until implementation is authorized.
-for (const mnemonic of ["ADC", "SBB"]) {
-  test("Assembler · " + mnemonic + " limitation is explicit", () => {
-    assert.throws(() => bytesOf(mnemonic + " AX, BX"), /non pris en charge|instruction inconnue/i);
   });
 }
 
@@ -95,7 +94,13 @@ const decoderVectors = [
   ["MOV direct memory from register", [0x89, 0x1E, 0x00, 0x20], /MOVWORDPTR\[2000h\],BX/i],
   ["ADD register to register", [0x03, 0xC3], /ADDAX,BX/i],
   ["SUB register from accumulator", [0x2B, 0xC3], /SUBAX,BX/i],
-  ["CMP register against accumulator", [0x3B, 0xC3], /CMPAX,BX/i]
+  ["CMP register against accumulator", [0x3B, 0xC3], /CMPAX,BX/i],
+  ["ADC register to register", [0x11, 0xD8], /ADCAX,BX/i],
+  ["SBB register from accumulator", [0x19, 0xD8], /SBBAX,BX/i],
+  ["ADC accumulator immediate", [0x14, 0x01], /ADCAL,01h/i],
+  ["SBB accumulator immediate", [0x1D, 0x34, 0x12], /SBBAX,1234h/i],
+  ["ADC memory immediate", [0x80, 0x16, 0x00, 0x20, 0x01], /ADCBYTEPTR\[2000h\],01h/i],
+  ["SBB memory immediate", [0x81, 0x1E, 0x00, 0x20, 0x01, 0x00], /SBBWORDPTR\[2000h\],0001h/i]
 ];
 for (const [name, machineBytes, expectedText] of decoderVectors) {
   test("Désassembleur · " + name, () => {
@@ -137,11 +142,55 @@ test("Simulateur · CMP égal active ZF", () => {
   assert.equal(state.reg.AX, 7);
   assert.equal(state.flags.ZF, 1);
 });
-for (const mnemonic of ["ADC", "SBB"]) {
-  test("Simulateur · " + mnemonic + " limitation détectée", () => {
-    assert.throws(() => execute(mnemonic + " AX, BX"), /instruction inconnue|inconnue/i);
-  });
-}
+test("Simulateur · ADC avec CF entrant nul", () => {
+  const state = execute("MOV AL, 1\nMOV BL, 2\nCLC\nADC AL, BL\nHLT");
+  assert.equal(state.reg.AX & 0xFF, 3);
+  assert.equal(state.flags.CF, 0);
+  assert.equal(state.flags.ZF, 0);
+});
+test("Simulateur · ADC consomme CF avant de recalculer les FLAGS", () => {
+  const state = execute("MOV AL, 254\nMOV BL, 1\nSTC\nADC AL, BL\nHLT");
+  assert.equal(state.reg.AX & 0xFF, 0);
+  assert.equal(state.flags.CF, 1);
+  assert.equal(state.flags.ZF, 1);
+  assert.equal(state.flags.AF, 1);
+});
+test("Simulateur · ADC 16 bits avec retenue entrante", () => {
+  const state = execute("MOV AX, 65535\nMOV BX, 0\nSTC\nADC AX, BX\nHLT");
+  assert.equal(state.reg.AX, 0);
+  assert.equal(state.flags.CF, 1);
+  assert.equal(state.flags.ZF, 1);
+});
+test("Simulateur · ADC détecte le débordement signé", () => {
+  const state = execute("MOV AL, 127\nMOV BL, 0\nSTC\nADC AL, BL\nHLT");
+  assert.equal(state.reg.AX & 0xFF, 128);
+  assert.equal(state.flags.OF, 1);
+  assert.equal(state.flags.SF, 1);
+});
+test("Simulateur · SBB avec CF entrant nul", () => {
+  const state = execute("MOV AL, 5\nMOV BL, 3\nCLC\nSBB AL, BL\nHLT");
+  assert.equal(state.reg.AX & 0xFF, 2);
+  assert.equal(state.flags.CF, 0);
+});
+test("Simulateur · SBB consomme CF comme emprunt entrant", () => {
+  const state = execute("MOV AL, 0\nMOV BL, 0\nSTC\nSBB AL, BL\nHLT");
+  assert.equal(state.reg.AX & 0xFF, 255);
+  assert.equal(state.flags.CF, 1);
+  assert.equal(state.flags.AF, 1);
+  assert.equal(state.flags.SF, 1);
+});
+test("Simulateur · SBB 16 bits avec emprunt entrant", () => {
+  const state = execute("MOV AX, 0\nMOV BX, 0\nSTC\nSBB AX, BX\nHLT");
+  assert.equal(state.reg.AX, 65535);
+  assert.equal(state.flags.CF, 1);
+  assert.equal(state.flags.SF, 1);
+});
+test("Simulateur · SBB détecte le débordement signé", () => {
+  const state = execute("MOV AL, 128\nMOV BL, 0\nSTC\nSBB AL, BL\nHLT");
+  assert.equal(state.reg.AX & 0xFF, 127);
+  assert.equal(state.flags.OF, 1);
+  assert.equal(state.flags.SF, 0);
+});
 
 console.log("\nRésultat vecteurs indépendants : " + passed + " tests réussis.");
 if (process.exitCode) process.exit(process.exitCode);
