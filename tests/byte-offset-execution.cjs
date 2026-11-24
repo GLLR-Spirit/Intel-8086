@@ -21,7 +21,8 @@ const context = {
 vm.createContext(context);
 const injection = "\nglobalThis.__8086ByteOffsetApi = {" +
   "\n assemble: function (source) { return assembleProgram(source); }," +
-  "\n execute: function (source) { return executeAll(source); }" +
+  "\n execute: function (source) { return executeAll(source); }," +
+  "\n executeBinary: function (bytes, cs, ip) { return executeBinary(bytes, cs, ip); }" +
   "\n};\n})();\n";
 const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injection);
 assert.notEqual(instrumented, match[1], "Test API injection point must exist");
@@ -139,4 +140,50 @@ console.log("Branchements directs et LOOP : " + counts.branches + " tests.");
 console.log("CALL / RET et adresses de retour : " + counts.calls + " tests.");
 console.log("Bouclage IP sur segment de 64 Kio : " + counts.wrap + " test.");
 console.log("Résultat cohérence binaire/exécution : " + passed + " réussis, " + failed + " échecs.");
+
+const countsBinary = { loading: 0, branches: 0, validation: 0 };
+function executeLoaded(bytes, cs, ip) {
+  const result = api.executeBinary(bytes, cs, ip);
+  assert.ok(!result.error, result.error || "binary execution failed");
+  return result;
+}
+test("loads bytes at the selected CS:IP and executes decoded instructions", () => {
+  const bytes = [0xB8,0x34,0x12,0x40,0xF4];
+  const state = executeLoaded(bytes, 0x1000, 0x0100);
+  assert.equal(state.execution.mode, "loaded-binary");
+  assert.equal(state.execution.loadCS, 0x1000);
+  assert.equal(state.execution.loadIP, 0x0100);
+  assert.equal(state.reg.CS, 0x1000);
+  assert.equal(state.reg.IP, 0x0105);
+  assert.equal(state.reg.AX, 0x1235);
+  assert.deepEqual([state.mem[0x10100],state.mem[0x10101],state.mem[0x10102],state.mem[0x10103],state.mem[0x10104]], bytes);
+});
+countsBinary.loading++;
+test("binary conditional branch resolves to a decoded target instruction", () => {
+  const bytes = [0xB8,0,0,0x3D,0,0,0x74,3,0xB8,1,0,0xF4];
+  const state = executeLoaded(bytes, 0x2000, 0x0200);
+  assert.equal(state.reg.AX, 0);
+  assert.equal(state.reg.IP, 0x020C);
+  assert.equal(state.execution.decodedInstructions, 5);
+});
+countsBinary.branches++;
+test("rejects a branch target in the middle of an instruction", () => {
+  const result = api.executeBinary([0xEB,0x01,0xB8,0x34,0x12,0xF4],0,0);
+  assert.ok(result.error && /ne correspond pas à une instruction décodée/.test(result.error));
+});
+countsBinary.validation++;
+test("rejects unsupported DB opcodes instead of silently executing them", () => {
+  const result = api.executeBinary([0x0F,0xF4],0,0);
+  assert.ok(result.error && /non pris en charge/.test(result.error));
+});
+countsBinary.validation++;
+test("validates initial segment and offset as 16-bit values", () => {
+  assert.match(api.executeBinary([0xF4],0x10000,0).error,/16 bits/);
+  assert.match(api.executeBinary([0xF4],0,-1).error,/16 bits/);
+});
+countsBinary.validation++;
+console.log("Chargement CS:IP et mémoire : " + countsBinary.loading + " test.");
+console.log("Branchements binaires : " + countsBinary.branches + " test.");
+console.log("Validation du flux chargé : " + countsBinary.validation + " tests.");
+
 if (failed) process.exit(1);
