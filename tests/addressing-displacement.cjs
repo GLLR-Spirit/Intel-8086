@@ -222,9 +222,8 @@ for (const opcode of [0xC6, 0xC7]) {
   }
 }
 // FE: only /0 INC and /1 DEC are defined.
-// FF: /0..6 are defined; /3 and /5 require memory operands. The current
-// decoder implements only /0 and /1, so /2..6 intentionally remain DB bytes
-// here (unsupported != architecturally invalid). /7 is undefined.
+// FF: /0..6 are defined; /3 and /5 require memory operands. /7 is undefined.
+ // The decoder recognizes the near indirect and PUSH forms plus far memory forms.
 for (let ext = 0; ext < 8; ext++) {
   test("FE extension · /" + ext, () => {
     const instruction = decodeInstruction(0xFE, ext);
@@ -233,23 +232,21 @@ for (let ext = 0; ext < 8; ext++) {
   groupCases++;
   test("FF extension support · /" + ext, () => {
     const instruction = decodeInstruction(0xFF, ext);
-    assert.equal(instruction.startsWith("DB "), ext > 1, instruction);
-    const architecturallyDefined = ext <= 6;
-    const implementedByDecoder = ext <= 1;
-    assert.equal(architecturallyDefined, ext !== 7);
-    assert.equal(implementedByDecoder, !instruction.startsWith("DB "));
+    const invalidRegisterForm = ext === 3 || ext === 5 || ext === 7;
+    assert.equal(instruction.startsWith("DB "), invalidRegisterForm, instruction);
+    const architecturallyDefined = ext <= 6 && !invalidRegisterForm;
+    assert.equal(architecturallyDefined, !instruction.startsWith("DB "));
   });
   groupCases++;
 }
-// FF /3 CALL FAR and /5 JMP FAR require a memory operand; /2, /4 and /6
-// accept register or memory. The decoder currently leaves these forms raw.
+// FF /3 CALL FAR and /5 JMP FAR require memory operands; /2, /4 and /6
+// accept register or memory. Every architecturally valid form is decoded.
 for (const ext of [2, 3, 4, 5, 6]) {
   for (const mod of [0, 3]) {
     test("FF architectural operand restriction · /" + ext + " mod=" + mod, () => {
-      const architecturallyDefined = ext === 3 || ext === 5 ? mod !== 3 : true;
+      const architecturallyDefined = !(ext === 3 || ext === 5) || mod !== 3;
       const instruction = decodeInstruction(0xFF, ext, mod, 0);
-      assert.equal(architecturallyDefined, !(ext === 3 || ext === 5) || mod !== 3);
-      assert.ok(instruction.startsWith("DB "), "This form is not yet decoded: " + instruction);
+      assert.equal(instruction.startsWith("DB "), !architecturallyDefined, instruction);
     });
     groupCases++;
   }
@@ -269,15 +266,15 @@ for (const opcode of [0x8C, 0x8E]) {
     groupCases++;
   }
 }
-// F6/F7: /0 TEST is implemented; /1 is architecturally reserved; /2..7
-// are defined 8086 operations but are currently outside this decoder subset.
+// F6/F7: /0 TEST, /1 reserved, /2 NOT, /3 NEG, /4 MUL,
+// /5 IMUL, /6 DIV and /7 IDIV.
 for (const opcode of [0xF6, 0xF7]) {
   const tail = opcode === 0xF6 ? [0x01] : [0x01, 0x00];
   for (let ext = 0; ext < 8; ext++) {
     test("F6/F7 extension · " + opcode.toString(16) + " /" + ext, () => {
       const instruction = decodeInstruction(opcode, ext, 3, 0, ext === 0 ? tail : []);
-      if (ext === 0 || ext === 1) assert.ok(instruction.startsWith("TEST ") === (ext === 0), instruction);
-      else assert.ok(instruction.startsWith("DB "), instruction);
+      if (ext === 1) assert.ok(instruction.startsWith("DB "), instruction);
+      else assert.ok(instruction.startsWith(["TEST", "", "NOT", "NEG", "MUL", "IMUL", "DIV", "IDIV"][ext] + " "), instruction);
     });
     groupCases++;
   }
