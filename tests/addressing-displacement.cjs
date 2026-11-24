@@ -255,13 +255,14 @@ for (const opcode of [0x8C, 0x8E]) {
   for (let ext = 0; ext < 8; ext++) {
     test("MOV segment extension · " + opcode.toString(16) + " /" + ext, () => {
       const instruction = decodeInstruction(opcode, ext);
-      // On original 8086/8088, selector values 4..7 alias 0..3, and 8E /1
-      // (MOV CS, r/m16) is accepted. This decoder currently emits DB for
-      // these legacy encodings; do not misclassify them as architecturally invalid.
-      const legacyUnsupported = false;
-      assert.equal(instruction.startsWith("DB "), legacyUnsupported, instruction);
-      const expectedSegment = ["ES", "CS", "SS", "DS"][ext & 3];
-      assert.ok(instruction.includes(expectedSegment), instruction);
+      // Intel 8086 Table 4-13 encodes the selector as 0SR: /0..3 valid,
+      // /4..7 marked "not used". /1 (MOV CS, r/m16) is valid on 8086.
+      const reservedSelector = ext >= 4;
+      assert.equal(instruction.startsWith("DB "), reservedSelector, instruction);
+      if (!reservedSelector) {
+        const expectedSegment = ["ES", "CS", "SS", "DS"][ext];
+        assert.ok(instruction.includes(expectedSegment), instruction);
+      }
     });
     groupCases++;
   }
