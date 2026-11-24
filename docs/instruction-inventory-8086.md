@@ -238,7 +238,7 @@ Les codes ci-dessous sont les opcodes primaires ou les groupes d'opcodes archite
 | LOOP | E2h | Saut court relatif | Mnémotechnique d'instruction |
 | LOOPE/LOOPZ | E1h | Saut court relatif | Synonymes |
 | LOOPNE/LOOPNZ | E0h | Saut court relatif | Synonymes |
-| MOV | 88h–8Bh, 8Ch–8Eh, A0h–A3h, B0h–BFh, C6h/C7h, etc. | Famille multi-formes ; détail ModR/M requis | Mnémotechnique d'instruction |
+| MOV | 88h–8Bh, 8Ch, 8Eh, A0h–A3h, B0h–BFh, C6h/C7h | Famille multi-formes ; 8Dh est LEA et 8Fh est POP | Mnémotechnique d'instruction |
 | MOVSB / MOVSW | A4h / A5h | Opcode fixe, taille implicite | Mnémotechniques distinctes |
 | MUL | F6h /4 (byte), F7h /4 (word) | Groupe ModR/M | Mnémotechnique d'instruction |
 | NEG | F6h /3 (byte), F7h /3 (word) | Groupe ModR/M | Mnémotechnique d'instruction |
@@ -328,3 +328,10 @@ Pour chaque graphie, consigner séparément :
 - Intel, *MCS-86 Macro Assembly Language Reference Manual*, septembre 1979 : https://mark-ogden.uk/files/intel/publications/9800640-02%20MCS-86%20Macro%20Assembly%20Language%20Reference%20Manual-Sep79.pdf
 
 **Important :** les conditions de saut du tableau sont des définitions fonctionnelles usuelles à vérifier avec le tableau Intel ; elles ne remplacent pas l'audit des FLAGS modifiés par l'instruction précédente. Cet inventaire ne constitue pas encore une certification de couverture totale.
+
+
+## 12. Première matrice de formes — six instructions prioritaires
+
+Une fiche détaillée de première passe est maintenant disponible dans [operand-encoding-8086.md](operand-encoding-8086.md). Elle décompose les formes ModR/M, les opcodes accumulateur-immédiat, les groupes 80h/81h/83h, les restrictions, les effets FLAGS et les cycles actuellement sourcés pour MOV, ADD, ADC, SUB, SBB et CMP.
+
+Cette matrice ne vaut pas validation exhaustive : les timings SUB/SBB et les contrôles binaires indépendants restent explicitement ouverts. Les propositions de vecteurs de tests dans cette fiche ne sont pas des tests exécutés.
