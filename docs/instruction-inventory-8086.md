@@ -334,7 +334,7 @@ Pour chaque graphie, consigner séparément :
 
 Une fiche détaillée de première passe est maintenant disponible dans [operand-encoding-8086.md](operand-encoding-8086.md). Elle décompose les formes ModR/M, les opcodes accumulateur-immédiat, les groupes 80h/81h/83h, les restrictions, les effets FLAGS et les cycles actuellement sourcés pour MOV, ADD, ADC, SUB, SBB et CMP.
 
-Cette matrice ne vaut pas validation exhaustive : les timings SUB/SBB et les contrôles binaires indépendants restent explicitement ouverts. Les propositions de vecteurs de tests dans cette fiche ne sont pas des tests exécutés.
+Cette matrice ne vaut pas validation exhaustive : les timings SUB/SBB et l'audit de chaque forme exacte restent ouverts. Les vecteurs indépendants exécutés valident maintenant un sous-ensemble des formes ADC/SBB ; le format 83h et d'autres variantes restent hors périmètre.
 
 
 ## État de prise en charge — ADC et SBB
