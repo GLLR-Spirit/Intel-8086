@@ -722,7 +722,7 @@ function runSelfTests(){var cases=[
 ["TEST AX immédiat utilise bien l'opcode  A9h","HLT",function(s){var b=encodingBytes(parseProgram("TEST AX, 1234h").ops[0]);return b&&b[0]===169&&encodingRoundTrip("TEST AX, 1234h");}],
 ["Désassembleur refuse les valeurs supérieures à FFh", "HLT", function(s){try{disassembleBytes([256]);return false;}catch(e){return /Octet invalide/.test(e.message);}}],
 ["Désassembleur refuse les valeurs négatives et fractionnaires", "HLT", function(s){try{disassembleBytes([144,-1]);return false;}catch(e){return /Octet invalide/.test(e.message);}}],
-["Extension SBB non prise en charge conserve la frontière suivante", "HLT", function(s){var r=disassembleBytes([128,216,1,244]);return r.rows.length===2&&r.rows[0].bytes.join(",")==="128,216,1"&&r.rows[0].instruction.indexOf("DB ")===0&&r.rows[1].instruction==="HLT";}],
+["Extension SBB /3 est décodée et conserve la frontière suivante", "HLT", function(s){var r=disassembleBytes([128,216,1,244]);return r.rows.length===2&&r.rows[0].bytes.join(",")==="128,216,1"&&r.rows[0].instruction==="SBB AL, 01h"&&r.rows[1].instruction==="HLT";}],
 ["Extension MOV C6 non prise en charge consomme son immédiat", "HLT", function(s){var r=disassembleBytes([198,200,127,244]);return r.rows.length===2&&r.rows[0].bytes.join(",")==="198,200,127"&&r.rows[1].instruction==="HLT";}],
 ["Opcode de groupe F6 non pris en charge ne désynchronise pas le flux", "HLT", function(s){var r=disassembleBytes([246,208,144]);return r.rows.length===2&&r.rows[0].bytes.join(",")==="246,208"&&r.rows[1].instruction==="NOP";}],
 ["Préfixe de segment isolé signalé explicitement", "HLT", function(s){try{disassembleBytes([38]);return false;}catch(e){return /Préfixe de segment isolé/.test(e.message);}}],
