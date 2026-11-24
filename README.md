@@ -20,7 +20,7 @@ Un registre distinct des instructions, synonymes, préfixes et éléments hors p
 
 ## Audit de la référence
 
-L'audit d'exhaustivité et de précision est en cours. Le suivi des vérifications, les anomalies ouvertes et les critères de clôture sont consignés dans [docs/audit-reference-8086.md](docs/audit-reference-8086.md). Les statuts de prise en charge sont corrigés lorsqu'une fiche documentaire ne correspond pas au code réel ; notamment, ADC et SBB sont documentées mais ne sont pas implémentées dans le simulateur, l'assembleur ou le désassembleur.
+L'audit d'exhaustivité et de précision est en cours. Le suivi des vérifications, les anomalies ouvertes et les critères de clôture sont consignés dans [docs/audit-reference-8086.md](docs/audit-reference-8086.md). Les statuts de prise en charge sont corrigés lorsqu'une fiche documentaire ne correspond pas au code réel ; notamment, ADC et SBB sont désormais implémentées dans le simulateur, l'assembleur et le désassembleur pour un sous-ensemble de formes ; les variantes 83h restent hors périmètre.
 
 ## Tests de référence des instructions
 
@@ -68,7 +68,7 @@ L'analyseur contrôle notamment les restrictions 8086 des registres de segment :
 
 Le moteur JavaScript est un interpréteur pédagogique, pas un émulateur matériel complet du 8086. Il prend actuellement en charge un sous-ensemble comprenant notamment :
 
-- Transferts et calculs : `MOV`, `ADD`, `SUB`, `INC`, `DEC`
+- Transferts et calculs : `MOV`, `ADD`, `ADC`, `SUB`, `SBB`, `INC`, `DEC`
 - Logique : `AND`, `OR`, `XOR`, `NOT`, `TEST`
 - Décalages : `SHL`, `SAL`, `SHR`
 - Comparaison et branchements : `CMP`, `JMP`, `JE/JZ`, `JNE/JNZ`, `JC/JNC`, `JS/JNS`, `JO/JNO`, `JP/JNP`, `JG/JGE/JL/JLE`, `JA/JAE/JB/JBE`
