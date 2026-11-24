@@ -36,3 +36,5 @@ jobs:
         run: node tests/legacy-segment-encodings.cjs
       - name: Run F6 F7 FF C6 C7 opcode group tests
         run: node tests/group-opcodes.cjs
+      - name: Run POP, control transfer and stack tests
+        run: node tests/control-stack.cjs
