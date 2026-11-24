@@ -22,7 +22,7 @@ vm.createContext(context);
 const injection = "\nglobalThis.__8086ByteOffsetApi = {" +
   "\n assemble: function (source) { return assembleProgram(source); }," +
   "\n execute: function (source) { return executeAll(source); }," +
-  "\n executeBinary: function (bytes, cs, ip) { return executeBinary(bytes, cs, ip); }" +
+  "\n executeBinary: function (bytes, cs, ip) { return executeBinary(bytes, cs, ip); }," +"\n decodeOne: function (bytes) { return disassembleBytes(bytes, 1); }" +
   "\n};\n})();\n";
 const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injection);
 assert.notEqual(instrumented, match[1], "Test API injection point must exist");
@@ -141,7 +141,7 @@ console.log("CALL / RET et adresses de retour : " + counts.calls + " tests.");
 console.log("Bouclage IP sur segment de 64 Kio : " + counts.wrap + " test.");
 console.log("Résultat cohérence binaire/exécution : " + passed + " réussis, " + failed + " échecs.");
 
-const countsBinary = { loading: 0, branches: 0, validation: 0 };
+const countsBinary = { loading: 0, branches: 0, validation: 0, prefixes: 0, wrap: 0, selfModify: 0, opcodes: 0, modrm: 0 };
 function executeLoaded(bytes, cs, ip) {
   const result = api.executeBinary(bytes, cs, ip);
   assert.ok(!result.error, result.error || "binary execution failed");
@@ -238,5 +238,77 @@ test("relative branches after the first instruction use the current IP as their 
   assert.equal(state.steps,3);
 });
 countsBinary.branches++;
+
+
+test("dynamic fetch rejects an incomplete immediate instead of padding with zero", () => {
+  const result = api.executeBinary([0xB8,0x34],0x5000,0x0100);
+  assert.ok(result.error && /Flux tronqué/.test(result.error),result.error);
+});
+countsBinary.validation++;
+test("instruction bytes can cross IP=FFFFh and continue at IP=0000h", () => {
+  const state = executeLoaded([0xB8,0x34,0x12,0xF4],0x5100,0xFFFE);
+  assert.equal(state.reg.AX,0x1234);
+  assert.equal(state.reg.IP,0x0002);
+  assert.equal(state.steps,2);
+});
+countsBinary.wrap++;
+test("CS override reads data from the selected code segment", () => {
+  const bytes = [0x2E,0xA1,0x10,0x00,0xF4];
+  bytes.length = 0x13;
+  bytes[0x10] = 0x34; bytes[0x11] = 0x12; bytes[0x12] = 0x90;
+  const state = executeLoaded(bytes,0x5200,0x0200);
+  assert.equal(state.reg.AX,0x1234);
+  assert.equal(state.reg.IP,0x0205);
+});
+countsBinary.prefixes++;
+test("relative negative branch executes dynamically and exits when condition changes", () => {
+  const state = executeLoaded([0xB9,0x02,0x00,0x49,0x75,0xFD,0xF4],0x5300,0x0100);
+  assert.equal(state.reg.CX,0);
+  assert.equal(state.reg.IP,0x0107);
+  assert.equal(state.steps,6);
+});
+countsBinary.branches++;
+test("relative short branch wraps from FFFFh to 0000h", () => {
+  const state = executeLoaded([0xEB,0x00,0xF4],0x5400,0xFFFE);
+  assert.equal(state.reg.IP,0x0001);
+  assert.equal(state.steps,2);
+});
+countsBinary.wrap++;
+test("20-bit physical address wraps at FFFFFh", () => {
+  const state = executeLoaded([0xB8,0x34,0x12,0xF4],0xFFFF,0x0010);
+  assert.equal(state.reg.AX,0x1234);
+  assert.equal(state.mem[0],0xB8);
+  assert.equal(state.reg.IP,0x0014);
+});
+countsBinary.wrap++;
+test("two-byte self-modification changes the next fetched instruction", () => {
+  const state = executeLoaded([0x2E,0xC7,0x06,0x0A,0x04,0xF4,0x00,0xEB,0x01,0x90,0x90],0x5500,0x0400);
+  assert.equal(state.reg.IP,0x040B);
+  assert.equal(state.mem[0x5540A],0xF4);
+  assert.equal(state.mem[0x5540B],0x00);
+  assert.equal(state.steps,3);
+});
+countsBinary.selfModify++;
+test("all 256 opcode byte values produce one bounded decode result", () => {
+  for(let opcode=0;opcode<256;opcode++){
+    const decoded=api.decodeOne([opcode,...Array(31).fill(0)]);
+    assert.equal(decoded.rows.length,1,"opcode "+opcode.toString(16));
+    assert.ok(decoded.rows[0].size>=1&&decoded.rows[0].size<=15,"length "+opcode.toString(16));
+    assert.equal(decoded.rows[0].offset,0);
+  }
+});
+countsBinary.opcodes++;
+test("all ModR/M values are checked across the principal opcode groups", () => {
+  const groups=[0x80,0x81,0x83,0x8F,0xC6,0xC7,0xF6,0xF7,0xFE,0xFF,0x8C,0x8E];
+  let checked=0;
+  for(const opcode of groups)for(let modrm=0;modrm<256;modrm++){
+    const decoded=api.decodeOne([opcode,modrm,...Array(29).fill(0)]);
+    assert.equal(decoded.rows.length,1,"opcode "+opcode.toString(16)+" ModR/M "+modrm.toString(16));
+    assert.ok(decoded.rows[0].size>=2,"empty decode");
+    checked++;
+  }
+  assert.equal(checked,3072);
+});
+countsBinary.modrm++;
 
 if (failed) process.exit(1);
