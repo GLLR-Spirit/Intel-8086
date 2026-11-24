@@ -19,27 +19,31 @@ function element(id) {
 const document = { getElementById: element, querySelectorAll: () => [] };
 const localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
 const context = { document, localStorage, console, confirm: () => true };
-vm.runInNewContext(match[1], context, { timeout: 5000 });
+const instrumented = match[1].replace(/\\}\\)\\(\\);\\s*$/, "globalThis.__learningData = { lessons, chapterLearning, exercises, chapterExerciseMap, executeAll };\\n})();");
+assert.notEqual(instrumented, match[1], "Application closure must be instrumented for learning checks");
+vm.runInNewContext(instrumented, context, { timeout: 5000 });
+const learning = context.__learningData;
+assert.ok(learning, "Learning data must be exposed to the isolated test harness");
 
-assert.equal(context.lessons.length, 11, "All 11 learning chapters must exist");
-assert.equal(context.chapterLearning.length, 11, "Every chapter must have a learning module");
-assert.ok(context.chapterLearning.every(c => c.goal && c.theory && c.walk && c.quiz.length >= 2),
+assert.equal(learning.lessons.length, 11, "All 11 learning chapters must exist");
+assert.equal(learning.chapterLearning.length, 11, "Every chapter must have a learning module");
+assert.ok(learning.chapterLearning.every(c => c.goal && c.theory && c.walk && c.quiz.length >= 2),
   "Every chapter must include objectives, theory, a guided example and comprehension questions");
-assert.equal(context.chapterLearning.reduce((n, c) => n + c.quiz.length, 0), 22,
+assert.equal(learning.chapterLearning.reduce((n, c) => n + c.quiz.length, 0), 22,
   "The chapter path must contain at least 22 comprehension questions");
 
-assert.equal(context.chapterExerciseMap.length, context.lessons.length,
+assert.equal(learning.chapterExerciseMap.length, learning.lessons.length,
   "Every chapter must link to exactly one practical exercise");
-assert.ok(context.chapterExerciseMap.every(i => Number.isInteger(i) && i >= 0 && i < context.exercises.length),
+assert.ok(learning.chapterExerciseMap.every(i => Number.isInteger(i) && i >= 0 && i < learning.exercises.length),
   "Every chapter exercise link must resolve to an existing exercise");
-assert.ok(context.exercises.length >= 19, "The exercise bank must contain at least 19 exercises");
+assert.ok(learning.exercises.length >= 19, "The exercise bank must contain at least 19 exercises");
 
 const advancedStart = 12;
-for (let i = advancedStart; i < context.exercises.length; i++) {
-  const exercise = context.exercises[i];
+for (let i = advancedStart; i < learning.exercises.length; i++) {
+  const exercise = learning.exercises[i];
   assert.ok(exercise[4]?.level && exercise[4]?.hint && exercise[4]?.steps?.length >= 3,
     "New exercise " + i + " must provide a level, hint and step-by-step solution");
-  const state = context.executeAll(exercise[2]);
+  const state = learning.executeAll(exercise[2]);
   assert.ok(!state.error, exercise[0] + " reference solution must execute: " + state.error);
   assert.ok(exercise[3](state), exercise[0] + " reference solution must satisfy its validator");
 }
@@ -49,4 +53,4 @@ assert.ok(renderer.includes("Indice et correction expliquée"), "Exercise UI mus
 assert.ok(renderer.includes("guide.steps"), "Exercise UI must render step-by-step solutions");
 
 console.log("Learning quality: 11 chapters, 22 comprehension questions, " +
-  context.exercises.length + " exercises; all 7 new reference solutions pass.");
+  learning.exercises.length + " exercises; all 7 new reference solutions pass.");
