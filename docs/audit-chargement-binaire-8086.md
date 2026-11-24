@@ -89,7 +89,7 @@ Nouvelle suite : [`tests/dynamic-differential.cjs`](../tests/dynamic-differentia
 - 4 cas de registres : INC/DEC, NOT/NEG, écritures AL/AH et XCHG ;
 - 5 cas mémoire/préfixes : DS par défaut, ES explicite, SS par défaut via BP, CS explicite, octet/mot et déplacement négatif ;
 - 5 cas de contrôle/pile : CALL/RET near direct, CALL/RET near indirect, CALL FAR/RETF, branchements conditionnels/LOOP et JMP near indirect ;
-- 2 cas IRET : restauration d'un cadre VECTOR dans le moteur source et rejet d'un IRET binaire sans cadre ;
+- 3 cas IRET : restauration d'un cadre VECTOR dans le moteur source, exécution binaire depuis un cadre brut préchargé en mémoire, et rejet d'un cadre binaire absent ;
 - 4 cas négatifs : cadres RET/RETF incompatibles, RET avec ajustement impair, extensions réservées et préfixes de segment répétés.
 
 La comparaison porte sur les registres, les indicateurs modélisés, le nombre d'instructions, la sortie, les métadonnées de pile et des adresses mémoire de données explicitement ciblées. Les octets de code chargés dans le moteur binaire ne sont pas assimilés à des écritures de données du moteur source.
@@ -107,6 +107,8 @@ Le chemin binaire ne se limite plus à rejeter `IRET` lorsqu'aucune métadonnée
 
 Le nouveau vecteur IRET place un cadre brut dans la mémoire, change réellement CS, restaure IP et FLAGS, puis vérifie le bouclage de SP de `FFFEh` vers `0000h`. Il ne dépend pas de la directive source `VECTOR`.
 
-La suite différentielle ajoute aussi un oracle de référence arithmétique indépendant : balayage exhaustif des paires d'opérandes 8 bits pour ADD, ADC, SUB et SBB avec les états de retenue pertinents, vecteurs 16 bits aux frontières, et exécution de vecteurs binaires bruts ALU dont les octets ne proviennent pas de l'assembleur du laboratoire.
+La suite différentielle ajoute aussi un oracle de référence arithmétique indépendant : balayage exhaustif de **393 216** combinaisons 8 bits pour ADD, ADC, SUB et SBB avec les états de retenue pertinents, **800** vecteurs 16 bits aux frontières, et **1 350** exécutions binaires ALU à partir d'octets machine bruts, sans passer par l'assembleur du laboratoire.
+
+Validation CI : [run 45505098359](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45505098359), commit `daaab3856e0c0b5f017fa11dd12eeffc4cb35252`, workflow **success** ; suite différentielle **34/34 réussites**.
 
 La portée reste bornée : ce renforcement ne transforme pas le moteur en émulateur matériel complet et ne prouve pas les formes qui ne sont pas implémentées.
