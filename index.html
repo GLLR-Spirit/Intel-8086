@@ -224,7 +224,7 @@ Object.keys(parsed.labels).forEach(function(name){symbolOffsets[name]=offsets[pa
 var output=[],rows=[];
 for(var j=0;j<ops.length;j++){
 var current=ops[j],mn=current.op,encoded=null,targetIndex,targetOffset,delta,opcode=relativeBranchOpcode(mn);
-if(opcode!==null){
+if(opcode!==null||mn==="CALL"){
 targetIndex=parsed.labels[current.args[0].toUpperCase()];
 if(targetIndex===undefined)assemblerFailure("Étiquette inconnue : "+current.args[0]+".",current);
 targetOffset=offsets[targetIndex];
