@@ -45,7 +45,7 @@ for(const [name,source,expected] of [
  ["forward +128 falls back to near","JMP TARGET\n"+nops(128)+"\nTARGET: HLT",[0xE9,0x80,0x00]],
  ["backward -129 falls back to near","TOP: NOP\n"+nops(126)+"\nJMP TOP\nHLT",[0xE9,0x7F,0xFF]]
 ]) {
- test("JMP relaxation "+name,()=>{const all=assemble(source);const actual=name.startsWith("backward")?all.slice(-expected.length):all.slice(0,expected.length);assert.deepEqual(actual,expected);});
+ test("JMP relaxation "+name,()=>{const all=assemble(source);const actual=name.startsWith("backward")?all.slice(-(expected.length+1),-1):all.slice(0,expected.length);assert.deepEqual(actual,expected);});
  counts.short++;
 }
 test("JMP relaxation updates later label offsets after shortening",()=>{
@@ -59,7 +59,7 @@ for(const [name,source,expected] of [
  ["+32767","CALL TARGET\n"+nops(32767)+"\nTARGET: HLT",[0xE8,0xFF,0x7F]],
  ["-32768","TARGET: NOP\n"+nops(32764)+"\nCALL TARGET",[0xE8,0x00,0x80]]
 ]){
- test("CALL rel16 boundary "+name,()=>assert.deepEqual(assemble(source).slice(name==="+32767"?0:-3),expected));
+ test("CALL rel16 boundary "+name,()=>{const all=assemble(source);assert.deepEqual(name==="+32767"?all.slice(0,3):all.slice(-3),expected);});
  counts.near++;
 }
 test("CALL rel16 displacement wraps through 16-bit IP",()=>{
