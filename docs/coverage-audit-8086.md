@@ -236,3 +236,12 @@ Le [registre de couverture par forme](form-coverage-register-8086.md) décompose
 La suite indépendante a été étendue de 40 à **80 tests**. Le run CI 221 du 24 novembre 2026 valide **354/354 tests de fumée et 80/80 vecteurs indépendants** : https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45441788838.
 
 Attention : 50/59 mesure la présence de branches pour les formes recensées, pas le taux de validation. La matrice reste limitée à six mnémotechniques et ne représente pas le jeu d'instructions complet.
+
+
+## Mise à jour ciblée — MOV, ADD, ADC, SUB, SBB et CMP
+
+Le registre [form-coverage-register-8086.md](form-coverage-register-8086.md) a été actualisé après implémentation des quatre formes `MOV moffs` A0h–A3h et des cinq formes immédiates signées `83h`. Pour ces six mnémotechniques, les 59 formes du registre disposent maintenant d’une voie d’assemblage et de désassemblage. Cela ne signifie pas que toutes les combinaisons ModR/M et tous les déplacements sont exhaustivement validés.
+
+Le champ S:W du manuel Intel 8086 (table 4-7) confirme que S=1 et W=1 étend l’immédiat de 8 bits à 16 bits ; l’opcode résultant du groupe est 83h. Il s’agit bien d’une forme du 8086, et non d’une extension 80186.
+
+**CI 238** : 354/354 tests de fumée et 114/114 vecteurs indépendants réussis : https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45443738198.
