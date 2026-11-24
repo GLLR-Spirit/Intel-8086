@@ -35,5 +35,5 @@ const summary = element("testSummary").textContent;
 const results = element("testResults").textContent;
 console.log(summary);
 console.log(results);
-assert.equal(summary, "258/258 tests réussis", "All simulator self-tests must pass");
+assert.equal(summary, "267/267 tests réussis", "All simulator self-tests must pass");
 assert.ok(!results.includes("FAIL"), "No self-test should fail");
