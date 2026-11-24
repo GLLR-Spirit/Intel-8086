@@ -14,6 +14,10 @@ La rubrique « Instructions » propose désormais une recherche dans les descrip
 
 La documentation ne modifie pas le moteur CPU. Les statuts affichés distinguent la prise en charge pédagogique de la documentation du jeu d'instructions réel.
 
+## Inventaire canonique et audit
+
+Un registre distinct des instructions, synonymes, préfixes et éléments hors périmètre est maintenu dans [docs/instruction-inventory-8086.md](docs/instruction-inventory-8086.md). Il ne confond pas les graphies d'assembleur historiques avec les mnémotechniques canoniques Intel et ne déduit pas le support logiciel de l'existence architecturale d'une instruction. Cet inventaire est une première passe à vérifier contre les sources primaires, pas une certification d'exhaustivité.
+
 ## Audit de la référence
 
 L'audit d'exhaustivité et de précision est en cours. Le suivi des vérifications, les anomalies ouvertes et les critères de clôture sont consignés dans [docs/audit-reference-8086.md](docs/audit-reference-8086.md). Les statuts de prise en charge sont corrigés lorsqu'une fiche documentaire ne correspond pas au code réel ; notamment, ADC et SBB sont documentées mais ne sont pas implémentées dans le simulateur, l'assembleur ou le désassembleur.
