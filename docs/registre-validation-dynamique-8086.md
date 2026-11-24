@@ -61,15 +61,15 @@ Le lot étendu comprend également un cadre IRET brut en mémoire, sans métadon
 | CALL/JMP indirects near et far ; RET/RETF | Oui, sous-ensemble | Oui, sous-ensemble | Oui, sous-ensemble | Oui pour formes reconnues | Partiel |
 | IRET | Oui avec cadre `VECTOR` et pile typée | Pas de directive binaire équivalente à `VECTOR` | Opcode décodé | Exécuté depuis un cadre brut `SS:SP` préchargé en mémoire | Partiel |
 | NOP, HLT, CLC, STC, CMC, CLI, STI, CLD, STD | Oui | Oui pour les formes présentes | Oui pour les formes présentes | Oui pour les formes présentes | Partiel |
-| MOVSB/MOVSW, CMPSB/CMPSW, SCASB/SCASW, LODSB/LODSW, STOSB/STOSW | Oui en mode source | Pas de génération binaire complète | Pas de décodage binaire complet | Non | Partiel source ; non pris en charge en binaire |
-| REP/REPE/REPZ/REPNE/REPNZ avec chaînes | Oui en mode source, sous-ensemble | Pas de génération complète | Préfixes non pris en charge | Non | Partiel source ; non pris en charge en binaire |
+| MOVSB/MOVSW, CMPSB/CMPSW, SCASB/SCASW, LODSB/LODSW, STOSB/STOSW | Oui | Oui pour les dix opcodes fixes | Oui pour les dix opcodes fixes | Oui, y compris avec répétition | Partiel : formes de chaîne et sémantique REP ciblées, pas audit exhaustif des interactions de préfixes |
+| REP/REPE/REPZ/REPNE/REPNZ avec chaînes | Oui, itération CX/ZF | F3/F2 générés | F3/F2 décodés | Oui, réexécution dynamique de l'instruction préfixée | Partiel : seules les instructions de chaîne prises en charge et les combinaisons testées sont couvertes |
 | INT imm8 et gestionnaires VECTOR/IVT | Oui avec `VECTOR` et service DOS AH=02h limité | Pas encore de génération binaire par l'assembleur | `CD ib` décodé | Oui si l'entrée IVT et le gestionnaire sont initialisés en mémoire ; service DOS AH=02h conservé | Partiel |
-| LOOPE/LOOPZ, LOOPNE/LOOPNZ, JCXZ | Non dans le chemin de contrôle exécuté | Non | Non | Non | Non pris en charge |
-| AAA, AAS, AAM, AAD, DAA, DAS, CBW, CWD | Non | Non | Non | Non | Non pris en charge |
-| SHL, SAL, SHR | Oui, exécution source | Pas de génération binaire complète | Non dans le décodeur binaire actuel | Non en exécution binaire | Partiel source ; non pris en charge en binaire |
-| ROL, ROR, RCL, RCR, SAR | Non | Non | Non | Non | Non pris en charge |
-| IN, OUT, INTO, XLAT, LAHF, SAHF, WAIT, ESC | Non | Non | Non | Non | Non pris en charge |
-| LOCK et interactions complètes de préfixes | Non | Non | Non | Non | Non pris en charge |
+| LOOPE/LOOPZ, LOOPNE/LOOPNZ, JCXZ | Oui | E0h/E1h/E3h | E0h/E1h/E3h | Oui, branchement relatif court | Partiel : alias, limites rel8 et toutes les conditions à compléter par tests indépendants |
+| AAA, AAS, AAM, AAD, DAA, DAS, CBW, CWD | Oui, base décimale 10 pour AAM/AAD | OpCodes fixes / D4 0A / D5 0A | Décodés pour les formes 8086 base 10 | Oui | Partiel : vecteurs de bord et oracle BCD exhaustif encore nécessaires |
+| SHL, SAL, SHR | Oui | D0h–D3h /4,/5 | Oui | Oui | Partiel : validation indépendante des comptes CL et des FLAGS à étendre |
+| ROL, ROR, RCL, RCR, SAR | Oui | D0h–D3h /0–/3,/7 | Oui | Oui | Partiel : vecteurs exhaustifs de rotation, CF et comptes CL à compléter |
+| IN, OUT, INTO, XLAT, LAHF, SAHF, WAIT, ESC | Oui, avec ports simulés et ESC/WAIT sans périphérique externe | OpCodes immédiats/fixes et ModR/M ESC | Oui pour les formes décodées | Oui dans le modèle pédagogique | Partiel : E/S déterministes, pas de matériel, TEST ni coprocesseur 8087 |
+| LOCK et interactions complètes de préfixes | Préfixe accepté sur un sous-ensemble mémoire verrouillable | F0h émis | F0h décodé | Instruction exécutée en mono-thread | Partiel : aucune atomicité bus/concurrence matérielle ; interactions de préfixes non exhaustives |
 
 **Important :** « Oui » signifie que le chemin existe pour un sous-ensemble de formes, pas que toutes les formes de l'instruction ont été validées. Les tableaux de formes et les tests spécialisés restent les références pour les restrictions exactes.
 
@@ -104,3 +104,19 @@ Le workflow principal [45505775488](https://github.com/GLLR-Spirit/Intel-8086/ac
 La suite différentielle est renforcée par un oracle indépendant exhaustif pour l'ALU 8 bits et des vecteurs machine bruts. **Cela ne certifie toujours pas l'ensemble du 8086** : toutes les formes d'instruction, tous les états ModR/M, les déplacements, l'ensemble des états mémoire et les périphériques ne sont pas couverts par une référence indépendante exhaustive.
 
 Le seuil « parfait » demandé n'est donc pas atteint. La phase est validée pour son périmètre de tests sur le run CI cité ; le laboratoire doit rester classé comme interpréteur pédagogique partiellement validé, et non comme simulateur 8086 exhaustif.
+
+## 7. Nouvelle passe — familles auparavant absentes (25 novembre 2026)
+
+Les familles précédemment listées comme absentes ont maintenant reçu une implémentation initiale dans le parseur, l'exécution source, l'assembleur, le désassembleur et le chemin binaire :
+
+- LOOPE/LOOPZ, LOOPNE/LOOPNZ et JCXZ : opcodes courts E1h, E0h et E3h.
+- AAA, AAS, AAM, AAD, DAA, DAS, CBW et CWD : formes 8086 documentées, AAM/AAD limitées à la base 10.
+- ROL, ROR, RCL, RCR, SHL/SAL, SHR et SAR : D0h–D3h, compte 1 ou CL.
+- IN/OUT : ports simulés par une table déterministe, initialisable par initialState.io ; aucun matériel d'E/S réel.
+- INTO : déclenchement du vecteur 4 lorsque OF=1.
+- XLAT, LAHF, SAHF, WAIT et ESC.
+- REP/REPE/REPNE et LOCK : préfixes F3h/F2h/F0h sur le sous-ensemble pris en charge.
+
+**Limites explicites :** WAIT est un no-op faute de modélisation de l'entrée TEST ; ESC est un no-op faute de coprocesseur externe/8087 ; LOCK valide et conserve le préfixe mais le moteur mono-thread ne simule ni verrouillage du bus ni concurrence atomique ; les ports IN/OUT sont un modèle logiciel. Les formes de compte, les FLAGS indéfinis, les combinaisons de préfixes et les cas invalides nécessitent encore des matrices indépendantes. Ces instructions restent donc **partiellement validées**, et non certifiées exhaustives.
+
+Les tests différentiels ajoutés couvrent les cas nominaux source/binaire et les principaux encodages. Le statut ne sera élevé qu'après des vecteurs indépendants complets par forme.
