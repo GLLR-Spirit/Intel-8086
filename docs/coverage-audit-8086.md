@@ -351,3 +351,13 @@ Les tests incluent un cadre IRET brut en mémoire, un changement de CS, la resta
 La validation arithmétique comprend un oracle indépendant pour ADD/ADC/SUB/SBB, un balayage exhaustif des couples 8 bits, des vecteurs de frontière 16 bits et des octets machine ALU fixes exécutés par le chemin binaire. Les moteurs source et binaire partagent encore certaines primitives ; la référence indépendante réduit cette dépendance pour l'ALU, sans constituer un modèle complet séparé du processeur.
 
 L'IVT doit être initialisée explicitement dans la mémoire binaire ; le moteur ne simule pas les interruptions matérielles ni l'arbitrage du processeur d'interruptions. Les familles absentes restent absentes du moteur binaire. Aucun statut de validation globale ne doit être attribué à un mnémonique tant que toutes ses formes et contraintes 8086 ne sont pas couvertes.
+
+## Extension du sous-ensemble binaire — 25 novembre 2026
+
+Une passe d'implémentation couvre maintenant les familles précédemment absentes : LOOPE/LOOPNE/JCXZ, ajustements ASCII/BCD, CBW/CWD, rotations et décalages, IN/OUT, INTO, XLAT, LAHF/SAHF, WAIT, ESC et les préfixes REP/LOCK.
+
+Les opcodes 8086 concernés sont intégrés à l'assembleur et au désassembleur ; l'exécution source et le fetch/décodage/exécution binaire prennent en charge les formes ciblées. Les chaînes sont répétées dynamiquement par CX et les conditions ZF appropriées ; IN/OUT utilisent une carte de ports logicielle initialisable explicitement.
+
+**Limites qui restent importantes :** les ports ne représentent aucun périphérique matériel ; WAIT ne modélise pas l'entrée TEST ; ESC ne simule pas un coprocesseur 8087 ; LOCK ne produit aucune atomicité observable dans le moteur mono-thread ; les interactions arbitraires de préfixes et tous les vecteurs de FLAGS ne sont pas exhaustivement validés. Les familles nouvellement ajoutées restent donc marquées **partielles**.
+
+Les tests spécialisés source/binaire et les validations CI associées déterminent le périmètre réellement vérifié. Cette extension ne constitue pas une certification d'émulation matérielle 8086 complète.
