@@ -99,11 +99,11 @@ const assemblerVectors = [
   ["ADC word memory immediate", "ADC WORD PTR [2000h], 1234h", [0x81, 0x16, 0x00, 0x20, 0x34, 0x12]],
   ["SUB word memory immediate", "SUB WORD PTR [2000h], 1234h", [0x81, 0x2E, 0x00, 0x20, 0x34, 0x12]],
   ["CMP word memory immediate", "CMP WORD PTR [2000h], 1234h", [0x81, 0x3E, 0x00, 0x20, 0x34, 0x12]],
-  ["ADD r/m16 small immediate remains 81h on 8086", "ADD WORD PTR [2000h], -1", [0x81, 0x06, 0x00, 0x20, 0xFF, 0xFF]],
-  ["ADC r/m16 immediate uses 81h on 8086", "ADC WORD PTR [2000h], -128", [0x81, 0x16, 0x00, 0x20, 0x80, 0xFF]],
-  ["SBB r/m16 immediate uses 81h on 8086", "SBB WORD PTR [2000h], 127", [0x81, 0x1E, 0x00, 0x20, 0x7F, 0x00]],
-  ["SUB r/m16 immediate uses 81h on 8086", "SUB WORD PTR [2000h], -2", [0x81, 0x2E, 0x00, 0x20, 0xFE, 0xFF]],
-  ["CMP r/m16 immediate uses 81h on 8086", "CMP WORD PTR [2000h], -128", [0x81, 0x3E, 0x00, 0x20, 0x80, 0xFF]],
+  ["ADD r/m16 sign-extended immediate", "ADD WORD PTR [2000h], -1", [0x83, 0x06, 0x00, 0x20, 0xFF]],
+  ["ADC r/m16 sign-extended immediate", "ADC WORD PTR [2000h], -128", [0x83, 0x16, 0x00, 0x20, 0x80]],
+  ["SBB r/m16 sign-extended immediate", "SBB WORD PTR [2000h], 127", [0x83, 0x1E, 0x00, 0x20, 0x7F]],
+  ["SUB r/m16 sign-extended immediate", "SUB WORD PTR [2000h], -2", [0x83, 0x2E, 0x00, 0x20, 0xFE]],
+  ["CMP r/m16 sign-extended immediate", "CMP WORD PTR [2000h], -128", [0x83, 0x3E, 0x00, 0x20, 0x80]],
   ["ADD r/m16 immediate outside signed byte uses 81h", "ADD WORD PTR [2000h], 255", [0x81, 0x06, 0x00, 0x20, 0xFF, 0x00]],
   ["MOV byte moffs A0", "MOV AL, [1234h]", [0xA0, 0x34, 0x12]],
   ["MOV word moffs A1", "MOV AX, [1234h]", [0xA1, 0x34, 0x12]],
@@ -156,7 +156,11 @@ const decoderVectors = [
   ["ADC word memory immediate", [0x81, 0x16, 0x00, 0x20, 0x34, 0x12], /ADCWORDPTR\[2000h\],1234h/i],
   ["SUB word memory immediate", [0x81, 0x2E, 0x00, 0x20, 0x34, 0x12], /SUBWORDPTR\[2000h\],1234h/i],
   ["CMP word memory immediate", [0x81, 0x3E, 0x00, 0x20, 0x34, 0x12], /CMPWORDPTR\[2000h\],1234h/i],
-  ["Opcode 83h remains unsupported on original 8086", [0x83], /^DB 83h/i],
+  ["ADD r/m16 sign-extended immediate", [0x83, 0x06, 0x00, 0x20, 0xFF], /ADDWORDPTR\\[2000h\\],-1/i],
+  ["ADC r/m16 sign-extended immediate", [0x83, 0x16, 0x00, 0x20, 0x80], /ADCWORDPTR\\[2000h\\],-128/i],
+  ["SBB r/m16 sign-extended immediate", [0x83, 0x1E, 0x00, 0x20, 0x7F], /SBBWORDPTR\\[2000h\\],127/i],
+  ["SUB r/m16 sign-extended immediate", [0x83, 0x2E, 0x00, 0x20, 0xFE], /SUBWORDPTR\\[2000h\\],-2/i],
+  ["CMP r/m16 sign-extended immediate", [0x83, 0x3E, 0x00, 0x20, 0x80], /CMPWORDPTR\\[2000h\\],-128/i],
   ["MOV byte moffs A0", [0xA0, 0x34, 0x12], /MOVAL,BYTEPTR\[1234h\]/i],
   ["MOV word moffs A1", [0xA1, 0x34, 0x12], /MOVAX,WORDPTR\[1234h\]/i],
   ["MOV byte moffs A2", [0xA2, 0x34, 0x12], /MOVBYTEPTR\[1234h\],AL/i],
@@ -175,9 +179,10 @@ for (const [name, machineBytes, expectedText] of decoderVectors) {
     assert.deepEqual(Array.from(result.rows[0].bytes), machineBytes);
   });
 }
-test("Assembleur · les formes 83h 80186 ne sont pas émises en mode 8086", () => {
-  for (const op of ["ADD", "ADC", "SBB", "SUB", "CMP"]) {
-    assert.notEqual(bytesOf(op + " CX, 7Fh")[0], 0x83);
+test("Assembleur · immédiat court signé utilise 83h pour les cinq opérations", () => {
+  const extensions = { ADD: 0, ADC: 2, SBB: 3, SUB: 5, CMP: 7 };
+  for (const [op, ext] of Object.entries(extensions)) {
+    assert.deepEqual(bytesOf(op + " CX, 7Fh"), [0x83, 0xC1 | (ext << 3), 0x7F]);
   }
 });
 test("Assembleur · MOV refuse une largeur incohérente pour moffs", () => {
