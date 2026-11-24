@@ -675,6 +675,100 @@ test("INTO — vecteur 4, gestionnaire IVT et retour IRET en binaire", () => {
   assert.equal(state.reg.SP,0xfffe);
 });
 
+
+test("Oracle indépendant exhaustif 8 bits — SHL/SHR/SAR et rotations 8086 avec CL non masqué", () => {
+  const specs=[
+    ["SHL",4],["SHR",5],["SAR",7],["ROL",0],["ROR",1],["RCL",2],["RCR",3]
+  ];
+  const counts=[1,2,7,8,9,16,31,32,255];
+  let checked=0;
+  for(const [name,ext] of specs) for(let value=0;value<256;value++) for(const count of counts) {
+    for(const initialCarry of (["RCL","RCR"].includes(name)?[0,1]:[0])) {
+      let result=value,carry=initialCarry;
+      for(let n=0;n<count;n++){
+        if(name==="SHL"){carry=(result>>7)&1;result=(result<<1)&255;}
+        else if(name==="SHR"){carry=result&1;result>>=1;}
+        else if(name==="SAR"){carry=result&1;result=(result>>1)|(result&128);}
+        else if(name==="ROL"){carry=(result>>7)&1;result=((result<<1)&255)|carry;}
+        else if(name==="ROR"){carry=result&1;result=(result>>1)|(carry<<7);}
+        else if(name==="RCL"){const old=carry;carry=(result>>7)&1;result=((result<<1)&255)|old;}
+        else if(name==="RCR"){const old=result&1;result=(result>>1)|(carry<<7);carry=old;}
+      }
+      const modrm=0xc0|(ext<<3);
+      const bytes=[0xb0,value,0xb1,count,0xd2,modrm,0xf4];
+      const state=api.executeBinary(bytes,0,0,{flags:{CF:initialCarry}});
+      assert.ok(!state.error,state.error||name+" decode/execution");
+      assert.equal(state.reg.AX&255,result,name+" result value="+value+" count="+count+" CF="+initialCarry);
+      assert.equal(state.flags.CF,carry,name+" CF value="+value+" count="+count+" CF="+initialCarry);
+      if(name==="SHL"||name==="SHR"||name==="SAR"){
+        assert.equal(state.flags.ZF,result===0?1:0,name+" ZF");
+        assert.equal(state.flags.SF,(result>>7)&1,name+" SF");
+        assert.equal(state.flags.PF,parity8(result),name+" PF");
+      }
+      checked++;
+    }
+  }
+  assert.equal(checked,18432);
+});
+test("Oracle indépendant exhaustif 8 bits — AAA/AAS et DAA/DAS", () => {
+  let checked=0;
+  for(const name of ["AAA","AAS"]) for(let al=0;al<256;al++) for(let af=0;af<2;af++){
+    const ah=0x55,adjust=((al&15)>9)||af===1;
+    let expectedAL=al,expectedAH=ah,expectedAF=0,expectedCF=0;
+    if(adjust){expectedAL=(expectedAL+(name==="AAA"?6:-6))&255;expectedAH=(expectedAH+(name==="AAA"?1:-1))&255;expectedAF=expectedCF=1;}
+    expectedAL&=15;
+    const state=api.executeBinary([name==="AAA"?0x37:0x3f,0xf4],0,0,{reg:{AX:(ah<<8)|al},flags:{AF:af}});
+    assert.ok(!state.error,state.error||name);
+    assert.equal(state.reg.AX,((expectedAH<<8)|expectedAL)&65535,name+" AX");
+    assert.equal(state.flags.AF,expectedAF,name+" AF");
+    assert.equal(state.flags.CF,expectedCF,name+" CF");
+    checked++;
+  }
+  for(const name of ["DAA","DAS"]) for(let al=0;al<256;al++) for(let af=0;af<2;af++) for(let cf=0;cf<2;cf++){
+    const low=(al&15)>9||af===1,high=al>0x99||cf===1;
+    let expected=(al+(low?(name==="DAA"?6:-6):0)+(high?(name==="DAA"?0x60:-0x60):0))&255;
+    const state=api.executeBinary([name==="DAA"?0x27:0x2f,0xf4],0,0,{reg:{AX:al},flags:{AF:af,CF:cf}});
+    assert.ok(!state.error,state.error||name);
+    assert.equal(state.reg.AX&255,expected,name+" AL");
+    assert.equal(state.flags.AF,low?1:0,name+" AF");
+    assert.equal(state.flags.CF,high?1:0,name+" CF");
+    assert.equal(state.flags.SF,(expected>>7)&1,name+" SF");
+    assert.equal(state.flags.ZF,expected===0?1:0,name+" ZF");
+    assert.equal(state.flags.PF,parity8(expected),name+" PF");
+    checked++;
+  }
+  assert.equal(checked,256*2+256*2*2*2);
+});
+test("Oracle AAM base 10 sur les 256 valeurs possibles de AL", () => {
+  for(let al=0;al<256;al++){
+    const state=api.executeBinary([0xd4,0x0a,0xf4],0,0,{reg:{AX:al}});
+    assert.ok(!state.error,state.error||"AAM");
+    assert.equal(state.reg.AH,Math.floor(al/10));
+    assert.equal(state.reg.AX&255,al%10);
+  }
+});
+test("Décalages 16 bits — frontières de signe, compte CL et retenue", () => {
+  for(const [name,ext] of [["SHL",4],["SHR",5],["SAR",7],["ROL",0],["ROR",1],["RCL",2],["RCR",3]])
+    for(const value of [0,1,0x7fff,0x8000,0xffff,0xaaaa,0x5555])
+      for(const count of [1,2,15,16,17,31,32,255])
+        for(const carryIn of (["RCL","RCR"].includes(name)?[0,1]:[0])){
+          let result=value,carry=carryIn;
+          for(let n=0;n<count;n++){
+            if(name==="SHL"){carry=(result>>15)&1;result=(result<<1)&65535;}
+            else if(name==="SHR"){carry=result&1;result>>=1;}
+            else if(name==="SAR"){carry=result&1;result=(result>>1)|(result&0x8000);}
+            else if(name==="ROL"){carry=(result>>15)&1;result=((result<<1)&65535)|carry;}
+            else if(name==="ROR"){carry=result&1;result=(result>>1)|(carry<<15);}
+            else if(name==="RCL"){const old=carry;carry=(result>>15)&1;result=((result<<1)&65535)|old;}
+            else if(name==="RCR"){const old=result&1;result=(result>>1)|(carry<<15);carry=old;}
+          }
+          const state=api.executeBinary([0xb8,value&255,value>>8,0xb1,count,0xd3,0xc0|(ext<<3),0xf4],0,0,{flags:{CF:carryIn}});
+          assert.ok(!state.error,state.error||name+" word");
+          assert.equal(state.reg.AX,result,name+" word result");
+          assert.equal(state.flags.CF,carry,name+" word CF");
+        }
+});
+
 console.log("Audit différentiel arithmétique : " + categories.arithmetic + " vecteurs.");
 console.log("Logique et TEST : " + categories.logic + " vecteurs.");
 console.log("Registres : " + categories.registers + " vecteurs.");
