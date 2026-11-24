@@ -3,7 +3,7 @@ const vm = require("node:vm");
 const assert = require("node:assert/strict");
 
 const html = fs.readFileSync("index.html", "utf8");
-const match = html.match(/<script>([\\s\\S]*?)<\\/script>/);
+const match = html.match(/<script>([\s\S]*?)<\/script>/);
 assert.ok(match, "Inline application script must exist");
 const elements = new Map();
 function element(id) {
@@ -19,11 +19,11 @@ const context = {
   console
 };
 vm.createContext(context);
-const injection = "\\nglobalThis.__8086ByteOffsetApi = {" +
-  "\\n assemble: function (source) { return assembleProgram(source); }," +
-  "\\n execute: function (source) { return executeAll(source); }" +
-  "\\n};\\n})();\\n";
-const instrumented = match[1].replace(/\\n\\}\\)\\(\\);\\s*$/, injection);
+const injection = "\nglobalThis.__8086ByteOffsetApi = {" +
+  "\n assemble: function (source) { return assembleProgram(source); }," +
+  "\n execute: function (source) { return executeAll(source); }" +
+  "\n};\n})();\n";
+const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injection);
 assert.notEqual(instrumented, match[1], "Test API injection point must exist");
 vm.runInContext(instrumented, context, { timeout: 30000 });
 const api = context.__8086ByteOffsetApi;
@@ -49,7 +49,7 @@ const mappedSource = [
   "JMP DONE",
   "PAD: NOP",
   "DONE: HLT"
-].join("\\n");
+].join("\n");
 test("assembler exposes monotonically increasing byte offsets and matching symbols", () => {
   const a = assemble(mappedSource);
   assert.deepEqual(a.rows.map(row => row.offset), [0, 1, 4, 6, 7]);
@@ -81,7 +81,7 @@ test("Jcc resolves to its label's byte offset", () => {
     "JMP END",
     "TAKEN: MOV BX, 1",
     "END: HLT"
-  ].join("\\n");
+  ].join("\n");
   const a = assemble(source), s = execute(source);
   assert.equal(s.reg.BX, 1);
   assert.equal(s.reg.IP, a.size);
@@ -90,7 +90,7 @@ test("Jcc resolves to its label's byte offset", () => {
 counts.branches++;
 
 test("LOOP uses the label map while IP follows byte offsets", () => {
-  const source = ["MOV CX, 3", "MOV AX, 0", "AGAIN: INC AX", "LOOP AGAIN", "HLT"].join("\\n");
+  const source = ["MOV CX, 3", "MOV AX, 0", "AGAIN: INC AX", "LOOP AGAIN", "HLT"].join("\n");
   const a = assemble(source), s = execute(source);
   assert.equal(s.reg.AX, 3);
   assert.equal(s.reg.CX, 0);
@@ -101,7 +101,7 @@ counts.branches++;
 // CALL pushes the offset immediately after the CALL instruction. RET resolves
 // that offset back to an instruction boundary before resuming.
 test("CALL stores a byte return address in the simulated stack", () => {
-  const s = execute(["NOP", "CALL SUB", "HLT", "SUB: HLT"].join("\\n"));
+  const s = execute(["NOP", "CALL SUB", "HLT", "SUB: HLT"].join("\n"));
   assert.equal(s.reg.IP, 5);
   assert.equal(s.stack.length, 1);
   assert.equal(s.stack[0].value, 4);
@@ -110,7 +110,7 @@ test("CALL stores a byte return address in the simulated stack", () => {
 counts.calls++;
 
 test("RET maps the saved byte offset back to the caller instruction", () => {
-  const s = execute(["CALL SUB", "HLT", "SUB: MOV AX, 1234h", "RET"].join("\\n"));
+  const s = execute(["CALL SUB", "HLT", "SUB: MOV AX, 1234h", "RET"].join("\n"));
   assert.equal(s.reg.AX, 0x1234);
   assert.equal(s.reg.IP, 4);
   assert.equal(s.reg.SP, 0xFFFE);
@@ -121,8 +121,8 @@ counts.calls++;
 // A full 64 KiB image places XOR AX,AX at FFFEh. Its following IP wraps to
 // 0000h; the now-true JZ branches to HLT, proving that wrap is executable.
 test("IP wraps FFFFh to 0000h and resumes at the first byte", () => {
-  const padding = Array(65528).fill("NOP").join("\\n");
-  const source = ["JZ DONE", "JMP LAST", "DONE: HLT", padding, "LAST: XOR AX, AX"].join("\\n");
+  const padding = Array(65528).fill("NOP").join("\n");
+  const source = ["JZ DONE", "JMP LAST", "DONE: HLT", padding, "LAST: XOR AX, AX"].join("\n");
   const a = assemble(source);
   assert.equal(a.size, 65536);
   assert.equal(a.symbols.LAST, 0xFFFE);
