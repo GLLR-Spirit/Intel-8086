@@ -66,7 +66,8 @@ Le lot étendu comprend également un cadre IRET brut en mémoire, sans métadon
 | INT imm8 et gestionnaires VECTOR/IVT | Oui avec `VECTOR` et service DOS AH=02h limité | Pas encore de génération binaire par l'assembleur | `CD ib` décodé | Oui si l'entrée IVT et le gestionnaire sont initialisés en mémoire ; service DOS AH=02h conservé | Partiel |
 | LOOPE/LOOPZ, LOOPNE/LOOPNZ, JCXZ | Non dans le chemin de contrôle exécuté | Non | Non | Non | Non pris en charge |
 | AAA, AAS, AAM, AAD, DAA, DAS, CBW, CWD | Non | Non | Non | Non | Non pris en charge |
-| ROL, ROR, RCL, RCR, SHL/SAL, SHR, SAR | Non | Non | Non | Non | Non pris en charge |
+| SHL, SAL, SHR | Oui, exécution source | Pas de génération binaire complète | Non dans le décodeur binaire actuel | Non en exécution binaire | Partiel source ; non pris en charge en binaire |
+| ROL, ROR, RCL, RCR, SAR | Non | Non | Non | Non | Non pris en charge |
 | IN, OUT, INTO, XLAT, LAHF, SAHF, WAIT, ESC | Non | Non | Non | Non | Non pris en charge |
 | LOCK et interactions complètes de préfixes | Non | Non | Non | Non | Non pris en charge |
 
