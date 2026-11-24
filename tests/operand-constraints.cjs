@@ -213,6 +213,19 @@ test("LES charge offset et ES ; LDS charge offset et DS", () => {
 });
 counts.execution++;
 
+test("MOV CS, AX et lecture de CS sur 8086", () => {
+  const state = api.execute([
+    "MOV AX, 2345h",
+    "MOV CS, AX",
+    "MOV BX, CS",
+    "HLT"
+  ].join("\n"));
+  assert.ok(!state.error, state.error || "MOV CS execution failed");
+  assert.equal(state.reg.CS, 0x2345);
+  assert.equal(state.reg.BX, 0x2345);
+});
+counts.execution++;
+
 console.log("LEA : " + counts.lea + " vérifications.");
 console.log("LES/LDS : " + counts.leslds + " vérifications.");
 console.log("MOV registres de segment : " + counts.movSegment + " vérifications.");
