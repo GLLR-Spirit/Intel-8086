@@ -207,8 +207,8 @@ Le laboratoire accepte certains préfixes de segment dans ses formes mémoire, m
 ## 5. Couverture des tests existants
 
 - `tests/smoke.cjs` lance les **354 auto-tests** intégrés au laboratoire et vérifie le résultat global.
-- `tests/instruction-vectors.cjs` ajoute **40 tests indépendants**. Les vecteurs binaires fixes couvrent MOV, ADD, ADC, SUB, SBB et CMP ; les autres tests vérifient des résultats de simulation pour un sous-ensemble de cas.
-- Les 40 vecteurs ne valident pas les 93 entrées ni toutes leurs formes. En particulier, l'assembleur et le désassembleur ne disposent pas encore d'une batterie indépendante complète instruction par instruction.
+- `tests/instruction-vectors.cjs` ajoute maintenant **80 tests indépendants** (34 assemblage, 32 désassemblage, 1 flux tronqué et 13 simulation). Les vecteurs binaires fixes couvrent MOV, ADD, ADC, SUB, SBB et CMP ; les autres tests vérifient des résultats de simulation pour un sous-ensemble de cas.
+- Les 80 vecteurs ne valident pas les 93 entrées ni toutes leurs formes. En particulier, l'assembleur et le désassembleur ne disposent pas encore d'une batterie indépendante complète instruction par instruction.
 - Dernière validation CI vérifiée avant cet audit : run 214 réussi pour le commit `b3786905ac21d548bff1595b732c5216f26de436`, avec les étapes des tests de fumée et des vecteurs indépendants réussies.
 
 ## 6. Ordre recommandé pour la suite
@@ -227,3 +227,12 @@ Le laboratoire accepte certains préfixes de segment dans ses formes mémoire, m
 - Code audité : `index.html`, `tests/smoke.cjs`, `tests/instruction-vectors.cjs`, `.github/workflows/ci.yml`.
 
 **Conclusion :** l'inventaire contient 93 entrées canoniques, mais le laboratoire n'offre pas une couverture complète du jeu d'instructions Intel 8086. Le simulateur couvre beaucoup plus de sémantique que l'assembleur et le désassembleur. Le prochain indicateur fiable sera le pourcentage de formes d'encodage testées indépendamment, et non le pourcentage de noms de mnémotechniques simplement présents.
+
+
+## Mise à jour — premier registre de formes et extension des vecteurs
+
+Le [registre de couverture par forme](form-coverage-register-8086.md) décompose MOV, ADD, ADC, SUB, SBB et CMP en **59 formes documentaires**. L'inspection des branches `encodingBytes` et `disassembleBytes` identifie 50 formes avec une voie de génération/décodage et 9 formes absentes : les quatre formes MOV moffs (A0h–A3h) et la forme 83h pour chacune des cinq opérations arithmétiques/comparaison.
+
+La suite indépendante a été étendue de 40 à **80 tests**. Le run CI 221 du 24 novembre 2026 valide **354/354 tests de fumée et 80/80 vecteurs indépendants** : https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45441788838.
+
+Attention : 50/59 mesure la présence de branches pour les formes recensées, pas le taux de validation. La matrice reste limitée à six mnémotechniques et ne représente pas le jeu d'instructions complet.
