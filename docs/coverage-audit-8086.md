@@ -337,7 +337,7 @@ Attention : les matrices attestent le comportement du décodeur sur les octets f
 
 La suite [`tests/dynamic-differential.cjs`](../tests/dynamic-differential.cjs) a été ajoutée au workflow CI. Elle compare le moteur source et le moteur binaire dynamique sur les registres, FLAGS, la pile, les sorties et des adresses mémoire ciblées. Elle ajoute des oracles indépendants pour ADD/ADC/SUB/SBB et des cas de logique, de branchement, de mémoire, de préfixes, de CALL/RET/RETF et d'IRET.
 
-Résultat vérifié sur le commit `8f0069c68ca794be47dc54582d1321796c7e47b0` : **29/29 tests différentiels réussis**. Workflow : [45503831908](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45503831908).
+Résultat historique remplacé par l'audit étendu : **34/34 tests différentiels réussis**, 393 216 vecteurs arithmétiques exhaustifs 8 bits, 800 vecteurs 16 bits aux frontières et 1 350 exécutions binaires ALU sur octets bruts. Run vérifié : [45505098359](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45505098359), commit testé `daaab3856e0c0b5f017fa11dd12eeffc4cb35252`.
 
 Le registre [`registre-validation-dynamique-8086.md`](registre-validation-dynamique-8086.md) distingue les familles partiellement validées et celles non prises en charge. **Aucune instruction n'est classée entièrement validée au niveau de toutes ses formes 8086.** Le différentiel détecte des divergences entre chemins, mais certaines primitives sont partagées ; il ne remplace pas une référence indépendante exhaustive.
 
