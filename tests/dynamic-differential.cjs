@@ -384,6 +384,32 @@ test("préfixes de segment répétés sont refusés au lieu d'être interprété
 });
 categories.invalid++;
 
+test("vecteurs binaires bruts ALU 8 bits comparés à l’oracle indépendant", () => {
+  const values = [0,1,2,7,8,15,16,31,63,64,0x7f,0x80,0x81,0xfe,0xff];
+  const operations = [
+    { kind:"ADD", opcode:0x00, carries:[0] },
+    { kind:"ADC", opcode:0x10, carries:[0,1] },
+    { kind:"SBB", opcode:0x18, carries:[0,1] },
+    { kind:"SUB", opcode:0x28, carries:[0] }
+  ];
+  let checked = 0;
+  for (const op of operations) for (const carry of op.carries)
+    for (const a of values) for (const b of values) {
+      const bytes = [0xb0,a,0xb3,b,carry?0xf9:0xf8,op.opcode,0xd8,0xf4];
+      const state = api.executeBinary(bytes,0,0);
+      assert.ok(!state.error,state.error||op.kind+" binary execution");
+      const expected = (op.kind==="ADD"||op.kind==="ADC")
+        ? addFlags(a,b,carry,8) : subFlags(a,b,carry,8);
+      const raw = (op.kind==="ADD"||op.kind==="ADC") ? a+b+carry : a-b-carry;
+      assert.equal(state.reg.AX&255,raw&255,op.kind+" result");
+      for (const [flag,value] of Object.entries(expected)) assert.equal(state.flags[flag],value,op.kind+" "+flag);
+      assert.equal(state.steps,5);
+      checked++;
+    }
+  assert.equal(checked,1125);
+});
+categories.arithmetic++;
+
 test("oracle indépendant exhaustif des opérations arithmétiques 8 bits", () => {
   const kinds = [
     { kind: "ADD", carry: 0, add: true },
