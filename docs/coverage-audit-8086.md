@@ -153,7 +153,7 @@ Le générateur binaire reste partiel. Il émet notamment MOV, arithmétique/log
 Limites observées dans le code :
 - Les groupes immédiats `80h/81h` sont générés pour l'arithmétique/logique ; la forme signée courte `83h` n'est pas générée.
 - `MOV` ne couvre pas toutes les variantes/opcodes, notamment les formes accumulator/moffs dédiées.
-- `PUSH r/m16` via FF /6 est généré pour les formes registre et mémoire ; `POP r/m16` mémoire n'est pas généré.
+- `PUSH MEM16` via FF /6 est généré pour les formes mémoire ; le registre utilise l'encodage compact `50+reg`. `POP r/m16` mémoire n'est pas généré.
 - `JMP` et `CALL` directs restent assemblés en near relatif 16 bits ; les formes near indirectes FF /2 et /4 sont également générées. Les formes far indirectes ne sont pas assemblées.
 - `RET` ne génère que le retour proche sans ajustement de pile ; les formes far et avec immédiat manquent.
 - Les groupes F6/F7 (TEST r/m, immédiat ; NOT, NEG, MUL, IMUL, DIV, IDIV) et FF /6 PUSH sont encodés. Les chaînes, `REP`, les E/S, shifts/rotations et plusieurs instructions fixes restent absents.
@@ -252,7 +252,7 @@ Le champ S:W du manuel Intel 8086 (table 4-7) confirme que S=1 et W=1 étend l�
 Les groupes ont été intégrés au générateur, au décodeur et, pour les opérations déjà interprétées, au simulateur. La nouvelle suite [tests/group-opcodes.cjs](../tests/group-opcodes.cjs) vérifie les encodages fixes, toutes les valeurs ModR/M pertinentes, les extensions réservées, les restrictions mémoire/registres, les flux tronqués et des résultats d'exécution indépendants.
 
 - **F6/F7** : /0 TEST, /1 réservé, /2 NOT, /3 NEG, /4 MUL, /5 IMUL, /6 DIV, /7 IDIV. Les formes r/m sont générées et décodées ; les opérations prises en charge par l'interpréteur sont exécutées.
-- **FF** : /0 INC, /1 DEC, /2 CALL near indirect, /3 CALL far indirect (mémoire seulement), /4 JMP near indirect, /5 JMP far indirect (mémoire seulement), /6 PUSH r/m16, /7 réservé. Les formes near indirectes /2 et /4 et PUSH /6 sont générées et décodées ; /3 et /5 sont décodées en mémoire uniquement. L'interpréteur ne simule pas les transferts indirects CALL/JMP ; il les signale explicitement comme non pris en charge.
+- **FF** : /0 INC, /1 DEC, /2 CALL near indirect (registre/mémoire), /3 CALL far indirect (mémoire seulement), /4 JMP near indirect (registre/mémoire), /5 JMP far indirect (mémoire seulement), /6 PUSH MEM16 (mémoire seulement selon la table Intel 8086), /7 réservé. Les formes /2, /4 et /6 mémoire sont générées et décodées ; /3 et /5 sont décodées en mémoire uniquement. L'interpréteur ne simule pas les transferts indirects CALL/JMP ; il les signale explicitement comme non pris en charge.
 - **C6/C7** : /0 MOV r/m,imm valide ; /1..7 réservés. Les 256 valeurs ModR/M par opcode sont testées côté décodeur, avec conservation des octets des extensions invalides.
 
 **Validation CI du commit précédent à cette mise à jour documentaire** : run 45451225859, commit `5d4e07f2897c7ad6efb3dfa81578897719d16e9c`, 1 348 vérifications dans la suite de groupes. Les quatre vecteurs TEST r/m,imm et les quatre tests de frontière d'exécution ajoutés ensuite seront comptés dans la prochaine exécution CI.
