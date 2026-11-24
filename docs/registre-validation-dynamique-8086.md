@@ -97,7 +97,7 @@ Les flux incomplets sont une classe distincte : ils doivent produire une erreur 
 
 ## 6. Validation CI — extension des familles manquantes
 
-Le workflow principal [45509443384](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45509443384) a terminé avec le statut **success** sur le commit `a67351dd0a603af4c6065b0d0b020e067e31046e`.
+Le workflow principal [45509666769](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45509666769) a terminé avec le statut **success** sur le commit `87b11ecc17742d5fc33d16bb574243808bb043d0`.
 
 - Suite différentielle : **65/65 tests réussis, 0 échec**.
 - Vecteurs indépendants de l'instruction : **114 tests réussis**.
