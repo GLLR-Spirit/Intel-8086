@@ -22,7 +22,22 @@ const context = {
   console
 };
 vm.createContext(context);
-vm.runInContext(match[1], context, { timeout: 5000 });
+const instrumented = match[1].replace(/\\n\\}\\)\\(\\);\\s*$/, `
+globalThis.__8086TestApi = {
+  assemble: function (source) { return assembleProgram(source); },
+  disassemble: function (bytes) { return disassembleBytes(bytes); },
+  run: function (source) {
+    prepare(source);
+    while (!halted && pc < ops.length) tick();
+    return JSON.parse(JSON.stringify(cpu));
+  }
+};
+})();
+`);
+assert.notEqual(instrumented, match[1], "Test API injection point must exist");
+vm.runInContext(instrumented, context, { timeout: 5000 });
+const api = context.__8086TestApi;
+assert.ok(api, "Internal test API must be exposed");
 
 let passed = 0;
 function test(name, fn) {
