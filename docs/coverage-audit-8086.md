@@ -315,3 +315,19 @@ Nouvelle valeur `execution.mode` : `dynamic-binary`. Le compteur `decodedInstruc
 La suite `tests/byte-offset-execution.cjs` vérifie notamment une branche vers un octet qui était un immédiat dans le balayage linéaire, une modification du code par `MOV BYTE PTR` avec préfixe CS, les retours CALL/RET, le bouclage IP et la comparaison avec l'exécution source.
 
 Limites : le décodeur/exécuteur reste un sous-ensemble du 8086 ; les formes non prises en charge sont refusées. La prélecture BIU, les cycles et les interactions bus ne sont pas simulés.
+
+## Audit dynamique de cohérence mémoire — 24 novembre 2026
+
+Le cycle binaire a été renforcé pour ne lire que des octets initialisés à partir de `CS:IP`. Le décodeur reçoit une fenêtre mémoire et ne produit qu'une instruction. Si cette instruction est incomplète, le décodeur signale le flux tronqué ; le fetch ne complète plus les octets manquants par `00h`.
+
+La suite `tests/byte-offset-execution.cjs` ajoute :
+- balayage de chacune des 256 valeurs d'opcode ;
+- 3 072 combinaisons ModR/M sur 12 groupes d'opcodes ;
+- limites IP, traversée de `FFFFh` et repli physique 20 bits ;
+- préfixes CS, ES, SS et DS ;
+- branchements positifs, négatifs, conditionnels et avec bouclage ;
+- CALL/JMP indirects near et FAR ;
+- modifications d'un et de deux octets de code ;
+- vecteurs binaires indépendants et comparaison source/binaire.
+
+Attention : les matrices attestent le comportement du décodeur sur les octets fournis ; elles ne certifient pas la validité architecturale ni l'exécution de tous les encodages possibles. Les limites de couverture et de modélisation matérielle sont détaillées dans `audit-chargement-binaire-8086.md`.
