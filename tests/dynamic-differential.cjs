@@ -655,14 +655,34 @@ test("WAIT et ESC — opcodes reconnus, sans coprocesseur externe simulé", () =
   assert.ok(assembled.bytes.includes(0x9b));
   assert.ok(assembled.bytes.includes(0xd8));
 });
-test("IN/OUT — ports 8/16 bits et état initial explicite", () => {
-  const source="IN AL, 20h\nOUT 21h, AL\nMOV DX, 30h\nIN AX, DX\nOUT DX, AX\nHLT";
+test("IN/OUT — les huit formes immédiat/DX et AL/AX", () => {
+  const source="IN AL, 20h\nOUT 21h, AL\nIN AX, 22h\nOUT 23h, AX\nMOV DX, 30h\nIN AX, DX\nOUT DX, AX\nMOV DX, 31h\nIN AL, DX\nOUT DX, AL\nHLT";
   const assembled=api.assemble(source);
-  const state=api.executeBinary(Array.from(assembled.bytes),0,0,{io:{"32":0x5a,"48":0x1234}});
+  const state=api.executeBinary(Array.from(assembled.bytes),0,0,{io:{"32":0x5a,"34":0xabcd,"48":0x1234,"49":0x66}});
   assert.ok(!state.error,state.error||"binary I/O failed");
   assert.equal(state.io[33],0x5a);
+  assert.equal(state.io[35],0xabcd);
   assert.equal(state.io[48],0x1234);
-  assert.equal(state.reg.AX,0x1234);
+  assert.equal(state.io[49],0x66);
+  assert.equal(state.reg.AX,0x66);
+});
+test("REP MOVSW/LODSB/STOSB et REPE/REPNE CMPS/SCAS", () => {
+  const programs=[
+    "MOV SI, 0100h\nMOV DI, 0200h\nMOV CX, 2\nMOV WORD PTR [0100h], 1234h\nMOV WORD PTR [0102h], 5678h\nREP MOVSW\nHLT",
+    "MOV SI, 0100h\nMOV CX, 2\nMOV BYTE PTR [0100h], 11h\nMOV BYTE PTR [0101h], 22h\nREP LODSB\nHLT",
+    "MOV DI, 0200h\nMOV CX, 2\nMOV AL, 5Ah\nREP STOSB\nHLT",
+    "MOV SI, 0100h\nMOV DI, 0200h\nMOV CX, 3\nMOV BYTE PTR [0100h], 1\nMOV BYTE PTR [0101h], 2\nMOV BYTE PTR [0102h], 3\nMOV BYTE PTR [0200h], 1\nMOV BYTE PTR [0201h], 2\nMOV BYTE PTR [0202h], 9\nREPE CMPSB\nHLT",
+    "MOV DI, 0200h\nMOV CX, 3\nMOV AL, 2\nMOV BYTE PTR [0200h], 1\nMOV BYTE PTR [0201h], 2\nMOV BYTE PTR [0202h], 3\nREPNE SCASB\nHLT"
+  ];
+  for(const source of programs) compareSourceBinary(source);
+});
+test("Préfixe segment + REP — CS: REP MOVSB", () => {
+  const source="MOV SI, 0100h\nMOV DI, 0200h\nMOV CX, 1\nMOV BYTE PTR CS:[0100h], 42h\nCS: REP MOVSB\nHLT";
+  const {assembled,binaryState}=compareSourceBinary(source,[0x200]);
+  const row=assembled.rows.find(x=>x.instruction==="CS: REP MOVSB");
+  assert.ok(row);
+  assert.deepEqual(Array.from(row.bytes.slice(0,3)),[0x2e,0xf3,0xa4]);
+  assert.equal(binaryState.mem[0x200],0x42);
 });
 test("INTO — vecteur 4, gestionnaire IVT et retour IRET en binaire", () => {
   const source="MOV AX, 7FFFh\nADD AX, 1\nINTO\nHLT\nHANDLER: MOV BX, 1\nIRET";
