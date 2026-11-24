@@ -25,12 +25,12 @@ vm.runInNewContext(instrumented, context, { timeout: 5000 });
 const learning = context.__learningData;
 assert.ok(learning, "Learning data must be exposed to the isolated test harness");
 
-assert.equal(learning.lessons.length, 11, "All 11 learning chapters must exist");
-assert.equal(learning.chapterLearning.length, 11, "Every chapter must have a learning module");
+assert.equal(learning.lessons.length, 14, "All 14 learning chapters must exist");
+assert.equal(learning.chapterLearning.length, 14, "Every chapter must have a learning module");
 assert.ok(learning.chapterLearning.every(c => c.goal && c.theory && c.walk && c.quiz.length >= 2),
   "Every chapter must include objectives, theory, a guided example and comprehension questions");
-assert.equal(learning.chapterLearning.reduce((n, c) => n + c.quiz.length, 0), 22,
-  "The chapter path must contain at least 22 comprehension questions");
+assert.equal(learning.chapterLearning.reduce((n, c) => n + c.quiz.length, 0), 28,
+  "The chapter path must contain 28 comprehension questions");
 
 assert.equal(learning.chapterExerciseMap.length, learning.lessons.length,
   "Every chapter must link to exactly one practical exercise");
@@ -53,5 +53,5 @@ assert.ok(renderer.includes("Indice et correction expliquée"), "Exercise UI mus
 assert.ok(renderer.includes("guide.steps"), "Exercise UI must render step-by-step solutions");
 assert.ok(renderer.includes("data-solution"), "Exercise UI must let the learner load the complete correction");
 
-console.log("Learning quality: 11 chapters, 22 comprehension questions, " +
+console.log("Learning quality: 14 chapters, 28 comprehension questions, " +
   learning.exercises.length + " exercises; all guided corrections execute and pass their validators.");
