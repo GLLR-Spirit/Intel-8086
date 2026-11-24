@@ -148,3 +148,12 @@ Tests de régression ajoutés dans tests/dynamic-differential.cjs : POP/POPF bru
 CI vérifiée : https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45511311367, commit 915d12868de2c91ce8a3cd11f0432c43b3b95256, job simulator-smoke-tests success ; toutes les étapes, y compris l'audit différentiel dynamique, ont réussi.
 
 Ces corrections augmentent la fidélité des opérations de pile, mais ne changent pas le statut global : toutes les formes du jeu d'instructions et tous les effets matériels ne sont pas encore validés indépendamment.
+
+
+## Particularités supplémentaires du registre FLAGS — 25 novembre 2026
+
+Le mot produit par PUSHF est maintenant conforme à la particularité du 8086 concernant les bits réservés 12 à 15 : ils sont lus à 1. Le modèle packFlags conserve aussi son bit 1 déterministe pour l'environnement pédagogique ; les bits réservés historiquement indéfinis ne doivent pas être présentés comme une reproduction électrique exacte.
+
+Un test vérifie les bits 12–15 dans le mot réellement écrit à SS:SP. Les attentes des tests historiques PUSHF/POP ont été adaptées à ce mot FLAGS 8086. Le comportement de POPF continue à ne modifier que les drapeaux architecturaux représentés dans le modèle.
+
+Validation : workflow [45511522452](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45511522452), commit a8613a97f73d5f2d31dfca19bf805e961fa37234 — **success**, toutes les étapes du workflow réussies.
