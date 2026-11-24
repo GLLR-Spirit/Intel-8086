@@ -913,6 +913,31 @@ test("ESC — les 64 codes d'échappement 8086 sont encodés/décodés", () => {
   }
 });
 
+test("POP et POPF lisent une pile binaire brute sans métadonnées pédagogiques", () => {
+  const ss=0x1000, sp=0x0100, address=(ss<<4)+sp;
+  const rawWord=0xbeef;
+  const pop=api.executeBinary([0x58,0xf4],0,0,{
+    reg:{SS:ss,SP:sp},
+    mem:{[address]:rawWord&255,[address+1]:(rawWord>>8)&255}
+  });
+  assert.ok(!pop.error,pop.error||"raw POP AX");
+  assert.equal(pop.reg.AX,rawWord);
+  assert.equal(pop.reg.SP,sp+2);
+  assert.equal(pop.stack.length,0);
+
+  const flagsWord=0x0fd7;
+  const popf=api.executeBinary([0x9d,0xf4],0,0,{
+    reg:{SS:ss,SP:sp},
+    mem:{[address]:flagsWord&255,[address+1]:(flagsWord>>8)&255}
+  });
+  assert.ok(!popf.error,popf.error||"raw POPF");
+  for(const flag of ["CF","PF","AF","ZF","SF","TF","IF","DF","OF"])
+    assert.equal(popf.flags[flag],1,"POPF raw "+flag);
+  assert.equal(popf.reg.SP,sp+2);
+  assert.equal(popf.stack.length,0);
+});
+categories.stack++;
+
 console.log("Audit différentiel arithmétique : " + categories.arithmetic + " vecteurs.");
 console.log("Logique et TEST : " + categories.logic + " vecteurs.");
 console.log("Registres : " + categories.registers + " vecteurs.");
