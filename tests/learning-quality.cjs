@@ -1,0 +1,52 @@
+const fs = require("node:fs");
+const vm = require("node:vm");
+const assert = require("node:assert/strict");
+
+const html = fs.readFileSync("index.html", "utf8");
+const match = html.match(/<script>([\s\S]*?)<\/script>/);
+assert.ok(match, "Inline application script must exist");
+
+const elements = new Map();
+function element(id) {
+  if (!elements.has(id)) {
+    elements.set(id, {
+      id, value: "", textContent: "", innerHTML: "", className: "",
+      dataset: {}, onclick: null, oninput: null, onchange: null
+    });
+  }
+  return elements.get(id);
+}
+const document = { getElementById: element, querySelectorAll: () => [] };
+const localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
+const context = { document, localStorage, console, confirm: () => true };
+vm.runInNewContext(match[1], context, { timeout: 5000 });
+
+assert.equal(context.lessons.length, 11, "All 11 learning chapters must exist");
+assert.equal(context.chapterLearning.length, 11, "Every chapter must have a learning module");
+assert.ok(context.chapterLearning.every(c => c.goal && c.theory && c.walk && c.quiz.length >= 2),
+  "Every chapter must include objectives, theory, a guided example and comprehension questions");
+assert.equal(context.chapterLearning.reduce((n, c) => n + c.quiz.length, 0), 22,
+  "The chapter path must contain at least 22 comprehension questions");
+
+assert.equal(context.chapterExerciseMap.length, context.lessons.length,
+  "Every chapter must link to exactly one practical exercise");
+assert.ok(context.chapterExerciseMap.every(i => Number.isInteger(i) && i >= 0 && i < context.exercises.length),
+  "Every chapter exercise link must resolve to an existing exercise");
+assert.ok(context.exercises.length >= 19, "The exercise bank must contain at least 19 exercises");
+
+const advancedStart = 12;
+for (let i = advancedStart; i < context.exercises.length; i++) {
+  const exercise = context.exercises[i];
+  assert.ok(exercise[4]?.level && exercise[4]?.hint && exercise[4]?.steps?.length >= 3,
+    "New exercise " + i + " must provide a level, hint and step-by-step solution");
+  const state = context.executeAll(exercise[2]);
+  assert.ok(!state.error, exercise[0] + " reference solution must execute: " + state.error);
+  assert.ok(exercise[3](state), exercise[0] + " reference solution must satisfy its validator");
+}
+
+const renderer = match[1].slice(match[1].indexOf("function renderExercises()"), match[1].indexOf("\nfunction renderProjects()"));
+assert.ok(renderer.includes("Indice et correction expliquée"), "Exercise UI must expose progressive guidance");
+assert.ok(renderer.includes("guide.steps"), "Exercise UI must render step-by-step solutions");
+
+console.log("Learning quality: 11 chapters, 22 comprehension questions, " +
+  context.exercises.length + " exercises; all 7 new reference solutions pass.");
