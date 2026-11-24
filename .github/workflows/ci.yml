@@ -32,3 +32,5 @@ jobs:
         run: node tests/flags-differential.cjs
       - name: Run operand constraint tests
         run: node tests/operand-constraints.cjs
+      - name: Run original 8086 segment selector vectors
+        run: node tests/legacy-segment-encodings.cjs
