@@ -24,7 +24,7 @@ L'audit d'exhaustivité et de précision est en cours. Le suivi des vérificatio
 
 ## Tests de référence des instructions
 
-Les tests de fumée existants sont complétés par [tests/instruction-vectors.cjs](tests/instruction-vectors.cjs), qui utilise des octets de référence fixes pour contrôler séparément l'assembleur et le désassembleur, puis vérifie quelques résultats du simulateur. Le workflow CI exécute les deux suites.
+Les tests de fumée existants sont complétés par [tests/instruction-vectors.cjs](tests/instruction-vectors.cjs), qui utilise des octets de référence fixes pour contrôler séparément l'assembleur et le désassembleur, puis vérifie quelques résultats du simulateur. Le workflow CI exécute les deux suites ; le run 196 a validé 354 tests de fumée et 24 vecteurs indépendants.
 
 La couverture est volontairement déclarée partielle. Les tests exposent notamment que ADC et SBB ne sont pas encore implémentées dans le simulateur ni dans l'assembleur ; ils ne doivent pas être considérées comme validées.
 
