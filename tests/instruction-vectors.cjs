@@ -67,8 +67,8 @@ function hex(bytes) {
 const assemblerVectors = [
   ["MOV register immediate", "MOV AX, 1234h", [0xB8, 0x34, 0x12]],
   ["MOV byte register immediate", "MOV AL, 12h", [0xB0, 0x12]],
-  ["MOV accumulator from direct memory (moffs)", "MOV AX, WORD PTR [2000h]", [0xA1, 0x00, 0x20]],
-  ["MOV accumulator to direct memory (moffs)", "MOV BYTE PTR [2000h], AL", [0xA2, 0x00, 0x20]],
+  ["MOV register from direct memory", "MOV AX, WORD PTR [2000h]", [0x8B, 0x06, 0x00, 0x20]],
+  ["MOV direct memory from byte register", "MOV BYTE PTR [2000h], AL", [0x88, 0x06, 0x00, 0x20]],
   ["MOV direct memory immediate", "MOV WORD PTR [2000h], 1234h", [0xC7, 0x06, 0x00, 0x20, 0x34, 0x12]],
   ["MOV segment register from AX", "MOV ES, AX", [0x8E, 0xC0]],
   ["MOV direct memory from segment register", "MOV WORD PTR [2000h], DS", [0x8C, 0x1E, 0x00, 0x20]],
@@ -99,19 +99,21 @@ const assemblerVectors = [
   ["ADC word memory immediate", "ADC WORD PTR [2000h], 1234h", [0x81, 0x16, 0x00, 0x20, 0x34, 0x12]],
   ["SUB word memory immediate", "SUB WORD PTR [2000h], 1234h", [0x81, 0x2E, 0x00, 0x20, 0x34, 0x12]],
   ["CMP word memory immediate", "CMP WORD PTR [2000h], 1234h", [0x81, 0x3E, 0x00, 0x20, 0x34, 0x12]]
-  ["ADD r/m16 sign-extended immediate", "ADD WORD PTR [2000h], -1", [0x83, 0x06, 0x00, 0x20, 0xFF]],
-  ["ADC r/m16 sign-extended immediate", "ADC WORD PTR [2000h], -128", [0x83, 0x16, 0x00, 0x20, 0x80]],
-  ["SBB r/m16 sign-extended immediate", "SBB WORD PTR [2000h], 127", [0x83, 0x1E, 0x00, 0x20, 0x7F]],
-  ["SUB r/m16 sign-extended immediate", "SUB WORD PTR [2000h], -2", [0x83, 0x2E, 0x00, 0x20, 0xFE]],
-  ["CMP r/m16 sign-extended immediate", "CMP WORD PTR [2000h], -128", [0x83, 0x3E, 0x00, 0x20, 0x80]],
+  ["ADD r/m16 small immediate remains 81h on 8086", "ADD WORD PTR [2000h], -1", [0x81, 0x06, 0x00, 0x20, 0xFF, 0xFF]],
+  ["ADC r/m16 immediate uses 81h on 8086", "ADC WORD PTR [2000h], -128", [0x81, 0x16, 0x00, 0x20, 0x80, 0xFF]],
+  ["SBB r/m16 immediate uses 81h on 8086", "SBB WORD PTR [2000h], 127", [0x81, 0x1E, 0x00, 0x20, 0x7F, 0x00]],
+  ["SUB r/m16 immediate uses 81h on 8086", "SUB WORD PTR [2000h], -2", [0x81, 0x2E, 0x00, 0x20, 0xFE, 0xFF]],
+  ["CMP r/m16 immediate uses 81h on 8086", "CMP WORD PTR [2000h], -128", [0x81, 0x3E, 0x00, 0x20, 0x80, 0xFF]],
   ["ADD r/m16 immediate outside signed byte uses 81h", "ADD WORD PTR [2000h], 255", [0x81, 0x06, 0x00, 0x20, 0xFF, 0x00]],
-  ["MOV byte moffs from accumulator", "MOV BYTE PTR [1234h], AL", [0xA2, 0x34, 0x12]],
-  ["MOV word moffs to accumulator", "MOV AX, WORD PTR [1234h]", [0xA1, 0x34, 0x12]],
-  ["MOV byte moffs with ES override", "MOV AL, BYTE PTR ES:[1234h]", [0x26, 0xA0, 0x34, 0x12]],
-  ["MOV word moffs with SS override", "MOV WORD PTR SS:[1234h], AX", [0x36, 0xA3, 0x34, 0x12]],
+  ["MOV byte moffs A0", "MOV AL, [1234h]", [0xA0, 0x34, 0x12]],
+  ["MOV word moffs A1", "MOV AX, [1234h]", [0xA1, 0x34, 0x12]],
+  ["MOV byte moffs A2", "MOV [1234h], AL", [0xA2, 0x34, 0x12]],
+  ["MOV word moffs A3", "MOV [1234h], AX", [0xA3, 0x34, 0x12]],
+  ["MOV byte moffs with ES override", "MOV AL, ES:[1234h]", [0x26, 0xA0, 0x34, 0x12]],
+  ["MOV word moffs with SS override", "MOV SS:[1234h], AX", [0x36, 0xA3, 0x34, 0x12]],
   ["ADD disp8 memory operand", "ADD WORD PTR [BX+SI+5], AX", [0x01, 0x40, 0x05]],
   ["ADD disp16 memory operand", "ADD WORD PTR [BX+SI+300], AX", [0x01, 0x80, 0x2C, 0x01]],
-  ["ADD memory operand with ES override", "ADD WORD PTR ES:[BX+SI], AX", [0x26, 0x01, 0x00]],
+  ["ADD memory operand with ES override", "ADD WORD PTR ES:[BX+SI], AX", [0x26, 0x01, 0x00]]
 ];
 for (const [name, source, expected] of assemblerVectors) {
   test("Assembler · " + name, () => {
@@ -124,8 +126,8 @@ for (const [name, source, expected] of assemblerVectors) {
 const decoderVectors = [
   ["MOV register immediate", [0xB8, 0x34, 0x12], /MOVAX,1234h/i],
   ["MOV byte register immediate", [0xB0, 0x12], /MOVAL,12h/i],
-  ["MOV accumulator from direct memory (moffs)", [0xA1, 0x00, 0x20], /MOVAX,WORDPTR\[2000h\]/i],
-  ["MOV accumulator to direct memory (moffs)", [0xA2, 0x00, 0x20], /MOVBYTEPTR\[2000h\],AL/i],
+  ["MOV register from direct memory", [0x8B, 0x06, 0x00, 0x20], /MOVAX,WORDPTR\[2000h\]/i],
+  ["MOV direct memory from byte register", [0x88, 0x06, 0x00, 0x20], /MOVBYTEPTR\[2000h\],AL/i],
   ["MOV direct memory immediate", [0xC7, 0x06, 0x00, 0x20, 0x34, 0x12], /MOVWORDPTR\[2000h\],1234h/i],
   ["MOV segment register from AX", [0x8E, 0xC0], /MOVES,AX/i],
   ["MOV direct memory from segment register", [0x8C, 0x1E, 0x00, 0x20], /MOVWORDPTR\[2000h\],DS/i],
@@ -154,16 +156,16 @@ const decoderVectors = [
   ["ADC word memory immediate", [0x81, 0x16, 0x00, 0x20, 0x34, 0x12], /ADCWORDPTR\[2000h\],1234h/i],
   ["SUB word memory immediate", [0x81, 0x2E, 0x00, 0x20, 0x34, 0x12], /SUBWORDPTR\[2000h\],1234h/i],
   ["CMP word memory immediate", [0x81, 0x3E, 0x00, 0x20, 0x34, 0x12], /CMPWORDPTR\[2000h\],1234h/i]
-  ["ADD r/m16 sign-extended immediate", [0x83, 0x06, 0x00, 0x20, 0xFF], /ADDWORDPTR\[2000h\],-1/i],
-  ["ADC r/m16 sign-extended immediate", [0x83, 0x16, 0x00, 0x20, 0x80], /ADCWORDPTR\[2000h\],-128/i],
-  ["SBB r/m16 sign-extended immediate", [0x83, 0x1E, 0x00, 0x20, 0x7F], /SBBWORDPTR\[2000h\],127/i],
-  ["SUB r/m16 sign-extended immediate", [0x83, 0x2E, 0x00, 0x20, 0xFE], /SUBWORDPTR\[2000h\],-2/i],
-  ["CMP r/m16 sign-extended immediate", [0x83, 0x3E, 0x00, 0x20, 0x80], /CMPWORDPTR\[2000h\],-128/i],
+  ["Opcode 83h remains unsupported on original 8086", [0x83, 0x06, 0x00, 0x20, 0xFF], /^DB 83h/i],
+  ["MOV byte moffs A0", [0xA0, 0x34, 0x12], /MOVAL,BYTEPTR\[1234h\]/i],
+  ["MOV word moffs A1", [0xA1, 0x34, 0x12], /MOVAX,WORDPTR\[1234h\]/i],
+  ["MOV byte moffs A2", [0xA2, 0x34, 0x12], /MOVBYTEPTR\[1234h\],AL/i],
+  ["MOV word moffs A3", [0xA3, 0x34, 0x12], /MOVWORDPTR\[1234h\],AX/i],
   ["MOV byte moffs with ES override", [0x26, 0xA0, 0x34, 0x12], /MOVAL,BYTEPTRES:\[1234h\]/i],
   ["MOV word moffs with SS override", [0x36, 0xA3, 0x34, 0x12], /MOVWORDPTRESS:\[1234h\],AX/i],
   ["ADD disp8 memory operand", [0x01, 0x40, 0x05], /ADDWORDPTR\[BX\+SI\+5\],AX/i],
   ["ADD disp16 memory operand", [0x01, 0x80, 0x2C, 0x01], /ADDWORDPTR\[BX\+SI\+300\],AX/i],
-  ["ADD memory operand with ES override", [0x26, 0x01, 0x00], /ADDWORDPTRES:\[BX\+SI\],AX/i],
+  ["ADD memory operand with ES override", [0x26, 0x01, 0x00], /ADDWORDPTRES:\[BX\+SI\],AX/i]
 ];
 for (const [name, machineBytes, expectedText] of decoderVectors) {
   test("Désassembleur · " + name, () => {
@@ -173,8 +175,10 @@ for (const [name, machineBytes, expectedText] of decoderVectors) {
     assert.deepEqual(Array.from(result.rows[0].bytes), machineBytes);
   });
 }
-test("Assembleur · immédiat hors plage signée utilise 81h", () => {
-  assert.deepEqual(bytesOf("ADD WORD PTR [2000h], 128"), [0x81, 0x06, 0x00, 0x20, 0x80, 0x00]);
+test("Assembleur · les formes 83h 80186 ne sont pas émises en mode 8086", () => {
+  for (const op of ["ADD", "ADC", "SBB", "SUB", "CMP"]) {
+    assert.notEqual(bytesOf(op + " CX, 7Fh")[0], 0x83);
+  }
 });
 test("Assembleur · MOV refuse une largeur incohérente pour moffs", () => {
   assert.throws(() => bytesOf("MOV AL, WORD PTR [2000h]"), /taille|incompatible|largeur/i);
