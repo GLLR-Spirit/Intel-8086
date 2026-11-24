@@ -331,3 +331,12 @@ La suite `tests/byte-offset-execution.cjs` ajoute :
 - vecteurs binaires indépendants et comparaison source/binaire.
 
 Attention : les matrices attestent le comportement du décodeur sur les octets fournis ; elles ne certifient pas la validité architecturale ni l'exécution de tous les encodages possibles. Les limites de couverture et de modélisation matérielle sont détaillées dans `audit-chargement-binaire-8086.md`.
+
+
+## Mise à jour — audit différentiel du moteur dynamique (24 novembre 2026)
+
+La suite [`tests/dynamic-differential.cjs`](../tests/dynamic-differential.cjs) a été ajoutée au workflow CI. Elle compare le moteur source et le moteur binaire dynamique sur les registres, FLAGS, la pile, les sorties et des adresses mémoire ciblées. Elle ajoute des oracles indépendants pour ADD/ADC/SUB/SBB et des cas de logique, de branchement, de mémoire, de préfixes, de CALL/RET/RETF et d'IRET.
+
+Résultat vérifié sur le commit `8f0069c68ca794be47dc54582d1321796c7e47b0` : **29/29 tests différentiels réussis**. Workflow : [45503831908](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45503831908).
+
+Le registre [`registre-validation-dynamique-8086.md`](registre-validation-dynamique-8086.md) distingue les familles partiellement validées et celles non prises en charge. **Aucune instruction n'est classée entièrement validée au niveau de toutes ses formes 8086.** Le différentiel détecte des divergences entre chemins, mais certaines primitives sont partagées ; il ne remplace pas une référence indépendante exhaustive.
