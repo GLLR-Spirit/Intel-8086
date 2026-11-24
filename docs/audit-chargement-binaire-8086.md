@@ -127,15 +127,15 @@ Les tests spécialisés source/binaire et les validations CI associées détermi
 
 ## Validation finale de l'extension des familles — 25 novembre 2026
 
-Le workflow CI [45509976522](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45509976522) a terminé en **success** sur le commit `99d0da55965f7d020199184c4eaf609e1f3ebbb8`.
+Le workflow CI [45510201993](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45510201993) a terminé en **success** sur le commit `5386d592b773753b2e23eb3e2340d9279ead2a06`.
 
-- Suite différentielle : **66/66 tests réussis**.
+- Suite différentielle : **68/68 tests réussis**.
 - Vecteurs indépendants : **114 tests réussis**.
 - Oracle ALU : 393 216 cas 8 bits et 800 cas 16 bits.
 - Décalages/rotations : 20 736 cas 8 bits et 504 cas 16 bits.
 - Ajustements : 3 072 cas AAA/AAS/DAA/DAS, 256 AAM et 65 536 AAD.
 - Extension de signe : 256 CBW et 65 536 CWD ; SAHF/LAHF : 32 combinaisons ; ESC : 64 codes.
-- Les tests de formes comprennent les branches rel8 aux limites, les huit formes IN/OUT, les instructions de chaîne répétées, les overrides de segment, LOCK (y compris avec override ES) et INTO.
+- Les tests de formes comprennent les branches rel8 aux limites, les huit formes IN/OUT, les instructions de chaîne répétées, les overrides de segment, LOCK (y compris avec override ES), aliases LOOPZ/LOOPNZ, SAL et ESC mémoire, et INTO.
 
 Les familles précédemment absentes sont désormais présentes dans les chemins ciblés de l'exécution source, de l'assembleur, du désassembleur et du moteur binaire. Elles restent classées **partielles** dans le registre : le modèle des ports est logiciel, WAIT ne simule pas TEST, ESC ne simule pas le coprocesseur, LOCK ne simule pas l'atomicité du bus, et les matrices exhaustives de toutes les formes/FLAGS/interactions de préfixes ne sont pas achevées.
 
