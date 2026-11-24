@@ -496,7 +496,7 @@ bytes.forEach(function(value,index){var address=(((cs<<4)+((ip+index)&65535))&10
 var placeholder=parseProgram("NOP").ops[0];
 while(!stop&&state.steps<10000){
 var windowBytes=[],physicalBase=((cpu.reg.CS<<4)&1048575);
-for(var look=0;look<15;look++){var offset=(currentIP+look)&65535,address=(physicalBase+offset)&1048575;windowBytes.push(cpu.mem[address]===undefined?0:cpu.mem[address]);}
+for(var look=0;look<32;look++){var offset=(currentIP+look)&65535,address=(physicalBase+offset)&1048575;windowBytes.push(cpu.mem[address]===undefined?0:cpu.mem[address]);}
 var decoded=disassembleBytes(windowBytes),row=decoded.rows[0],nextIP=(currentIP+row.size)&65535;
 if(!row||!row.size)throw Error("Le décodeur n’a consommé aucun octet à CS:IP.");
 if(/^DB /.test(row.instruction))throw Error("Opcode ou forme non pris en charge à "+cpu.reg.CS.toString(16).toUpperCase().padStart(4,"0")+"h:"+currentIP.toString(16).toUpperCase().padStart(4,"0")+"h : "+row.instruction);
