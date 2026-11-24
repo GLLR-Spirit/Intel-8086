@@ -258,3 +258,17 @@ Les groupes ont été intégrés au générateur, au décodeur et, pour les opé
 Audit détaillé : [audit-groupes-opcodes-8086.md](audit-groupes-opcodes-8086.md), qui précise les contraintes des extensions FF, y compris les formes mémoire uniquement.
 
 **Validation CI vérifiée** : run 45452066068, commit testé `1b8fc8e8ed19655fba655e33a207e122a035b34f`. La suite de groupes atteint **1 358/1 358** réussites ; le total agrégé du workflow est **8 245 vérifications réussies, 0 échec**.
+
+
+## Mise à jour — POP, RET et transferts indirects (24 novembre 2026)
+
+Le laboratoire prend maintenant en charge :
+- `POP r/m16` via `8F /0`, avec /1–/7 classés comme extensions réservées ;
+- `RET` C3/C2 et `RETF` CB/CA, avec ou sans immédiat ;
+- `CALL/JMP` indirects near via FF /2 et /4 ;
+- `CALL/JMP` indirects far via FF /3 et /5, avec pointeur mémoire m16:16 ;
+- la restauration de IP et CS, ainsi que l'ajustement de pile pair par mots suivis.
+
+La suite dédiée comporte **304 vecteurs**. Le workflow CI [45482367409](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45482367409) a réussi sur le commit `04f7ee9c918f42cb7c25d8124ecf983ff0e9bcc4` : **8 549 vérifications réussies, 0 échec** au total.
+
+Limite importante : dans l'interpréteur, IP est un indice logique d'instruction et non un offset octet dans un segment de code chargé. Les transferts indirects sont donc simulés dans ce modèle logique. Les formes RET/RETF avec ajustement impair restent encodées et décodées, mais leur exécution est refusée car le suivi pédagogique de pile travaille par mots.
