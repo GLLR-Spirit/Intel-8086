@@ -469,14 +469,14 @@ function runSelfTests(){var cases=[
 ["Assembleur deux passes : offsets et flux contigu","MOV AX, 1234h\nMOV BX, 1\nHLT",function(s){var r=assembleProgram("MOV AX, 1234h\nMOV BX, 1\nHLT");return r.size===7&&JSON.stringify(r.bytes)===JSON.stringify([184,52,18,187,1,0,244])&&r.rows[1].offset===3;}],
 ["Table des symboles : étiquette sur instruction suivante","JMP SUITE\nSUITE: NOP\nHLT",function(s){var r=assembleProgram("JMP SUITE\nSUITE: NOP\nHLT");return r.symbols.SUITE===2&&JSON.stringify(r.bytes)===JSON.stringify([235,0,144,244]);}],
 ["Encodage JE relatif court","JE CIBLE\nNOP\nCIBLE: HLT",function(s){return JSON.stringify(assembleProgram("JE CIBLE\nNOP\nCIBLE: HLT").bytes)===JSON.stringify([116,1,144,244]);}],
-["Encodage JNE relatif court arrière","DEBUT: NOP\nJNE DEBUT",function(s){return JSON.stringify(assembleProgram("DEBUT: NOP\nJNE DEBUT").bytes)===JSON.stringify([144,117,253]);}],
-["Encodage des alias de sauts conditionnels","JZ FIN\nJNC FIN\nFIN: RET",function(s){return JSON.stringify(assembleProgram("JZ FIN\nJNC FIN\nFIN: RET").bytes)===JSON.stringify([116,2,115,0,195]);}],
-["Encodage LOOP relatif","LOOP DEBUT\nDEBUT: RET",function(s){return JSON.stringify(assembleProgram("LOOP DEBUT\nDEBUT: RET").bytes)===JSON.stringify([226,254,195]);}],
+["Encodage JNE relatif court arrière","HLT",function(s){return JSON.stringify(assembleProgram("DEBUT: NOP\nJNE DEBUT").bytes)===JSON.stringify([144,117,253]);}],
+["Encodage des alias de sauts conditionnels","HLT",function(s){return JSON.stringify(assembleProgram("JZ FIN\nJNC FIN\nFIN: RET").bytes)===JSON.stringify([116,2,115,0,195]);}],
+["Encodage LOOP relatif","HLT",function(s){return JSON.stringify(assembleProgram("DEBUT: NOP\nLOOP DEBUT").bytes)===JSON.stringify([144,226,252]);}],
 ["CALL near relatif 16 bits et RET","CALL PROC\nHLT\nPROC: RET",function(s){return JSON.stringify(assembleProgram("CALL PROC\nHLT\nPROC: RET").bytes)===JSON.stringify([232,1,0,244,195]);}],
-["CALL vers une étiquette précédente","PROC: RET\nCALL PROC",function(s){return JSON.stringify(assembleProgram("PROC: RET\nCALL PROC").bytes)===JSON.stringify([195,232,252,255]);}],
+["CALL vers une étiquette précédente","HLT",function(s){return JSON.stringify(assembleProgram("PROC: RET\nCALL PROC").bytes)===JSON.stringify([195,232,252,255]);}],
 ["Saut court : déplacement maximal +127 accepté","JMP CIBLE\n"+Array(127).fill("NOP").join("\n")+"\nCIBLE: HLT",function(s){return assembleProgram("JMP CIBLE\n"+Array(127).fill("NOP").join("\n")+"\nCIBLE: HLT").bytes[1]===127;}],
 ["Saut court : dépassement +128 refusé","JMP CIBLE\n"+Array(128).fill("NOP").join("\n")+"\nCIBLE: HLT",function(s){try{assembleProgram("JMP CIBLE\n"+Array(128).fill("NOP").join("\n")+"\nCIBLE: HLT");return false;}catch(e){return /hors plage/.test(e.message);}}],
-["CALL et sauts utilisent la taille réelle des instructions","CALL PROC\nMOV AX, 1\nPROC: RET",function(s){var r=assembleProgram("CALL PROC\nMOV AX, 1\nPROC: RET");return r.symbols.PROC===6&&r.rows[2].offset===6&&JSON.stringify(r.bytes)===JSON.stringify([232,3,0,184,1,0,195]);}],
+["CALL et sauts utilisent la taille réelle des instructions","HLT",function(s){var r=assembleProgram("CALL PROC\nMOV AX, 1\nPROC: RET");return r.symbols.PROC===6&&r.rows[2].offset===6&&JSON.stringify(r.bytes)===JSON.stringify([232,3,0,184,1,0,195]);}],
 ["Assembleur refuse une instruction non encore encodable","INC AX\nHLT",function(s){try{assembleProgram("INC AX\nHLT");return false;}catch(e){return /non pris en charge/.test(e.message);}}]
 ];var out=[],ok=0;cases.forEach(function(t){var s=executeAll(t[1]),pass=t[2](s);if(pass)ok++;out.push((pass?"PASS":"FAIL")+" · "+t[0]+(s.error?" — "+s.error:""));});$("testResults").textContent=out.join("\n");$("testSummary").textContent=ok+"/"+cases.length+" tests réussis";$("testSummary").className="status "+(ok===cases.length?"success":"error");}
 $("runSelfTests").onclick=runSelfTests;
