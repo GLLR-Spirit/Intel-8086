@@ -159,11 +159,11 @@ const decoderVectors = [
   ["SBB r/m16 sign-extended immediate", [0x83, 0x1E, 0x00, 0x20, 0x7F], /SBBWORDPTR\[2000h\],127/i],
   ["SUB r/m16 sign-extended immediate", [0x83, 0x2E, 0x00, 0x20, 0xFE], /SUBWORDPTR\[2000h\],-2/i],
   ["CMP r/m16 sign-extended immediate", [0x83, 0x3E, 0x00, 0x20, 0x80], /CMPWORDPTR\[2000h\],-128/i],
-  ["MOV byte moffs with ES override", [0x26, 0xA0, 0x34, 0x12], /MOVAL,BYTEPTR ES:\[1234h\]/i],
-  ["MOV word moffs with SS override", [0x36, 0xA3, 0x34, 0x12], /MOVWORDPTR SS:\[1234h\],AX/i],
+  ["MOV byte moffs with ES override", [0x26, 0xA0, 0x34, 0x12], /MOVAL,BYTEPTRES:\[1234h\]/i],
+  ["MOV word moffs with SS override", [0x36, 0xA3, 0x34, 0x12], /MOVWORDPTRESS:\[1234h\],AX/i],
   ["ADD disp8 memory operand", [0x01, 0x40, 0x05], /ADDWORDPTR\[BX\+SI\+5\],AX/i],
   ["ADD disp16 memory operand", [0x01, 0x80, 0x2C, 0x01], /ADDWORDPTR\[BX\+SI\+300\],AX/i],
-  ["ADD memory operand with ES override", [0x26, 0x01, 0x00], /ADDWORDPTR ES:\[BX\+SI\],AX/i],
+  ["ADD memory operand with ES override", [0x26, 0x01, 0x00], /ADDWORDPTRES:\[BX\+SI\],AX/i],
 ];
 for (const [name, machineBytes, expectedText] of decoderVectors) {
   test("Désassembleur · " + name, () => {
@@ -173,8 +173,8 @@ for (const [name, machineBytes, expectedText] of decoderVectors) {
     assert.deepEqual(Array.from(result.rows[0].bytes), machineBytes);
   });
 }
-test("Assembleur · 83h refuse un immédiat hors plage signée", () => {
-  assert.throws(() => bytesOf("ADD WORD PTR [2000h], 128"), /encodage|plage|immédiat/i);
+test("Assembleur · immédiat hors plage signée utilise 81h", () => {
+  assert.deepEqual(bytesOf("ADD WORD PTR [2000h], 128"), [0x81, 0x06, 0x00, 0x20, 0x80, 0x00]);
 });
 test("Assembleur · MOV refuse une largeur incohérente pour moffs", () => {
   assert.throws(() => bytesOf("MOV AL, WORD PTR [2000h]"), /taille|incompatible|largeur/i);
