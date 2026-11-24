@@ -635,6 +635,25 @@ test("XLAT — lecture DS:[BX+AL] et mise à jour de AL", () => {
   try { binary=runBinary(prefix+"XLAT\nHLT").state; } catch(error) { throw new Error("binary XLAT: "+error.message); }
   assert.equal(binary.reg.AX&255,0x5a,"binary XLAT");
 });
+test("XLAT — override de segment ES", () => {
+  const source="MOV AX, 1000h\nMOV ES, AX\nMOV BX, 0100h\nMOV AL, 2\nMOV BYTE PTR ES:[BX+2], 5Ah\nES: XLAT\nHLT";
+  const {assembled,binaryState}=compareSourceBinary(source,[0x10102]);
+  assert.equal(binaryState.reg.AX&255,0x5a);
+  const row=assembled.rows.find(x=>x.instruction==="ES: XLAT");
+  assert.deepEqual(Array.from(row.bytes),[0x26,0xd7]);
+});
+test("INTO — aucun vecteur requis lorsque OF=0", () => {
+  const {binaryState}=compareSourceBinary("INTO\nHLT");
+  assert.equal(binaryState.reg.IP,2);
+});
+test("LOCK XCHG — forme mémoire dans le second opérande", () => {
+  const source="MOV BX, 0100h\nMOV AX, 1234h\nMOV WORD PTR [BX], 5678h\nLOCK XCHG AX, WORD PTR [BX]\nHLT";
+  const {assembled,binaryState}=compareSourceBinary(source,[0x100,0x101]);
+  const row=assembled.rows.find(x=>x.instruction.startsWith("LOCK"));
+  assert.deepEqual(Array.from(row.bytes.slice(0,2)),[0xf0,0x87]);
+  assert.equal(binaryState.reg.AX,0x5678);
+  assert.equal(binaryState.mem[0x100]|(binaryState.mem[0x101]<<8),0x1234);
+});
 test("REP MOVSB — préfixe binaire, répétition CX et transfert mémoire", () => {
   const source="MOV SI, 0100h\nMOV DI, 0200h\nMOV CX, 3\nMOV BYTE PTR [0100h], 11h\nMOV BYTE PTR [0101h], 22h\nMOV BYTE PTR [0102h], 33h\nREP MOVSB\nHLT";
   const {assembled,binaryState}=compareSourceBinary(source,[0x200,0x201,0x202]);
