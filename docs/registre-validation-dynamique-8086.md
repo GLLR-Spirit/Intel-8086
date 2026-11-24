@@ -30,7 +30,7 @@ Elle utilise désormais trois niveaux de vérification arithmétique :
 2. Balayage exhaustif des couples d'opérandes 8 bits pour ADD, ADC, SUB et SBB, avec les deux états de retenue pertinents.
 3. Vecteurs binaires bruts : octets machine constants, sans passer par l'assembleur du laboratoire, puis comparaison des résultats avec l'oracle.
 
-Le lot étendu comprend également un cadre IRET brut en mémoire, sans métadonnées de pile, avec restauration d'un CS différent et bouclage de SP. Résultat vérifié : **37/37 tests différentiels réussis**, plus 393 216 cas ALU 8 bits exhaustifs, 800 cas de frontière 16 bits, 1 350 exécutions binaires ALU sur octets bruts, 768 combinaisons ModR/M registre-direct exécutées, 512 combinaisons Jcc/FLAGS et les huit modes d'adressage mémoire avec quatre overrides de segment. Run CI [45505436864](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45505436864), commit testé `08208ea6dc2cbe867b33e8bc1dc61ce3c6b22857`.
+Le lot étendu comprend également un cadre IRET brut en mémoire, sans métadonnées de pile, avec restauration d'un CS différent et bouclage de SP. Résultat vérifié : **39/39 tests différentiels réussis**, plus 393 216 cas ALU 8 bits exhaustifs, 800 cas de frontière 16 bits, 1 350 exécutions binaires ALU sur octets bruts, 768 combinaisons ModR/M registre-direct, 512 combinaisons Jcc/FLAGS, les huit modes d'adressage avec quatre overrides, un IRET brut et un cycle INT/IVT/IRET. Run CI [45505775488](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45505775488), commit testé `39b342f1611e5f323c951e02830f8274b7109839`.
 
 ### Limites méthodologiques
 
@@ -39,9 +39,10 @@ Le lot étendu comprend également un cadre IRET brut en mémoire, sans métadon
 - Les vecteurs binaires bruts vérifient aussi le décodage et le chemin fetch/decode/execute sur un sous-ensemble représentatif, mais ne constituent pas un second émulateur complet.
 - La mémoire n'est comparée qu'aux adresses listées par chaque vecteur. Ce n'est pas une comparaison exhaustive du Mio de mémoire.
 - Le chemin source peut utiliser des directives pédagogiques comme `VECTOR`, qui ne sont pas présentes dans un flux binaire brut.
-- `IRET` fonctionne désormais dans le flux binaire lorsque le programme a un cadre architectural présent en mémoire à `SS:SP`. Le chargeur n'invente toujours pas de cadre : sans trois mots initialisés (IP, CS, FLAGS), l'exécution échoue explicitement.
+- `IRET` fonctionne dans le flux binaire avec un cadre architectural présent à `SS:SP`. `INT imm8` consulte l'entrée correspondante de l'IVT en mémoire, empile FLAGS/CS/IP et transfère le contrôle si les quatre octets de l'entrée IVT sont initialisés. Le gestionnaire peut revenir avec `IRET`.
+- Le chargeur n'invente pas de vecteur ni de gestionnaire : sans entrée IVT complète ou sans cadre de retour, l'exécution échoue explicitement.
 - Le paramètre facultatif `initialState` de `executeBinary` permet aux tests de précharger les registres, FLAGS et octets mémoire. Le cadre IRET brut ne requiert pas les métadonnées pédagogiques de pile ; si celles-ci existent, leurs types et leur cohérence sont vérifiés.
-- La prise en charge d'IRET ne signifie pas que le processeur d'interruptions est complet : le chargement automatique de l'IVT, l'arbitrage matériel, les interruptions externes et les événements asynchrones ne sont pas simulés.
+- La prise en charge logicielle INT/IRET ne constitue pas un processeur d'interruptions complet : les vecteurs doivent être fournis en mémoire ; les interruptions matérielles, l'arbitrage, NMI, DMA et événements asynchrones ne sont pas simulés.
 - Les effets de FLAGS architecturaux indéfinis ne doivent jamais être comparés comme s'ils avaient une valeur prescrite.
 
 ## 3. Registre par famille
@@ -62,7 +63,7 @@ Le lot étendu comprend également un cadre IRET brut en mémoire, sans métadon
 | NOP, HLT, CLC, STC, CMC, CLI, STI, CLD, STD | Oui | Oui pour les formes présentes | Oui pour les formes présentes | Oui pour les formes présentes | Partiel |
 | MOVSB/MOVSW, CMPSB/CMPSW, SCASB/SCASW, LODSB/LODSW, STOSB/STOSW | Oui en mode source | Pas de génération binaire complète | Pas de décodage binaire complet | Non | Partiel source ; non pris en charge en binaire |
 | REP/REPE/REPZ/REPNE/REPNZ avec chaînes | Oui en mode source, sous-ensemble | Pas de génération complète | Préfixes non pris en charge | Non | Partiel source ; non pris en charge en binaire |
-| INT et gestionnaires VECTOR | Simulation pédagogique | Pas de flux autonome équivalent à VECTOR | Couverture binaire limitée | Le chargeur brut ne reçoit pas la table VECTOR | Partiel source ; non équivalent en binaire |
+| INT imm8 et gestionnaires VECTOR/IVT | Oui avec `VECTOR` et service DOS AH=02h limité | Pas encore de génération binaire par l'assembleur | `CD ib` décodé | Oui si l'entrée IVT et le gestionnaire sont initialisés en mémoire ; service DOS AH=02h conservé | Partiel |
 | LOOPE/LOOPZ, LOOPNE/LOOPNZ, JCXZ | Non dans le chemin de contrôle exécuté | Non | Non | Non | Non pris en charge |
 | AAA, AAS, AAM, AAD, DAA, DAS, CBW, CWD | Non | Non | Non | Non | Non pris en charge |
 | ROL, ROR, RCL, RCR, SHL/SAL, SHR, SAR | Non | Non | Non | Non | Non pris en charge |
@@ -91,11 +92,11 @@ Les flux incomplets sont une classe distincte : ils doivent produire une erreur 
 - JMP near indirect par registre : comparaison source/binaire.
 - Les transferts far ne constituent pas un mécanisme de chargement de plusieurs images indépendantes par segment. Les alias physiques et le contenu réellement présent en mémoire restent déterminants.
 - RET/RETF avec ajustement impair : forme encodable/décodable mais refusée par le suivi pédagogique de pile, qui travaille par mots.
-- IRET : test source avec cadre `VECTOR` et test binaire avec trois mots bruts en mémoire (`IP`, `CS`, `FLAGS`), restauration d'un CS différent et bouclage 16 bits de SP. L'équivalence complète d'un environnement d'interruptions matériel n'est pas revendiquée.
+- INT/IRET : test source avec cadre `VECTOR`, test binaire avec trois mots bruts en mémoire (`IP`, `CS`, `FLAGS`), restauration d'un CS différent et bouclage 16 bits de SP, puis cycle binaire INT → entrée IVT → gestionnaire → IRET. Les interruptions matérielles et l'environnement complet ne sont pas revendiqués.
 
 ## 6. Validation CI
 
-Le workflow principal [45505436864](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45505436864) a terminé avec le statut **success** sur le commit testé `08208ea6dc2cbe867b33e8bc1dc61ce3c6b22857`. La suite différentielle rapporte **37/37 tests réussis**, **393 216** vecteurs arithmétiques exhaustifs 8 bits, **800** vecteurs de frontière 16 bits, **1 350** exécutions binaires ALU sur octets bruts, **768** combinaisons registre-direct et **512** combinaisons Jcc/FLAGS.
+Le workflow principal [45505775488](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45505775488) a terminé avec le statut **success** sur le commit testé `39b342f1611e5f323c951e02830f8274b7109839`. La suite différentielle rapporte **39/39 tests réussis**, **393 216** vecteurs arithmétiques exhaustifs 8 bits, **800** vecteurs de frontière 16 bits, **1 350** exécutions binaires ALU sur octets bruts, **768** combinaisons registre-direct, **512** combinaisons Jcc/FLAGS et les tests mémoire/interruptions.
 
 ## 7. Conclusion et seuil d'arrêt
 
