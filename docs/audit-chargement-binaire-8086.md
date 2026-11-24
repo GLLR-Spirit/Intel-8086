@@ -97,3 +97,16 @@ La comparaison porte sur les registres, les indicateurs modélisés, le nombre d
 **Interprétation :** le test différentiel repère des divergences entre les deux chemins, mais les moteurs partagent certaines primitives et certaines règles d'interprétation. Les oracles indépendants ne couvrent que les vecteurs explicitement déclarés. Ce résultat ne constitue donc pas une preuve indépendante exhaustive de l'architecture 8086.
 
 Registre détaillé des statuts par famille : [`registre-validation-dynamique-8086.md`](registre-validation-dynamique-8086.md). Aucun mnémonique n'est déclaré entièrement validé dans toutes ses formes 8086 ; le statut général demeure partiel.
+
+
+## Correctif différentiel — IRET binaire et oracle arithmétique indépendant
+
+Le chemin binaire ne se limite plus à rejeter `IRET` lorsqu'aucune métadonnée pédagogique de pile n'existe. L'exécution de `IRET` lit désormais les trois mots architecturaux depuis la mémoire à `SS:SP`, dans l'ordre de dépilement IP, CS, FLAGS. Lorsque le moteur source possède des métadonnées typées, leur cohérence reste contrôlée ; pour un binaire chargé, un cadre brut en mémoire suffit.
+
+`executeBinary` accepte un quatrième argument facultatif `initialState` destiné à initialiser explicitement les registres, FLAGS, octets mémoire (adresses physiques 20 bits) et, facultativement, les métadonnées de pile. Le schéma est validé strictement ; les champs inconnus et valeurs hors plage sont rejetés. Aucun cadre d'interruption n'est créé implicitement.
+
+Le nouveau vecteur IRET place un cadre brut dans la mémoire, change réellement CS, restaure IP et FLAGS, puis vérifie le bouclage de SP de `FFFEh` vers `0000h`. Il ne dépend pas de la directive source `VECTOR`.
+
+La suite différentielle ajoute aussi un oracle de référence arithmétique indépendant : balayage exhaustif des paires d'opérandes 8 bits pour ADD, ADC, SUB et SBB avec les états de retenue pertinents, vecteurs 16 bits aux frontières, et exécution de vecteurs binaires bruts ALU dont les octets ne proviennent pas de l'assembleur du laboratoire.
+
+La portée reste bornée : ce renforcement ne transforme pas le moteur en émulateur matériel complet et ne prouve pas les formes qui ne sont pas implémentées.
