@@ -225,15 +225,15 @@ test("dynamic branch fetches an instruction inside bytes previously decoded as a
 });
 countsBinary.branches++;
 test("self-modifying code is fetched again from memory after a write", () => {
-  const state = executeLoaded([0x2E,0xC6,0x06,0x09,0x00,0xF4,0xEB,0x01,0x90,0x90],0x2200,0x0400);
+  const state = executeLoaded([0x2E,0xC6,0x06,0x09,0x04,0xF4,0xEB,0x01,0x90,0x90],0x2200,0x0400);
   assert.equal(state.steps,3);
   assert.equal(state.reg.IP,0x040A);
-  assert.equal(state.mem[0x22009],0xF4);
+  assert.equal(state.mem[0x22409],0xF4);
 });
 countsBinary.branches++;
 test("relative branches after the first instruction use the current IP as their base", () => {
   const state = executeLoaded([0x40,0xEB,0x01,0xB8,0xF4,0x00],0x2300,0x0500);
-  assert.equal(state.reg.AX,0);
+  assert.equal(state.reg.AX,1);
   assert.equal(state.reg.IP,0x0505);
   assert.equal(state.steps,3);
 });
