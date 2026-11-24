@@ -192,7 +192,7 @@ if(["MOV","ADD","ADC","SUB","SBB","AND","OR","XOR","CMP","TEST"].indexOf(op)>=0)
 if(op==="LEA"){var leaMemory=memoryOperand(a[1]);set(a[0],leaMemory.offset,16);return null;}
 if(op==="LES"||op==="LDS"){var farMemory=memoryOperand(a[1]),farAddress=physicalAddress(farMemory,0),farOffset=(cpu.mem[farAddress]||0)|((cpu.mem[physicalAddress(farMemory,1)]||0)<<8),farSegment=(cpu.mem[physicalAddress(farMemory,2)]||0)|((cpu.mem[physicalAddress(farMemory,3)]||0)<<8);set(a[0],farOffset,16);cpu.reg[op==="LES"?"ES":"DS"]=farSegment;return null;}
 if(op==="XCHG"){if(a.length!==2)throw Error("XCHG attend deux opérandes.");b=width(a[0],a[1]);x=get(a[0],b);y=get(a[1],b);set(a[0],y,b);set(a[1],x,b);return null;}
-if(["INC","DEC","NOT"].indexOf(op)>=0){if(a.length!==1)throw Error(op+" attend un opérande.");b=width(a[0]);x=get(a[0],b);var cf=f.CF;if(op==="NOT")set(a[0],~x,b);else set(a[0],arithmetic(x,1,op==="INC"?"ADD":"SUB",b),b);if(op!=="NOT")f.CF=cf;return null;}
+if(["INC","DEC","NOT","NEG"].indexOf(op)>=0){if(a.length!==1)throw Error(op+" attend un opérande.");b=width(a[0]);x=get(a[0],b);var cf=f.CF;if(op==="NOT")set(a[0],~x,b);else if(op==="NEG")set(a[0],arithmetic(0,x,"SUB",b),b);else set(a[0],arithmetic(x,1,op==="INC"?"ADD":"SUB",b),b);if(op==="INC"||op==="DEC")f.CF=cf;return null;}
 if(["SHL","SAL","SHR"].indexOf(op)>=0){if(a.length!==2)throw Error(op+" attend deux opérandes.");b=width(a[0]);x=get(a[0],b);var count=get(a[1])&31,mask=b===8?255:65535;if(count===0)return null;var carry=0,original=x;for(var j=0;j<count;j++){if(op==="SHR"){carry=x&1;x>>=1;}else{carry=(x>>(b-1))&1;x=(x<<1)&mask;}}set(a[0],x,b);logicFlags(x,b);f.CF=count?carry:0;if(count===1){var signBit=b===8?128:32768;f.OF=op==="SHR"?((original&signBit)?1:0):(((x&signBit)?1:0)^f.CF);}return null;}
 if(["PUSH","PUSHF"].indexOf(op)>=0){if((op==="PUSH"&&a.length!==1)||(op==="PUSHF"&&a.length!==0))throw Error(op+" : nombre d’opérandes invalide.");pushWord(op==="PUSHF"?packFlags(f):get(a[0]),op==="PUSHF"?"flags":"data");return null;}
 if(["POP","POPF"].indexOf(op)>=0){if((op==="POP"&&a.length!==1)||(op==="POPF"&&a.length!==0))throw Error(op+" : nombre d’opérandes invalide.");var popped=popStackWord(["data","flags"]);if(op==="POPF")cpu.flags=unpackFlags(popped);else set(a[0],popped);return null;}
@@ -238,7 +238,7 @@ return null;
 }
 function encodingBytes(ins){
 var base=ins.op.replace(/^(REP|REPE|REPZ|REPNE|REPNZ)_/,""),a=ins.args;
-if(a.length===1){var unaryName=a[0].trim().toUpperCase(),unaryReg=encodingRegisterCode(unaryName),unaryInfo=info(unaryName),segmentOpcodes={ES:6,CS:14,SS:22,DS:30},segmentPopOpcodes={ES:7,SS:23,DS:31};if(base==="PUSH"&&segmentOpcodes[unaryName]!==undefined)return [segmentOpcodes[unaryName]];if(base==="POP"&&segmentPopOpcodes[unaryName]!==undefined)return [segmentPopOpcodes[unaryName]];if(unaryReg!==null&&unaryInfo&&unaryInfo.bits===16){if(base==="INC")return [64+unaryReg];if(base==="DEC")return [72+unaryReg];if(base==="PUSH")return [80+unaryReg];if(base==="POP")return [88+unaryReg];}if(base==="INC"||base==="DEC"){var unaryBits=encodingOperandBits(unaryName);if(unaryBits===8||unaryBits===16){var unaryRM=encodingModRM(base==="INC"?0:1,unaryName);if(unaryRM)return encodingPrefixFor(unaryName).concat([unaryBits===8?254:255],unaryRM);}}}
+if(a.length===1){var unaryName=a[0].trim().toUpperCase(),unaryReg=encodingRegisterCode(unaryName),unaryInfo=info(unaryName),segmentOpcodes={ES:6,CS:14,SS:22,DS:30},segmentPopOpcodes={ES:7,SS:23,DS:31};if(base==="PUSH"&&segmentOpcodes[unaryName]!==undefined)return [segmentOpcodes[unaryName]];if(base==="POP"&&segmentPopOpcodes[unaryName]!==undefined)return [segmentPopOpcodes[unaryName]];if(unaryReg!==null&&unaryInfo&&unaryInfo.bits===16){if(base==="INC")return [64+unaryReg];if(base==="DEC")return [72+unaryReg];if(base==="PUSH")return [80+unaryReg];if(base==="POP")return [88+unaryReg];}if(base==="INC"||base==="DEC"||base==="NOT"||base==="NEG"||base==="MUL"||base==="IMUL"||base==="DIV"||base==="IDIV"){var unaryBits=encodingOperandBits(unaryName);if(unaryBits===8||unaryBits===16){var unaryExt=({INC:0,DEC:1,NOT:2,NEG:3,MUL:4,IMUL:5,DIV:6,IDIV:7})[base],unaryRM=encodingModRM(unaryExt,unaryName);if(unaryRM)return encodingPrefixFor(unaryName).concat([unaryBits===8?246:247],unaryRM);}}if(base==="CALL"||base==="JMP"||base==="PUSH"){var indirectBits=encodingOperandBits(unaryName),indirectReg=encodingRegisterCode(unaryName),indirectMemory=unaryName.indexOf("[")>=0;if((indirectReg!==null&&indirectBits===16)||(indirectMemory&&indirectBits===16)){var indirectExt=base==="CALL"?2:base==="JMP"?4:6,indirectRM=encodingModRM(indirectExt,unaryName);if(indirectRM)return encodingPrefixFor(unaryName).concat([255],indirectRM);}}}
 if(a.length===2){
 var d=a[0].trim().toUpperCase(),q=a[1].trim().toUpperCase(),rd=encodingRegisterCode(d),rq=encodingRegisterCode(q),id=info(d),iq=info(q),dm=d.indexOf("[")>=0,qm=q.indexOf("[")>=0;
 if(base==="LEA"||base==="LES"||base==="LDS"){var farReg=rd,farRM=encodingModRM(farReg,q);if(farReg===null||!farRM)return null;return encodingPrefixFor(q).concat([base==="LEA"?141:base==="LES"?196:197],farRM);}
@@ -310,7 +310,7 @@ function assembleProgram(src){
 var parsed=parseProgram(src),ops=parsed.ops,offsets=[],symbolOffsets={},size=0,relativeOps=["JMP","JE","JZ","JNE","JNZ","JC","JB","JNC","JAE","JO","JNO","JS","JNS","JP","JNP","JL","JGE","JLE","JG","JA","JBE","LOOP","CALL"];
 /* Passe 1 : calcul des tailles, offsets et table des symboles. */
 for(var i=0;i<ops.length;i++){
-var ins=ops[i],op=ins.op,branch=relativeOps.indexOf(op)>=0,bytes=null;
+var ins=ops[i],op=ins.op,indirectControl=(op==="CALL"||op==="JMP")&&(info(ins.args[0])||memoryOperand(ins.args[0])),branch=relativeOps.indexOf(op)>=0&&!indirectControl,bytes=null;
 offsets[i]=size;
 if(branch)bytes=(op==="CALL"||op==="JMP")?[op==="CALL"?232:233,0,0]:[0,0];else bytes=encodingBytes(ins);
 if(!bytes)assemblerFailure("Encodage binaire non pris en charge pour "+ins.raw+". Aucune sortie partielle n'est produite.",ins);
@@ -323,7 +323,8 @@ Object.keys(parsed.labels).forEach(function(name){symbolOffsets[name]=offsets[pa
 var output=[],rows=[];
 for(var j=0;j<ops.length;j++){
 var current=ops[j],mn=current.op,encoded=null,targetIndex,targetOffset,delta,opcode=relativeBranchOpcode(mn);
-if(opcode!==null||mn==="CALL"){
+var indirectControl=(mn==="CALL"||mn==="JMP")&&(info(current.args[0])||memoryOperand(current.args[0]));
+if((opcode!==null||mn==="CALL")&&!indirectControl){
 targetIndex=parsed.labels[current.args[0].toUpperCase()];
 if(targetIndex===undefined)assemblerFailure("Étiquette inconnue : "+current.args[0]+".",current);
 targetOffset=offsets[targetIndex];
@@ -393,7 +394,7 @@ else if(op===30)ins="PUSH DS";
 else if(op===7)ins="POP ES";
 else if(op===23)ins="POP SS";
 else if(op===31)ins="POP DS";
-else if(op===254||op===255){bits=op===254?8:16;modrm=read();ext=(modrm>>3)&7;rm=decodeRM(modrm,bits,prefix);if(ext===0)ins="INC "+rm.text;else if(ext===1)ins="DEC "+rm.text;}
+else if(op===254||op===255){bits=op===254?8:16;modrm=read();ext=(modrm>>3)&7;rm=decodeRM(modrm,bits,prefix);if(ext===0)ins="INC "+rm.text;else if(ext===1)ins="DEC "+rm.text;else if(op===255&&ext===2)ins="CALL "+rm.text;else if(op===255&&ext===3&&rm.memory)ins="CALL FAR "+rm.text;else if(op===255&&ext===4)ins="JMP "+rm.text;else if(op===255&&ext===5&&rm.memory)ins="JMP FAR "+rm.text;else if(op===255&&ext===6)ins="PUSH "+rm.text;}
 else if(op>=176&&op<=191){bits=op<184?8:16;reg=(op-(bits===8?176:184));ins="MOV "+(bits===8?reg8:reg16)[reg]+", "+imm(bits===8?read():word(),bits);}
 else if(op>=112&&op<=127){disp=signed(read(),8);target=(i+disp)&65535;ins=cond[op-112]+" "+hx(target,4);}
 else if(op===226){disp=signed(read(),8);ins="LOOP "+hx((i+disp)&65535,4);}
@@ -430,7 +431,7 @@ else ins="TEST "+rm.text+", "+reg;
 else if(op===160||op===161||op===162||op===163){bits=(op===160||op===162)?8:16;val=word();var moffsMem=(prefix?prefix+":":"")+"["+hx(val,4)+"]";if(op===160||op===161)ins="MOV "+(bits===8?"AL":"AX")+", "+(bits===8?"BYTE":"WORD")+" PTR "+moffsMem;else ins="MOV "+(bits===8?"BYTE":"WORD")+" PTR "+moffsMem+", "+(bits===8?"AL":"AX");}
 else if(op===198||op===199){bits=op===198?8:16;modrm=read();ext=(modrm>>3)&7;rm=decodeRM(modrm,bits,prefix);val=bits===8?read():word();if(ext===0)ins="MOV "+rm.text+", "+imm(val,bits);}
 else if(op===128||op===129||op===131){bits=op===128?8:16;modrm=read();ext=(modrm>>3)&7;rm=decodeRM(modrm,bits,prefix);val=op===131?signed(read(),8):bits===8?read():word();base=["ADD","OR","ADC","SBB","AND","SUB","XOR","CMP"][ext];ins=base+" "+rm.text+", "+(op===131?String(val):imm(val,bits));}
-else if(op===246||op===247){bits=op===246?8:16;modrm=read();ext=(modrm>>3)&7;rm=decodeRM(modrm,bits,prefix);if(ext===0){val=bits===8?read():word();ins="TEST "+rm.text+", "+imm(val,bits);}}
+else if(op===246||op===247){bits=op===246?8:16;modrm=read();ext=(modrm>>3)&7;rm=decodeRM(modrm,bits,prefix);if(ext===0){val=bits===8?read():word();ins="TEST "+rm.text+", "+imm(val,bits);}else if(ext>=2){ins=["","","NOT","NEG","MUL","IMUL","DIV","IDIV"][ext]+" "+rm.text;}}
 else if([4,5,12,13,20,21,28,29,36,37,44,45,52,53,60,61,168,169].indexOf(op)>=0){
 bits=(op&1)?16:8;acc=bits===8?"AL":"AX";val=bits===8?read():word();base=({4:"ADD",5:"ADD",12:"OR",13:"OR",20:"ADC",21:"ADC",28:"SBB",29:"SBB",36:"AND",37:"AND",44:"SUB",45:"SUB",52:"XOR",53:"XOR",60:"CMP",61:"CMP",168:"TEST",169:"TEST"})[op];ins=base+" "+acc+", "+imm(val,bits);
 }
