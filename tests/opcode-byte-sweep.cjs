@@ -3,7 +3,7 @@ const vm = require("node:vm");
 const assert = require("node:assert/strict");
 
 const html = fs.readFileSync("index.html", "utf8");
-const match = html.match(/<script>([\\s\\S]*?)<\\/script>/);
+const match = html.match(/<script>([\s\S]*?)<\/script>/);
 assert.ok(match, "Inline application script must exist");
 
 const elements = new Map();
@@ -20,8 +20,8 @@ const context = {
   console
 };
 vm.createContext(context);
-const injected = "\\nglobalThis.__8086OpcodeSweep = { disassemble: bytes => disassembleBytes(bytes) };\\n})();\\n";
-const instrumented = match[1].replace(/\\n\\}\\)\\(\\);\\s*$/, injected);
+const injected = "\nglobalThis.__8086OpcodeSweep = { disassemble: bytes => disassembleBytes(bytes) };\n})();\n";
+const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injected);
 assert.notEqual(instrumented, match[1], "Test API injection point must exist");
 vm.runInContext(instrumented, context, { timeout: 30000 });
 const disassemble = context.__8086OpcodeSweep.disassemble;
