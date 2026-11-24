@@ -22,7 +22,7 @@ const context = {
   console
 };
 vm.createContext(context);
-const instrumented = match[1].replace(/\\n\\}\\)\\(\\);\\s*$/, `
+const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, `
 globalThis.__8086TestApi = {
   assemble: function (source) { return assembleProgram(source); },
   disassemble: function (bytes) { return disassembleBytes(bytes); },
