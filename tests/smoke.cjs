@@ -37,3 +37,17 @@ console.log(summary);
 console.log(results);
 assert.equal(summary, "354/354 tests réussis", "All simulator self-tests must pass");
 assert.ok(!results.includes("FAIL"), "No self-test should fail");
+const instructionGrid = element("instructionGrid").innerHTML;
+assert.ok(instructionGrid.includes("Fiche technique détaillée"), "Instruction cards must expose technical details");
+assert.ok(instructionGrid.includes("Prise en charge dans Intel 8086 Lab"), "Instruction cards must state simulator/assembler/disassembler support");
+const instructionSearch = element("searchInstruction");
+instructionSearch.value = "8Eh";
+instructionSearch.oninput();
+assert.ok(element("instructionCount").textContent.startsWith("1 entrée(s)"), "Opcode search must find the MOV segment-register form");
+instructionSearch.value = "";
+instructionSearch.oninput();
+const categoryFilter = element("filterCategory");
+categoryFilter.value = "Chaînes";
+categoryFilter.onchange();
+assert.ok(element("instructionCount").textContent.startsWith("6 entrée(s)"), "Category filter must find the string instruction family");
+
