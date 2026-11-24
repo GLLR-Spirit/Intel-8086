@@ -78,3 +78,10 @@ La relaxation automatique ne propose pas de syntaxe pour forcer un JMP near lors
 - [`tests/control-stack.cjs`](../tests/control-stack.cjs) : transferts indirects near/far, pile, retours et contraintes POP/RET.
 
 Le total CI doit être lu sur le dernier workflow validé pour le commit concerné ; les résultats antérieurs de la phase relative ne valident pas cette phase d'intégration.
+
+
+## Chargement et exécution initiale d'un flux binaire
+
+Le laboratoire accepte maintenant un tableau d'octets avec un `CS:IP` initial choisi. Les octets sont copiés dans la mémoire simulée selon l'adresse physique 8086 sur 20 bits, et le décodeur existant produit une table des frontières d'instructions. Les branchements relatifs vers ces frontières, ainsi que CALL/RET, sont exécutés dans le modèle chargé. Les octets non pris en charge ou les cibles au milieu d'une instruction sont refusés explicitement.
+
+**Cette étape n'est pas encore un fetch/decode dynamique.** Le décodage reste linéaire et préalable au démarrage ; le moteur n'effectue pas encore la lecture et le décodage d'un opcode depuis la mémoire à chaque instruction. Voir [l'audit du chargeur binaire](audit-chargement-binaire-8086.md).
