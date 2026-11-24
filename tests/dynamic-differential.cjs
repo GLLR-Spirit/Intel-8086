@@ -646,6 +646,13 @@ test("INTO — aucun vecteur requis lorsque OF=0", () => {
   const {binaryState}=compareSourceBinary("INTO\nHLT");
   assert.equal(binaryState.reg.IP,2);
 });
+test("LOCK + override ES — préfixes combinés sur mémoire", () => {
+  const source="MOV AX, 1000h\nMOV ES, AX\nMOV BX, 0100h\nMOV WORD PTR ES:[BX], 1\nMOV AX, 2\nES: LOCK ADD WORD PTR [BX], AX\nHLT";
+  const {assembled,binaryState}=compareSourceBinary(source,[0x10100,0x10101]);
+  const row=assembled.rows.find(x=>x.instruction.startsWith("LOCK"));
+  assert.deepEqual(Array.from(row.bytes.slice(0,4)),[0xf0,0x26,0x01,0x07]);
+  assert.equal(binaryState.mem[0x10100]|(binaryState.mem[0x10101]<<8),3);
+});
 test("LOCK XCHG — forme mémoire dans le second opérande", () => {
   const source="MOV BX, 0100h\nMOV AX, 1234h\nMOV WORD PTR [BX], 5678h\nLOCK XCHG AX, WORD PTR [BX]\nHLT";
   const {assembled,binaryState}=compareSourceBinary(source,[0x100,0x101]);
