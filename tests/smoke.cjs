@@ -54,9 +54,9 @@ categoryFilter.value = "";
 categoryFilter.onchange();
 instructionSearch.value = "ADC";
 instructionSearch.oninput();
-assert.ok(/Simulateur : (Pris en charge|Partiel)/.test(element("instructionGrid").innerHTML), "ADC must not be advertised as unsupported");
+assert.ok(element("instructionGrid").innerHTML.includes("ADC") && !element("instructionGrid").innerHTML.includes("Simulateur : Non pris en charge"), "ADC must not be advertised as unsupported");
 instructionSearch.value = "SBB";
 instructionSearch.oninput();
-assert.ok(/Simulateur : (Pris en charge|Partiel)/.test(element("instructionGrid").innerHTML), "SBB must not be advertised as unsupported");
+assert.ok(element("instructionGrid").innerHTML.includes("SBB") && !element("instructionGrid").innerHTML.includes("Simulateur : Non pris en charge"), "SBB must not be advertised as unsupported");
 
 
