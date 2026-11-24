@@ -283,3 +283,14 @@ Nouvelle suite : [`tests/relative-branches.cjs`](../tests/relative-branches.cjs)
 Le workflow CI [45484177621](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45484177621) a réussi sur le commit `aa8b455e9cce132c0c437b2fc1f1ce30306b1f51` : **8 736 vérifications réussies, 0 échec** au total.
 
 Limite maintenue : les offsets octet sont utilisés par l'assembleur et le désassembleur ; l'interpréteur utilise encore un indice logique d'instruction pour l'IP et les branches par étiquette.
+
+
+## Mise à jour — cohérence des offsets binaires et du modèle d'exécution (24 novembre 2026)
+
+L'interpréteur construit désormais, lorsque le programme entier est encodable, une table bidirectionnelle entre indice logique et offset binaire. IP est exposé en offset octet ; les branches directes, LOOP, CALL, les retours RET/RETF/IRET et les transferts indirects résolvent les cibles par cette table. Les adresses de retour empilées sont des offsets octet. Un segment de code de 65 536 octets permet le bouclage séquentiel FFFFh → 0000h.
+
+Le mode d'exécution est indiqué dans `state.execution.mode` : `binary-offset` lorsque l'image est assemblable, ou `logical-fallback` lorsque le programme contient une forme hors du sous-ensemble encodable.
+
+Nouvelle suite : [`byte-offset-execution.cjs`](../tests/byte-offset-execution.cjs), qui couvre les offsets, les branchements, CALL/RET et le rebouclage d'un segment complet de 64 Kio. Les tests de pile existants ont été adaptés pour utiliser des offsets binaires réels comme cibles des transferts indirects.
+
+Limites : il ne s'agit pas encore d'un chargeur de binaire externe ni d'un émulateur complet. Les transferts FAR ne chargent pas des images de code distinctes par segment CS ; les offsets sont résolus dans l'image source courante. Les transferts indirects doivent viser une frontière d'instruction connue.
