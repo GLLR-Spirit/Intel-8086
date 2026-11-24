@@ -493,6 +493,8 @@ var state=fresh(),currentIP=ip,decodedCount=0,stop=false;
 cpu=state;
 if(initialState!==undefined&&initialState!==null){
 if(typeof initialState!=="object"||Array.isArray(initialState))throw Error("L’état initial binaire doit être un objet.");
+Object.keys(initialState).forEach(function(key){if(["reg","flags","mem","stack"].indexOf(key)<0)throw Error("Champ d’état initial inconnu : "+key+".");});
+["reg","flags","mem"].forEach(function(key){if(initialState[key]!==undefined&&initialState[key]!==null&&(typeof initialState[key]!=="object"||Array.isArray(initialState[key])))throw Error("Le champ initial "+key+" doit être un objet.");});
 var seedRegs=initialState.reg||{},seedFlags=initialState.flags||{},seedMem=initialState.mem||{},seedStack=initialState.stack||[];
 Object.keys(seedRegs).forEach(function(key){if(!Object.prototype.hasOwnProperty.call(state.reg,key)||!Number.isInteger(seedRegs[key])||seedRegs[key]<0||seedRegs[key]>65535)throw Error("Registre initial invalide : "+key+".");state.reg[key]=seedRegs[key];});
 Object.keys(seedFlags).forEach(function(key){if(!Object.prototype.hasOwnProperty.call(state.flags,key)||(seedFlags[key]!==0&&seedFlags[key]!==1))throw Error("Indicateur initial invalide : "+key+".");state.flags[key]=seedFlags[key];});
