@@ -60,4 +60,4 @@ La relaxation automatique ne propose pas de syntaxe pour forcer un JMP near lors
 
 Suite dédiée : [`tests/relative-branches.cjs`](../tests/relative-branches.cjs).
 
-Elle couvre la relaxation JMP, les limites rel8, les limites rel16, les seize conditions et leurs FLAGS, LOOP, les offsets de désassemblage et les flux tronqués. Le statut et les totaux définitifs doivent être lus dans le dernier workflow CI associé au commit audité.
+Elle couvre la relaxation JMP, les limites rel8, les limites rel16, les seize conditions et leurs FLAGS, LOOP, les offsets de désassemblage et les flux tronqués. Le workflow CI [45484177621](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45484177621) a réussi sur le commit `aa8b455e9cce132c0c437b2fc1f1ce30306b1f51`. Les **187 vecteurs** de cette suite passent, et le workflow complet valide **8 736 vérifications avec 0 échec**.
