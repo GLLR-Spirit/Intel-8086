@@ -521,7 +521,7 @@ function runSelfTests(){var cases=[
 ["RET sur pile vide","RET\nHLT",function(s){return !!s.error&&s.error.indexOf("Pile vide")>=0;}],
 ["CALL étiquette inconnue","CALL ABSENTE\nHLT",function(s){return !!s.error&&s.error.indexOf("Étiquette inconnue")>=0;}],
 ["CALL nombre d’opérandes invalide","CALL A, B\nHLT\nA:\nRET",function(s){return !!s.error&&s.error.indexOf("CALL attend")>=0;}],
-["RET avec opérande refusé","RET 4\nHLT",function(s){return !!s.error&&s.error.indexOf("RET sans opérande")>=0;}],
+["RET imm16 ajuste la pile après le retour","MOV AX, 1\nPUSH AX\nCALL PROC\nHLT\nPROC:\nRET 2",function(s){return !s.error&&s.stack.length===0&&s.reg.SP===65534;}],
 ["INT appelle un gestionnaire VECTOR","VECTOR 30h, HANDLER\nMOV AX, 1\nINT 30h\nMOV BX, 2\nHLT\nHANDLER:\nINC AX\nIRET",function(s){return !s.error&&s.reg.AX===2&&s.reg.BX===2&&s.reg.SP===65534;}],
 ["INT empile FLAGS, CS et IP","VECTOR 31h, H\nMOV AX, 1\nINT 31h\nHLT\nH:\nIRET",function(s){return !s.error&&s.stack.length===0&&s.reg.SP===65534;}],
 ["INT efface IF et TF dans le gestionnaire","VECTOR 32h, H\nMOV AX, 1\nINT 32h\nHLT\nH:\nMOV BX, 1\nIRET",function(s){return !s.error&&s.reg.BX===1;}],
