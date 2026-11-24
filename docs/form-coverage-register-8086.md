@@ -82,7 +82,7 @@ Le fichier `tests/instruction-vectors.cjs` a été étendu avec :
 - dix cas directionnels pour ADD/ADC/SBB/SUB/CMP avec opérandes mémoire ;
 - quatre cas d'immédiat mot en mémoire couvrant ADD, ADC, SUB et CMP.
 
-Les vecteurs du désassembleur utilisent des octets fixes écrits dans le test. Ils ne réutilisent pas la sortie de l'assembleur comme oracle. La suite ne couvre toujours pas toutes les variantes de ModR/M, tous les modes d'adressage, les déplacements signés, les préfixes, les opcodes moffs ni les groupes 83h.
+Les vecteurs du désassembleur utilisent des octets fixes écrits dans le test. Ils ne réutilisent pas la sortie de l'assembleur comme oracle. La suite comprend maintenant 80 vecteurs indépendants : 34 contrôles d'assembleur, 32 de désassembleur, un contrôle de flux tronqué et 13 contrôles du simulateur. Le run CI 221 a validé les 80/80 vecteurs ainsi que les 354/354 tests de fumée. Elle ne couvre toujours pas toutes les variantes de ModR/M, tous les modes d'adressage, les déplacements signés, les préfixes, les opcodes moffs ni les groupes 83h.
 
 ## 5. Couverture calculable à ce stade
 
@@ -114,3 +114,15 @@ Ces pourcentages de présence de branches (50/59) ne sont **pas** des taux de va
 Cette tranche couvre la décomposition documentaire de six mnémotechniques, soit une petite partie de l'inventaire de 93 entrées. Elle ne vérifie pas encore tous les alias ni les autres familles d'instructions. Les modes d'adressage décrits ici sont des champs de forme ; le nombre réel d'encodages machine est bien plus élevé que le nombre de lignes du tableau.
 
 Le simulateur reste un interpréteur pédagogique. Les vecteurs de cette tranche ne constituent pas une preuve de fidélité matérielle complète du 8086.
+
+
+### Validation automatisée du premier lot
+
+**Run CI 221 — 24 novembre 2026** : [résultats GitHub Actions](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45441788838), commit `62f6ad45b146ede7168b76dab21c507352c668dd`.
+
+- Tests de fumée : **354/354 réussis**.
+- Vecteurs indépendants : **80/80 réussis**.
+- Détail : 34 assemblage, 32 désassemblage, 1 flux tronqué, 13 simulation.
+- Aucun changement du moteur CPU, de l'assembleur ou du désassembleur dans ce lot ; seules les suites de tests et les documents ont été étendus.
+
+Ce résultat valide les cas ajoutés, pas toutes les combinaisons d'opérandes des 59 formes recensées.
