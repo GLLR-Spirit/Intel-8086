@@ -188,7 +188,7 @@ if((rd!==null||dm)&&parseNumber(q)!==null){
 var immBytes=encodingImmediate(q,wBits);if(!immBytes)return null;
 if(rd!==null&&(d==="AL"||d==="AX")){
 var accOps={ADD:4,OR:12,AND:36,SUB:44,XOR:52,CMP:60,TEST:168};
-return [accOps[base]+(wBits===16&&base!=="TEST"?1:0)].concat(immBytes);
+return [accOps[base]+(wBits===16?1:0)].concat(immBytes);
 }
 var ext=base==="TEST"?0:arithmeticCodes[base],rmImm=encodingModRM(ext,d);if(!rmImm)return null;
 return encodingPrefixFor(d).concat([base==="TEST"?(wBits===8?246:247):(wBits===8?128:129)],rmImm,immBytes);
@@ -253,6 +253,10 @@ var tokens=src.trim().split(/[\s,;]+/).filter(Boolean),out=[];
 if(!tokens.length)throw Error("Aucun octet à désassembler.");
 tokens.forEach(function(t){var x=t.replace(/^0x/i,"").replace(/h$/i,"");if(!/^[0-9a-f]{1,2}$/i.test(x))throw Error("Octet hexadécimal invalide : "+t+". Utilise des valeurs de 00 à FF.");out.push(parseInt(x,16));});
 return out;
+}
+function encodingRoundTrip(src){
+var assembled=assembleProgram(src),decoded=disassembleBytes(assembled.bytes);
+return decoded.size===assembled.size&&decoded.rows.length===assembled.rows.length&&decoded.rows.every(function(row,index){return row.offset===assembled.rows[index].offset&&row.bytes.join(",")===assembled.rows[index].bytes.join(",");});
 }
 function disassembleBytes(input){
 var bytes=Array.prototype.slice.call(input),rows=[],i=0,reg8=["AL","CL","DL","BL","AH","CH","DH","BH"],reg16=["AX","CX","DX","BX","SP","BP","SI","DI"],ea=["BX+SI","BX+DI","BP+SI","BP+DI","SI","DI","BP","BX"],segNames={38:"ES",46:"CS",54:"SS",62:"DS"},cond=["JO","JNO","JB","JAE","JE","JNE","JBE","JA","JS","JNS","JP","JNP","JL","JGE","JLE","JG"];
@@ -578,7 +582,24 @@ function runSelfTests(){var cases=[
 ["Désassemblage flux mixte et offsets continus","HLT",function(s){var r=disassembleBytes([184,52,18,233,1,0,144,244]);return r.rows.length===4&&r.rows[1].offset===3&&r.rows[2].offset===6&&r.rows[3].instruction==="HLT";}],
 ["Désassemblage signale les opcodes inconnus sans bloquer le flux","HLT",function(s){var r=disassembleBytes([15,244]);return r.rows.length===2&&r.rows[0].instruction.indexOf("DB 0Fh")===0&&r.rows[1].instruction==="HLT";}],
 ["Désassemblage refuse une instruction tronquée","HLT",function(s){try{disassembleBytes([184,52]);return false;}catch(e){return /tronqué/.test(e.message);}}],
-["Correspondance assembleur-désassembleur sur un programme représentatif","HLT",function(s){var a=assembleProgram("MOV AX, 1234h\nMOV BX, AX\nADD AX, 1\nJNE FIN\nNOP\nFIN: HLT"),d=disassembleBytes(a.bytes);return d.size===a.size&&d.rows.length===a.rows.length&&d.rows.map(function(x){return x.bytes.join(",");}).join("|")===a.rows.map(function(x){return x.bytes.join(",");}).join("|");}]
+["Correspondance assembleur-désassembleur sur un programme représentatif","HLT",function(s){var a=assembleProgram("MOV AX, 1234h\nMOV BX, AX\nADD AX, 1\nJNE FIN\nNOP\nFIN: HLT"),d=disassembleBytes(a.bytes);return d.size===a.size&&d.rows.length===a.rows.length&&d.rows.map(function(x){return x.bytes.join(",");}).join("|")===a.rows.map(function(x){return x.bytes.join(",");}).join("|");}],
+["Round-trip MOV immédiats de tous les registres 8 et 16 bits","HLT",function(s){return encodingRoundTrip("MOV AL, 12h\nMOV CL, 34h\nMOV DL, 56h\nMOV BL, 78h\nMOV AH, 9Ah\nMOV CH, 0BCh\nMOV DH, 0DEh\nMOV BH, 0F0h\nMOV AX, 1234h\nMOV CX, 2345h\nMOV DX, 3456h\nMOV BX, 4567h\nMOV SP, 5678h\nMOV BP, 6789h\nMOV SI, 789Ah\nMOV DI, 89ABh");}],
+["Round-trip MOV registre-registre 8 et 16 bits","HLT",function(s){return encodingRoundTrip("MOV AL, BL\nMOV CL, DH\nMOV AX, BX\nMOV SI, DI\nMOV SP, BP");}],
+["Round-trip MOV ModR/M vers mémoire pour les huit adresses effectives","HLT",function(s){return encodingRoundTrip("MOV BYTE PTR [BX+SI], AL\nMOV BYTE PTR [BX+DI], CL\nMOV BYTE PTR [BP+SI], DL\nMOV BYTE PTR [BP+DI], BL\nMOV BYTE PTR [SI], AH\nMOV BYTE PTR [DI], CH\nMOV BYTE PTR [BP], DH\nMOV BYTE PTR [BX], BH");}],
+["Round-trip MOV mémoire vers registre avec déplacements disp8 et disp16","HLT",function(s){return encodingRoundTrip("MOV AL, BYTE PTR [BX+SI+127]\nMOV CL, BYTE PTR [BX+DI-128]\nMOV DX, WORD PTR [BP+SI+128]\nMOV SI, WORD PTR [BP+DI-129]\nMOV BX, WORD PTR [SI+300]");}],
+["Round-trip MOV adressage direct et immédiats mémoire","HLT",function(s){return encodingRoundTrip("MOV AX, WORD PTR [1234h]\nMOV BYTE PTR [2345h], 7Fh\nMOV WORD PTR [3456h], 1234h\nMOV BYTE PTR [BX+SI], 80h\nMOV WORD PTR [BP+DI+128], 0ABCDh");}],
+["Round-trip opérations arithmétiques et logiques ModR/M dans les deux directions","HLT",function(s){return encodingRoundTrip("ADD AL, BL\nADD CX, DX\nADD BYTE PTR [BX], CL\nADD SI, WORD PTR [BP+DI]\nOR DL, AH\nOR BX, SI\nOR BYTE PTR [DI], CH\nOR DX, WORD PTR [BX+SI]\nAND AL, CL\nAND BP, DI\nAND BYTE PTR [SI], DL\nAND AX, WORD PTR [BP]\nSUB BL, BH\nSUB SP, BP\nSUB BYTE PTR [BX+DI], AL\nSUB CX, WORD PTR [BP+SI]\nXOR CH, DH\nXOR DI, SI\nXOR BYTE PTR [BP], BL\nXOR DX, WORD PTR [DI]\nCMP AL, AH\nCMP BX, CX\nCMP BYTE PTR [SI], CL\nCMP SP, WORD PTR [BX]");}],
+["Round-trip opérations immédiates accumulées 8 et 16 bits","HLT",function(s){return encodingRoundTrip("ADD AL, 1\nADD AX, 1234h\nOR AL, 2\nOR AX, 2345h\nAND AL, 3\nAND AX, 3456h\nSUB AL, 4\nSUB AX, 4567h\nXOR AL, 5\nXOR AX, 5678h\nCMP AL, 6\nCMP AX, 6789h\nTEST AL, 7\nTEST AX, 789Ah");}],
+["Round-trip immédiats ModR/M pour toutes les opérations encodées","HLT",function(s){return encodingRoundTrip("ADD BYTE PTR [BX], 1\nADD WORD PTR [SI], 1234h\nOR BYTE PTR [DI], 2\nOR WORD PTR [BP], 2345h\nAND BYTE PTR [BX+SI], 3\nAND WORD PTR [BX+DI], 3456h\nSUB BYTE PTR [BP+SI], 4\nSUB WORD PTR [BP+DI], 4567h\nXOR BYTE PTR [SI], 5\nXOR WORD PTR [DI], 5678h\nCMP BYTE PTR [BP], 6\nCMP WORD PTR [BX], 6789h\nTEST BYTE PTR [BX+SI], 7\nTEST WORD PTR [BP+DI+128], 789Ah");}],
+["Round-trip TEST registre/mémoire et immédiat mémoire","HLT",function(s){return encodingRoundTrip("TEST AL, BL\nTEST AX, BX\nTEST BYTE PTR [BX+DI], CL\nTEST DX, WORD PTR [BP+SI]\nTEST BYTE PTR [SI], 7Fh\nTEST WORD PTR [BP+DI+128], 1234h");}],
+["Round-trip XCHG registres 8 bits, 16 bits et formes spéciales AX","HLT",function(s){return encodingRoundTrip("XCHG AL, BL\nXCHG CL, DH\nXCHG AX, BX\nXCHG CX, DX\nXCHG SI, DI");}],
+["Round-trip préfixes de segment ES, CS, SS et DS","HLT",function(s){return encodingRoundTrip("MOV AL, BYTE PTR ES:[BX]\nMOV BL, BYTE PTR CS:[SI]\nMOV CL, BYTE PTR SS:[DI]\nMOV DL, BYTE PTR DS:[BP]\nMOV WORD PTR ES:[BP+SI+4], AX\nADD BYTE PTR CS:[BX+DI], 1\nXOR WORD PTR SS:[BP], 1234h");}],
+["Round-trip ModR/M couvre les modes direct, disp8, disp16 et registre","HLT",function(s){return encodingRoundTrip("MOV AX, WORD PTR [1234h]\nMOV BX, WORD PTR [SI+127]\nMOV CX, WORD PTR [DI-128]\nMOV DX, WORD PTR [BP+SI+128]\nMOV SP, WORD PTR [BX+DI-129]\nMOV SI, WORD PTR [BP]");}],
+["Round-trip immédiats aux bornes signées et non signées 8/16 bits","HLT",function(s){return encodingRoundTrip("MOV AL, -128\nMOV CL, 255\nMOV DX, -32768\nMOV BX, 65535\nADD BYTE PTR [BX], -128\nCMP WORD PTR [SI], 65535");}],
+["Round-trip toutes les conditions de branchement et LOOP/CALL/JMP","HLT",function(s){return encodingRoundTrip("JO A\nJNO A\nJB A\nJAE A\nJE A\nJNE A\nJBE A\nJA A\nJS A\nJNS A\nJP A\nJNP A\nJL A\nJGE A\nJLE A\nJG A\nLOOP A\nJMP A\nCALL A\nA: RET");}],
+["Round-trip toutes les instructions fixes encodées","HLT",function(s){return encodingRoundTrip("NOP\nHLT\nCLC\nSTC\nCMC\nCLI\nSTI\nCLD\nSTD\nPUSHF\nPOPF\nRET\nIRET");}],
+["Round-trip flux combinant ModR/M, préfixes, immédiats et branchements","HLT",function(s){return encodingRoundTrip("MOV AX, 1234h\nMOV WORD PTR ES:[BX+SI+8], AX\nADD WORD PTR SS:[BP+DI+128], 5678h\nTEST AL, 80h\nXCHG AX, DX\nJNE FIN\nMOV BYTE PTR CS:[DI-4], 7Fh\nFIN: HLT");}],
+["TEST AX immédiat utilise bien l'opcode  A9h","HLT",function(s){var b=encodingBytes(parseProgram("TEST AX, 1234h").ops[0]);return b&&b[0]===169&&encodingRoundTrip("TEST AX, 1234h");}]
 ];var out=[],ok=0;cases.forEach(function(t){var s=executeAll(t[1]),pass=t[2](s);if(pass)ok++;out.push((pass?"PASS":"FAIL")+" · "+t[0]+(s.error?" — "+s.error:""));});$("testResults").textContent=out.join("\n");$("testSummary").textContent=ok+"/"+cases.length+" tests réussis";$("testSummary").className="status "+(ok===cases.length?"success":"error");}
 $("runSelfTests").onclick=runSelfTests;
 $("reset").onclick=resetCPU;resetCPU();renderLessons();showLesson(0);renderInstructions("");renderExercises();renderProjects();stats();
