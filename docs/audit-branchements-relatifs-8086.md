@@ -85,3 +85,9 @@ Le total CI doit être lu sur le dernier workflow validé pour le commit concern
 Le laboratoire accepte maintenant un tableau d'octets avec un `CS:IP` initial choisi. Les octets sont copiés dans la mémoire simulée selon l'adresse physique 8086 sur 20 bits, et le décodeur existant produit une table des frontières d'instructions. Les branchements relatifs vers ces frontières, ainsi que CALL/RET, sont exécutés dans le modèle chargé. Les octets non pris en charge ou les cibles au milieu d'une instruction sont refusés explicitement.
 
 **Cette étape n'est pas encore un fetch/decode dynamique.** Le décodage reste linéaire et préalable au démarrage ; le moteur n'effectue pas encore la lecture et le décodage d'un opcode depuis la mémoire à chaque instruction. Voir [l'audit du chargeur binaire](audit-chargement-binaire-8086.md).
+
+
+## Complément — exécution binaire dynamique
+
+Le chargeur binaire utilise désormais une lecture mémoire à chaque instruction. Le décodeur ne parcourt que l'instruction courante, puis l'interpréteur recommence au nouvel `CS:IP`. Les branchements peuvent viser des octets qui n'étaient pas des débuts d'instructions dans un désassemblage linéaire, et les modifications du code sont relues à leur prochain fetch. Voir [l'audit du chargement binaire](audit-chargement-binaire-8086.md).
+
