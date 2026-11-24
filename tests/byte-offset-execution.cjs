@@ -391,4 +391,16 @@ console.log("Audit dynamique : "+passed+" réussis, "+failed+" échecs.");
 console.log("Décodage opcode : 256 valeurs vérifiées ; ModR/M : 3072 combinaisons (12 groupes × 256).");
 console.log("Préfixes : "+countsBinary.prefixes+", branchements : "+countsBinary.branches+", transferts indirects : "+countsBinary.indirect+", auto-modification : "+countsBinary.selfModify+", vecteurs indépendants : "+countsBinary.independentVectors+".");
 
+
+test("truncated instruction is detected across the FFFFh to 0000h boundary", () => {
+  const result=api.executeBinary([0xB8],0x5B00,0xFFFF);
+  assert.ok(result.error&&/Flux tronqué/.test(result.error),result.error);
+});
+countsBinary.validation++;
+test("repeated segment override prefixes are rejected explicitly", () => {
+  const result=api.executeBinary([0x2E,0x3E,0xA1,0x10,0x00,0xF4],0x5C00,0x0000);
+  assert.ok(result.error&&/répétés non pris en charge/.test(result.error),result.error);
+});
+countsBinary.prefixes++;
+
 if (failed) process.exit(1);
