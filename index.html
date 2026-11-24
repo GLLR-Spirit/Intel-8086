@@ -308,15 +308,33 @@ return codes[op]===undefined?null:codes[op];
 function assemblerFailure(message,ins){throw makeDiagnostic(Error(message),ins&&ins.line,ins&&(ins.raw||ins.op));}
 function assembleProgram(src){
 var parsed=parseProgram(src),ops=parsed.ops,offsets=[],symbolOffsets={},size=0,relativeOps=["JMP","JE","JZ","JNE","JNZ","JC","JB","JNC","JAE","JO","JNO","JS","JNS","JP","JNP","JL","JGE","JLE","JG","JA","JBE","LOOP","CALL"];
-/* Passe 1 : calcul des tailles, offsets et table des symboles. */
+/* Passe 1 : tailles initiales ; JMP direct est d'abord near. */
 for(var i=0;i<ops.length;i++){
 var ins=ops[i],op=ins.op,indirectControl=(op==="CALL"||op==="JMP")&&(info(ins.args[0])||memoryOperand(ins.args[0])),branch=relativeOps.indexOf(op)>=0&&!indirectControl,bytes=null;
-offsets[i]=size;
 if(branch)bytes=(op==="CALL"||op==="JMP")?[op==="CALL"?232:233,0,0]:[0,0];else bytes=encodingBytes(ins);
 if(!bytes)assemblerFailure("Encodage binaire non pris en charge pour "+ins.raw+". Aucune sortie partielle n'est produite.",ins);
-ins._binaryOffset=size;ins._binarySize=bytes.length;size+=bytes.length;
-if(size>65536)assemblerFailure("Programme trop volumineux : la taille dépasse 65 536 octets.",ins);
+ins._shortBranch=false;ins._binarySize=bytes.length;
 }
+/* Relaxation monotone : JMP direct passe en EB lorsque la cible tient en rel8. */
+var changed=true,passes=0;
+while(changed&&passes++<=ops.length){
+changed=false;size=0;
+for(var oi=0;oi<ops.length;oi++){offsets[oi]=size;size+=ops[oi]._binarySize;}
+offsets[ops.length]=size;
+for(var bi=0;bi<ops.length;bi++){
+var candidate=ops[bi];
+if(candidate.op!=="JMP"||candidate._shortBranch)continue;
+var candidateIndirect=(info(candidate.args[0])||memoryOperand(candidate.args[0]));
+if(candidateIndirect)continue;
+var candidateIndex=parsed.labels[candidate.args[0].toUpperCase()];
+if(candidateIndex===undefined)assemblerFailure("Étiquette inconnue : "+candidate.args[0]+".",candidate);
+var candidateDelta=offsets[candidateIndex]-(offsets[bi]+2);
+candidateDelta=((candidateDelta+32768)&65535)-32768;
+if(candidateDelta>=-128&&candidateDelta<=127){candidate._shortBranch=true;candidate._binarySize=2;changed=true;}
+}
+}
+if(changed)throw Error("La relaxation des branchements JMP n'a pas convergé.");
+size=0;for(var fi=0;fi<ops.length;fi++){offsets[fi]=size;ops[fi]._binaryOffset=size;size+=ops[fi]._binarySize;if(size>65536)assemblerFailure("Programme trop volumineux : la taille dépasse 65 536 octets.",ops[fi]);}
 offsets[ops.length]=size;
 Object.keys(parsed.labels).forEach(function(name){symbolOffsets[name]=offsets[parsed.labels[name]];});
 /* Passe 2 : résolution des symboles et émission des octets. */
@@ -328,8 +346,11 @@ if((opcode!==null||mn==="CALL")&&!indirectControl){
 targetIndex=parsed.labels[current.args[0].toUpperCase()];
 if(targetIndex===undefined)assemblerFailure("Étiquette inconnue : "+current.args[0]+".",current);
 targetOffset=offsets[targetIndex];
-if(mn==="CALL"||mn==="JMP"){delta=(targetOffset-(offsets[j]+3))&65535;encoded=[mn==="CALL"?232:233,delta&255,(delta>>8)&255];}
-else{delta=targetOffset-(offsets[j]+2);if(delta< -128||delta>127)assemblerFailure("Déplacement relatif hors plage pour "+mn+" : "+delta+" octets (plage autorisée : -128 à +127).",current);encoded=[opcode,delta&255];}
+if(mn==="CALL"||mn==="JMP"){
+if(mn==="JMP"&&current._shortBranch){delta=targetOffset-(offsets[j]+2);delta=((delta+32768)&65535)-32768;if(delta< -128||delta>127)assemblerFailure("Déplacement relatif court hors plage pour JMP : "+delta+" octets (plage autorisée : -128 à +127).",current);encoded=[235,delta&255];}
+else{delta=targetOffset-(offsets[j]+3);delta=((delta+32768)&65535)-32768;encoded=[mn==="CALL"?232:233,delta&255,(delta>>8)&255];}
+}
+else{delta=targetOffset-(offsets[j]+2);delta=((delta+32768)&65535)-32768;if(delta< -128||delta>127)assemblerFailure("Déplacement relatif hors plage pour "+mn+" : "+delta+" octets (plage autorisée : -128 à +127).",current);encoded=[opcode,delta&255];}
 }else encoded=encodingBytes(current);
 if(!encoded||encoded.length!==current._binarySize)assemblerFailure("Taille d'encodage incohérente pour "+current.raw+".",current);
 Array.prototype.push.apply(output,encoded);
@@ -398,6 +419,7 @@ else if(op===143){modrm=read();ext=(modrm>>3)&7;rm=decodeRM(modrm,16,prefix);if(
 else if(op===254||op===255){bits=op===254?8:16;modrm=read();ext=(modrm>>3)&7;rm=decodeRM(modrm,bits,prefix);if(ext===0&&(op===254||rm.memory))ins="INC "+rm.text;else if(ext===1&&(op===254||rm.memory))ins="DEC "+rm.text;else if(op===255&&ext===2)ins="CALL "+rm.text;else if(op===255&&ext===3&&rm.memory)ins="CALL FAR PTR "+rm.text.replace(/^WORD PTR /,"");else if(op===255&&ext===4)ins="JMP "+rm.text;else if(op===255&&ext===5&&rm.memory)ins="JMP FAR PTR "+rm.text.replace(/^WORD PTR /,"");else if(op===255&&ext===6&&rm.memory)ins="PUSH "+rm.text;}
 else if(op>=176&&op<=191){bits=op<184?8:16;reg=(op-(bits===8?176:184));ins="MOV "+(bits===8?reg8:reg16)[reg]+", "+imm(bits===8?read():word(),bits);}
 else if(op>=112&&op<=127){disp=signed(read(),8);target=(i+disp)&65535;ins=cond[op-112]+" "+hx(target,4);}
+else if(op===235){disp=signed(read(),8);ins="JMP "+hx((i+disp)&65535,4);}
 else if(op===226){disp=signed(read(),8);ins="LOOP "+hx((i+disp)&65535,4);}
 else if(op===233||op===232){disp=signed(word(),16);ins=(op===233?"JMP ":"CALL ")+hx((i+disp)&65535,4);}
 else if(op===144)ins="NOP";
