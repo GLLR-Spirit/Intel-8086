@@ -38,19 +38,20 @@ assert.ok(learning.chapterExerciseMap.every(i => Number.isInteger(i) && i >= 0 &
   "Every chapter exercise link must resolve to an existing exercise");
 assert.ok(learning.exercises.length >= 19, "The exercise bank must contain at least 19 exercises");
 
-const advancedStart = 12;
-for (let i = advancedStart; i < learning.exercises.length; i++) {
+for (let i = 0; i < learning.exercises.length; i++) {
   const exercise = learning.exercises[i];
-  assert.ok(exercise[4]?.level && exercise[4]?.hint && exercise[4]?.steps?.length >= 3,
-    "New exercise " + i + " must provide a level, hint and step-by-step solution");
-  const state = learning.executeAll(exercise[2]);
-  assert.ok(!state.error, exercise[0] + " reference solution must execute: " + state.error);
-  assert.ok(exercise[3](state), exercise[0] + " reference solution must satisfy its validator; state=" + JSON.stringify(state.reg) + "; flags=" + JSON.stringify(state.flags));
+  const guide = exercise[4];
+  assert.ok(guide?.level && guide?.hint && guide?.steps?.length >= 3 && guide?.solution,
+    "Exercise " + i + " must provide a level, hint, correction steps and a complete solution");
+  const state = learning.executeAll(guide.solution);
+  assert.ok(!state.error, exercise[0] + " correction must execute: " + state.error);
+  assert.ok(exercise[3](state), exercise[0] + " correction must satisfy its validator; state=" +
+    JSON.stringify(state.reg) + "; flags=" + JSON.stringify(state.flags));
 }
-
 const renderer = match[1].slice(match[1].indexOf("function renderExercises()"), match[1].indexOf("\nfunction renderProjects()"));
 assert.ok(renderer.includes("Indice et correction expliquée"), "Exercise UI must expose progressive guidance");
 assert.ok(renderer.includes("guide.steps"), "Exercise UI must render step-by-step solutions");
+assert.ok(renderer.includes("data-solution"), "Exercise UI must let the learner load the complete correction");
 
 console.log("Learning quality: 11 chapters, 22 comprehension questions, " +
-  learning.exercises.length + " exercises; all 7 new reference solutions pass.");
+  learning.exercises.length + " exercises; all guided corrections execute and pass their validators.");
