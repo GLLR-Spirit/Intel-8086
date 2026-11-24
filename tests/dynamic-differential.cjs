@@ -817,6 +817,61 @@ test("SHL/SHR/SAR et rotations sur mémoire BYTE/WORD avec override ES", () => {
   assert.throws(()=>api.assemble("MOV AL, 1\nSHL AL, 2\nHLT"),/compteur immédiat/);
 });
 
+
+test("Oracle exhaustif AAD — toutes les 65 536 combinaisons AH:AL", () => {
+  let checked=0;
+  for(let ah=0;ah<256;ah++) for(let al=0;al<256;al++){
+    const expected=(ah*10+al)&255;
+    const state=api.executeBinary([0xd5,0x0a,0xf4],0,0,{reg:{AX:(ah<<8)|al}});
+    assert.ok(!state.error,state.error||"AAD");
+    assert.equal(state.reg.AX,expected,"AAD AH="+ah+" AL="+al);
+    assert.equal(state.flags.SF,(expected>>7)&1);
+    assert.equal(state.flags.ZF,expected===0?1:0);
+    assert.equal(state.flags.PF,parity8(expected));
+    checked++;
+  }
+  assert.equal(checked,65536);
+});
+test("Oracle exhaustif CBW/CWD — extension de signe", () => {
+  for(let al=0;al<256;al++){
+    const state=api.executeBinary([0x98,0xf4],0,0,{reg:{AX:al}});
+    assert.ok(!state.error,state.error||"CBW");
+    assert.equal(state.reg.AX,(al&0x80)?(0xff00|al):al);
+  }
+  for(let ax=0;ax<65536;ax++){
+    const state=api.executeBinary([0x99,0xf4],0,0,{reg:{AX:ax}});
+    assert.ok(!state.error,state.error||"CWD");
+    assert.equal(state.reg.DX,(ax&0x8000)?0xffff:0);
+  }
+});
+test("Oracle exhaustif SAHF/LAHF — 32 combinaisons de FLAGS", () => {
+  for(let bits=0;bits<32;bits++){
+    const ah=((bits&1)<<0)|(((bits>>1)&1)<<2)|(((bits>>2)&1)<<4)|(((bits>>3)&1)<<6)|(((bits>>4)&1)<<7);
+    const state=api.executeBinary([0x9e,0x9f,0xf4],0,0,{reg:{AX:ah<<8},flags:{OF:1}});
+    assert.ok(!state.error,state.error||"SAHF/LAHF");
+    const expected=(ah&0xd5)|2;
+    assert.equal(state.reg.AX>>8,expected);
+    assert.equal(state.flags.CF,ah&1);
+    assert.equal(state.flags.PF,(ah>>2)&1);
+    assert.equal(state.flags.AF,(ah>>4)&1);
+    assert.equal(state.flags.ZF,(ah>>6)&1);
+    assert.equal(state.flags.SF,(ah>>7)&1);
+    assert.equal(state.flags.OF,1);
+  }
+});
+test("ESC — les 64 codes d'échappement 8086 sont encodés/décodés", () => {
+  for(let code=0;code<64;code++){
+    const source="ESC "+code+", AX\nHLT";
+    const assembled=api.assemble(source);
+    const expectedOpcode=0xd8+(code>>3),expectedModRM=0xc0|((code&7)<<3);
+    assert.deepEqual(Array.from(assembled.bytes.slice(0,2)),[expectedOpcode,expectedModRM]);
+    const decoded=api.disassemble(assembled.bytes).rows[0].instruction;
+    assert.equal(decoded,"ESC "+code+", AX");
+    const state=api.executeBinary(Array.from(assembled.bytes),0,0);
+    assert.ok(!state.error,state.error||"ESC "+code);
+  }
+});
+
 console.log("Audit différentiel arithmétique : " + categories.arithmetic + " vecteurs.");
 console.log("Logique et TEST : " + categories.logic + " vecteurs.");
 console.log("Registres : " + categories.registers + " vecteurs.");
