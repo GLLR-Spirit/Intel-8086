@@ -34,3 +34,5 @@ jobs:
         run: node tests/operand-constraints.cjs
       - name: Run original 8086 segment selector vectors
         run: node tests/legacy-segment-encodings.cjs
+      - name: Run F6 F7 FF C6 C7 opcode group tests
+        run: node tests/group-opcodes.cjs
