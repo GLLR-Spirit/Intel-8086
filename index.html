@@ -13,7 +13,7 @@
 MOV AX, 5
 MOV BX, 3
 ADD AX, BX
-HLT</textarea></div><div class="toolbar"><button class="btn primary" id="run">▶ Exécuter</button><button class="btn" id="step">Pas à pas</button><button class="btn" id="reset">Réinitialiser CPU</button><button class="btn" id="example">Exemple</button><button class="btn" id="save">Sauvegarder</button></div><div class="status" id="status">Prêt. Lance l'exécution ou avance instruction par instruction.</div><h3>Console</h3><div class="console" id="console">Console prête.</div><div class="status" id="lineStatus">Instruction : aucune</div></div><div class="panel"><h3>Analyse pédagogique de l’encodage</h3><p class="muted">Octets affichés uniquement pour les formes dont l’encodage est déterminé par cet analyseur. Les autres instructions restent interprétées sans production de code machine.</p><div class="console" id="encodingReport">Saisis un programme pour analyser les formes encodables.</div><h3 style="margin-top:16px">Assemblage binaire en deux passes</h3><p class="muted">Calcule les offsets, résout les étiquettes et génère un flux contigu pour le sous-ensemble encodable. Base d’assemblage : 0000h.</p><button class="btn primary" id="assemble">Assembler le programme</button><div class="console" id="assemblerReport">Lance l’assemblage pour obtenir les offsets, la table des symboles et les octets.</div></div></div><div><div class="panel"><h3>Registres généraux</h3><div class="reggrid" id="regs"></div><h3 style="margin-top:14px">Segments et pointeurs</h3><div class="reggrid" id="segments"></div></div><div class="panel"><h3>FLAGS</h3><div class="flags" id="flags"></div><p class="muted" style="font-size:11px">CF retenue · ZF zéro · SF signe · OF débordement · PF parité · AF retenue auxiliaire.</p></div><div class="panel"><h3>Mémoire observée</h3><div class="memgrid" id="memory"><span class="muted">Aucune écriture mémoire.</span></div></div><div class="panel"><h3>Pile simulée (SS:SP)</h3><p class="muted" style="font-size:11px">Sommet en haut · chaque entrée occupe un mot de 16 bits (2 octets).</p><div id="stackView" class="console">Pile vide.</div><h3 style="margin-top:12px">Octets de la pile</h3><div id="stackBytes" class="console">Aucun octet de pile.</div></div></div></div><div class="panel"><h3>Limites du simulateur</h3><p class="muted">Ce moteur pédagogique interprète un sous-ensemble d'instructions 8086. Il ne remplace pas un émulateur matériel complet ni MASM/TASM. La table VECTOR et les cadres d'interruption sont des abstractions pédagogiques, pas une IVT physique complète.</p></div></section>
+HLT</textarea></div><div class="toolbar"><button class="btn primary" id="run">▶ Exécuter</button><button class="btn" id="step">Pas à pas</button><button class="btn" id="reset">Réinitialiser CPU</button><button class="btn" id="example">Exemple</button><button class="btn" id="save">Sauvegarder</button></div><div class="status" id="status">Prêt. Lance l'exécution ou avance instruction par instruction.</div><h3>Console</h3><div class="console" id="console">Console prête.</div><div class="status" id="lineStatus">Instruction : aucune</div></div><div class="panel"><h3>Analyse pédagogique de l’encodage</h3><p class="muted">Octets affichés uniquement pour les formes dont l’encodage est déterminé par cet analyseur. Les autres instructions restent interprétées sans production de code machine.</p><div class="console" id="encodingReport">Saisis un programme pour analyser les formes encodables.</div><h3 style="margin-top:16px">Assemblage binaire en deux passes</h3><p class="muted">Calcule les offsets, résout les étiquettes et génère un flux contigu pour le sous-ensemble encodable. Base d’assemblage : 0000h.</p><button class="btn primary" id="assemble">Assembler le programme</button> <button class="btn" id="exportBin">Exporter .bin</button><div class="console" id="assemblerReport">Lance l’assemblage pour obtenir les offsets, la table des symboles et les octets.</div><h3 style="margin-top:16px">Désassembleur du sous-ensemble encodé</h3><p class="muted">Colle des octets hexadécimaux séparés par des espaces, ou laisse le champ vide pour désassembler le programme courant.</p><input id="disassemblyInput" placeholder="B8 34 12 E9 01 00 90 F4" style="width:100%;margin:6px 0"><button class="btn" id="disassemble">Désassembler le flux</button><div class="console" id="disassemblerReport">Aucun flux désassemblé.</div></div></div><div><div class="panel"><h3>Registres généraux</h3><div class="reggrid" id="regs"></div><h3 style="margin-top:14px">Segments et pointeurs</h3><div class="reggrid" id="segments"></div></div><div class="panel"><h3>FLAGS</h3><div class="flags" id="flags"></div><p class="muted" style="font-size:11px">CF retenue · ZF zéro · SF signe · OF débordement · PF parité · AF retenue auxiliaire.</p></div><div class="panel"><h3>Mémoire observée</h3><div class="memgrid" id="memory"><span class="muted">Aucune écriture mémoire.</span></div></div><div class="panel"><h3>Pile simulée (SS:SP)</h3><p class="muted" style="font-size:11px">Sommet en haut · chaque entrée occupe un mot de 16 bits (2 octets).</p><div id="stackView" class="console">Pile vide.</div><h3 style="margin-top:12px">Octets de la pile</h3><div id="stackBytes" class="console">Aucun octet de pile.</div></div></div></div><div class="panel"><h3>Limites du simulateur</h3><p class="muted">Ce moteur pédagogique interprète un sous-ensemble d'instructions 8086. Il ne remplace pas un émulateur matériel complet ni MASM/TASM. La table VECTOR et les cadres d'interruption sont des abstractions pédagogiques, pas une IVT physique complète.</p></div></section>
 <section class="view" id="view-instructions"><div class="head"><h2>Référence des instructions</h2><p>Syntaxe simplifiée et rôle des principales instructions.</p><input id="searchInstruction" placeholder="Rechercher MOV, ADD, JMP…" style="width:100%;max-width:300px;margin-top:8px"></div><div class="instgrid" id="instructionGrid"></div></section>
 <section class="view" id="view-exercises"><div class="head"><h2>Exercices pratiques</h2><p>Charge un énoncé, écris ta solution puis vérifie le résultat.</p></div><div id="exerciseList"></div></section>
 <section class="view" id="view-projects"><div class="head"><h2>Idées et mini-projets</h2><p>Conçois, expérimente et améliore tes propres programmes.</p></div><div class="grid2" id="projectList"></div><div class="panel"><h3>Mon idée de projet</h3><input id="projectTitle" placeholder="Nom de mon projet" style="width:100%;margin-bottom:8px"><textarea class="idea" id="projectIdea" rows="4" style="width:100%" placeholder="Objectif, entrées, traitement, résultat attendu…"></textarea><div class="toolbar"><button class="btn primary" id="saveIdea">Enregistrer mon idée</button><span class="muted" id="ideaStatus"></span></div></div></section>
@@ -237,6 +237,87 @@ rows.push({line:current.line,instruction:current.raw,offset:offsets[j],bytes:enc
 }
 return {bytes:output,rows:rows,symbols:symbolOffsets,size:size,ops:ops};
 }
+
+function binaryArray(bytes){
+if(!Array.isArray(bytes)||bytes.some(function(b){return !Number.isInteger(b)||b<0||b>255;}))throw Error("Flux binaire invalide : chaque élément doit être un octet (00h à FFh).");
+return new Uint8Array(bytes);
+}
+function downloadBinary(bytes,filename){
+var data=binaryArray(bytes),blob=new Blob([data],{type:"application/octet-stream"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+a.href=url;a.download=filename||"programme-8086.bin";a.style.display="none";document.body.appendChild(a);a.click();a.remove();
+setTimeout(function(){URL.revokeObjectURL(url);},1000);
+return {size:data.length,name:a.download};
+}
+function parseHexBytes(src){
+var tokens=src.trim().split(/[\s,;]+/).filter(Boolean),out=[];
+if(!tokens.length)throw Error("Aucun octet à désassembler.");
+tokens.forEach(function(t){var x=t.replace(/^0x/i,"").replace(/h$/i,"");if(!/^[0-9a-f]{1,2}$/i.test(x))throw Error("Octet hexadécimal invalide : "+t+". Utilise des valeurs de 00 à FF.");out.push(parseInt(x,16));});
+return out;
+}
+function disassembleBytes(input){
+var bytes=Array.prototype.slice.call(input),rows=[],i=0,reg8=["AL","CL","DL","BL","AH","CH","DH","BH"],reg16=["AX","CX","DX","BX","SP","BP","SI","DI"],ea=["BX+SI","BX+DI","BP+SI","BP+DI","SI","DI","BP","BX"],segNames={38:"ES",46:"CS",54:"SS",62:"DS"},cond=["JO","JNO","JB","JAE","JE","JNE","JBE","JA","JS","JNS","JP","JNP","JL","JGE","JLE","JG"];
+function hx(n,w){return (n>>>0).toString(16).toUpperCase().padStart(w||2,"0")+"h";}
+function signed(n,b){return n&(1<<(b-1))?n-(1<<b):n;}
+function need(n){if(i+n>bytes.length)throw Error("Flux tronqué à l'offset "+hx(i,4)+" : "+n+" octet(s) supplémentaire(s) requis.");}
+function read(){need(1);return bytes[i++];}
+function word(){var lo=read(),hi=read();return lo|(hi<<8);}
+function imm(v,b){return hx(v,b===8?2:4);}
+function decodeRM(modrm,bits,prefix){
+var mod=(modrm>>6)&3,reg=(modrm>>3)&7,rm=modrm&7;
+if(mod===3)return {reg:reg,bits:bits,text:(bits===8?reg8:reg16)[rm],memory:false};
+var expr;
+if(mod===0&&rm===6)expr=hx(word(),4);
+else{expr=ea[rm];if(mod===1){var d=signed(read(),8);if(d)expr+=(d<0?"-":"+")+Math.abs(d);}else if(mod===2){var d16=signed(word(),16);if(d16)expr+=(d16<0?"-":"+")+Math.abs(d16);}}
+var seg=prefix?prefix+":":"",sz=bits===8?"BYTE":"WORD";
+return {reg:reg,bits:bits,text:sz+" PTR "+seg+"["+expr+"]",memory:true};
+}
+function row(start,ins){rows.push({offset:start,bytes:bytes.slice(start,i),instruction:ins,size:i-start});}
+while(i<bytes.length){
+var start=i,prefix=null,op=read();
+if(segNames[op]){prefix=segNames[op];if(i>=bytes.length)throw Error("Préfixe de segment isolé à "+hx(start,4)+".");op=read();if(segNames[op])throw Error("Préfixes de segment répétés non pris en charge à "+hx(start,4)+".");}
+var ins=null,modrm,rm,reg,bits,dir,ext,val,base,acc,disp,target;
+if(op>=176&&op<=191){bits=op<184?8:16;reg=(op-(bits===8?176:184));ins="MOV "+(bits===8?reg8:reg16)[reg]+", "+imm(bits===8?read():word(),bits);}
+else if(op>=112&&op<=127){disp=signed(read(),8);target=(i+disp)&65535;ins=cond[op-112]+" "+hx(target,4);}
+else if(op===226){disp=signed(read(),8);ins="LOOP "+hx((i+disp)&65535,4);}
+else if(op===233||op===232){disp=signed(word(),16);ins=(op===233?"JMP ":"CALL ")+hx((i+disp)&65535,4);}
+else if(op===144)ins="NOP";
+else if(op===244)ins="HLT";
+else if(op===248)ins="CLC";
+else if(op===249)ins="STC";
+else if(op===241)ins="CMC";
+else if(op===250)ins="CLI";
+else if(op===251)ins="STI";
+else if(op===252)ins="CLD";
+else if(op===253)ins="STD";
+else if(op===156)ins="PUSHF";
+else if(op===157)ins="POPF";
+else if(op===195)ins="RET";
+else if(op===207)ins="IRET";
+else if(op>=145&&op<=151)ins="XCHG AX, "+reg16[op-144];
+else if([136,137,138,139,134,135,132,133].indexOf(op)>=0){
+bits=(op&1)?16:8;modrm=read();rm=decodeRM(modrm,bits,prefix);reg=(bits===8?reg8:reg16)[(modrm>>3)&7];
+if(op===136||op===137)ins="MOV "+rm.text+", "+reg;
+else if(op===138||op===139)ins="MOV "+reg+", "+rm.text;
+else if(op===134||op===135)ins="XCHG "+rm.text+", "+reg;
+else ins="TEST "+rm.text+", "+reg;
+}
+else if(op===198||op===199){bits=op===198?8:16;modrm=read();if(((modrm>>3)&7)!==0)throw Error("Extension ModR/M non prise en charge à "+hx(start,4)+".");rm=decodeRM(modrm,bits,prefix);val=bits===8?read():word();ins="MOV "+rm.text+", "+imm(val,bits);}
+else if(op===128||op===129){bits=op===128?8:16;modrm=read();ext=(modrm>>3)&7;rm=decodeRM(modrm,bits,prefix);val=bits===8?read():word();base=["ADD","OR","ADC","SBB","AND","SUB","XOR","CMP"][ext];if(ext===2||ext===3)base=null;ins=base?base+" "+rm.text+", "+imm(val,bits):null;}
+else if(op===246||op===247){bits=op===246?8:16;modrm=read();ext=(modrm>>3)&7;rm=decodeRM(modrm,bits,prefix);if(ext===0){val=bits===8?read():word();ins="TEST "+rm.text+", "+imm(val,bits);}}
+else if(op===4||op===5||op===12||op===13||op===36||op===37||op===44||op===45||op===52||op===53||op===60||op===61||op===168||op===169){
+bits=(op&1)?16:8;acc=bits===8?"AL":"AX";val=bits===8?read():word();base=({4:"ADD",5:"ADD",12:"OR",13:"OR",36:"AND",37:"AND",44:"SUB",45:"SUB",52:"XOR",53:"XOR",60:"CMP",61:"CMP",168:"TEST",169:"TEST"})[op];ins=base+" "+acc+", "+imm(val,bits);
+}
+else{
+var arith={0:"ADD",1:"ADD",2:"ADD",3:"ADD",8:"OR",9:"OR",10:"OR",11:"OR",32:"AND",33:"AND",34:"AND",35:"AND",40:"SUB",41:"SUB",42:"SUB",43:"SUB",48:"XOR",49:"XOR",50:"XOR",51:"XOR",56:"CMP",57:"CMP",58:"CMP",59:"CMP"};
+if(arith[op]){bits=(op&1)?16:8;dir=(op>>1)&1;modrm=read();rm=decodeRM(modrm,bits,prefix);reg=(bits===8?reg8:reg16)[(modrm>>3)&7];ins=arith[op]+" "+(dir?reg:rm.text)+", "+(dir?rm.text:reg);}
+}
+if(!ins){ins="DB "+hx(bytes[start],2)+" ; opcode non pris en charge";i=start+1;}
+else if(prefix&&!/PTR /.test(ins))ins=prefix+": "+ins;
+row(start,ins);
+}
+return {rows:rows,size:bytes.length,bytes:bytes};
+}
+
 function encodingForm(ins){var base=ins.op.replace(/^(REP|REPE|REPZ|REPNE|REPNZ)_/,""),a=ins.args;return a.map(function(raw,index){var x=raw.trim().toUpperCase(),r=info(x);if(r)return "reg"+r.bits;if(x.indexOf("[")>=0){var m=memoryOperand(x),bits=m&&m.bits;if(!bits&&a.length===2){var other=info(a[index===0?1:0]);if(other)bits=other.bits;}return bits?"r/m"+bits:"r/m?";}if(parseNumber(x)!==null){var bits=null;if(base==="INT")bits=8;else if(base==="SHL"||base==="SAL"||base==="SHR")bits=8;else if(a.length===2){var peer=info(a[index===0?1:0]);if(peer)bits=peer.bits;else{var pm=memoryOperand(a[index===0?1:0]);if(pm)bits=pm.bits;}}return bits?"imm"+bits:"imm?";}if(/^[A-Za-z_]\w*$/.test(x))return "rel?";return "autre";}).join(", ");}
 function renderEncodingReport(src){var node=$("encodingReport");if(!node)return;try{var p=parseProgram(src),rows=p.ops.map(function(ins){var bytes=encodingBytes(ins);return "L"+ins.line+"  "+ins.raw+"  | forme : "+(encodingForm(ins)||"aucune")+"  | octets : "+(bytes?bytes.map(function(b){return b.toString(16).toUpperCase().padStart(2,"0")+"h";}).join(" "):"non générés / non déterminés");});node.textContent=rows.length?rows.join("\n"):"Aucune instruction à analyser."; }catch(e){node.textContent="Analyse indisponible : "+(e.diagnostic?formatDiagnostic(e.diagnostic):e.message);}}
 function prepare(src){var p=parseProgram(src);ops=p.ops;labels=p.labels;vectors=p.vectors;pc=0;halted=false;history=[];cpu=fresh();renderEncodingReport(src);}
@@ -246,7 +327,10 @@ function status(t,err,good){$("status").textContent=t;$("status").className="sta
 function consoleOut(){$("console").textContent=(cpu.output||"Aucune sortie produite.")+"\n\nInstructions exécutées : "+cpu.steps;}
 function resetCPU(){cpu=fresh();ops=[];labels={};pc=0;halted=false;history=[];renderCPU(cpu);$("console").textContent="CPU réinitialisé. Prêt.";status("Prêt.");$("lineStatus").textContent="Instruction : aucune";}
 function executeAll(src){var oldCpu=cpu,oldHalted=halted,oldLabels=labels,oldVectors=vectors;try{var p=parseProgram(src),s=fresh(),at=0,stop=false;cpu=s;halted=false;labels=p.labels;vectors=p.vectors;while(at<p.ops.length&&s.steps<10000&&!stop){pc=at;var ins=p.ops[at],dest=execute(ins);s.steps++;at=dest&&dest.repeat?at:(dest===null?at+1:dest);s.reg.IP=at&65535;if(halted)stop=true;}if(s.steps>=10000&&!stop)throw Error("Limite de sécurité atteinte (10 000 instructions).");return s;}catch(e){return {error:e.message,diagnostic:e.diagnostic||makeDiagnostic(e,typeof ins!=="undefined"&&ins?ins.line:null,typeof ins!=="undefined"&&ins?(ins.raw||ins.op):null).diagnostic};}finally{cpu=oldCpu;halted=oldHalted;labels=oldLabels;vectors=oldVectors;}}
-$("code").oninput=function(){renderEncodingReport($("code").value);};renderEncodingReport($("code").value);$("assemble").onclick=function(){var node=$("assemblerReport");try{var result=assembleProgram($("code").value),hex=result.bytes.map(function(b){return b.toString(16).toUpperCase().padStart(2,"0");});var lines=["ASSEMBLAGE RÉUSSI · "+result.size+" octet(s)","", "TABLE DES SYMBOLES"].concat(Object.keys(result.symbols).map(function(k){return k+" = "+result.symbols[k].toString(16).toUpperCase().padStart(4,"0")+"h";}),["","LISTING"]).concat(result.rows.map(function(r){return r.offset.toString(16).toUpperCase().padStart(4,"0")+"h  "+r.bytes.map(function(b){return b.toString(16).toUpperCase().padStart(2,"0");}).join(" ")+"   "+r.instruction;}),["","FLUX BINAIRE",hex.join(" ")]);node.textContent=lines.join("\n");}catch(e){node.textContent=e.diagnostic?formatDiagnostic(e.diagnostic):e.message;}};$("run").onclick=function(){try{if(!ops.length)prepare($("code").value);var count=0;while(!halted&&pc<ops.length&&count<10000){tick();count++;}renderCPU(cpu);consoleOut();status("Exécution terminée : "+cpu.steps+" instruction(s).",false,true);$("lineStatus").textContent="Programme terminé.";}catch(e){var d=e.diagnostic||makeDiagnostic(e,null,null).diagnostic;status(formatDiagnostic(d),true);$("lineStatus").textContent="Diagnostic : "+d.category+(d.line?" · ligne "+d.line:"");}};
+$("code").oninput=function(){renderEncodingReport($("code").value);};renderEncodingReport($("code").value);$("assemble").onclick=function(){var node=$("assemblerReport");try{var result=assembleProgram($("code").value),hex=result.bytes.map(function(b){return b.toString(16).toUpperCase().padStart(2,"0");});var lines=["ASSEMBLAGE RÉUSSI · "+result.size+" octet(s)","", "TABLE DES SYMBOLES"].concat(Object.keys(result.symbols).map(function(k){return k+" = "+result.symbols[k].toString(16).toUpperCase().padStart(4,"0")+"h";}),["","LISTING"]).concat(result.rows.map(function(r){return r.offset.toString(16).toUpperCase().padStart(4,"0")+"h  "+r.bytes.map(function(b){return b.toString(16).toUpperCase().padStart(2,"0");}).join(" ")+"   "+r.instruction;}),["","FLUX BINAIRE",hex.join(" ")]);node.textContent=lines.join("\n");}catch(e){node.textContent=e.diagnostic?formatDiagnostic(e.diagnostic):e.message;}};
+$("exportBin").onclick=function(){var node=$("assemblerReport");try{var result=assembleProgram($("code").value);if(!result.bytes.length)throw Error("Le programme ne contient aucun octet à exporter.");var done=downloadBinary(result.bytes,"programme-8086.bin");node.textContent="EXPORT RÉUSSI · "+done.name+" · "+done.size+" octet(s) · application/octet-stream";}catch(e){node.textContent=e.diagnostic?formatDiagnostic(e.diagnostic):e.message;}};
+$("disassemble").onclick=function(){var node=$("disassemblerReport");try{var raw=$("disassemblyInput").value.trim(),bytes=raw?parseHexBytes(raw):assembleProgram($("code").value).bytes;if(!bytes.length)throw Error("Le flux binaire est vide.");var result=disassembleBytes(bytes);node.textContent=["DÉSASSEMBLAGE · "+result.size+" octet(s)","", "OFFSET  OCTETS             INSTRUCTION"].concat(result.rows.map(function(r){return r.offset.toString(16).toUpperCase().padStart(4,"0")+"h  "+r.bytes.map(function(b){return b.toString(16).toUpperCase().padStart(2,"0");}).join(" ").padEnd(18," ")+" "+r.instruction;})).join("\n");}catch(e){node.textContent=e.message;}};
+$("run").onclick=function(){try{if(!ops.length)prepare($("code").value);var count=0;while(!halted&&pc<ops.length&&count<10000){tick();count++;}renderCPU(cpu);consoleOut();status("Exécution terminée : "+cpu.steps+" instruction(s).",false,true);$("lineStatus").textContent="Programme terminé.";}catch(e){var d=e.diagnostic||makeDiagnostic(e,null,null).diagnostic;status(formatDiagnostic(d),true);$("lineStatus").textContent="Diagnostic : "+d.category+(d.line?" · ligne "+d.line:"");}};
 $("step").onclick=function(){try{if(!ops.length)prepare($("code").value);if(halted){status("Programme arrêté. Réinitialise le CPU pour recommencer.");return;}var ins=tick();renderCPU(cpu);consoleOut();status(ins?"Exécuté : "+ins.raw:"Fin du programme.");$("lineStatus").textContent=ins?"Ligne source : "+ins.line+" · "+ins.raw:"Programme terminé.";}catch(e){var d=e.diagnostic||makeDiagnostic(e,null,null).diagnostic;status(formatDiagnostic(d),true);$("lineStatus").textContent="Diagnostic : "+d.category+(d.line?" · ligne "+d.line:"");}};
 function runSelfTests(){var cases=[
 ["MOV et ADD","MOV AX, 5\nMOV BX, 3\nADD AX, BX\nHLT",function(s){return s.reg.AX===8;}],
@@ -480,7 +564,21 @@ function runSelfTests(){var cases=[
 ["Saut conditionnel court : déplacement +128 refusé","HLT",function(s){try{assembleProgram("JNE CIBLE\n"+Array(128).fill("NOP").join("\n")+"\nCIBLE: HLT");return false;}catch(e){return /hors plage/.test(e.message);}}],
 ["JMP near accepte un déplacement supérieur à 127","HLT",function(s){var r=assembleProgram("JMP CIBLE\n"+Array(128).fill("NOP").join("\n")+"\nCIBLE: HLT");return r.bytes[0]===233&&r.bytes[1]===128&&r.bytes[2]===0&&r.symbols.CIBLE===131;}],
 ["CALL et sauts utilisent la taille réelle des instructions","HLT",function(s){var r=assembleProgram("CALL PROC\nMOV AX, 1\nPROC: RET");return r.symbols.PROC===6&&r.rows[2].offset===6&&JSON.stringify(r.bytes)===JSON.stringify([232,3,0,184,1,0,195]);}],
-["Assembleur refuse une instruction non encore encodable","INC AX\nHLT",function(s){try{assembleProgram("INC AX\nHLT");return false;}catch(e){return /non pris en charge/.test(e.message);}}]
+["Assembleur refuse une instruction non encore encodable","INC AX\nHLT",function(s){try{assembleProgram("INC AX\nHLT");return false;}catch(e){return /non pris en charge/.test(e.message);}}],
+["Conversion en octets binaires exacte","HLT",function(s){var a=binaryArray([0,128,255]);return a instanceof Uint8Array&&a.length===3&&a[0]===0&&a[1]===128&&a[2]===255;}],
+["Conversion binaire refuse une valeur hors octet","HLT",function(s){try{binaryArray([256]);return false;}catch(e){return /octet/.test(e.message);}}],
+["Analyse des octets hexadécimaux","HLT",function(s){return JSON.stringify(parseHexBytes("B8 34 12, F4h"))===JSON.stringify([184,52,18,244]);}],
+["Analyse hexadécimale refuse un jeton invalide","HLT",function(s){try{parseHexBytes("GG");return false;}catch(e){return /invalide/.test(e.message);}}],
+["Désassemblage MOV immédiat 16 bits","HLT",function(s){var r=disassembleBytes([184,52,18]);return r.rows[0].instruction==="MOV AX, 1234h"&&r.size===3;}],
+["Désassemblage MOV registre-registre","HLT",function(s){return disassembleBytes([137,216]).rows[0].instruction==="MOV AX, BX";}],
+["Désassemblage adressage mémoire et déplacement","HLT",function(s){return disassembleBytes([139,66,4]).rows[0].instruction==="MOV AX, WORD PTR [BP+SI+4]";}],
+["Désassemblage JMP relatif et cible","HLT",function(s){return disassembleBytes([233,1,0]).rows[0].instruction==="JMP 0004h";}],
+["Désassemblage saut conditionnel court","HLT",function(s){return disassembleBytes([116,254]).rows[0].instruction==="JE 0000h";}],
+["Désassemblage préfixe de segment","HLT",function(s){return disassembleBytes([38,136,7]).rows[0].instruction==="MOV BYTE PTR ES:[BX], AL";}],
+["Désassemblage flux mixte et offsets continus","HLT",function(s){var r=disassembleBytes([184,52,18,233,1,0,144,244]);return r.rows.length===4&&r.rows[1].offset===3&&r.rows[2].offset===6&&r.rows[3].instruction==="HLT";}],
+["Désassemblage signale les opcodes inconnus sans bloquer le flux","HLT",function(s){var r=disassembleBytes([15,244]);return r.rows.length===2&&r.rows[0].instruction.indexOf("DB 0Fh")===0&&r.rows[1].instruction==="HLT";}],
+["Désassemblage refuse une instruction tronquée","HLT",function(s){try{disassembleBytes([184,52]);return false;}catch(e){return /tronqué/.test(e.message);}}],
+["Correspondance assembleur-désassembleur sur un programme représentatif","HLT",function(s){var a=assembleProgram("MOV AX, 1234h\\nMOV BX, AX\\nADD AX, 1\\nJNE FIN\\nNOP\\nFIN: HLT"),d=disassembleBytes(a.bytes);return d.size===a.size&&d.rows.length===a.rows.length&&d.rows.map(function(x){return x.bytes.join(",");}).join("|")===a.rows.map(function(x){return x.bytes.join(",");}).join("|");}]
 ];var out=[],ok=0;cases.forEach(function(t){var s=executeAll(t[1]),pass=t[2](s);if(pass)ok++;out.push((pass?"PASS":"FAIL")+" · "+t[0]+(s.error?" — "+s.error:""));});$("testResults").textContent=out.join("\n");$("testSummary").textContent=ok+"/"+cases.length+" tests réussis";$("testSummary").className="status "+(ok===cases.length?"success":"error");}
 $("runSelfTests").onclick=runSelfTests;
 $("reset").onclick=resetCPU;resetCPU();renderLessons();showLesson(0);renderInstructions("");renderExercises();renderProjects();stats();
