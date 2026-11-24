@@ -457,5 +457,6 @@ console.log("Pile et transferts : " + categories.stack + " vecteurs.");
 console.log("IRET : " + categories.iret + " vecteurs.");
 console.log("Encodages invalides / limites : " + categories.invalid + " vecteurs.");
 console.log("Oracle arithmétique indépendant : 393 216 vecteurs exhaustifs 8 bits + 800 vecteurs frontières 16 bits.");
+console.log("Exécution binaire ALU avec octets bruts : 1 350 vecteurs.");
 console.log("Résultat audit différentiel : " + passed + " réussis, " + failed + " échecs.");
 if (failed) process.exit(1);
