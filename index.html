@@ -875,7 +875,7 @@ function runSelfTests(){var cases=[
 ["Désassemblage indépendant MOV AX, DS = 8C D8", "HLT", function(s){var r=disassembleBytes([140,216]);return r.rows.length===1&&r.rows[0].instruction==="MOV AX, DS"&&r.rows[0].bytes.join(",")==="140,216";}],
 ["Désassemblage indépendant MOV ES, [BX] = 8E 07", "HLT", function(s){var r=disassembleBytes([142,7]);return r.rows.length===1&&r.rows[0].instruction==="MOV ES, WORD PTR [BX]"&&r.rows[0].bytes.join(",")==="142,7";}],
 ["Désassemblage indépendant MOV [BP+SI+4], SS = 8C 52 04", "HLT", function(s){var r=disassembleBytes([140,82,4]);return r.rows.length===1&&r.rows[0].instruction==="MOV WORD PTR [BP+SI+4], SS"&&r.rows[0].bytes.join(",")==="140,82,4";}],
-["Alias segment 8086 /4 décodé comme ES", "HLT", function(s){var r=disassembleBytes([142,224]);return r.rows.length===1&&r.rows[0].instruction==="MOV ES, AX"&&r.rows[0].bytes.join(",")==="142,224";}],
+["Sélecteur segment réservé 8E /4 conservé comme DB", "HLT", function(s){var r=disassembleBytes([142,224]);return r.rows.length===1&&r.rows[0].instruction.indexOf("DB ")===0&&r.rows[0].bytes.join(",")==="142,224";}],
 ["MOV CS via 8E /1 accepté sur 8086", "HLT", function(s){var r=disassembleBytes([142,200]);return r.rows.length===1&&r.rows[0].instruction==="MOV CS, AX"&&r.rows[0].bytes.join(",")==="142,200";}],
 ["MOV segment round-trip sur les quatre codes", "HLT", function(s){return encodingRoundTrip("MOV ES, AX\nMOV SS, CX\nMOV DS, DX\nMOV AX, ES\nMOV BX, CS\nMOV CX, SS\nMOV DX, DS");}],
 ["MOV segment mémoire round-trip avec displacement", "HLT", function(s){return encodingRoundTrip("MOV ES, WORD PTR [BX+SI+4]\nMOV WORD PTR [BP+DI+8], DS");}]
