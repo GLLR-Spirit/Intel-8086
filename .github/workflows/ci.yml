@@ -22,3 +22,5 @@ jobs:
           node-version: 22
       - name: Run simulator smoke tests
         run: node tests/smoke.cjs
+      - name: Run independent instruction vectors
+        run: node tests/instruction-vectors.cjs
