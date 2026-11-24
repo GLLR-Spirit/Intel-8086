@@ -340,3 +340,14 @@ La suite [`tests/dynamic-differential.cjs`](../tests/dynamic-differential.cjs) a
 Résultat vérifié sur le commit `8f0069c68ca794be47dc54582d1321796c7e47b0` : **29/29 tests différentiels réussis**. Workflow : [45503831908](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45503831908).
 
 Le registre [`registre-validation-dynamique-8086.md`](registre-validation-dynamique-8086.md) distingue les familles partiellement validées et celles non prises en charge. **Aucune instruction n'est classée entièrement validée au niveau de toutes ses formes 8086.** Le différentiel détecte des divergences entre chemins, mais certaines primitives sont partagées ; il ne remplace pas une référence indépendante exhaustive.
+
+
+## Mise à jour — oracle ALU indépendant et IRET brut (24 novembre 2026)
+
+Le chemin binaire dynamique accepte désormais un état initial explicite facultatif pour les tests : registres, FLAGS et octets mémoire 20 bits. Le schéma est strictement validé. `IRET` dépile les mots IP, CS et FLAGS directement depuis `SS:SP` lorsque la pile ne possède pas de métadonnées pédagogiques ; avec une pile typée, les contrôles de cohérence sont conservés.
+
+Les tests incluent un cadre IRET brut en mémoire, un changement de CS, la restauration des FLAGS et le bouclage de SP sur 16 bits. Cela valide l'exécution de l'opcode IRET dans un environnement préinitialisé ; cela n'implémente pas la gestion complète de l'IVT ni les interruptions matérielles.
+
+La validation arithmétique comprend un oracle indépendant pour ADD/ADC/SUB/SBB, un balayage exhaustif des couples 8 bits, des vecteurs de frontière 16 bits et des octets machine ALU fixes exécutés par le chemin binaire. Les moteurs source et binaire partagent encore certaines primitives ; la référence indépendante réduit cette dépendance pour l'ALU, sans constituer un modèle complet séparé du processeur.
+
+Les familles absentes restent absentes du moteur binaire. Aucun statut de validation globale ne doit être attribué à un mnémonique tant que toutes ses formes et contraintes 8086 ne sont pas couvertes.
