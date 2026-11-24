@@ -624,6 +624,8 @@ test("XLAT — lecture DS:[BX+AL] et mise à jour de AL", () => {
   const prefix="MOV BX, 0100h\nMOV AL, 2\nMOV BYTE PTR [BX+2], 5Ah\n";
   const sourceState=runSource(prefix+"HLT");
   assert.equal(sourceState.mem[0x102],0x5a,"source store must initialize DS:[BX+2]");
+  assert.equal(sourceState.reg.BX,0x100,"source BX before XLAT");
+  assert.equal(sourceState.reg.AX&255,2,"source AL before XLAT");
   const binaryStore=runBinary(prefix+"HLT").state;
   assert.equal(binaryStore.mem[0x102],0x5a,"binary store must initialize DS:[BX+2]");
   let source;
