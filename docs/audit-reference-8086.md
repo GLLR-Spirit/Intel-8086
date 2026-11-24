@@ -20,7 +20,7 @@ Les fiches doivent être auditées au niveau de chaque forme d'encodage, et non 
 
 La fiche [operand-encoding-8086.md](operand-encoding-8086.md) détaille une première passe sur MOV, ADD, ADC, SUB, SBB et CMP : formes registre/mémoire, formes immédiates, opcodes, champs ModR/M, restrictions et FLAGS. Elle corrige également une confusion d'indexation : 8Dh correspond à LEA, et ne doit pas être inclus dans la plage des opcodes MOV.
 
-Les timings de MOV, ADD, ADC et CMP sont rapprochés des références Intel disponibles. La vérification individuelle des timings SUB/SBB reste ouverte. Une suite de vecteurs indépendants est maintenant ajoutée dans `tests/instruction-vectors.cjs` et appelée par le workflow CI ; elle couvre les formes principales de MOV, ADD, SUB et CMP, ainsi que les limites actuelles ADC/SBB. Cette couverture reste partielle et ne clôt pas l'audit.
+Les timings de MOV, ADD, ADC et CMP sont rapprochés des références Intel disponibles. La vérification individuelle des timings SUB/SBB reste ouverte. Une suite de vecteurs indépendants est maintenant ajoutée dans `tests/instruction-vectors.cjs` et appelée par le workflow CI ; elle couvre les formes principales de MOV, ADD, SUB et CMP, ainsi que les limites actuelles ADC/SBB. Cette couverture reste partielle et ne clôt pas l'audit. Le run CI 196 (commit `46b4c66`) a validé les 354 tests de fumée et les 24 vecteurs indépendants.
 
 ## Corrections effectuées
 
