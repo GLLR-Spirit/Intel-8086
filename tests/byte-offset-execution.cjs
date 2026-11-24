@@ -351,9 +351,6 @@ test("far indirect JMP reads an m16:16 pointer and changes CS:IP", () => {
 });
 countsBinary.indirect++;
 
-console.log("Audit dynamique : "+passed+" réussis, "+failed+" échecs.");
-console.log("Décodage opcode : 256 valeurs vérifiées ; ModR/M : 3072 combinaisons (12 groupes × 256).");
-console.log("Préfixes : "+countsBinary.prefixes+", branchements : "+countsBinary.branches+", transferts indirects : "+countsBinary.indirect+", auto-modification : "+countsBinary.selfModify+", vecteurs indépendants : "+countsBinary.independentVectors+".");
 
 test("independent binary vectors verify arithmetic flags and taken control flow", () => {
   const vectors=[
@@ -389,5 +386,9 @@ test("ES SS and DS overrides read and write their selected segment in dynamic ex
   }
 });
 countsBinary.prefixes++;
+
+console.log("Audit dynamique : "+passed+" réussis, "+failed+" échecs.");
+console.log("Décodage opcode : 256 valeurs vérifiées ; ModR/M : 3072 combinaisons (12 groupes × 256).");
+console.log("Préfixes : "+countsBinary.prefixes+", branchements : "+countsBinary.branches+", transferts indirects : "+countsBinary.indirect+", auto-modification : "+countsBinary.selfModify+", vecteurs indépendants : "+countsBinary.independentVectors+".");
 
 if (failed) process.exit(1);
