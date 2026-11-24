@@ -112,7 +112,7 @@ counts.calls++;
 test("RET maps the saved byte offset back to the caller instruction", () => {
   const s = execute(["CALL SUB", "HLT", "SUB: MOV AX, 1234h", "RET"].join("\n"));
   assert.equal(s.reg.AX, 0x1234);
-  assert.equal(s.reg.IP, 8);
+  assert.equal(s.reg.IP, 4);
   assert.equal(s.reg.SP, 0xFFFE);
   assert.equal(s.stack.length, 0);
 });
