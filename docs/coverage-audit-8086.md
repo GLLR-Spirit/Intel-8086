@@ -272,3 +272,14 @@ Le laboratoire prend maintenant en charge :
 La suite dédiée comporte **304 vecteurs**. Le workflow CI [45482367409](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45482367409) a réussi sur le commit `04f7ee9c918f42cb7c25d8124ecf983ff0e9bcc4` : **8 549 vérifications réussies, 0 échec** au total.
 
 Limite importante : dans l'interpréteur, IP est un indice logique d'instruction et non un offset octet dans un segment de code chargé. Les transferts indirects sont donc simulés dans ce modèle logique. Les formes RET/RETF avec ajustement impair restent encodées et décodées, mais leur exécution est refusée car le suivi pédagogique de pile travaille par mots.
+
+
+## Mise à jour — branchements relatifs (24 novembre 2026)
+
+L'assembleur prend maintenant en charge `EB rel8` pour les JMP directs courts, avec relaxation automatique vers `E9 rel16` lorsque la cible sort de l'intervalle court. Les déplacements near CALL/JMP sont normalisés sur 16 bits, et le désassembleur décode explicitement EB. Les 16 conditions Jcc et LOOP bénéficient d'une validation différentielle dédiée.
+
+Nouvelle suite : [`tests/relative-branches.cjs`](../tests/relative-branches.cjs), **187 vecteurs réussis**.
+
+Le workflow CI [45484177621](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45484177621) a réussi sur le commit `aa8b455e9cce132c0c437b2fc1f1ce30306b1f51` : **8 736 vérifications réussies, 0 échec** au total.
+
+Limite maintenue : les offsets octet sont utilisés par l'assembleur et le désassembleur ; l'interpréteur utilise encore un indice logique d'instruction pour l'IP et les branches par étiquette.
