@@ -132,8 +132,8 @@ const unaryVectors = [
   ["IMUL SP", [0xF7, 0xEC]],
   ["DIV SI", [0xF7, 0xF6]],
   ["IDIV DI", [0xF7, 0xFF]],
-  ["TEST AL, 5Ah", [0xF6, 0xC0, 0x5A]],
-  ["TEST AX, 1234h", [0xF7, 0xC0, 0x34, 0x12]]
+  ["TEST AL, 5Ah", [0xA8, 0x5A]],
+  ["TEST AX, 1234h", [0xA9, 0x34, 0x12]]
 ];
 for (const [source, expected] of unaryVectors) {
   test("F6/F7 assembler " + source, () => assert.deepEqual(assemble(source), expected));
@@ -176,7 +176,7 @@ const ffVectors = [
   ["JMP DX", [0xFF, 0xE2]],
   ["JMP WORD PTR [BP+SI+4]", [0xFF, 0x62, 0x04]],
   ["PUSH WORD PTR [BX]", [0xFF, 0x37]],
-  ["PUSH WORD PTR [DI+256]", [0xFF, 0x75, 0x00, 0x01]]
+  ["PUSH WORD PTR [DI+256]", [0xFF, 0xB5, 0x00, 0x01]]
 ];
 for (const [source, expected] of ffVectors) {
   test("FF assembler " + source, () => assert.deepEqual(assemble(source), expected));
