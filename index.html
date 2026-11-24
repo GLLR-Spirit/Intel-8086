@@ -394,7 +394,7 @@ else if(op===30)ins="PUSH DS";
 else if(op===7)ins="POP ES";
 else if(op===23)ins="POP SS";
 else if(op===31)ins="POP DS";
-else if(op===254||op===255){bits=op===254?8:16;modrm=read();ext=(modrm>>3)&7;rm=decodeRM(modrm,bits,prefix);if(ext===0)ins="INC "+rm.text;else if(ext===1)ins="DEC "+rm.text;else if(op===255&&ext===2)ins="CALL "+rm.text;else if(op===255&&ext===3&&rm.memory)ins="CALL FAR PTR "+rm.text.replace(/^WORD PTR /,"");else if(op===255&&ext===4)ins="JMP "+rm.text;else if(op===255&&ext===5&&rm.memory)ins="JMP FAR PTR "+rm.text.replace(/^WORD PTR /,"");else if(op===255&&ext===6&&rm.memory)ins="PUSH "+rm.text;}
+else if(op===254||op===255){bits=op===254?8:16;modrm=read();ext=(modrm>>3)&7;rm=decodeRM(modrm,bits,prefix);if(ext===0&&rm.memory)ins="INC "+rm.text;else if(ext===1&&rm.memory)ins="DEC "+rm.text;else if(op===255&&ext===2)ins="CALL "+rm.text;else if(op===255&&ext===3&&rm.memory)ins="CALL FAR PTR "+rm.text.replace(/^WORD PTR /,"");else if(op===255&&ext===4)ins="JMP "+rm.text;else if(op===255&&ext===5&&rm.memory)ins="JMP FAR PTR "+rm.text.replace(/^WORD PTR /,"");else if(op===255&&ext===6&&rm.memory)ins="PUSH "+rm.text;}
 else if(op>=176&&op<=191){bits=op<184?8:16;reg=(op-(bits===8?176:184));ins="MOV "+(bits===8?reg8:reg16)[reg]+", "+imm(bits===8?read():word(),bits);}
 else if(op>=112&&op<=127){disp=signed(read(),8);target=(i+disp)&65535;ins=cond[op-112]+" "+hx(target,4);}
 else if(op===226){disp=signed(read(),8);ins="LOOP "+hx((i+disp)&65535,4);}
