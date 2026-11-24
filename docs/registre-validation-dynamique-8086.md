@@ -30,7 +30,7 @@ Elle utilise désormais trois niveaux de vérification arithmétique :
 2. Balayage exhaustif des couples d'opérandes 8 bits pour ADD, ADC, SUB et SBB, avec les deux états de retenue pertinents.
 3. Vecteurs binaires bruts : octets machine constants, sans passer par l'assembleur du laboratoire, puis comparaison des résultats avec l'oracle.
 
-Le lot étendu comprend également un cadre IRET brut en mémoire, sans métadonnées de pile, avec restauration d'un CS différent et bouclage de SP. Le résultat final doit être pris dans le dernier run CI associé au commit de ce document.
+Le lot étendu comprend également un cadre IRET brut en mémoire, sans métadonnées de pile, avec restauration d'un CS différent et bouclage de SP. Résultat vérifié : **34/34 tests différentiels réussis**, plus 393 216 cas ALU 8 bits exhaustifs, 800 cas de frontière 16 bits et 1 350 exécutions binaires ALU avec octets bruts. Run CI [45505098359](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45505098359), commit testé `daaab3856e0c0b5f017fa11dd12eeffc4cb35252`.
 
 ### Limites méthodologiques
 
@@ -95,10 +95,10 @@ Les flux incomplets sont une classe distincte : ils doivent produire une erreur 
 
 ## 6. Validation CI
 
-Le résultat final de ce registre doit être associé au commit exact et au run CI le plus récent. Ne pas réutiliser un succès historique après modification des tests ou du moteur. Le rapport doit être mis à jour après le passage vert du workflow déclenché par ce commit.
+Le workflow principal [45505098359](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45505098359) a terminé avec le statut **success** sur le commit testé `daaab3856e0c0b5f017fa11dd12eeffc4cb35252`. La suite différentielle rapporte **34/34 tests réussis**, **393 216** vecteurs arithmétiques exhaustifs 8 bits, **800** vecteurs de frontière 16 bits et **1 350** exécutions binaires ALU à partir d'octets bruts.
 
 ## 7. Conclusion et seuil d'arrêt
 
 La suite différentielle est renforcée par un oracle indépendant exhaustif pour l'ALU 8 bits et des vecteurs machine bruts. **Cela ne certifie toujours pas l'ensemble du 8086** : toutes les formes d'instruction, tous les états ModR/M, les déplacements, l'ensemble des états mémoire et les périphériques ne sont pas couverts par une référence indépendante exhaustive.
 
-Le seuil « parfait » demandé n'est donc pas atteint. La phase peut être déclarée réussie pour son périmètre de tests uniquement lorsque le workflow CI final est vert ; le laboratoire, lui, doit rester classé comme interpréteur pédagogique partiellement validé, et non comme simulateur 8086 exhaustif.
+Le seuil « parfait » demandé n'est donc pas atteint. La phase est validée pour son périmètre de tests sur le run CI cité ; le laboratoire doit rester classé comme interpréteur pédagogique partiellement validé, et non comme simulateur 8086 exhaustif.
