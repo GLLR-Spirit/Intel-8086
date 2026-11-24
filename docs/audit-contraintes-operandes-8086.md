@@ -27,12 +27,12 @@ Références de codage : manuel Intel 8086, table « Instruction Set Summary » 
 - Vérification de l'exécution et du chargement little-endian de l'offset et du segment.
 
 ### MOV entre registre général/mémoire et registre de segment (8C/8E)
-- Les quatre champs de registre segment ES, CS, SS, DS.
-- Les huit registres généraux en mode register-direct.
-- MOV vers CS via 8E /1 rejeté.
-- Les extensions de champ segment 4..7 rejetées.
+- Les quatre champs canoniques ES, CS, SS, DS et les huit registres généraux.
+- Sur 8086/8088, les valeurs de sélecteur 4..7 aliasent respectivement ES, CS, SS et DS.
+- `MOV CS, r/m16` via 8E /1 est accepté sur le 8086 d'origine ; ne pas appliquer la restriction des générations ultérieures.
 - Formes mémoire word testées.
 - Qualificateurs BYTE incompatibles rejetés.
+- Le désassembleur a été corrigé pour décoder ces alias et le transfert vers CS.
 
 ### Flux tronqués
 20 vecteurs couvrent les octets ModR/M absents, les déplacements disp8/disp16 incomplets et les mots directs incomplets pour 8D, C4, C5, 8C et 8E.
@@ -47,9 +47,9 @@ Workflow : https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45448321120
 - Encodages invalides : 43 vérifications.
 - Flux tronqués : 20 vérifications.
 - Exécution : 2 vérifications.
-- Total de la suite : 269 réussites, 0 échec.
+- Les compteurs de la suite ont évolué après la correction des sélecteurs ; consulter le dernier journal CI pour le total exact.
 
-Les suites précédentes restent vertes :
+Les suites précédentes restent vertes sur le commit antérieur ; le nouveau commit de correction doit être vérifié séparément :
 - smoke : 354/354 ;
 - vecteurs indépendants : 114/114 ;
 - matrice ModR/M : 2 352 cas ;
@@ -60,4 +60,4 @@ Les suites précédentes restent vertes :
 
 Cette suite ne prouve pas l'exhaustivité de tout le jeu d'instructions 8086. Elle certifie uniquement les formes et les contraintes listées ci-dessus. Les extensions de groupes non encore décodées restent à traiter séparément. Une forme reconnue comme invalide par le désassembleur ne doit pas être confondue avec une forme valide mais non encore prise en charge.
 
-Aucune modification du moteur n'a été apportée pour cette phase.
+Une correction ciblée du désassembleur a ensuite été apportée dans `index.html` : les valeurs du champ segment sont interprétées modulo 4 et 8E /1 est rendu comme `MOV CS, ...`. Les tests internes ont été ajustés en conséquence.
