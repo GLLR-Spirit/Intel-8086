@@ -238,6 +238,52 @@ test("CALL FAR indirect mémoire et RETF restaurent CS:IP", () => {
 });
 categories.stack++;
 
+
+test("branchements conditionnels et LOOP gardent le même flot de contrôle", () => {
+  const conditional = [
+    "MOV AX, 0", "CMP AX, 0", "JE TAKEN", "MOV BX, 1",
+    "JMP END", "TAKEN: MOV BX, 2", "END: HLT"
+  ].join("\\n");
+  const c = compareSourceBinary(conditional);
+  assert.equal(c.binaryState.reg.BX, 2);
+  const loop = compareSourceBinary("MOV CX, 4\\nMOV AX, 0\\nAGAIN: INC AX\\nLOOP AGAIN\\nHLT");
+  assert.equal(loop.binaryState.reg.AX, 4);
+  assert.equal(loop.binaryState.reg.CX, 0);
+});
+categories.stack++;
+
+test("JMP near indirect par registre garde la même destination", () => {
+  const source = "MOV AX, 0007h\\nJMP AX\\nHLT\\nNOP\\nMOV BX, 1234h\\nHLT";
+  const { binaryState } = compareSourceBinary(source);
+  assert.equal(binaryState.reg.BX, 0x1234);
+});
+categories.stack++;
+
+test("adressage BP utilise SS par défaut", () => {
+  const source = [
+    "MOV AX, 3000h", "MOV SS, AX", "MOV BP, 0020h",
+    "MOV WORD PTR [BP], 0BEEfh", "MOV DX, WORD PTR [BP]", "HLT"
+  ].join("\\n");
+  const { binaryState } = compareSourceBinary(source, [0x30020, 0x30021]);
+  assert.equal(binaryState.reg.DX, 0xbeef);
+  assert.equal(binaryState.mem[0x30020], 0xef);
+  assert.equal(binaryState.mem[0x30021], 0xbe);
+});
+categories.memory++;
+
+test("préfixe CS permet un accès mémoire distinct au segment de code", () => {
+  const source = [
+    "MOV WORD PTR CS:[0200h], 0A55Ah",
+    "MOV AX, WORD PTR CS:[0200h]",
+    "HLT"
+  ].join("\\n");
+  const { binaryState } = compareSourceBinary(source, [0x200, 0x201]);
+  assert.equal(binaryState.reg.AX, 0xa55a);
+  assert.equal(binaryState.mem[0x200], 0x5a);
+  assert.equal(binaryState.mem[0x201], 0xa5);
+});
+categories.memory++;
+
 test("RET et RETF rejettent un cadre de pile incompatible", () => {
   const near = api.execute("PUSH AX\nRET");
   const far = api.execute("PUSH AX\nRETF");
