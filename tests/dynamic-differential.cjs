@@ -953,6 +953,29 @@ test("PUSH SP applique la sémantique particulière du 8086", () => {
 });
 categories.stack++;
 
+test("RET et RETF restaurent les adresses depuis une pile binaire brute", () => {
+  const ss=0x1000,sp=0x0100,base=(ss<<4)+sp;
+  const near=api.executeBinary([0xc3,0xf4],0,0,{
+    reg:{SS:ss,SP:sp},
+    mem:{[base]:1,[base+1]:0}
+  });
+  assert.ok(!near.error,near.error||"raw RET");
+  assert.equal(near.reg.IP,2);
+  assert.equal(near.reg.SP,sp+2);
+  assert.equal(near.stack.length,0);
+
+  const far=api.executeBinary([0xcb,0xf4],0,0,{
+    reg:{SS:ss,SP:sp},
+    mem:{[base]:1,[base+1]:0,[base+2]:0,[base+3]:0}
+  });
+  assert.ok(!far.error,far.error||"raw RETF");
+  assert.equal(far.reg.CS,0);
+  assert.equal(far.reg.IP,2);
+  assert.equal(far.reg.SP,sp+4);
+  assert.equal(far.stack.length,0);
+});
+categories.stack++;
+
 console.log("Audit différentiel arithmétique : " + categories.arithmetic + " vecteurs.");
 console.log("Logique et TEST : " + categories.logic + " vecteurs.");
 console.log("Registres : " + categories.registers + " vecteurs.");
