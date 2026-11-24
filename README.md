@@ -11,7 +11,7 @@ Intel 8086 Lab rassemble dans une seule page :
 - Un moteur pédagogique avec exécution complète et pas à pas
 - L'observation des registres, des indicateurs FLAGS et d'une mémoire segmentée pédagogique
 - Une référence d'instructions, des exercices et des idées de projets
-- Une suite de 97 tests rapides intégrée à la page pour contrôler des cas de calcul, FLAGS, sauts, boucles et pile
+- Une suite de 101 tests rapides intégrée à la page pour contrôler des cas de calcul, FLAGS, sauts, boucles et pile
 - Un convertisseur binaire, décimal, hexadécimal et octal
 - Une sauvegarde locale dans le navigateur, sans compte ni serveur
 
@@ -33,7 +33,7 @@ Le moteur JavaScript est un interpréteur pédagogique, pas un émulateur matér
 - Transferts et calculs : `MOV`, `ADD`, `SUB`, `INC`, `DEC`
 - Logique : `AND`, `OR`, `XOR`, `NOT`, `TEST`
 - Décalages : `SHL`, `SAL`, `SHR`
-- Comparaison et branchements : `CMP`, `JMP`, `JE/JZ`, `JNE/JNZ`, `JC/JNC`, `JS/JNS`, `JO/JNO`, `JG/JGE/JL/JLE`, `JA/JAE/JB/JBE`
+- Comparaison et branchements : `CMP`, `JMP`, `JE/JZ`, `JNE/JNZ`, `JC/JNC`, `JS/JNS`, `JO/JNO`, `JP/JNP`, `JG/JGE/JL/JLE`, `JA/JAE/JB/JBE`
 - Multiplication et division : `MUL`, `IMUL`, `DIV`, `IDIV` (opérandes implicites `AX` et `DX:AX`, vérification du quotient et division par zéro)
 - Boucles et pile : `LOOP`, `PUSH`, `POP`, `PUSHF`, `POPF`, `CALL`, `RET` (mots stockés en little-endian dans la mémoire simulée à l'adresse physique calculée depuis `SS:SP`, avec métadonnées de contrôle pour les retours)
 - Manipulation des indicateurs : `CLI`, `STI`, `CLC`, `STC`, `CMC`, `CLD`, `STD` ; `PUSHF`/`POPF` sauvegardent et restaurent le mot FLAGS simulé
@@ -64,4 +64,4 @@ Aucune licence open source n'est déclarée pour le moment. Ne présume pas d'un
 
 ## Instructions de chaînes 8086
 
-Instructions prises en charge : `MOVSB/MOVSW`, `LODSB/LODSW`, `STOSB/STOSW`, `CMPSB/CMPSW`, `SCASB/SCASW`, avec les préfixes `REP`, `REPE/REPZ` et `REPNE/REPNZ`. Les sources utilisent `DS:SI`, les destinations `ES:DI`; `DF` contrôle l'incrémentation ou la décrémentation de `SI` et `DI`. Pour `CMPS` et `SCAS`, `REP` se comporte comme `REPE` et s'arrête si `ZF` devient nul. Une répétition est limitée à 10 000 itérations par instruction pour protéger le navigateur. Les préfixes doivent être écrits sur la même ligne que l'instruction (ex. `REP MOVSB`). Les overrides de segment pour les instructions de chaîne ne sont pas encore pris en charge.
+Instructions prises en charge : `MOVSB/MOVSW`, `LODSB/LODSW`, `STOSB/STOSW`, `CMPSB/CMPSW`, `SCASB/SCASW`, avec les préfixes `REP`, `REPE/REPZ` et `REPNE/REPNZ`. Les sources utilisent `DS:SI`, les destinations `ES:DI`; `DF` contrôle l'incrémentation ou la décrémentation de `SI` et `DI`. Pour `CMPS` et `SCAS`, `REP` se comporte comme `REPE` et s'arrête si `ZF` devient nul. Une répétition est limitée à 10 000 itérations par instruction pour protéger le navigateur. Les préfixes `REP`, `REPE/REPZ`, `REPNE/REPNZ` et les overrides `CS:`, `DS:`, `ES:`, `SS:` peuvent être placés sur la même ligne ou sur des lignes séparées avant l'instruction de chaîne. Un override de segment modifie la source mémoire lorsque l'instruction en possède une ; la destination des instructions de chaîne reste `ES:DI`. Chaque pas d'exécution d'une instruction REP traite au plus une itération, en conservant l'instruction courante tant que la répétition continue.
