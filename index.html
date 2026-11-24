@@ -502,7 +502,7 @@ if(!row||!row.size)throw Error("Le décodeur n’a consommé aucun octet à CS:I
 if(/^DB /.test(row.instruction))throw Error("Opcode ou forme non pris en charge à "+cpu.reg.CS.toString(16).toUpperCase().padStart(4,"0")+"h:"+currentIP.toString(16).toUpperCase().padStart(4,"0")+"h : "+row.instruction);
 var targetMatch=row.instruction.match(/^(JO|JNO|JB|JAE|JE|JNE|JBE|JA|JS|JNS|JP|JNP|JL|JGE|JLE|JG|JMP|LOOP|CALL) ([0-9A-F]{4}h)$/),targetIP=null,line=row.instruction,targetLabel="__DYNAMIC_TARGET";
 if(targetMatch){targetIP=(currentIP+parseInt(targetMatch[2],16))&65535;line=targetMatch[1]+" "+targetLabel;}
-var parsed=parseProgram(targetMatch?targetLabel+": NOP\\n"+line:line),instruction=parsed.ops[targetMatch?1:0];
+var parsed=parseProgram(targetMatch?targetLabel+": NOP\n"+line:line),instruction=parsed.ops[targetMatch?1:0];
 if(!instruction)throw Error("Instruction vide après décodage à IP "+currentIP.toString(16).toUpperCase()+"h.");
 ops=[instruction,placeholder];labels=parsed.labels;vectors=parsed.vectors;if(targetMatch)labels[targetLabel]=1;
 executionImage={size:65536,offsets:[currentIP,targetIP===null?nextIP:targetIP],offsetToIndex:{},loadCS:cpu.reg.CS,endOffset:nextIP};
