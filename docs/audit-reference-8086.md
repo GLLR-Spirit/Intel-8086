@@ -68,3 +68,14 @@ ADC et SBB ont été ajoutées au validateur, à l'interpréteur, à l'assembleu
 ## Matrice de couverture actuelle
 
 Consulter [coverage-audit-8086.md](coverage-audit-8086.md) pour les statuts séparés du simulateur, de l'assembleur, du désassembleur et des tests. Les nombres sont des décomptes de mnémotechniques canoniques ; ils ne doivent pas être convertis en taux de couverture des formes d'encodage tant que le registre détaillé des formes n'est pas terminé.
+
+
+## Révision de la matrice 8C/8E et balayage structurel — 25 novembre 2026
+
+La réinspection de la table 4-13 du manuel Intel 8086 Family User's Manual a révélé une erreur dans une ancienne hypothèse de test : le champ de sélection du registre de segment est `0SR`, et non un champ 3 bits replié par `reg & 3`. Les sélecteurs `/0` à `/3` désignent ES, CS, SS et DS ; `/4` à `/7` sont indiqués « not used ». Le désassembleur et les suites de tests ont été corrigés en conséquence. `MOV CS, r/m16` via `8E /1` reste accepté dans le mode 8086 original.
+
+La CI inclut désormais un balayage structurel des 256 valeurs d'opcode primaire et des 256 valeurs ModR/M pour chacune des 67 familles décodées avec ModR/M. Le test vérifie l'absence de crash, la progression continue des offsets et la consommation exacte des octets. Il ne valide pas le sens de chaque opcode ni les effets d'exécution : ces assertions exigent toujours des oracles indépendants spécifiques.
+
+Le même lot corrige le désassembleur pour que son traitement de LOCK reste cohérent avec le sous-ensemble verrouillable accepté par l'analyseur du laboratoire : destination mémoire obligatoire pour les opérations prises en charge, avec traitement distinct de XCHG mémoire. Cela ne constitue pas une simulation de la sortie LOCK, du bus ou de l'arbitrage.
+
+Validation CI : run 45512297498, commit `f0573072cf57ad741a0b6e33165f0ffa61d9cd75` — success, toutes les étapes exécutées.
