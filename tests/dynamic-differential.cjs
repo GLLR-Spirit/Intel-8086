@@ -308,7 +308,7 @@ test("IRET restaure FLAGS, CS et IP depuis un cadre VECTOR dans le moteur source
   ].join("\n");
   const state = runSource(source);
   assert.equal(state.flags.CF, 1, "IRET must restore the pre-interrupt carry flag");
-  assert.equal(state.reg.CS, 0);
+  assert.equal(state.reg.CS, 0x00ff);
   assert.equal(state.stack.length, 0);
   assert.equal(state.reg.SP, 0xfffe);
 });
@@ -323,20 +323,20 @@ test("IRET binaire restaure un cadre architectural préchargé en mémoire", () 
   };
   const mem = {};
   putWord(mem, 0xfffc, flagsWord);
-  putWord(mem, 0xfffa, 0x0000);
-  putWord(mem, 0xfff8, 0x0001);
+  putWord(mem, 0xfffa, 0x00ff);
+  putWord(mem, 0xfff8, 0x0011);
   const state = api.executeBinary([0xcf, 0xf4], 0x0100, 0, {
     reg: { SS: ss, SP: sp },
     mem,
     stack: [
       { value: flagsWord, kind: "iret-flags", address: 0xfffc, segment: ss },
-      { value: 0, kind: "iret-cs", address: 0xfffa, segment: ss },
-      { value: 1, kind: "iret-ip", address: 0xfff8, segment: ss }
+      { value: 0x00ff, kind: "iret-cs", address: 0xfffa, segment: ss },
+      { value: 0x0011, kind: "iret-ip", address: 0xfff8, segment: ss }
     ]
   });
   assert.ok(!state.error, state.error || "binary IRET failed");
   assert.equal(state.reg.CS, 0);
-  assert.equal(state.reg.IP, 2);
+  assert.equal(state.reg.IP, 0x0012);
   assert.equal(state.reg.SP, 0xfffe);
   assert.equal(state.stack.length, 0);
   for (const flag of ["CF","PF","AF","ZF","SF","TF","IF","DF","OF"]) assert.equal(state.flags[flag], 1, flag);
