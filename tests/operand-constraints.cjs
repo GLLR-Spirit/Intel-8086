@@ -151,21 +151,24 @@ for (const source of [
 }
 
 // D. Legacy 8086 segment-selector encodings.
-// On 8086/8088, selectors 4..7 alias ES/CS/SS/DS (0..3). MOV CS is
-// accepted on the original 8086, although later x86 generations restrict it.
-// The current decoder intentionally does not yet render these legacy forms.
+// On 8086/8088, selectors 4..7 alias ES/CS/SS/DS (0..3), and MOV CS is
+// accepted. The disassembler normalizes aliases to their canonical names.
 for (const opcode of [0x8C, 0x8E]) {
   for (let ext = 4; ext < 8; ext++) {
     test("MOV segment alias 8086 · " + opcode.toString(16) + " /" + ext, () => {
-      assert.ok(decoded([opcode, modrm(3, ext, 0)]).startsWith("DB "));
+      const instruction = decoded([opcode, modrm(3, ext, 0)]);
+      const expected = ["ES", "CS", "SS", "DS"][ext & 3];
+      assert.ok(instruction.includes(expected), instruction);
+      assert.ok(!instruction.startsWith("DB "), instruction);
     });
   }
 }
 for (let ext = 0; ext < 4; ext++) {
-  const opcode = 0x8E;
-  test("MOV vers segment documenté 8086 · /" + ext, () => {
-    const instruction = decoded([opcode, modrm(3, ext, 0)]);
-    assert.equal(instruction.startsWith("DB "), false, instruction);
+  test("MOV vers segment 8086 · /" + ext, () => {
+    const instruction = decoded([0x8E, modrm(3, ext, 0)]);
+    const expected = ["ES", "CS", "SS", "DS"][ext];
+    assert.ok(instruction.includes(expected), instruction);
+    assert.ok(!instruction.startsWith("DB "), instruction);
   });
 }
 
