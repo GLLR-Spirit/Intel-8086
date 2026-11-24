@@ -34,13 +34,26 @@ La suite `tests/byte-offset-execution.cjs` couvre :
 - chargement traversant IP=FFFFh ;
 - comparaison des registres et FLAGS entre l'exécution source assemblée et l'exécution binaire.
 
+## Passage au cycle fetch → decode → execute dynamique
+
+Le chemin `executeBinary` a été remplacé par une boucle qui, à chaque étape :
+
+1. lit jusqu'à 32 octets depuis la mémoire simulée à partir de `CS:IP` (avec bouclage de l'offset 16 bits) ;
+2. demande au désassembleur de ne produire que la première instruction (`disassembleBytes(..., 1)`) ;
+3. convertit cette instruction décodée en opération exécutable ;
+4. exécute l'opération, puis choisit le prochain IP selon le flux séquentiel ou le transfert de contrôle ;
+5. recommence une lecture mémoire au nouvel IP.
+
+Le flux initial est copié dans la mémoire, mais aucune liste complète d'instructions n'est préparée. Un branchement relatif peut donc viser un offset qui n'était pas une frontière dans un désassemblage linéaire antérieur. Les écritures mémoire qui touchent au code sont visibles à la prochaine lecture : il n'y a pas de cache d'instructions à invalider.
+
+Le mode est maintenant `execution.mode = "dynamic-binary"`; `decodedInstructions` indique le nombre d'instructions effectivement décodées pendant l'exécution. La fonction `disassembleBytes` accepte un paramètre optionnel `maxRows` afin de décoder une seule instruction sans analyser les octets qui suivent.
+
 ## Limites explicites
 
 Cette version est un premier chargeur pédagogique, pas encore un moteur de décodage à la demande :
-- le flux est décodé linéairement une fois au chargement ;
-- les cibles de branchement doivent être des frontières d'instructions de ce décodage linéaire ;
-- un branchement vers des octets non décodés linéairement ou au milieu d'une instruction est refusé ;
-- les octets sont copiés en mémoire, mais le moteur d'exécution utilise encore les lignes décodées préparées au chargement, pas un fetch/décode de chaque opcode depuis `cpu.mem` à chaque étape ;
+- le décodeur et l'interpréteur ne couvrent toujours qu'un sous-ensemble des opcodes et formes 8086 ; les formes rendues sous forme DB sont refusées ;
+- les octets situés au-delà du flux importé sont lus comme des zéros si aucune valeur n'a été écrite à ces adresses ;
+- les écritures mémoire sont visibles par les fetchs suivants, mais les interactions de prélecture BIU et les cycles de bus ne sont pas modélisés ;
 - le sous-ensemble du décodeur/interpréteur reste limité ; les instructions rendues sous forme DB ne sont pas exécutées ;
 - les transferts FAR et le chargement de plusieurs segments de code indépendants restent à traiter.
 
