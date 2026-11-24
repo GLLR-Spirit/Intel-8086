@@ -345,3 +345,9 @@ ADC et SBB sont maintenant implémentées dans le simulateur, l'assembleur et le
 ## Matrice de couverture
 
 La matrice actuelle des 93 entrées canoniques, avec statuts séparés pour la documentation, le simulateur, l'assembleur, le désassembleur et les tests, est publiée dans [coverage-audit-8086.md](coverage-audit-8086.md). Le nombre 93 est un dénominateur de travail ; les alias et préfixes sont suivis séparément.
+
+### Directive pédagogique PORT — environnement d'E/S simulé
+
+`PORT numéro, valeur` est une directive propre au laboratoire, et non une instruction Intel 8086. Elle initialise la carte logicielle des ports pour permettre à `IN` de lire une valeur déterministe en mode source. Elle n'émet aucun octet machine. Pour le chemin binaire, l'état des ports est fourni par `initialState.io` ; l'interface d'exécution binaire reprend les directives PORT du programme source courant comme état initial.
+
+Les ports sont des valeurs logicielles 16 bits ; IN/OUT AL tronque ou écrit 8 bits, IN/OUT AX utilise 16 bits. Aucun contrôleur matériel, temporisation de bus ni périphérique n'est simulé.
