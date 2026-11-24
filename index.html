@@ -144,8 +144,9 @@ return {mod:mod,rm:rm,tail:tail,prefix:prefix,defaultSegment:defaultSeg,explicit
 function encodingModRM(regField,operand){
 var r=encodingRegisterCode(operand);if(r!==null)return [192|((regField&7)<<3)|r];
 var m=encodingMemory(operand);if(!m)return null;
-return (m.prefix===null?[]:[m.prefix]).concat([(m.mod<<6)|((regField&7)<<3)|m.rm],m.tail);
+return [(m.mod<<6)|((regField&7)<<3)|m.rm].concat(m.tail);
 }
+function encodingPrefixFor(raw){var m=encodingMemory(raw);return m&&m.prefix!==null?[m.prefix]:[];}
 function encodingOperandBits(raw,other){
 var r=info(raw.trim().toUpperCase());if(r)return r.bits;
 var m=memoryOperand(raw);if(m&&m.bits)return m.bits;
@@ -163,11 +164,11 @@ if((rd!==null||dm)&&(rq!==null||qm)){
 var widthBits=rd!==null?id.bits:rq!==null?iq.bits:encodingOperandBits(d,q);
 if(!widthBits)return null;
 var body=[],rm;
-if(rq!==null&&dm){rm=encodingModRM(rq,d);if(!rm)return null;body=[widthBits===8?136:137].concat(rm);}
-else if(rd!==null&&qm){rm=encodingModRM(rd,q);if(!rm)return null;body=[widthBits===8?138:139].concat(rm);}
+if(rq!==null&&dm){rm=encodingModRM(rq,d);if(!rm)return null;body=encodingPrefixFor(d).concat([widthBits===8?136:137],rm);}
+else if(rd!==null&&qm){rm=encodingModRM(rd,q);if(!rm)return null;body=encodingPrefixFor(q).concat([widthBits===8?138:139],rm);}
 if(body.length)return body;
 }
-if((dm||rd!==null)&&parseNumber(q)!==null){var memBits=encodingOperandBits(d,q);if(!memBits)return null;var imm=encodingImmediate(q,memBits);if(!imm)return null;rm=encodingModRM(0,d);if(!rm)return null;return [memBits===8?198:199].concat(rm,imm);}
+if((dm||rd!==null)&&parseNumber(q)!==null){var memBits=encodingOperandBits(d,q);if(!memBits)return null;var imm=encodingImmediate(q,memBits);if(!imm)return null;rm=encodingModRM(0,d);if(!rm)return null;return encodingPrefixFor(d).concat([memBits===8?198:199],rm,imm);}
 }
 var arithmeticCodes={ADD:0,OR:1,AND:4,SUB:5,XOR:6,CMP:7};
 if(base==="TEST"||Object.prototype.hasOwnProperty.call(arithmeticCodes,base)){
@@ -176,12 +177,12 @@ if(!wBits)return null;
 if(rq!==null&&(rd!==null||dm)){
 var rmDst=encodingModRM(rq,d);if(!rmDst)return null;
 var op1=base==="TEST"?(wBits===8?132:133):(arithmeticCodes[base]*8+(wBits===8?0:1));
-return op1===undefined?null:[op1].concat(rmDst);
+return op1===undefined?null:encodingPrefixFor(d).concat([op1],rmDst);
 }
 if(rd!==null&&(rq!==null||qm)){
-if(base==="TEST"){var rmTest=encodingModRM(rq,q);if(!rmTest)return null;return [wBits===8?132:133].concat(rmTest);}
+if(base==="TEST"){var rmTest=encodingModRM(rq,q);if(!rmTest)return null;return encodingPrefixFor(q).concat([wBits===8?132:133],rmTest);}
 var rmSrc=encodingModRM(rd,q);if(!rmSrc)return null;
-return [arithmeticCodes[base]*8+(wBits===8?2:3)].concat(rmSrc);
+return encodingPrefixFor(q).concat([arithmeticCodes[base]*8+(wBits===8?2:3)],rmSrc);
 }
 if((rd!==null||dm)&&parseNumber(q)!==null){
 var immBytes=encodingImmediate(q,wBits);if(!immBytes)return null;
@@ -190,7 +191,7 @@ var accOps={ADD:4,OR:12,AND:36,SUB:44,XOR:52,CMP:60,TEST:168};
 return [accOps[base]+(wBits===16&&base!=="TEST"?1:0)].concat(immBytes);
 }
 var ext=base==="TEST"?0:arithmeticCodes[base],rmImm=encodingModRM(ext,d);if(!rmImm)return null;
-return [base==="TEST"?(wBits===8?246:247):(wBits===8?128:129)].concat(rmImm,immBytes);
+return encodingPrefixFor(d).concat([base==="TEST"?(wBits===8?246:247):(wBits===8?128:129)],rmImm,immBytes);
 }
 }
 if(rd!==null&&rq!==null&&id.bits===iq.bits&&base==="XCHG"){
