@@ -439,7 +439,7 @@ else if(op===195)ins="RET";
 else if(op===194)ins="RET "+imm(word(),16);
 else if(op===203)ins="RETF";
 else if(op===202)ins="RETF "+imm(word(),16);
-else if(op===207)ins="IRET";
+else if(op===207)ins="IRET";else if(op===205)ins="INT "+imm(read(),8);
 else if(op>=145&&op<=151)ins="XCHG AX, "+reg16[op-144];
 else if(op===141||op===196||op===197){modrm=read();rm=decodeRM(modrm,16,prefix);if(rm.memory){var leaReg=reg16[(modrm>>3)&7],leaAddress=rm.text.replace(/^WORD PTR /,"");ins=op===141?"LEA "+leaReg+", "+leaAddress:(op===196?"LES ":"LDS ")+leaReg+", "+leaAddress;}}
 else if(op===140||op===142){
