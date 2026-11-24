@@ -4,7 +4,7 @@
 **Périmètre :** instructions du processeur Intel 8086 d'origine (pas 80186/80286+), avec séparation entre mnémotechniques principales, synonymes documentés et préfixes.  
 **Règle de comptage :** une ligne = une graphie mnémotechnique ; les alias restent des entrées propres afin de pouvoir les auditer individuellement.
 
-Cet inventaire est indépendant des 58 cartes de l'interface. Cette première passe n'est pas encore garantie exhaustive : elle doit notamment être rapprochée de chaque tableau d'opcodes Intel pour détecter les omissions. Il ne déduit aucun statut de support du simulateur, de l'assembleur ou du désassembleur.
+Cet inventaire est indépendant des 58 cartes de l'interface. Il contient un registre de travail des instructions, alias et préfixes ; il n'est pas encore certifié exhaustif et doit être rapproché de chaque tableau Intel pour détecter les omissions. Les statuts réels du simulateur, de l'assembleur et du désassembleur sont consignés séparément dans [coverage-audit-8086.md](coverage-audit-8086.md).
 
 ## 1. Instructions et variantes de chaîne
 
@@ -340,3 +340,8 @@ Cette matrice ne vaut pas validation exhaustive : les timings SUB/SBB et l'audit
 ## État de prise en charge — ADC et SBB
 
 ADC et SBB sont maintenant implémentées dans le simulateur, l'assembleur et le désassembleur pour un sous-ensemble de formes 8086 : registre/mémoire, accumulateur-immédiat et groupe immédiat 80h/81h. Le format 83h et l'exhaustivité de chaque forme restent à auditer. Leur inclusion ne signifie donc pas que l'ensemble des instructions 8086 est couvert.
+
+
+## Matrice de couverture
+
+La matrice actuelle des 93 entrées canoniques, avec statuts séparés pour la documentation, le simulateur, l'assembleur, le désassembleur et les tests, est publiée dans [coverage-audit-8086.md](coverage-audit-8086.md). Le nombre 93 est un dénominateur de travail ; les alias et préfixes sont suivis séparément.
