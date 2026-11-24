@@ -332,7 +332,7 @@ countsBinary.indirect++;
 test("far indirect CALL reads an m16:16 pointer and RETF restores CS:IP", () => {
   const bytes=Array(0x12).fill(0x90);
   bytes.splice(0,5,0x2E,0xFF,0x1E,0x07,0x01);
-  bytes[5]=0xF4; bytes[7]=0x10; bytes[8]=0x01; bytes[9]=0x00; bytes[10]=0x56; bytes[0x10]=0xCB;
+  bytes[5]=0xF4; bytes[7]=0x00; bytes[8]=0x01; bytes[9]=0x01; bytes[10]=0x56; bytes[0x10]=0xCB;
   const state=executeLoaded(bytes,0x5600,0x0100);
   assert.equal(state.reg.CS,0x5600);
   assert.equal(state.reg.IP,0x0106);
@@ -343,10 +343,10 @@ countsBinary.indirect++;
 test("far indirect JMP reads an m16:16 pointer and changes CS:IP", () => {
   const bytes=Array(0x12).fill(0x90);
   bytes.splice(0,5,0x2E,0xFF,0x2E,0x07,0x01);
-  bytes[7]=0x10; bytes[8]=0x01; bytes[9]=0x00; bytes[10]=0x57; bytes[0x10]=0xF4;
+  bytes[7]=0x00; bytes[8]=0x01; bytes[9]=0x01; bytes[10]=0x57; bytes[0x10]=0xF4;
   const state=executeLoaded(bytes,0x5700,0x0100);
-  assert.equal(state.reg.CS,0x5700);
-  assert.equal(state.reg.IP,0x0111);
+  assert.equal(state.reg.CS,0x5701);
+  assert.equal(state.reg.IP,0x0101);
   assert.equal(state.steps,2);
 });
 countsBinary.indirect++;
