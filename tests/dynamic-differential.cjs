@@ -621,8 +621,15 @@ test("LAHF et SAHF — transfert des FLAGS via AH", () => {
   for (const flag of ["CF","PF","AF","ZF","SF"]) assert.equal(binaryState.flags[flag],1);
 });
 test("XLAT — lecture DS:[BX+AL] et mise à jour de AL", () => {
-  const {binaryState}=compareSourceBinary("MOV BX, 0100h\nMOV AL, 2\nMOV BYTE PTR [BX+2], 5Ah\nXLAT\nHLT");
-  assert.equal(binaryState.reg.AX&255,0x5a);
+  const prefix="MOV BX, 0100h\nMOV AL, 2\nMOV BYTE PTR [BX+2], 5Ah\n";
+  const sourceState=runSource(prefix+"HLT");
+  assert.equal(sourceState.mem[0x102],0x5a,"source store must initialize DS:[BX+2]");
+  const binaryStore=runBinary(prefix+"HLT").state;
+  assert.equal(binaryStore.mem[0x102],0x5a,"binary store must initialize DS:[BX+2]");
+  const source=runSource(prefix+"XLAT\nHLT");
+  assert.equal(source.reg.AX&255,0x5a,"source XLAT");
+  const binary=runBinary(prefix+"XLAT\nHLT").state;
+  assert.equal(binary.reg.AX&255,0x5a,"binary XLAT");
 });
 test("REP MOVSB — préfixe binaire, répétition CX et transfert mémoire", () => {
   const source="MOV SI, 0100h\nMOV DI, 0200h\nMOV CX, 3\nMOV BYTE PTR [0100h], 11h\nMOV BYTE PTR [0101h], 22h\nMOV BYTE PTR [0102h], 33h\nREP MOVSB\nHLT";
