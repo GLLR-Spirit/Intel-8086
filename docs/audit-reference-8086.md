@@ -4,7 +4,7 @@
 
 ## Inventaire canonique — première passe
 
-Le registre distinct des graphies mnémotechniques, synonymes, préfixes et éléments hors périmètre est maintenu dans [instruction-inventory-8086.md](instruction-inventory-8086.md). Il sert de base au décompte de couverture ; les 58 cartes de l'interface ne sont pas utilisées comme dénominateur. Les graphies dont le statut historique est incertain (notamment FWAIT, XLATB et RETF) restent explicitement à confirmer et ne sont pas déclarées instructions canoniques sur la seule base de leur présence dans des assembleurs.
+Le registre distinct des graphies mnémotechniques, synonymes, préfixes et éléments hors périmètre est maintenu dans [instruction-inventory-8086.md](instruction-inventory-8086.md). La matrice d'audit statique, fondée sur le code actuel, est maintenant consignée dans [coverage-audit-8086.md](coverage-audit-8086.md). Son dénominateur de travail est de 93 entrées canoniques ; les 58 cartes de l'interface ne sont pas utilisées comme dénominateur. Les graphies dont le statut historique est incertain (notamment FWAIT, XLATB et RETF) restent explicitement à confirmer et ne sont pas déclarées instructions canoniques sur la seule base de leur présence dans des assembleurs.
 
 ## Réconciliation initiale des opcodes
 
@@ -25,7 +25,7 @@ La suite indépendante couvre désormais MOV, ADD, SUB, CMP, ADC et SBB avec des
 ## Corrections effectuées
 
 - **ADC et SBB** : implémentées dans le validateur et l'interpréteur, et dans les formes binaires principales du générateur/désassembleur. Les formes 83h à immédiat signé court et l'exhaustivité des formes restent à auditer.
-- Les tests dédiés consignent explicitement cette absence de support ; ils ne la corrigent pas.\n- Aucun changement n'a été apporté au moteur CPU pendant cette phase de tests.
+- Les vecteurs indépendants couvrent désormais un sous-ensemble des formes binaires et des cas sémantiques ADC/SBB ; ils ne couvrent pas encore chaque forme d'opérande. Le moteur CPU a bien été modifié pour intégrer ces deux instructions.
 
 ## Points de contrôle à appliquer à chaque fiche
 
@@ -40,7 +40,7 @@ La suite indépendante couvre désormais MOV, ADD, SUB, CMP, ADC et SBB avec des
 
 ## Anomalies et limites encore ouvertes
 
-1. **Exhaustivité des mnémoniques et alias :** un premier inventaire distinct est maintenant consigné dans instruction-inventory-8086.md. Il reste à le confronter ligne par ligne aux tables Intel et à décider explicitement du statut des graphies historiques/propres aux assembleurs avant de calculer un taux de couverture.
+1. **Exhaustivité des mnémoniques et alias :** une première matrice de 93 entrées canoniques est maintenant publiée dans coverage-audit-8086.md. Le décompte est un inventaire de travail, pas encore une certification historique exhaustive ; il reste à confirmer chaque entrée, alias et opcode avec les tables primaires Intel.
 2. **Formes d'opérandes :** une première matrice détaillée existe maintenant pour MOV, ADD, ADC, SUB, SBB et CMP dans operand-encoding-8086.md. Les autres familles restent à décomposer ; pour ces six instructions, les formes mémoire/immédiat et les cas limites FLAGS doivent encore être mieux couverts par les vecteurs.
 3. **FLAGS indéfinis :** certaines fiches mentionnent les indicateurs indéfinis, mais il faut vérifier chaque instruction et chaque variante contre la table Intel. « Indéfini » ne signifie ni « conservé » ni « égal à zéro ».
 4. **Cycles :** les valeurs regroupées ou formulées « variable » restent insuffisantes pour une référence de précision. Les coûts EA doivent être appliqués uniquement aux formes mémoire concernées. Les effets de prélecture BIU, les transferts de mots non alignés et les branchements doivent rester des notes distinctes.
@@ -63,3 +63,8 @@ ADC et SBB ont été ajoutées au validateur, à l'interpréteur, à l'assembleu
 
 
 **Validation de la phase ADC/SBB :** run CI 210 réussi — 354 tests de fumée et 40 vecteurs indépendants. Les timings exacts SUB/SBB et l'exhaustivité de la couverture 8086 restent ouverts.
+
+
+## Matrice de couverture actuelle
+
+Consulter [coverage-audit-8086.md](coverage-audit-8086.md) pour les statuts séparés du simulateur, de l'assembleur, du désassembleur et des tests. Les nombres sont des décomptes de mnémotechniques canoniques ; ils ne doivent pas être convertis en taux de couverture des formes d'encodage tant que le registre détaillé des formes n'est pas terminé.
