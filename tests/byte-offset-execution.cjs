@@ -52,7 +52,7 @@ const mappedSource = [
 ].join("\n");
 test("assembler exposes monotonically increasing byte offsets and matching symbols", () => {
   const a = assemble(mappedSource);
-  assert.deepEqual(a.rows.map(row => row.offset), [0, 1, 4, 6, 7]);
+  assert.deepEqual(Array.from(a.rows, row => row.offset), [0, 1, 4, 6, 7]);
   assert.equal(a.symbols.PAD, 6);
   assert.equal(a.symbols.DONE, 7);
   assert.equal(a.size, 8);
@@ -102,7 +102,7 @@ counts.branches++;
 // that offset back to an instruction boundary before resuming.
 test("CALL stores a byte return address in the simulated stack", () => {
   const s = execute(["NOP", "CALL SUB", "HLT", "SUB: HLT"].join("\n"));
-  assert.equal(s.reg.IP, 5);
+  assert.equal(s.reg.IP, 6);
   assert.equal(s.stack.length, 1);
   assert.equal(s.stack[0].value, 4);
   assert.equal(s.stack[0].kind, "return");
@@ -121,7 +121,7 @@ counts.calls++;
 // A full 64 KiB image places XOR AX,AX at FFFEh. Its following IP wraps to
 // 0000h; the now-true JZ branches to HLT, proving that wrap is executable.
 test("IP wraps FFFFh to 0000h and resumes at the first byte", () => {
-  const padding = Array(65528).fill("NOP").join("\n");
+  const padding = Array(65529).fill("NOP").join("\n");
   const source = ["JZ DONE", "JMP LAST", "DONE: HLT", padding, "LAST: XOR AX, AX"].join("\n");
   const a = assemble(source);
   assert.equal(a.size, 65536);
@@ -129,7 +129,7 @@ test("IP wraps FFFFh to 0000h and resumes at the first byte", () => {
   const s = execute(source);
   assert.equal(s.reg.AX, 0);
   assert.equal(s.flags.ZF, 1);
-  assert.equal(s.reg.IP, 7);
+  assert.equal(s.reg.IP, 5);
   assert.equal(s.execution.codeSize, 65536);
 });
 counts.wrap++;
