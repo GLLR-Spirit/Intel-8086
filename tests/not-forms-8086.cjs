@@ -145,18 +145,24 @@ for(const prefix of ["REP","REPE","REPNE"]){
 
 // F. NOT preserves all modeled FLAGS in source and binary execution.
 const flags=2|(1<<9)|(1<<10)|(1<<11)|(1<<7)|(1<<6)|(1<<4)|(1<<2)|1;
-const source=[
+const setup=[
   "MOV AX,1000h","MOV DS,AX","MOV BX,0200h",
   "MOV BYTE PTR [BX],55h","MOV AX,"+flags.toString(16)+"h",
-  "PUSH AX","POPF","NOT BYTE PTR [BX]","HLT"
-].join("\n");
+  "PUSH AX","POPF"
+];
+const source=setup.concat(["NOT BYTE PTR [BX]","HLT"]).join("\n");
+const baseline=setup.concat(["HLT"]).join("\n");
 const bytes=assemble(source);
 const src=api.execute(source),bin=api.binary(bytes,0,0,{});
-for(const [mode,state] of [["source",src],["binary",bin]]){
+const baselineSource=api.execute(baseline);
+const baselineBinary=api.binary(assemble(baseline),0,0,{});
+for(const [mode,state,initial] of [
+  ["source",src,baselineSource],["binary",bin,baselineBinary]
+]){
   check(state.error===undefined,"NOT "+mode+" no error");
   same(state.mem[0x10200],0xAA,"NOT "+mode+" memory result");
   for(const flag of ["CF","PF","AF","ZF","SF","TF","IF","DF","OF"])
-    same(state.flags[flag],1,"NOT "+mode+" preserves "+flag);
+    same(state.flags[flag],initial.flags[flag],"NOT "+mode+" preserves "+flag);
 }
 console.log("NOT independent audit: 16 register forms; 48 memory addressing forms; /1 reserved; invalid operands; four segment overrides; LOCK; REP rejection; source/binary FLAGS preservation.");
 console.log("Assertions: "+assertions+" passed.");
