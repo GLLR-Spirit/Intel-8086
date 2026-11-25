@@ -141,6 +141,47 @@ for (const oracle of exampleOracles) {
     "; actual=" + JSON.stringify(state.reg) + "; flags=" + JSON.stringify(state.flags));
 }
 
+// Full state oracles for all 15 foundational examples (chapters 1–5).
+const foundationalExampleOracles = [
+  [1,1, state => state.reg.AX === 0x1234, "AX=1234h"],
+  [1,2, state => state.steps === 1, "theoretical bus-capacity lesson remains a comment plus HLT, not a fabricated CPU calculation"],
+  [1,3, state => state.reg.AX === 0x8086, "AX=8086h"],
+  [2,1, state => state.reg.AX === 7, "AX=0007h"],
+  [2,2, state => state.reg.DS === 0x1000, "DS=1000h"],
+  [2,3, state => state.reg.AX === 1, "AX remains 0001h because the jump skips MOV AX,2"],
+  [3,1, state => state.reg.AX === 10, "AX=000Ah"],
+  [3,2, state => state.reg.AL === 0x2a, "AL=2Ah"],
+  [3,3, state => state.reg.AX === 0xff, "AX=00FFh"],
+  [4,1, state => state.reg.AX === 0x1234 && state.mem[0x100] === 0x34 && state.mem[0x101] === 0x12,
+    "AX=1234h and little-endian bytes 34h at 0100h, 12h at 0101h"],
+  [4,2, state => state.reg.AL === 0 && state.flags.CF === 1 && state.flags.ZF === 1 && state.flags.OF === 0,
+    "AL=00h, CF=1, ZF=1, OF=0 after unsigned FFh+1"],
+  [4,3, state => state.reg.AL === 0x80 && state.flags.OF === 1 && state.flags.CF === 0 && state.flags.SF === 1,
+    "AL=80h, OF=1, CF=0, SF=1 after signed 7Fh+1"],
+  [5,1, state => state.reg.AX === 0x1256, "AX=1256h"],
+  [5,2, state => state.reg.SI === 0x100 && state.reg.DI === 0x200 && state.reg.BP === 0x300 && state.reg.SP === 0x400,
+    "SI=0100h, DI=0200h, BP=0300h, SP=0400h"],
+  [5,3, state => state.reg.DS === 0x1000, "DS=1000h"]
+];
+for (const [chapter, lesson, check, expected] of foundationalExampleOracles) {
+  const source = learning.curriculum[chapter - 1][5][lesson - 1][2];
+  const state = learning.executeAll(source);
+  assert.ok(!state.error && check(state),
+    "Foundational example C" + chapter + "L" + lesson + " expected " + expected +
+    "; actual registers=" + JSON.stringify(state.reg) + "; memory=" + JSON.stringify(state.mem) +
+    "; flags=" + JSON.stringify(state.flags));
+}
+for (let chapterIndex = 0; chapterIndex < 5; chapterIndex++) {
+  const chapter = learning.chapterLearning[chapterIndex];
+  assert.equal(chapter.quiz.length, 10, "Foundational chapter must retain ten final questions.");
+  assert.deepEqual(chapter.quiz.map(q => q[4]), [
+    "Définition","Compréhension","Syntaxe","Restrictions","Prédiction",
+    "Calcul / prédiction","Analyse de programme","Analyse de résultat","Débogage","Raisonnement"
+  ], "Foundational final assessment must use the ten audited categories in order.");
+  assert.ok(chapter.lessons.every(lesson => lesson.quiz.length === 3),
+    "Each foundational lesson must retain exactly three questions.");
+}
+
 // Detect exact duplicate final-question stems inside a chapter and collisions
 // between a lesson check and its chapter assessment.
 for (let chapterIndex = 0; chapterIndex < learning.chapterLearning.length; chapterIndex++) {
