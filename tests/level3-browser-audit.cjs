@@ -6,7 +6,7 @@ const assert = require("node:assert/strict");
   const page = await browser.newPage();
   const errors = [];
   page.on("pageerror", e => errors.push(e.message));
-  await page.goto("http://127.0.0.1:4173/", { waitUntil: "networkidle" });
+  await page.goto("http://127.0.0.1:4173/?audit=1", { waitUntil: "networkidle" });
 
   await page.locator("#runSelfTests").click();
   const summary = (await page.locator("#testSummary").textContent()).trim();
@@ -16,6 +16,8 @@ const assert = require("node:assert/strict");
 
   const report = await page.evaluate(() => {
     const failures = [];
+    const api = window.__8086Audit;
+    if (!api) throw new Error("API de test absente : charger la page avec ?audit=1");
     const chapterRows = [
       [{AX:7,BX:9,CF:1,ZF:0},{AX:3,CF:1,ZF:0,SF:1},{AX:5,ZF:0,CF:0,OF:0}],
       [{AX:0,BX:2},{AX:9},{AX:9}],
@@ -26,7 +28,7 @@ const assert = require("node:assert/strict");
     ];
     const programs = [];
     for (let ci=11; ci<17; ci++) {
-      const chapter = window.curriculum[ci];
+      const chapter = api.curriculum[ci];
       for (let li=0; li<3; li++) {
         const lesson = chapter[5][li];
         programs.push({chapter:ci+1,lesson:li+1,title:lesson[0],source:lesson[2],expected:chapterRows[ci-11][li]});
@@ -35,9 +37,9 @@ const assert = require("node:assert/strict");
     if (programs.length !== 18) failures.push("Le nombre d'exemples n'est pas 18 : " + programs.length);
     for (const p of programs) {
       try {
-        const assembled = window.assembleProgram(p.source);
-        const logical = window.executeAll(p.source);
-        const binary = window.executeBinary(assembled.bytes, 0, 0, {});
+        const assembled = api.assembleProgram(p.source);
+        const logical = api.executeAll(p.source);
+        const binary = api.executeBinary(assembled.bytes, 0, 0, {});
         for (const [mode,state] of [["interpréteur",logical],["binaire",binary]]) {
           if (state.error) throw new Error(mode + " : " + state.error);
           for (const [key,value] of Object.entries(p.expected)) {
@@ -74,15 +76,33 @@ const assert = require("node:assert/strict");
     for (const [op,yesPrep,yes,noPrep,no,opcode] of conditions) {
       for (const [prep,expected] of [[yesPrep,yes],[noPrep,no]]) {
         const src=prep+"\n"+op+" PRISE\nMOV BX,0\nJMP FIN\nPRISE:\nMOV BX,1\nFIN:\nHLT";
-        const result=window.executeBinary(window.assembleProgram(src).bytes,0,0,{});
+        const result=api.executeBinary(api.assembleProgram(src).bytes,0,0,{});
         if (result.error || result.reg.BX !== (expected?1:0))
           failures.push(op+" branchement "+(expected?"vrai":"faux")+" : "+(result.error||("BX="+result.reg.BX)));
       }
-      const encoded=window.assembleProgram(op+" CIBLE\nNOP\nCIBLE:\nHLT").bytes;
+      const encoded=api.assembleProgram(op+" CIBLE\nNOP\nCIBLE:\nHLT").bytes;
       if(encoded[0]!==opcode || encoded[1]!==1) failures.push(op+" opcode attendu "+opcode.toString(16)+" 01, obtenu "+encoded.slice(0,2).map(x=>x.toString(16)).join(" "));
     }
-    const intermediate=window.level3LessonQuestions;
-    const final=window.level3FinalQuestions;
+    const loopOpcodes=[["LOOPNE",0xE0],["LOOPE",0xE1],["LOOP",0xE2],["JCXZ",0xE3]];
+    for (const [op,opcode] of loopOpcodes) {
+      const bytes=api.assembleProgram(op+" CIBLE\\nNOP\\nCIBLE:\\nHLT").bytes;
+      if(bytes[0]!==opcode||bytes[1]!==1) failures.push(op+" opcode rel8 incorrect");
+    }
+    const loopFlag=api.executeBinary(api.assembleProgram("MOV CX,1\\nMOV AX,1\\nCMP AX,2\\nLOOP FIN\\nFIN:\\nHLT").bytes,0,0,{});
+    if(loopFlag.error||loopFlag.flags.CF!==1||loopFlag.flags.ZF!==0) failures.push("LOOP doit préserver les FLAGS");
+    const zeroCounter=api.executeBinary(api.assembleProgram("MOV CX,0\\nLOOP FIN\\nMOV BX,1\\nFIN:\\nHLT").bytes,0,0,{});
+    if(zeroCounter.error||zeroCounter.reg.CX!==0xFFFF||zeroCounter.reg.BX!==0) failures.push("LOOP avec CX=0 doit décrémenter à FFFFh puis brancher");
+    const loopSemantics=[
+      ["LOOPE","MOV AX,1\\nCMP AX,1",true],["LOOPE","MOV AX,1\\nCMP AX,2",false],
+      ["LOOPNE","MOV AX,1\\nCMP AX,2",true],["LOOPNE","MOV AX,1\\nCMP AX,1",false]
+    ];
+    for(const [op,prep,take] of loopSemantics){
+      const src="MOV CX,2\\n"+prep+"\\n"+op+" PRISE\\nMOV BX,0\\nJMP FIN\\nPRISE:\\nMOV BX,1\\nFIN:\\nHLT";
+      const state=api.executeBinary(api.assembleProgram(src).bytes,0,0,{});
+      if(state.error||state.reg.BX!==(take?1:0)||state.reg.CX!==1) failures.push(op+" condition ZF/CX incorrect");
+    }
+    const intermediate=api.level3LessonQuestions;
+    const final=api.level3FinalQuestions;
     const intermediateCount=intermediate.reduce((n,g)=>n+g.length,0);
     const finalCount=final.reduce((n,g)=>n+g.length,0);
     if(intermediateCount!==54) failures.push("Questions intermédiaires : "+intermediateCount+"/54");
