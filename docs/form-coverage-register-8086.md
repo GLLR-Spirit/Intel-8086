@@ -240,3 +240,43 @@ Les groupes suivants sont recensés, mais leur décompte forme-par-forme reste �
 - Préfixes : F0, F2, F3 et overrides 26/2E/36/3E, seuls et combinés, y compris ordre, répétitions et flux tronqués.
 
 La phase 2 demeure ouverte : aucune somme de mnémoniques ou de suites exécutées n'est convertie en pourcentage global tant que ces familles ne sont pas décomposées en formes vérifiables.
+
+
+---
+
+## 14. Quatrième tranche — pile, interruptions, E/S et instructions de contrôle
+
+| Famille | Formes 8086 | Encodages | État des tests |
+|---|---|---|---|
+| PUSH registre | AX/CX/DX/BX/SP/BP/SI/DI | 50–57 | Tests de pile et contraintes |
+| POP registre | AX/CX/DX/BX/SP/BP/SI/DI | 58–5F | Tests de pile et contraintes |
+| PUSH segment | ES, CS, SS, DS | 06, 0E, 16, 1E | Tests de pile ciblés |
+| POP segment | ES, SS, DS ; pas POP CS | 07, 17, 1F | Tests négatifs et pile |
+| PUSH r/m16 | registre ou mémoire | FF /6 | Groupe FF et tests de pile |
+| POP r/m16 | registre ou mémoire | 8F /0 | Groupe 8F et tests de pile |
+| PUSHF / POPF | FLAGS vers/de la pile | 9C / 9D | Contrôle de FLAGS et pile |
+| INT imm8 | vecteur immédiat | CD ib | Tests d'interruption logicielle |
+| INT3 | vecteur 3 | CC | Vecteurs ciblés |
+| INTO | condition OF | CE | Vecteurs conditionnels |
+| IRET | retour IP, CS, FLAGS | CF | Tests de cadre et pile |
+| IN AL/AX, imm8 | port immédiat | E4 / E5 | Tests ciblés E/S |
+| IN AL/AX, DX | port DX | EC / ED | Tests ciblés E/S |
+| OUT imm8, AL/AX | port immédiat | E6 / E7 | Tests ciblés E/S |
+| OUT DX, AL/AX | port DX | EE / EF | Tests ciblés E/S |
+| CLC / STC / CMC | CF | F8 / F9 / F5 | Vecteurs FLAGS |
+| CLD / STD | DF | FC / FD | Vecteurs FLAGS et chaînes |
+| CLI / STI | IF | FA / FB | Vecteurs FLAGS et contrôle |
+| LAHF / SAHF | AH et FLAGS | 9F / 9E | Suite dédiée et préservation |
+| NOP / HLT / WAIT | implicites | 90 / F4 / 9B | Tests ciblés ; WAIT reste partiel |
+| ESC | ModR/M | D8–DF | Encodage et décodage ciblés ; aucun 8087 simulé |
+
+**Restrictions 8086 à préserver :**
+- Les instructions PUSH immédiat (68/6A) sont postérieures au 8086 original et ne doivent pas être présentées comme formes 8086.
+- POP CS n'est pas une forme valide.
+- POP r/m16 exige l'extension `8F /0`.
+- PUSH r/m16 utilise `FF /6`.
+- L'espace de ports reste adressé sur 16 bits ; le champ immédiat des formes E4–E7 ne porte que 8 bits.
+- Les instructions ESC transmettent une opération au coprocesseur ; l'existence d'un décodage ne signifie pas qu'un 8087 est émulé.
+- WAIT dépend du signal TEST du coprocesseur ; le modèle logiciel n'émule pas ce signal.
+
+Les lignes de ce tableau sont une liste de formes à valider, pas un décompte de formes toutes certifiées. Les tests existants sont ciblés ; il reste à relier chaque ligne à une preuve indépendante propre, en source et en binaire lorsque cela a un sens.
