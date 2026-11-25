@@ -51,7 +51,8 @@ function decodeOne(bytes,mnemonic,label){
   const d=api.disassemble(bytes);
   check(d.rows.length===1,label+" one row");
   same(Array.from(d.rows[0].bytes),bytes,label+" exact bytes");
-  check(d.rows[0].instruction.startsWith(mnemonic+" "),label+" mnemonic");
+  check(d.rows[0].instruction.startsWith(mnemonic+" ") ||
+    d.rows[0].instruction.startsWith("LOCK "+mnemonic+" "),label+" mnemonic");
 }
 function physical(seg,off){return (((seg&0xFFFF)<<4)+(off&0xFFFF))&0xFFFFF;}
 
