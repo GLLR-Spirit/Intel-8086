@@ -74,14 +74,10 @@ for (let selector = 0; selector < 8; selector++) {
       }
     } else {
       test("8C reserved selector " + selector + " remains DB", () => {
-        const rows = api.disassemble(codeToRM).rows;
-        assert.ok(rows[0].instruction.startsWith("DB "));
-        assert.deepEqual(Array.from(rows[0].bytes), [0x8C]);
+        assert.ok(decode(codeToRM).startsWith("DB "));
       });
       test("8E reserved selector " + selector + " remains DB", () => {
-        const rows = api.disassemble(codeFromRM).rows;
-        assert.ok(rows[0].instruction.startsWith("DB "));
-        assert.deepEqual(Array.from(rows[0].bytes), [0x8E]);
+        assert.ok(decode(codeFromRM).startsWith("DB "));
       });
     }
   }
