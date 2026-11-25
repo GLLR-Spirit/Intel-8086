@@ -21,7 +21,7 @@ Cet inventaire est indépendant des 58 cartes de l'interface. Il contient un reg
 | LODSW | Chargement depuis chaîne, mot | — | À auditer |
 | STOSB | Stockage dans chaîne, octet | — | À auditer |
 | STOSW | Stockage dans chaîne, mot | — | À auditer |
-| XCHG | Échange | — | À auditer |
+| XCHG | Échange | — | Audit indépendant ciblé ; verrouillage implicite du bus non simulé |
 | LEA | Chargement de l'adresse effective | — | À auditer |
 | LES | Chargement d'un pointeur far vers ES:registre | — | À auditer |
 | LDS | Chargement d'un pointeur far vers DS:registre | — | À auditer |
