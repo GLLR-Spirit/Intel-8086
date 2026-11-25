@@ -64,6 +64,10 @@ jobs:
         run: node tests/lea-8086.cjs
       - name: Cross-check LEA encodings with GNU as
         run: node tests/lea-gnu-crosscheck.cjs
+      - name: Run independent 8086 LDS and LES instruction audits
+        run: node tests/lds-les-8086.cjs
+      - name: Cross-check LDS and LES encodings with GNU as
+        run: node tests/lds-les-gnu-crosscheck.cjs
       - name: Run operand constraint tests
         run: node tests/operand-constraints.cjs
       - name: Run original 8086 segment selector vectors
