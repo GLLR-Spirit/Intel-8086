@@ -168,4 +168,4 @@ La suite `tests/divide-error-interrupt-8086.cjs` vérifie huit scénarios source
 
 La suite complète de CI du commit `12239566043af5befb6201c58ca7ce11c8e5e06d` a réussi ; l'étape dédiée « Run 8086 divide-error interrupt tests » est verte (https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45583099100).
 
-**Périmètre restant :** cette correction modélise l'exception logicielle de type 0 dans le moteur pédagogique. Elle ne simule pas les signaux électriques, les cycles, l'arbitrage des interruptions matérielles INTR/NMI ni le matériel physique. Les formes mémoire de `MUL`/`IMUL`/`DIV`/`IDIV` et l'audit approfondi de `NEG` restent à traiter séparément.
+**Périmètre restant :** cette correction modélise l'exception processeur de division de type 0 dans le moteur pédagogique. Elle ne simule pas les signaux électriques, les cycles, l'arbitrage des interruptions matérielles INTR/NMI ni le matériel physique. Les formes mémoire de `MUL`/`IMUL`/`DIV`/`IDIV` et l'audit approfondi de `NEG` restent à traiter séparément.
