@@ -25,7 +25,7 @@ vm.createContext(context);
 
 const injectedApi = "\nglobalThis.__8086ModRMApi = {" +
   "\n  assemble: function (source) { return assembleProgram(source); }," +
-  "\n  disassemble: function (bytes) { return disassembleBytes(bytes); }" +
+  "\n  disassemble: function (bytes, maxRows) { return disassembleBytes(bytes, maxRows); }" +
   "\n};\n})();\n";
 const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injectedApi);
 assert.notEqual(instrumented, match[1], "Test API injection point must exist");
@@ -148,7 +148,7 @@ for (const family of decoderFamilies) {
 
 // 3. VALIDITY — supported and reserved group extensions / segment-register fields.
 function isDB(bytes) {
-  return disassemble(bytes).rows[0].instruction.startsWith("DB ");
+  return disassemble(bytes, 1).rows[0].instruction.startsWith("DB ");
 }
 let validityCases = 0;
 
@@ -179,8 +179,8 @@ for (const opcode of [0x8C, 0x8E]) {
   for (let seg = 0; seg < 8; seg++) {
     const bytes = [opcode, modRM(3, seg, 0)];
     // Intel 8086 Table 4-13 encodes the selector as 0SR; /4..7 are not used.
-    // /1 (CS) is valid on the original 8086.
-    const expectedInvalid = seg >= 4;
+    // 8E /1 (MOV CS destination) is prohibited; 8C /1 (read CS) is valid.
+    const expectedInvalid = seg >= 4 || (opcode === 0x8E && seg === 1);
     test("Validité · " + opcode.toString(16).toUpperCase() + " segment /" + seg, () => {
       assert.equal(isDB(bytes), expectedInvalid,
         opcode.toString(16).toUpperCase() + " /" + seg + " : " + hex(bytes));
