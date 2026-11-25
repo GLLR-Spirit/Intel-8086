@@ -623,7 +623,7 @@ Les nombres de plusieurs suites se recouvrent et ne doivent pas être additionn�
 5. CALL/JMP/RET ont des chemins testés, mais le moteur source utilise un IP logique et n'est pas un processeur matériel.
 6. Les extensions ModR/M, tailles, formes invalides, préfixes, limites de déplacement et flux tronqués doivent être consignés forme par forme avant le calcul pondéré définitif.
 
-**Conclusion :** cette matrice actualisée fournit un premier score traçable au niveau des 93 entrées. La phase 2 n'est pas clôturée : le registre forme-par-forme et le recalcul pondéré par formes restent obligatoires.
+**Conclusion :** cette matrice constitue un inventaire des 93 entrées et de la présence de leurs chemins de base, pas un score. La phase 2 n'est pas clôturée : le registre forme-par-forme, les préfixes et les validations indépendantes restent à terminer avant tout calcul pondéré.
 
 
 ---
