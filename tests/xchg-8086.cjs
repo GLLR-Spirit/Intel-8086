@@ -367,8 +367,7 @@ for (const invalid of [
   "XCHG AL, BX",
   "XCHG BYTE PTR [BX], CX",
   "XCHG WORD PTR [BX], AL",
-  "XCHG CS, DS",
-  "LOCK XCHG AX, BX"
+  "XCHG CS, DS"
 ]) {
   test("Forme interdite rejetée : " + invalid, () => {
     assert.throws(() => api.assemble(invalid));
@@ -382,6 +381,16 @@ for (const invalid of [
 test("XCHG r/m16,r16 et XCHG r/m8,r8 décodent leurs deux sens", () => {
   assert.match(disassemble([0x87, modrm(3, 2, 1)]), /^XCHG /);
   assert.match(disassemble([0x86, modrm(3, 6, 7)]), /^XCHG /);
+  totals.special++;
+});
+test("LOCK XCHG registre reste un préfixe 8086 valide sans protéger une donnée mémoire", () => {
+  const encoded=bytes("LOCK XCHG AX, BX");
+  assert.equal(encoded[0],0xF0);
+  const state=api.execute("MOV AX, 1111h\\nMOV BX, 2222h\\nLOCK XCHG AX, BX\\nHLT");
+  assert.equal(state.error,undefined);
+  assert.equal(state.reg.AX,0x2222);
+  assert.equal(state.reg.BX,0x1111);
+  assert.equal(disassemble(encoded).startsWith("LOCK XCHG"),true);
   totals.special++;
 });
 test("LOCK XCHG mémoire assemble avec préfixe F0h", () => {
