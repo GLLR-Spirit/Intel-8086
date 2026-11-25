@@ -206,7 +206,7 @@ const level2Oracles = [
   [6,3, state => state.reg.AX === 1, "JMP skips MOV AX,2"],
   [7,1, state => state.reg.AX === 0x5678 && state.reg.BX === 0x1234, "XCHG swaps AX and BX"],
   [7,2, state => state.reg.SI === 0x0104, "LEA computes BX+4 without reading memory"],
-  [7,3, state => state.reg.SI === 0 && state.reg.DS === 0, "LDS reads the zero-initialized far pointer in this example"],
+  [7,3, state => state.reg.SI === 0x0200 && state.reg.DS === 0x1000 && state.mem[0x100] === 0x00 && state.mem[0x101] === 0x02 && state.mem[0x102] === 0x00 && state.mem[0x103] === 0x10, "LDS loads offset 0200h and segment 1000h from four explicitly initialized little-endian bytes"],
   [8,1, state => (state.reg.AX & 0xff) === 0 && (state.reg.BX & 0xff) === 2 && state.flags.CF === 0, "ADD/ADC propagation"],
   [8,2, state => (state.reg.AX & 0xff) === 0xff && state.flags.CF === 0 && (state.reg.BX & 0xff) === 4, "SUB/SBB borrow propagation"],
   [8,3, state => (state.reg.AX & 0xff) === 0x80 && state.flags.OF === 1 && state.flags.CF === 1, "NEG 80h signed overflow"],
