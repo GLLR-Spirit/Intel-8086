@@ -1338,17 +1338,11 @@ for(var l2f=0;l2f<6;l2f++){chapterLearning[l2f+5].quiz=level2FinalQuestions[l2f]
 
 /* Audit pédagogique niveau 3 — chapitres 12 à 17 : contenu et évaluations spécifiques. */
 var level3LessonQuestions=[
-[
  [["Que conserve CMP après CMP AX,BX ?",["Les deux opérandes, seuls les FLAGS changent","Le résultat dans AX","Le résultat dans BX"],0,"CMP met à jour les FLAGS sans écrire le résultat de la soustraction."],["Après CMP 3,5 en non signé, quel indicateur est mis à 1 ?",["CF","OF obligatoirement","DF"],0,"La soustraction 3−5 emprunte : CF=1."],["TEST AL,04h avec AL=05h modifie-t-il AL ?",["Non, TEST ne stocke pas le ET logique","Oui, AL devient 04h","Oui, AL devient 00h"],0,"TEST met à jour les FLAGS mais conserve l'opérande."]],
-[
  [["Quelle plage de déplacement utilise JMP short ?",["−128 à +127 octets","−32768 à +32767 octets","0 à 255 octets"],0,"Le déplacement relatif short est un entier signé sur 8 bits."],["Depuis quelle adresse calcule-t-on le déplacement relatif ?",["L'adresse de l'instruction qui suit le saut","Le début du segment","L'adresse de l'étiquette précédente"],0,"Le déplacement est relatif à l'IP après l'instruction."],["JMP BX est quelle forme ?",["Saut indirect near par registre","Saut direct relatif short","Saut far immédiat"],0,"JMP r/m16 utilise un offset fourni par l'opérande et conserve CS."]],
-[
  [["JE saute lorsque…",["ZF=1","CF=1","SF=1"],0,"JE et JZ sont des alias qui testent ZF=1."],["Que teste JO ?",["OF=1","ZF=1","PF=0"],0,"JO teste le drapeau de débordement signé."],["Quelle formule définit JL ?",["SF différent de OF","CF=0 et ZF=0","ZF=1 uniquement"],0,"JL teste SF≠OF, ce qui correspond à inférieur signé."]],
-[
  [["Quelle condition correspond à inférieur non signé ?",["JB (CF=1)","JL (SF≠OF)","JG"],0,"JB utilise CF et exprime inférieur non signé."],["Quelle condition correspond à inférieur signé ?",["JL","JB","JA"],0,"JL teste SF différent de OF."],["FFh représente quelle valeur sur 8 bits signés ?",["−1","255","−127"],0,"En complément à deux sur 8 bits, FFh représente −1."]],
-[
  [["LOOP modifie quel registre ?",["CX","AX","IP uniquement"],0,"LOOP décrémente implicitement CX."],["LOOPE poursuit si…",["CX≠0 et ZF=1 après décrémentation","CX=0","ZF=0 quelle que soit CX"],0,"LOOPE combine le compteur non nul et ZF=1."],["JCXZ modifie-t-elle CX ?",["Non, elle teste CX sans le décrémenter","Oui, elle le décrémente","Oui, elle le met à zéro"],0,"JCXZ effectue uniquement le test CX=0."]],
-[
  [["Pourquoi initialiser le maximum avec le premier élément ?",["Pour éviter une sentinelle qui pourrait être incorrecte","Pour activer CF","Pour éviter CMP"],0,"L'initialisation depuis les données garantit une base valide."],["Quel registre peut jouer le rôle d'accumulateur de somme ?",["AX","IP","CS"],0,"AX peut accumuler une somme de mots dans cet exemple."],["Quels cas doivent être testés pour une recherche ?",["Cible début, milieu, absente et tableau vide","Uniquement cible au début","Uniquement tableau de taille paire"],0,"Ces cas couvrent les principaux chemins de la recherche séquentielle."]]
 ];
 var level3FinalQuestions=[
@@ -1422,7 +1416,7 @@ var level3FinalQuestions=[
  ["Quel résultat distingue une cible absente ?",["Un état trouvé/non trouvé explicite","La valeur de DF","La valeur du segment CS"],0,"Le programme doit distinguer l'échec de recherche d'une position valide."],
  ["Quel risque doit éviter une recherche dans un tableau ?",["Lire au-delà de la dernière case","Utiliser CMP","Initialiser un index"],0,"Les bornes doivent être contrôlées avant chaque lecture."],
  ["Que doit-on préciser avant de comparer des éléments ?",["Leur interprétation signée ou non signée","La couleur du registre","La vitesse du clavier"],0,"Le choix Jcc dépend de l'interprétation des valeurs."],
- ["L'exemple de recherche d'une seule paire démontre-t-il une recherche complète de tableau ?",["Non, seulement un test d'égalité","Oui, toutes les bornes","Oui, une recherche binaire"],0,"Une recherche complète doit itérer sur les éléments et contrôler les bornes."]
+ ["Quel contrôle évite une lecture hors limites dans une recherche séquentielle ?",["Vérifier le nombre d'éléments restants avant chaque lecture","Continuer après avoir trouvé la cible","Lire systématiquement une case supplémentaire"],0,"Le compteur restant doit empêcher tout accès au-delà du dernier élément."]
  ]
 ];
 var level3Categories=["Compréhension","Application","Vérification"];
