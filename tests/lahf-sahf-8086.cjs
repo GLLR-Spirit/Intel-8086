@@ -42,6 +42,9 @@ function test(name, fn) {
 function word(value) {
   return value.toString(16).toUpperCase().padStart(4, "0") + "h";
 }
+function byte(value) {
+  return value.toString(16).toUpperCase().padStart(2, "0") + "h";
+}
 function runBoth(source) {
   const assembled = api.assemble(source);
   const sourceState = api.execute(source);
@@ -112,8 +115,8 @@ for (let combination = 0; combination < 32; combination++) {
   totals.lahf++;
 }
 
-// SAHF loads only SF/ZF/AF/PF/CF from AH. Bits 1, 3, 5, and 7? (bit 7 is SF)
-// are not treated as additional FLAGS; OF/TF/IF/DF must remain unchanged.
+// SAHF loads only SF/ZF/AF/PF/CF from AH. Reserved AH bits 1, 3, and 5
+// are ignored; OF/TF/IF/DF must remain unchanged.
 // All 256 AH values are exercised against a nontrivial initial FLAGS pattern.
 for (let ah = 0; ah < 256; ah++) {
   const initialFlagsWord = 0x0FD7; // OF, DF, IF, TF and all five SAHF flags set.
@@ -121,7 +124,7 @@ for (let ah = 0; ah < 256; ah++) {
     "MOV AX, " + word(initialFlagsWord),
     "PUSH AX",
     "POPF",
-    "MOV AH, " + word(ah).slice(0, 2) + "h",
+    "MOV AH, " + byte(ah),
     "SAHF",
     "HLT"
   ].join("\\n");
