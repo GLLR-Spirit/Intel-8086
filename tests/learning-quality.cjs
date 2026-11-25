@@ -27,7 +27,10 @@ assert.ok(learning, "Learning data must be exposed to the isolated test harness"
 assert.match(match[1], /function annotateAssembly\(/, "Course examples must receive instruction-level annotations");
 assert.match(match[1], /function courseVisual\(/, "The course must include chapter-specific visualizations");
 assert.match(match[1], /courseVisual\(i\)/, "Chapter visualizations must be rendered in the lesson view");
-assert.match(match[1], /id='toggleAX'/, "The register chapter must expose an interactive AX/AH/AL explanation");
+assert.match(match[1], /id='axDemoValue'/, "The register chapter must expose an editable AX value");
+assert.match(match[1], /\$\("axShowHigh"\)\.onclick=function\(\)\{showAX\("AH"\);\}/, "The register chapter must wire the AH control");
+assert.match(match[1], /\$\("axShowLow"\)\.onclick=function\(\)\{showAX\("AL"\);\}/, "The register chapter must wire the AL control");
+assert.match(match[1], /\$\("axWriteLow"\)\.onclick=function\(\)/, "The register chapter must wire the AL write control");
 
 assert.equal(learning.lessons.length, 36, "All 36 learning chapters must exist");
 assert.equal(learning.curriculum.length, 36, "The canonical curriculum must contain 36 chapters");
