@@ -5,7 +5,7 @@ const forms=["[BX+SI]","[BX+DI]","[BP+SI]","[BP+DI]","[SI]","[DI]","[BP]","[BX]"
 const program=[];
 for(const r of registers)for(const ea of forms)program.push("LEA "+r+", "+ea);
 for(const d of [-32768,-129,-128,-1,0,1,127,128,32767])program.push("LEA AX, [BX+SI"+(d<0?String(d):"+"+d)+"]");
-program.push("LEA DX,[1234h]","LEA AX,[0FFFFh]","LEA SP,[BP]","LEA DI,ES:[BX+DI+127]","LEA SI,CS:[BP+SI-128]","LEA CX,SS:[BP+DI+32767]","LEA BX,DS:[BX+SI-32768]");
+program.push("LEA DX,[0x1234]","LEA AX,[0xffff]","LEA SP,[BP]","LEA DI,ES:[BX+DI+127]","LEA SI,CS:[BP+SI-128]","LEA CX,SS:[BP+DI+32767]","LEA BX,DS:[BX+SI-32768]");
 const source=program.join("\n");
 const html=fs.readFileSync("index.html","utf8"),match=html.match(/<script>([\s\S]*?)<\/script>/);
 assert.ok(match,"Application script must exist");
