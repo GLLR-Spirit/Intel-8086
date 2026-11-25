@@ -440,6 +440,6 @@ La suite `tests/xlat-8086.cjs` est intégrée au workflow CI. L'inspection préa
 
 La suite vérifie notamment que `BX+AL` est ramené sur 16 bits avant la formation de l'adresse physique, que DS est le segment par défaut, que le préfixe explicite sélectionne le segment demandé et qu'une lecture non initialisée provoque une erreur au lieu de retourner implicitement zéro.
 
-Résultat : [workflow CI 45593318116](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45593318116), commit `50b982ca58e9b0cd4ae2d7e31c130876eb1f17ab` — **24 réussis, 0 échec** pour la suite XLAT ; workflow global **success**.
+Les compteurs par dimension se recouvrent : les contrôles FLAGS et adresses sont inclus dans les cas d'exécution source/binaire et ne doivent pas être additionnés comme des tests distincts.\n\nRésultat : [workflow CI 45593318116](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45593318116), commit `50b982ca58e9b0cd4ae2d7e31c130876eb1f17ab` — **24 réussis, 0 échec** pour la suite XLAT ; workflow global **success**.
 
 La matrice passe à « Oui » pour la présence dans le simulateur, l'assembleur et le désassembleur. Le statut des tests reste **Partiel** : les scénarios indépendants listés sont vérifiés, mais aucune comparaison complète avec un 8086 physique ou un émulateur matériel indépendant n'a été effectuée.
