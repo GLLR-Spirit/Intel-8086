@@ -166,10 +166,14 @@ for (const opcode of [0x8C, 0x8E]) {
 }
 for (let ext = 0; ext < 4; ext++) {
   test("MOV vers segment 8086 · /" + ext, () => {
-    const instruction = decoded([0x8E, modrm(3, ext, 0)]);
-    const expected = ["ES", "CS", "SS", "DS"][ext];
-    if (ext === 1) assert.ok(instruction.startsWith("DB "), instruction);
-    else {
+    const code = [0x8E, modrm(3, ext, 0)];
+    if (ext === 1) {
+      const rows = api.disassemble(code).rows;
+      assert.ok(rows[0].instruction.startsWith("DB "), rows[0].instruction);
+      assert.deepEqual(Array.from(rows[0].bytes), [0x8E]);
+    } else {
+      const instruction = decoded(code);
+      const expected = ["ES", "CS", "SS", "DS"][ext];
       assert.ok(instruction.includes(expected), instruction);
       assert.ok(!instruction.startsWith("DB "), instruction);
     }
