@@ -80,7 +80,7 @@ Restrictions :
 - Aucun transfert mémoire-mémoire.
 - Les tailles source et destination doivent correspondre.
 - Un immédiat ne peut pas être transféré directement vers un registre de segment.
-- MOV Sreg,r/m16 utilise 8E /r ; sur 8086/8088 d'origine, CS est sélectionnable via /1 (comportement absent des générations ultérieures).
+- MOV Sreg,r/m16 utilise 8E /r pour ES, SS et DS. L'extension `/1` (destination CS) est rejetée par ASM86 et n'est pas retenue comme forme documentée du jeu d'instructions 8086 ; le désassembleur la laisse en données brutes. Les sélecteurs `/4` à `/7` sont également non utilisés.
 - MOV r/m16,Sreg utilise 8C /r ; CS peut être la source.
 - Pour C6/C7, seule l'extension ModR/M /0 est valide.
 - 8Dh est LEA, pas MOV ; 8Fh appartient à POP.
