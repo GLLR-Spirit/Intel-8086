@@ -123,7 +123,13 @@ for (const op of OPS) {
           ? (width === 8 ? REG8[rm] : REG16[rm])
           : memory(mod, rm, width);
         const source = op.name + " " + operand + ", " + literal;
-        const expected = [opcode, modrm(mod, op.ext, rm), ...displacement(mod, rm), ...immediate];
+        const accumulatorAlias = mod === 3 && rm === 0;
+        const accumulatorOpcode = op.base + (width === 8 ? 4 : 5);
+        const accumulatorImmediate = width === 8 ? immediate
+          : opcode === 0x83 ? [0xFF, 0xFF] : immediate;
+        const expected = accumulatorAlias
+          ? [accumulatorOpcode, ...accumulatorImmediate]
+          : [opcode, modrm(mod, op.ext, rm), ...displacement(mod, rm), ...immediate];
         same(bytes(source), expected, source + " immediate encoding");
         decodeOne(expected, op.name, source + " immediate decoding");
         immediateCases++;
