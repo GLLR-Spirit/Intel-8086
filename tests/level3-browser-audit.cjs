@@ -157,6 +157,32 @@ const assert = require("node:assert/strict");
   assert.equal(animationName, "busPacket", "The BIU/EU flow illustration must expose its schematic animation.");
   console.log("Course visual interaction audit: 6/6 interactive demonstrations and BIU animation PASS.");
 
+  // Cours, Exercices et Atelier doivent rester des vues distinctes ; les filtres
+  // de la page Exercices doivent mettre à jour la liste puis pouvoir être réinitialisés.
+  await page.locator('[data-view="exercises"]').click();
+  assert.equal(await page.locator("#view-exercises").isVisible(), true);
+  const allExerciseText=(await page.locator("#exerciseCount").textContent()).trim();
+  const allExerciseMatch=allExerciseText.match(/(\\d+) exercice\\(s\\) affiché\\(s\\) sur (\\d+)/);
+  assert.ok(allExerciseMatch,"Exercise count must be visible: "+allExerciseText);
+  const totalExercises=Number(allExerciseMatch[2]);
+  assert.ok(totalExercises>0,"The exercise page must contain exercises.");
+  const firstChapterValue=await page.locator("#exerciseChapter option").nth(1).getAttribute("value");
+  assert.ok(firstChapterValue,"A chapter filter option must be populated.");
+  await page.locator("#exerciseChapter").selectOption(firstChapterValue);
+  await page.locator("#exerciseDifficulty").selectOption("Débutant");
+  await page.locator("#exerciseType").selectOption("application");
+  const filteredText=(await page.locator("#exerciseCount").textContent()).trim();
+  assert.match(filteredText,/exercice\\(s\\) affiché\\(s\\) sur/);
+  assert.equal(await page.locator("#exerciseList .exercise").count(),Number(filteredText.match(/^(\\d+)/)[1]));
+  await page.locator("#resetExerciseFilters").click();
+  assert.equal((await page.locator("#exerciseCount").textContent()).trim(),allExerciseText,"Reset must restore the full exercise list.");
+  await page.locator('[data-view="editor"]').click();
+  assert.equal(await page.locator("#view-editor").isVisible(),true,"Atelier must be a distinct view.");
+  await page.locator('[data-view="learn"]').click();
+  assert.equal(await page.locator("#view-learn").isVisible(),true,"Cours must be a distinct view.");
+  console.log("Cours/Exercices/Atelier separation and exercise filters PASS.");
+
+
 
   assert.deepEqual(report.failures, [], report.failures.join("\n"));
   assert.deepEqual(errors, [], "Erreurs JavaScript dans la page : "+errors.join("; "));
