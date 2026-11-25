@@ -292,13 +292,18 @@ test("RET et RETF rejettent un cadre de pile incompatible", () => {
 });
 categories.invalid++;
 
-test("RET avec ajustement impair reste refusé à l'exécution, bien que décodable", () => {
+test("RET avec ajustement impair est exécuté en source et en binaire", () => {
+  const source = "CALL SUB\nHLT\nSUB: RET 1";
   const decoded = api.disassemble([0xc2, 0x01, 0x00]);
   assert.equal(decoded.rows[0].instruction, "RET 0001h");
-  const result = api.execute("CALL SUB\nHLT\nSUB: RET 1");
-  assert.match(result.error, /ajustement impair non pris en charge/i);
+  const sourceState = runSource(source);
+  const binaryState = runBinary(source);
+  assert.equal(sourceState.reg.SP, 0xffff);
+  assert.equal(binaryState.reg.SP, 0xffff);
+  assert.equal(sourceState.stack.length, 0);
+  assert.equal(binaryState.stack.length, 0);
 });
-categories.invalid++;
+categories.stack++;
 
 test("IRET restaure FLAGS, CS et IP depuis un cadre VECTOR dans le moteur source", () => {
   const source = [
