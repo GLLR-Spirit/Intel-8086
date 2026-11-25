@@ -385,7 +385,7 @@ Ce résultat valide les tests déclarés, pas l'exhaustivité matérielle de l'I
 
 Une batterie supplémentaire `tests/opcode-byte-sweep.cjs` est exécutée par CI. Elle balaie les 256 octets possibles en position d'opcode primaire, puis toutes les 256 valeurs ModR/M pour chacune des 67 familles ModR/M du décodeur, soit 17 152 combinaisons ModR/M et 17 408 flux vérifiés au total. Les assertions portent sur la robustesse du parseur, les frontières des instructions, les offsets continus et la consommation exacte du flux ; elles ne prétendent pas certifier la sémantique de chaque opcode.
 
-Une anomalie de référence a également été corrigée : pour `MOV Sreg` (`8C`/`8E`), Intel table 4-13 définit le champ comme `0SR`. Les sélecteurs `/4` à `/7` sont non utilisés et doivent rester `DB`; `/0` à `/3` restent ES/CS/SS/DS, y compris `MOV CS` via `8E /1` sur le 8086 original. Le décodeur, la matrice ModR/M, les tests d'adressage et les tests de contraintes ont été alignés sur cette règle.
+Une anomalie de référence a également été corrigée : pour `MOV Sreg` (`8C`/`8E`), le champ segment est `0SR` (`/0` ES, `/1` CS, `/2` SS, `/3` DS) ; `/4` à `/7` ne sont pas utilisés. La référence Intel ASM86 indique que CS n'est pas une destination autorisée pour MOV : `8E /1` est donc rejeté, tandis que `8C /1` (lecture de CS vers r/m16) reste valide. Le décodeur, l'assembleur et les tests sont alignés sur cette distinction.
 
 Le préfixe LOCK est désormais contrôlé de manière cohérente entre le désassembleur et le sous-ensemble de formes accepté par l'analyseur. Le verrouillage réel du bus, les autres maîtres de bus et l'atomicité matérielle ne sont toujours pas simulés.
 
