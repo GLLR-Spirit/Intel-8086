@@ -669,3 +669,15 @@ La passe de tests sur JMP complète la couverture précédente de CALL :
 Run CI `45689117952` : succès, y compris les tests directs et indirects JMP, les tests LOCK et la suite différentielle.
 
 Cela ferme une tranche importante des transferts indirects, mais ne clôt pas la matrice des 93 instructions : les autres familles, formes et préfixes restent à réconcilier. Aucun pourcentage global n'est publié.
+
+## Actualisation du registre des formes — 25 novembre 2026
+
+Les 93 mnémoniques de cette matrice disposent maintenant d'un index de rapprochement vers leur famille de formes dans `docs/form-coverage-register-8086.md` (§15). La matrice par mnémonique ne constitue pas un score de couverture : ses statuts décrivent uniquement la présence ou le caractère partiel d'un chemin de base. La validation de toutes les formes, tailles, préfixes et restrictions reste suivie séparément.
+
+Corrections et preuves nouvelles :
+- Le groupe FF est décomposé extension par extension ; /0 INC MEM16, /1 DEC MEM16, /6 PUSH MEM16 et /3,/5 far sont mémoire uniquement ; /2 et /4 near acceptent registre ou mémoire ; /7 est non utilisé.
+- Le désassembleur ne présente plus FF C0, FF C8 ou FF F0 comme INC AX, DEC AX ou PUSH AX : ces formes registre-direct sont conservées comme DB. Les formes registre utilisent les opcodes compacts 40–47, 48–4F et 50–57.
+- Les tests group-opcodes, modrm-matrix, addressing-displacement et push-pop-forms contrôlent ces restrictions.
+- CALL indirect et JMP indirect sont suivis séparément : FF /2 et FF /4 near r/m16 ; FF /3 et FF /5 far MEM16 ; les huit formes d'adressage, les overrides de segment et les neuf FLAGS modélisés sont vérifiés par les suites dédiées.
+
+**Décision :** aucun pourcentage global n'est calculé. Le calcul pondéré attend la clôture des registres de formes pour les 93 entrées, y compris les interactions de préfixes et les chemins source/binaire.
