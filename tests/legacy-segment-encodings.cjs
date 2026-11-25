@@ -209,7 +209,7 @@ for (const selector of [0, 2, 3]) {
 }
 
 console.log("Décodage 8C/8E : vecteurs fixes registre et mémoire, CS destination et sélecteurs /4..7 rejetés.");
-console.log("Assemblage 8C/8E : 64 formes source→registre, 48 formes registre→segment et 693 vecteurs mémoire assemblage/désassemblage.");
+console.log("Assemblage 8C/8E : 64 formes source→registre, 48 formes registre→segment et 154 assertions mémoire assemblage/désassemblage.");
 console.log("Transferts CS : lecture autorisée, chargement interdit.");
 console.log("Résultat segment legacy : " + passed + " réussis, " + failed + " échecs.");
 if (failed) process.exit(1);
