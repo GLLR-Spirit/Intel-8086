@@ -232,7 +232,7 @@ for (let ext = 0; ext < 8; ext++) {
   groupCases++;
   test("FF extension support · /" + ext, () => {
     const instruction = decodeInstruction(0xFF, ext);
-    const invalidRegisterForm = [3, 5, 7].includes(ext);
+    const invalidRegisterForm = [0, 1, 3, 5, 6, 7].includes(ext);
     assert.equal(instruction.startsWith("DB "), invalidRegisterForm, instruction);
     const architecturallyDefined = ext <= 6 && !invalidRegisterForm;
     assert.equal(architecturallyDefined, !instruction.startsWith("DB "));
@@ -244,7 +244,7 @@ for (let ext = 0; ext < 8; ext++) {
 for (const ext of [2, 3, 4, 5, 6]) {
   for (const mod of [0, 3]) {
     test("FF architectural operand restriction · /" + ext + " mod=" + mod, () => {
-      const architecturallyDefined = !(ext === 3 || ext === 5) || mod !== 3;
+      const architecturallyDefined = !(ext === 3 || ext === 5 || ext === 6) || mod !== 3;
       const instruction = decodeInstruction(0xFF, ext, mod, 0);
       assert.equal(instruction.startsWith("DB "), !architecturallyDefined, instruction);
     });
