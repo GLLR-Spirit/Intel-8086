@@ -32,6 +32,15 @@ assert.match(match[1], /\$\("axShowHigh"\)\.onclick=function\(\)\{showAX\("AH"\)
 assert.match(match[1], /\$\("axShowLow"\)\.onclick=function\(\)\{showAX\("AL"\);\}/, "The register chapter must wire the AL control");
 assert.match(match[1], /\$\("axWriteLow"\)\.onclick=function\(\)/, "The register chapter must wire the AL write control");
 
+assert.match(html, /id="view-learn"/, "Cours must remain a separate page");
+assert.match(html, /id="view-exercises"/, "Exercices must remain a separate page");
+assert.match(html, /id="view-editor"/, "Atelier must remain a separate page");
+for (const id of ["exerciseSearch","exerciseChapter","exerciseDifficulty","exerciseType","exerciseList"])
+  assert.match(html, new RegExp('id="' + id + '"'), "Exercise workflow must expose " + id);
+assert.match(match[1], /@media\\(prefers-reduced-motion:reduce\\)/, "Architecture animation must respect reduced-motion preferences");
+assert.match(match[1], /@keyframes busPacket/, "Architecture animation must have an explicit keyframe definition");
+
+
 assert.equal(learning.lessons.length, 36, "All 36 learning chapters must exist");
 assert.equal(learning.curriculum.length, 36, "The canonical curriculum must contain 36 chapters");
 assert.equal(learning.chapterLearning.length, 36, "Every chapter must have a learning module");
@@ -418,6 +427,25 @@ assert.equal(courseExampleOracleKeys.size,108,
 console.log("Course example audit: 108/108 unique lesson examples have independent expected-result oracles.");
 
 
-for (let ci = 0; ci < learning.chapterLearning.length; ci++) { const c=learning.chapterLearning[ci]; console.log("COURSE_MODULE_DUMP_C"+(ci+1)+":"+JSON.stringify({goal:c.goal,prereq:c.prereq,theory:c.theory,walk:c.walk,lessons:c.lessons.map(l=>({title:l.title,theory:l.theory,example:l.example,expected:l.expected}))})); }
+
+const lessonTextOracles = [
+  [11,3,"CF reste à 1"],
+  [17,1,"JAE"],
+  [21,3,"DX:AX=0000:0009h"],
+  [24,3,"la moitié haute n'est pas une extension de signe"],
+  [30,1,"adresses de port sur 16 bits"],
+  [30,3,"IP avance normalement"],
+  [33,2,"B8 34 12 F4"],
+  [33,3,"DB 64h"],
+  [35,2,"le premier LOOP décrémente CX à 1"],
+  [35,3,"ne démontre pas un gain de cycles"]
+];
+for (const [chapter,lesson,needle] of lessonTextOracles) {
+  const data=learning.curriculum[chapter-1][5][lesson-1];
+  const text=data[1]+" "+data[3];
+  assert.ok(text.includes(needle),"C"+chapter+"L"+lesson+" must retain its audited technical clarification: "+needle);
+}
+assert.ok(learning.curriculum[10][5][2][2].includes("STC\\nINC AL"),"C11 L3 must establish CF before testing INC preservation.");
+
 console.log("Learning quality: 36 chapters, 324 intermediate questions, 360 final questions, " +
   learning.exercises.length + " exercises; all guided corrections execute and pass their validators.");
