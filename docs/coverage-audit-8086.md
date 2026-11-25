@@ -38,8 +38,8 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | POP | Oui | Oui | Partiel | Partiel | Partiel |
 | PUSHF | Oui | Oui | Oui | Oui | Partiel |
 | POPF | Oui | Oui | Oui | Oui | Partiel |
-| LAHF | Oui | Non | Non | Non | À faire |
-| SAHF | Oui | Non | Non | Non | À faire |
+| LAHF | Oui | Oui | Oui | Oui | Partiel |
+| SAHF | Oui | Oui | Oui | Oui | Partiel |
 | MOVSB | Oui | Oui | Non | Non | Partiel |
 | MOVSW | Oui | Oui | Non | Non | Partiel |
 | CMPSB | Oui | Oui | Non | Non | Partiel |
@@ -410,3 +410,18 @@ L'IVT binaire fait maintenant l'objet d'un contrôle supplémentaire du cadre m�
 Résultats CI du commit `217c0a413c937d1248573e1f1f9f879c57d69ba6` : **143 vecteurs indépendants réussis**, **83 tests différentiels réussis, 0 échec**, et **27 corrections pédagogiques exécutables validées**. Détail : [audit-chain-strings-8086.md](audit-chain-strings-8086.md).
 
 La politique de l'analyseur rejette explicitement les préfixes répétés de même catégorie et LOCK sur les instructions de chaîne. Cette politique de validation du laboratoire ne doit pas être confondue avec une modélisation complète de tous les cas de préfixes matériels.
+
+
+## Audit indépendant de LAHF et SAHF — 25 novembre 2026
+
+La suite dédiée `tests/lahf-sahf-8086.cjs` est maintenant intégrée au workflow CI.
+
+- **LAHF : 32/32 combinaisons** des cinq indicateurs SF/ZF/AF/PF/CF transférées dans AH ; contrôle du bit 1 forcé et de la préservation de FLAGS.
+- **SAHF : 256/256 valeurs de AH** ; contrôle des cinq indicateurs restaurés et de la préservation de OF, TF, IF et DF.
+- Les deux chemins d'exécution (source assemblée et binaire dynamique) sont comparés sur les registres et les indicateurs.
+- Encodages fixes contrôlés sur les octets indépendants `9Fh` (LAHF) et `9Eh` (SAHF), avec désassemblage brut et exécution binaire.
+- Quatre formes syntaxiques avec opérandes superflus sont rejetées.
+
+Résultat CI : [run 45592060463](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45592060463), commit `aaa1b499a3147b654a73cad6cbb4dc1b9ad131a0` — **298 réussis, 0 échec** pour la suite dédiée.
+
+Les lignes LAHF/SAHF passent de « non prises en charge » à « présentes » pour le simulateur, l'assembleur et le désassembleur. Le statut de tests reste **Partiel** dans la matrice globale : la suite couvre de manière exhaustive les valeurs d'entrée pertinentes de ces deux instructions dans le modèle logiciel, mais ne constitue pas une comparaison avec un 8086 physique ou un émulateur indépendant complet.
