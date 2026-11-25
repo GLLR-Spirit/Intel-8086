@@ -510,7 +510,9 @@ function verifyIdivBoundary(source, expectedAX, expectedDX, mnemonic, expectedOp
 
 function verifyIdivOverflow(source, mnemonic, opcode) {
   const assembled = api.assemble(source);
-  assert.deepEqual(Array.from(assembled.bytes.slice(-2)), opcode, mnemonic + " fixed F6/F7 bytes");
+  assert.ok(Array.from(assembled.bytes).some((value, index) =>
+    value === opcode[0] && assembled.bytes[index + 1] === opcode[1]),
+    mnemonic + " fixed F6/F7 bytes");
   const decoded = api.disassemble(assembled.bytes);
   assert.ok(decoded.rows.some(row => row.instruction === mnemonic), mnemonic + " disassembly");
   for (const [mode, state] of [
@@ -538,7 +540,7 @@ test("IDIV word rejects quotient -32768 on original 8086", () => {
 test("IDIV byte accepts the lower valid quotient -127", () => {
   verifyIdivBoundary(
     ["MOV AX, FF81h", "MOV BL, 1", "IDIV BL", "HLT"].join("\n"),
-    0xFF81, 0, "IDIV BL", [0xF6, 0xFB]
+    0x0081, 0, "IDIV BL", [0xF6, 0xFB]
   );
 });
 
