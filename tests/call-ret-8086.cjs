@@ -13,7 +13,8 @@ test("CALL FAR ptr16:16 encodes 9A offset then segment",()=>{
  const d=api.disassemble(Array.from(x.bytes));assert.equal(d.rows[0].instruction,"CALL FAR 1234h:5678h");
 });
 test("CALL FAR direct source path pushes CS then IP; RETF restores them",()=>{
- const src="MOV AX,0FD7h\nPUSH AX\nPOPF\nCALL FAR 0000h:0006h\nHLT\nPROC: RETF";
+ const template="MOV AX,0FD7h\nPUSH AX\nPOPF\nCALL FAR 0000h:0000h\nHLT\nPROC: RETF";
+ const target=api.assemble(template).symbols.PROC,src=template.replace("CALL FAR 0000h:0000h","CALL FAR 0000h:"+target.toString(16).toUpperCase().padStart(4,"0")+"h");
  const a=api.execute(src);assert.ok(!a.error,a.error);assert.equal(a.reg.CS,0);assert.equal(a.reg.SP,0xFFFE);assert.equal(a.stack.length,0);
  for(const f of ["CF","PF","AF","ZF","SF","TF","IF","DF","OF"])assert.equal(a.flags[f],1,"FLAGS "+f);
 });
