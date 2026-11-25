@@ -462,9 +462,9 @@ Cet index relie chaque entrée de la matrice générale à son registre de forme
 | RET | C2/C3/CA/CB, nettoyage immédiat pair/impair | Pile, SP, limites et GNU as ciblés ; pas de modèle processeur physique |
 | Jcc et boucles | 16 Jcc courts, LOOP/LOOPE/LOOPNE/JCXZ | Vecteurs de conditions et déplacements ; pas de relâchement vers rel16 pour Jcc sur 8086 |
 | Arithmétique et logique | ALU, groupes F6/F7, NEG, MUL/IMUL/DIV/IDIV, BCD, rotations/décalages | Plusieurs oracles indépendants exhaustifs sur domaines numériques bornés ; chaque forme mémoire et préfixe reste à rapprocher |
-| Chaînes | MOVS/CMPS/SCAS/LODS/STOS octet/mot, REP/REPNE, DF, DS:SI et ES:DI | Couverture fonctionnelle ciblée ; matrice complète des interruptions, préfixes et FLAGS encore à compléter |
+| Chaînes | Les dix opcodes MOVS/CMPS/SCAS/LODS/STOS byte/word ; source/binaire, DS:SI, ES:DI, DF, REP/REPE/REPNE, segment override, FLAGS et wrap 16 bits | Suite dédiée validée ; interactions de préfixes redondants/interruption et cas matériels encore hors modèle |
 | Interruptions | INT/INT3/INTO/IRET, cadre FLAGS/CS/IP | Chemins logiciels et erreurs de division ciblés ; pas d'interruptions matérielles asynchrones |
-| E/S | IN/OUT immédiat et DX | État de ports simulé ; aucun périphérique électrique |
+| E/S | Les huit formes IN/OUT immédiat8 ou DX, AL/AX ; octets exacts, source/binaire, FLAGS et opérandes invalides | Suite dédiée validée ; état de ports logiciel, aucun périphérique électrique |
 | WAIT/ESC | WAIT, D8–DF | Décodage et formes ciblés ; aucun signal TEST ni coprocesseur 8087 simulé |
 | FLAGS | CLC/STC/CMC, CLD/STD, CLI/STI, LAHF/SAHF, PUSHF/POPF | Différentiels et oracles ciblés ; les bits indéfinis/non modélisés sont hors garantie |
 
@@ -475,3 +475,10 @@ Le groupe FF est désormais traité ainsi : /0 INC MEM16, /1 DEC MEM16, /2 CALL 
 ### Décision de calcul
 
 Aucun score par mnémonique ni score global n'est publié. La pondération ne sera définie qu'après que chaque ligne aura un inventaire de formes, les contraintes d'opérandes, les préfixes applicables, une preuve de génération/décodage/exécution et un oracle indépendant. Un opcode présent dans le code ne vaut pas une forme validée.
+
+### 16.1 Suites ajoutées pour les formes chaînes et E/S
+
+- `tests/string-instructions-8086.cjs` : les dix instructions de chaîne sont assemblées et désassemblées individuellement ; MOVSB/MOVSW, CMPSB/CMPSW, SCASB/SCASW, LODSB/LODSW et STOSB/STOSW sont exécutées en source et en binaire. Les cas contrôlent les registres implicites, le segment source substitué, la destination ES, DF=0/1, REP/REPE/REPNE, CX=0, FLAGS et le passage de l'offset FFFFh à 0000h.
+- `tests/io-ports-8086.cjs` : les huit formes IN/OUT (port imm8 ou DX, AL ou AX) sont vérifiées en encodage, désassemblage et exécution source/binaire. Le test couvre la valeur des ports, les neuf FLAGS préservés et les formes invalides.
+
+Ces suites valident le modèle logiciel du laboratoire ; elles ne prétendent pas simuler le bus électrique, les périphériques ni le minutage matériel.
