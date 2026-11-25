@@ -72,6 +72,28 @@ assert.equal(learning.chapterLearning.reduce((n, c) => n + c.lessons.reduce((m, 
 assert.equal(learning.chapterLearning.reduce((n, c) => n + c.quiz.length, 0), 360,
   "The 36 chapters must contain 360 final assessment questions (10 × 36)");
 
+
+function findQuestion(stem) {
+  const all = learning.chapterLearning.flatMap((chapter,ci) =>
+    chapter.lessons.flatMap((lesson,li) => lesson.quiz.map((q,qi)=>({q,where:"C"+(ci+1)+"L"+(li+1)+"Q"+(qi+1)})))
+      .concat(chapter.quiz.map((q,qi)=>({q,where:"C"+(ci+1)+"F"+(qi+1)}))));
+  const found=all.filter(x=>x.q[0]===stem);
+  assert.equal(found.length,1,"Question audit stem must be unique: "+stem);
+  return found[0];
+}
+const semanticQuestionOracles = [
+  ["Quel indicateur active le mode pas à pas matériel ?","TF","TF est le Trap Flag."],
+  ["Quel registre contient l'offset de la prochaine instruction à exécuter ?","IP","IP contient l'offset de la prochaine instruction dans le segment de code."],
+  ["Comment corriger SHR AL,1 si le programme doit préserver un signe négatif ?","Utiliser SAR plutôt que SHR","SAR propage le bit de signe alors que SHR insère zéro."]
+];
+for(const [stem,answer,explanation] of semanticQuestionOracles){
+  const {q,where}=findQuestion(stem);
+  assert.equal(q[1][q[2]],answer,where+" correct answer");
+  assert.equal(q[3],explanation,where+" explanation");
+}
+assert.equal(learning.chapterLearning.reduce((n,c)=>n+c.lessons.reduce((m,l)=>m+l.quiz.length,0)+c.quiz.length,0),684,
+  "All 684 assessment items must be included in the individually reviewed bank.");
+
 const requiredFinalCategories = ["Définition","Compréhension","Syntaxe","Restrictions","Prédiction","Calcul / prédiction","Analyse de programme","Analyse de résultat","Débogage","Raisonnement"];
 for (let chapterIndex = 0; chapterIndex < learning.chapterLearning.length; chapterIndex++) {
   const chapter = learning.chapterLearning[chapterIndex];
@@ -390,6 +412,5 @@ assert.equal(courseExampleOracleKeys.size,108,
 console.log("Course example audit: 108/108 unique lesson examples have independent expected-result oracles.");
 
 
-for (let qi = 0; qi < learning.chapterLearning.length; qi++) { const qc=learning.chapterLearning[qi]; console.log("QUESTION_AUDIT_DUMP_C"+(qi+1)+":"+JSON.stringify({lessons:qc.lessons.map(l=>l.quiz),final:qc.quiz})); }
 console.log("Learning quality: 36 chapters, 324 intermediate questions, 360 final questions, " +
   learning.exercises.length + " exercises; all guided corrections execute and pass their validators.");
