@@ -48,9 +48,11 @@ function parity8(value) {
   for (let bit = 0; bit < 8; bit++) count += (value >> bit) & 1;
   return count % 2 === 0 ? 1 : 0;
 }
-function flagsInput(af, cf) {
-  // SAHF loads SF:ZF:0:AF:0:PF:1:CF from AH.
-  return "MOV AH, " + ((af << 4) | (cf ? 1 : 0) | 2).toString(16) + "h\nSAHF";
+function flagsInput(af, cf, initialAX) {
+  // POPF loads AF/CF without borrowing AH, then MOV restores the implicit AX operand.
+  const flagsWord = (af << 4) | (cf ? 1 : 0) | 2;
+  return "MOV AX, " + wordLiteral(flagsWord) + "\\nPUSH AX\\nPOPF\\nMOV AX, " +
+    wordLiteral(initialAX);
 }
 function byteLiteral(value) {
   return value.toString(16).toUpperCase().padStart(2, "0") + "h";
@@ -77,7 +79,7 @@ for (const op of ["AAA", "AAS"]) {
         test("ASCII adjust " + label, () => {
           const state = run([
             "MOV AX, " + wordLiteral((initialAH << 8) | al),
-            flagsInput(af, cf, initialAH),
+            flagsInput(af, cf, (initialAH << 8) | al),
             op,
             "HLT"
           ].join("\n"));
@@ -150,7 +152,7 @@ for (const op of ["DAA", "DAS"]) {
         test("BCD adjust " + label, () => {
           const state = run([
             "MOV AX, " + wordLiteral(al),
-            flagsInput(af, cf, 0),
+            flagsInput(af, cf, al),
             op,
             "HLT"
           ].join("\n"));
