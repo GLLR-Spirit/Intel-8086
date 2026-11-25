@@ -161,3 +161,74 @@ Le moteur d'échange XCHG n'a pas nécessité de correction fonctionnelle démon
 ### Limites de validation
 
 La comparaison GNU as valide l'encodage, pas le comportement électrique du bus. Le simulateur ne reproduit pas les signaux physiques LOCK, l'arbitrage entre maîtres de bus ni les deux cycles de transfert au niveau matériel. Les tests valident les effets architecturaux simulés, les octets, la mémoire, les registres et les FLAGS ; ils ne constituent pas une certification sur processeur Intel 8086 physique.
+
+
+## 7. Audit approfondi de LEA (8Dh /r)
+
+Date : 25 novembre 2026  
+Commit testé : `f56961f6d16c7a335e2221f029b42d6c85ed5709`
+
+### Règles architecturales contrôlées
+
+- `LEA r16,m` calcule l'offset effectif de l'opérande mémoire et le place dans le registre général 16 bits.
+- L'instruction ne lit pas l'octet ou le mot situé à cette adresse.
+- Les registres de segment ne font pas partie du résultat ; un préfixe ES/CS/SS/DS n'altère pas l'offset calculé.
+- Les neuf indicateurs suivis par le simulateur restent inchangés.
+- Opcode : `8Dh /r`. Le champ ModR/M doit désigner la mémoire (`mod != 11b`) ; la forme registre-direct est invalide sur 8086.
+- Temporisation de référence : 2 cycles + EA.
+
+Références architecturales consultées : Intel 8086 Family User's Manual (1979), iAPX 88 Book (1983) et ASM86 Language Reference Manual. Elles confirment le calcul de l'offset, la source mémoire obligatoire, la destination registre général 16 bits et l'absence d'effet sur FLAGS.
+
+### Défaut corrigé
+
+Le premier audit a révélé un défaut dans le désassembleur/exécuteur binaire pour les formes préfixées, par exemple :
+
+`LEA CX, ES:[BX+SI+4]`
+
+Le décodeur reconstruisait l'opérande mémoire sans le qualificatif `WORD PTR`, puis une validation générique rejetait le préfixe de segment faute de reconnaître cette forme comme une instruction mémoire. L'instruction était transformée à tort en données `DB`, ce qui interrompait l'exécution binaire.
+
+Correction dans `index.html` : la validation des préfixes reconnaît désormais explicitement LEA avec une opérande entre crochets. Le préfixe reste décodé, mais l'exécution LEA ne consulte que l'offset ; il ne provoque aucun accès mémoire et ne change pas le résultat.
+
+### Suite LEA dédiée
+
+Le fichier `tests/lea-8086.cjs` contient **47/47 tests réussis** :
+
+- Les huit modes d'adressage 8086 : BX+SI, BX+DI, BP+SI, BP+DI, SI, DI, BP et BX.
+- L'adressage direct disp16.
+- Les huit registres généraux 16 bits comme destination : AX, CX, DX, BX, SP, BP, SI et DI.
+- Déplacements disp8/disp16 : -32768, -129, -128, -1, 0, +1, +127, +128 et +32767.
+- Calcul EA modulo 16 bits.
+- Différence entre offset et contenu mémoire : l'adresse calculée est retournée alors que la donnée présente à cette adresse reste inchangée.
+- Préfixe ES : l'offset est identique et le segment n'est pas modifié.
+- Préservation des neuf FLAGS dans les chemins source et binaire.
+- Rejets des destinations mémoire, immédiates, 8 bits et registres de segment ; source registre/immédiate ; BYTE PTR ; combinaisons de registres invalides ; déplacements hors plage.
+- Encodages fixes et rejet du ModR/M registre-direct.
+
+Chaque cas d'exécution compare le résultat du chemin source avec celui de l'exécution du flux binaire décodé.
+
+### Comparaison indépendante
+
+Le fichier `tests/lea-gnu-crosscheck.cjs` compare **80 instructions LEA** avec GNU as (GNU Binutils 2.46), en mode `.code16` :
+
+- 64 combinaisons : huit destinations × huit modes d'adressage.
+- Neuf valeurs limites de déplacement.
+- Adressage direct disp16.
+- Cas spécial [BP] avec disp8 nul.
+- Préfixes de segment explicites.
+
+Résultat : octets émis identiques pour les 80 instructions. Les vecteurs fixes contrôlent également `8D 40 04`, `8D 16 34 12` et `8D 46 00`.
+
+### Exécution interactive et régressions
+
+- Chromium/Playwright : LEA exécutée avec le véritable bouton « Pas à pas », préfixe ES, contrôle du résultat CX, lecture mémoire de vérification après LEA, segments et neuf FLAGS : **réussi**.
+- Auto-tests intégrés dans Chromium : **376/376**.
+- Workflow CI principal : run **45651773823**, succès.
+- Workflow navigateur : run **45651773207**, succès.
+- Suite LEA : **47/47**.
+- Comparaison GNU as : **80/80 instructions, octets identiques**.
+
+### Conclusion LEA
+
+LEA est validée pour le périmètre logiciel audité : calcul de l'offset, modes d'adressage, destinations, déplacements, FLAGS, assemblage, désassemblage, exécution source et binaire, préfixe de segment, interface interactive et comparaison indépendante des encodages.
+
+Cette conclusion ne constitue pas une validation sur processeur physique. Le simulateur ne reproduit pas les signaux électriques ni les cycles de bus réels. LDS et LES ne sont pas inclus dans cette conclusion et feront l'objet d'audits distincts.
