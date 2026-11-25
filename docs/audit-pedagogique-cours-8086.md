@@ -299,3 +299,6 @@ Corrections et renforcements d'exemples :
 - **C34 L2–L3** : LOCK INC mémoire et REP MOVSB sont vérifiés sur les états et les octets attendus, sans prétendre simuler l'atomicité électrique du bus.
 
 Le contrôle de la progression rédactionnelle, la qualité de chaque explication, l'exhaustivité des visualisations et le test interactif de chaque chapitre restent à terminer. La phase 3 n'est donc pas déclarée close.
+- **C20 L2** : ajout de la particularité 8086 de PUSH SP : la valeur empilée est celle de SP après décrémentation ; elle diffère du comportement de processeurs ultérieurs.
+- **C27** : le prérequis précise maintenant les segments implicites : DS:SI (ou source substituée) pour la lecture et ES:DI pour les destinations MOVS, CMPS, SCAS et STOS.
+- **C32 L1–L3** : correction d'une erreur conceptuelle du prérequis : R/M=100 désigne [SI], il n'est pas réservé. R/M=110 avec Mod=00 encode le direct disp16 ; avec Mod=01/10, il désigne BP avec déplacement. Le texte distingue maintenant les trois valeurs de Mod et le rôle des champs Mod, Reg et R/M.
