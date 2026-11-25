@@ -7,14 +7,14 @@ const injection="\nglobalThis.api={assemble:s=>assembleProgram(s),disassemble:b=
 const instrumented=match[1].replace(/\n\}\)\(\);\s*$/,injection);assert.notEqual(instrumented,match[1]);
 vm.runInContext(instrumented,context,{timeout:30000});
 const api=context.api;
-const direct="JMP FAR 1234h:0003h\nMOV AX, 1\nMOV AX, 2\nHLT";
+const direct="JMP FAR 1234h:000Bh\nMOV AX, 1\nMOV AX, 2\nHLT";
 const encoded=Array.from(api.assemble(direct).bytes);
-assert.deepEqual(encoded.slice(0,5),[0xEA,0x03,0x00,0x34,0x12],"EA far JMP offset then segment little-endian");
-assert.equal(api.disassemble(encoded).rows[0].instruction,"JMP FAR 1234h:0003h");
+assert.deepEqual(encoded.slice(0,5),[0xEA,0x0B,0x00,0x34,0x12],"EA far JMP offset then segment little-endian");
+assert.equal(api.disassemble(encoded).rows[0].instruction,"JMP FAR 1234h:000Bh");
 const sourceState=api.execute(direct);
 assert.equal(sourceState.error,undefined,"source far JMP");
 assert.equal(sourceState.reg.CS,0x1234);
-assert.equal(sourceState.reg.IP,4,"HLT advances to the byte after the target instruction in the source model.");
+assert.equal(sourceState.reg.IP,12,"HLT advances to the byte after the target instruction in the source model.");
 assert.equal(sourceState.reg.AX,0,"both MOV instructions skipped by far JMP");
 assert.equal(sourceState.reg.SP,0xFFFE,"JMP does not push a return frame");
 const main=Array.from(api.assemble("JMP FAR 2000h:0100h\nHLT").bytes);
