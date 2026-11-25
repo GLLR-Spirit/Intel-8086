@@ -328,7 +328,7 @@ Cette conclusion ne constitue pas une certification sur processeur physique. Le 
 
 Cette phase ne constitue pas encore une validation exhaustive de CALL/RET. Il reste à étendre les vecteurs sur toutes les formes near/far indirectes, les huit modes d'adressage, les limites de déplacement et de segment, les combinaisons de préfixes, les frontières de pile et les neuf FLAGS. Les interactions far source multi-segment sont encore abstraites dans le moteur source ; le test binaire vérifie le transfert inter-segment en mémoire.
 
-Les tests ciblés et le cross-check GNU as ont réussi dans le workflow CI run 814 sur le commit \`020a6f4408a9a17c5a95a4ccaf6290c129040c04\`. Le workflow navigateur run 284 a également réussi sur ce commit. Les exécutions de confirmation sur la tête courante de branche restent à vérifier.
+Les tests ciblés, la comparaison GNU as et toutes les régressions ont réussi dans le workflow CI run 822 (ID \`45656804213\`) sur le commit \`addb0d1f803708df6efbb49cca268c75faad5da0\`. Le workflow navigateur Playwright run 293 (ID \`45656804338\`) a également réussi sur ce même commit. Les runs précédents 814/284 avaient déjà confirmé les suites sur le commit de développement antérieur.
 
 ### Conclusion provisoire
 
