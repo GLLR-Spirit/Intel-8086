@@ -48,6 +48,8 @@ jobs:
         run: node tests/bcd-multiply-divide-8086.cjs
       - name: Run independent 8086 logical instruction audit
         run: node tests/logical-ops-8086.cjs
+      - name: Run independent 8086 NOT operand and prefix audit
+        run: node tests/not-forms-8086.cjs
       - name: Run 8086 divide-error interrupt tests
         run: node tests/divide-error-interrupt-8086.cjs
       - name: Run INTO overflow interrupt tests
