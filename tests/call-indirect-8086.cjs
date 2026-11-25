@@ -27,11 +27,13 @@ function hex(n){return (n&65535).toString(16).toUpperCase().padStart(4,"0")+"h";
 function phys(seg,off){return (((seg<<4)+(off&65535))&0xFFFFF);}
 function expr2(form){return form.direct?"5002h":form.expr+"+2";}
 function operand(form,seg,far){return (far?"FAR PTR ":"WORD PTR ")+seg+":["+form.expr+"]";}
+function addressAdjustment(form,seg){return seg==="CS"&&!form.direct?0x1000:0;}
+function effectiveOffset(form,seg){return form.offset+addressAdjustment(form,seg)*(form.direct?0:form.expr.split("+").length);}
 function sourceProgram(form,seg,far,sp=0xFFFE){
- const ret=far?"RETF":"RET";
+ const ret=far?"RETF":"RET",delta=addressAdjustment(form,seg);
  let src=[
   "MOV AX, 1000h","MOV DS, AX","MOV AX, 2000h","MOV SS, AX","MOV AX, 3000h","MOV ES, AX",
-  "MOV BX, 20h","MOV BP, 30h","MOV SI, 4","MOV DI, 6",
+  "MOV BX, "+hex(0x20+delta),"MOV BP, "+hex(0x30+delta),"MOV SI, "+hex(4+delta),"MOV DI, "+hex(6+delta),
   "MOV AX, 0FD7h","PUSH AX","POPF","MOV SP, "+hex(sp),
   "MOV WORD PTR "+seg+":["+form.expr+"], 1357h"
  ];
@@ -43,12 +45,11 @@ function sourceProgram(form,seg,far,sp=0xFFFE){
 }
 function binaryProgram(form,seg,far,sp=0xFFFE){
  const src="CALL "+operand(form,seg,far)+"\nHLT\nTARGET: "+(far?"RETF":"RET");
- const assembled=api.assemble(src),target=assembled.symbols.TARGET,mem={};
- const address=phys(segValue[seg],form.offset);
- function put(off,value){mem[phys(segValue[seg],off)]=value&255;}
- put(form.offset,target&255);put(form.offset+1,target>>8);
- if(far){put(form.offset+2,0x34);put(form.offset+3,0x12);mem[phys(0x1234,target)]=0xCB;}
- const regs=Object.assign({},regInit,{SP:sp});
+ const assembled=api.assemble(src),target=assembled.symbols.TARGET,mem={},delta=addressAdjustment(form,seg),off=effectiveOffset(form,seg);
+ function put(at,value){mem[phys(segValue[seg],at)]=value&255;}
+ put(off,target&255);put(off+1,target>>8);
+ if(far){put(off+2,0x34);put(off+3,0x12);mem[phys(0x1234,target)]=0xCB;}
+ const regs=Object.assign({},regInit,{BX:regInit.BX+delta,BP:regInit.BP+delta,SI:regInit.SI+delta,DI:regInit.DI+delta,SP:sp});
  const state=api.binary(Array.from(assembled.bytes),0,0,{reg:regs,flags,mem});
  return {state,target,assembled,mem};
 }
