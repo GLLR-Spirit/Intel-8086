@@ -144,7 +144,7 @@ test("XCHG AX, AX est encodé par 90h et reste un NOP architectural", () => {
 for (const [bits, regs] of [[8, regs8], [16, regs16]]) {
   for (const a of regs) for (const b of regs) {
     const expected = expectedRegSwap(a, b, bits);
-    const source = [setSourceFlags(), ...initSourceRegs(), "XCHG " + a + ", " + b, "HLT"].join("\n");
+    const source = [setSourceFlags(), "MOV AX, 1000h", "MOV DS, AX", "MOV AX, 3000h", "MOV SS, AX", ...initSourceRegs(), "XCHG " + a + ", " + b, "HLT"].join("\n");
     test("Source échange " + bits + " bits " + a + "/" + b, () => {
       const state = runSource(source);
       assertRegSet(state, expected, "source " + a + "/" + b);
@@ -175,7 +175,7 @@ for (const bits of [8, 16]) {
     const tail = eaCodes[i].tail || [];
     const size = bits === 8 ? "BYTE" : "WORD";
     const opcode = bits === 8 ? 0x86 : 0x87;
-    const code = [opcode, modrm(mod, 1, rm), ...tail];
+    const code = [opcode, modrm(mod, 0, rm), ...tail];
     const value = bits === 8 ? 0x5A : 0xA55A;
     const source = [
       setSourceFlags(), ...initSourceRegs(),
@@ -247,7 +247,7 @@ for (const item of segmentVectors) {
   test("Préfixe segment " + item.name + " encodage/désassemblage", () => {
     const source = "XCHG CX, WORD PTR " + item.name + ":" + expr;
     assert.deepEqual(bytes(source), code.slice(0, -1));
-    assert.match(disassemble(code.slice(0, -1)), new RegExp("^" + item.name + ": XCHG "));
+    assert.match(disassemble(code.slice(0, -1)), new RegExp("^XCHG .*" + item.name + ":"));
     totals.segment++;
   });
   test("Préfixe segment " + item.name + " exécution binaire", () => {
@@ -259,8 +259,8 @@ for (const item of segmentVectors) {
     };
     const state = runBinary(code, 0x5000, 0x0100, initial);
     assert.equal(state.reg.CX, 0xABCD);
-    assert.equal(state.mem[physical(item.seg, offset)], 0x34);
-    assert.equal(state.mem[physical(item.seg, (offset + 1) & 0xFFFF)], 0x12);
+    assert.equal(state.mem[physical(sourceSegment, offset)], 0x34);
+    assert.equal(state.mem[physical(sourceSegment, (offset + 1) & 0xFFFF)], 0x12);
     assertFlags(state, "préfixe " + item.name);
     totals.segment++;
     totals.binary++;
@@ -273,6 +273,7 @@ for (const item of segmentVectors) {
   const useBP = item.name === "DS";
   const expr = useBP ? "[BP]" : "[BX]";
   const offset = useBP ? 0x1200 : 0x7788;
+  const sourceSegment = item.name === "CS" ? 0 : item.seg;
   const source = [
     setSourceFlags(),
     "MOV AX, 1000h", "MOV DS, AX",
