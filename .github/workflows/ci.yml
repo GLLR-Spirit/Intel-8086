@@ -34,6 +34,8 @@ jobs:
         run: node tests/modrm-matrix.cjs
       - name: Run independent ALU operand-form matrix
         run: node tests/alu-forms-8086.cjs
+      - name: Run ALU segment and repeat prefix interactions
+        run: node tests/alu-prefix-interactions-8086.cjs
       - name: Run all-opcode and ModR/M structural sweeps
         run: node tests/opcode-byte-sweep.cjs
       - name: Run addressing and displacement tests
