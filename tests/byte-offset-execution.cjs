@@ -306,8 +306,15 @@ test("all ModR/M values are checked across the principal opcode groups", () => {
   let checked=0;
   for(const opcode of groups)for(let modrm=0;modrm<256;modrm++){
     const decoded=api.decodeOne([opcode,modrm,...Array(29).fill(0)]);
-    assert.equal(decoded.rows.length,1,"opcode "+opcode.toString(16)+" ModR/M "+modrm.toString(16));
-    assert.ok(decoded.rows[0].size>=2,"empty decode");
+    const invalidMovCsDestination = opcode === 0x8E && ((modrm >> 3) & 7) === 1;
+    assert.ok(decoded.rows.length>=1,"missing decode row for opcode "+opcode.toString(16)+" ModR/M "+modrm.toString(16));
+    if (invalidMovCsDestination) {
+      assert.ok(decoded.rows[0].instruction.startsWith("DB "), "8E /1 must remain raw data");
+      assert.equal(decoded.rows[0].size,1,"invalid MOV CS consumes only its opcode byte");
+    } else {
+      assert.equal(decoded.rows.length,1,"opcode "+opcode.toString(16)+" ModR/M "+modrm.toString(16));
+      assert.ok(decoded.rows[0].size>=2,"empty decode");
+    }
     checked++;
   }
   assert.equal(checked,3072);
