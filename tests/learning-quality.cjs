@@ -326,7 +326,7 @@ const advancedExampleOracles = [
   [31,1,s=>s.reg.AX===0x1234,"MOV immediate example leaves AX=1234h"],
   [31,2,s=>s.reg.AX===0x1234,"three-byte MOV immediate is executed correctly"],
   [31,3,s=>s.reg.AX===0x1234,"register-to-register MOV transfers BX to AX"],
-  [32,1,s=>s.reg.AX===0,"ModR/M example decodes the intended BX+SI+disp8 addressing form"],
+  [32,1,s=>s.reg.AX===0xabcd,"ModR/M example writes and reloads ABCDh through BX+SI+disp8"],
   [32,2,s=>s.reg.AX===0xabcd,"BX+SI+disp8 effective address reads ABCDh"],
   [32,3,s=>s.reg.AX===0xbeef,"direct disp16 memory form reads BEEFh"],
   [33,1,s=>s.reg.IP>=0&&s.reg.SP===initialSP,"assembler resolves FIN and execution reaches HLT"],
