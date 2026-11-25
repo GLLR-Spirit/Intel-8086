@@ -399,3 +399,14 @@ La suite différentielle vérifie désormais les dix formes MOVS/LODS/STOS/CMPS/
 Détail des vecteurs, règles de segment, limites restantes et résultats : [audit-chain-strings-8086.md](audit-chain-strings-8086.md).
 
 CI vérifiée sur le commit `a3bb746b158c67e3f2ca8c45ea2df96a0ae4e0e5` : **78/78 tests différentiels**, **17 chapitres**, **34 questions**, **27 exercices** et toutes les corrections guidées validées. Les résultats restent limités aux scénarios explicitement testés ; ils ne certifient pas une émulation matérielle complète.
+
+
+## Extension de l'audit des chaînes — 25 novembre 2026
+
+Les tests ont été étendus aux bouclages 16 bits de SI/DI, au transfert de mots dont l'octet haut passe de FFFFh à 0000h, à la préservation des FLAGS par MOVS/LODS/STOS, aux FLAGS produits par CMPS/SCAS, aux overrides CS de LODS/CMPS et à la destination ES immuable de SCAS.
+
+L'IVT binaire fait maintenant l'objet d'un contrôle supplémentaire du cadre mémoire réel (IP, CS, FLAGS), ainsi que de l'état IF/TF observé par le gestionnaire avant IRET. Les vecteurs d'encodage/désassemblage couvrent individuellement les dix opcodes de chaîne et les préfixes F2h/F3h, y compris CS + REP.
+
+Résultats CI du commit `217c0a413c937d1248573e1f1f9f879c57d69ba6` : **143 vecteurs indépendants réussis**, **83 tests différentiels réussis, 0 échec**, et **27 corrections pédagogiques exécutables validées**. Détail : [audit-chain-strings-8086.md](audit-chain-strings-8086.md).
+
+La politique de l'analyseur rejette explicitement les préfixes répétés de même catégorie et LOCK sur les instructions de chaîne. Cette politique de validation du laboratoire ne doit pas être confondue avec une modélisation complète de tous les cas de préfixes matériels.
