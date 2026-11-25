@@ -52,6 +52,8 @@ jobs:
         run: node tests/logical-prefix-interactions-8086.cjs
       - name: Run independent 8086 NOT operand and prefix audit
         run: node tests/not-forms-8086.cjs
+      - name: Run INC DEC NEG operand and prefix audit
+        run: node tests/unary-arithmetic-prefix-8086.cjs
       - name: Run 8086 divide-error interrupt tests
         run: node tests/divide-error-interrupt-8086.cjs
       - name: Run INTO overflow interrupt tests
