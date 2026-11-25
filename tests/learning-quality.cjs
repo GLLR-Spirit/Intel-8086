@@ -201,21 +201,24 @@ for (let chapterIndex = 0; chapterIndex < learning.chapterLearning.length; chapt
 
 // Level 2 audit: 18 independently checked course examples (chapters 6–11).
 const level2Oracles = [
-  [6,1, state => state.reg.AX === 0x5678 && state.reg.BX === 0x1234, "XCHG swaps AX and BX"],
-  [6,2, state => state.reg.SI === 0x0104, "LEA computes BX+4 without reading memory"],
-  [6,3, state => state.reg.SI === 0 && state.reg.DS === 0, "LDS reads a zero-initialized far pointer in the current example"],
-  [7,1, state => (state.reg.AX & 0xff) === 0 && (state.reg.BX & 0xff) === 2 && state.flags.CF === 0, "ADD/ADC propagation"],
-  [7,2, state => (state.reg.AX & 0xff) === 0xff && state.flags.CF === 0 && (state.reg.BX & 0xff) === 4, "SUB/SBB borrow propagation"],
-  [7,3, state => (state.reg.AX & 0xff) === 0x80 && state.flags.OF === 1 && state.flags.CF === 1, "NEG 80h signed overflow"],
-  [8,1, state => (state.reg.AX & 0xff) === 0x0c, "AND masks to low nibble"],
-  [8,2, state => (state.reg.AX & 0xff) === 0x0f, "XOR complements F0h with FFh"],
-  [8,3, state => state.flags.ZF === 1 && (state.reg.AX & 0xff) === 0x08, "TEST preserves AL and sets ZF"],
-  [9,1, state => (state.reg.AX & 0xff) === 0 && state.flags.CF === 1 && state.flags.ZF === 1, "arithmetic FLAGS after FFh+1"],
-  [9,2, state => state.flags.DF === 0, "CLD/STD/CLD leaves DF cleared"],
-  [9,3, state => state.flags.CF === 1, "POPF restores CF saved by PUSHF"],
-  [10,1, state => state.reg.AX === 5, "trace example reaches AX=5"],
-  [10,2, state => state.reg.AX === 7, "diagnostic example reaches AX=7"],
-  [10,3, state => (state.reg.AX & 0xff) === 0, "INC wraps FFh to 00h while preserving CF"]
+  [6,1, state => state.reg.AX === 5, "first source program leaves AX=5"],
+  [6,2, state => state.reg.AX === 1 && state.reg.BX === 0, "MOV and ADD produce AX=1 with initial BX=0"],
+  [6,3, state => state.reg.AX === 1, "JMP skips MOV AX,2"],
+  [7,1, state => state.reg.AX === 0x5678 && state.reg.BX === 0x1234, "XCHG swaps AX and BX"],
+  [7,2, state => state.reg.SI === 0x0104, "LEA computes BX+4 without reading memory"],
+  [7,3, state => state.reg.SI === 0 && state.reg.DS === 0, "LDS reads the zero-initialized far pointer in this example"],
+  [8,1, state => (state.reg.AX & 0xff) === 0 && (state.reg.BX & 0xff) === 2 && state.flags.CF === 0, "ADD/ADC propagation"],
+  [8,2, state => (state.reg.AX & 0xff) === 0xff && state.flags.CF === 0 && (state.reg.BX & 0xff) === 4, "SUB/SBB borrow propagation"],
+  [8,3, state => (state.reg.AX & 0xff) === 0x80 && state.flags.OF === 1 && state.flags.CF === 1, "NEG 80h signed overflow"],
+  [9,1, state => (state.reg.AX & 0xff) === 0x0c, "AND masks to low nibble"],
+  [9,2, state => (state.reg.AX & 0xff) === 0x0f, "XOR complements F0h with FFh"],
+  [9,3, state => state.flags.ZF === 1 && (state.reg.AX & 0xff) === 0x08, "TEST preserves AL and sets ZF"],
+  [10,1, state => (state.reg.AX & 0xff) === 0 && state.flags.CF === 1 && state.flags.ZF === 1, "arithmetic FLAGS after FFh+1"],
+  [10,2, state => state.flags.DF === 0, "CLD/STD/CLD leaves DF cleared"],
+  [10,3, state => state.flags.CF === 1, "POPF restores CF saved by PUSHF"],
+  [11,1, state => state.reg.AX === 5, "trace example reaches AX=5"],
+  [11,2, state => state.reg.AX === 7, "diagnostic example reaches AX=7"],
+  [11,3, state => (state.reg.AX & 0xff) === 0, "INC wraps FFh to 00h while preserving CF"]
 ];
 for (const [chapter, lesson, check, expected] of level2Oracles) {
   const source = learning.curriculum[chapter - 1][5][lesson - 1][2];
