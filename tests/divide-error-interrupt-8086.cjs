@@ -3,7 +3,7 @@ const vm = require("node:vm");
 const assert = require("node:assert/strict");
 
 const html = fs.readFileSync("index.html", "utf8");
-const match = html.match(/<script>([\\s\\S]*?)<\\/script>/);
+const match = html.match(/<script>([\s\S]*?)<\/script>/);
 assert.ok(match, "Application script must exist");
 
 const elements = new Map();
@@ -25,7 +25,7 @@ const injection = "\nglobalThis.__8086DivideInterruptApi = {" +
   "\n assemble: function (source) { return assembleProgram(source); }," +
   "\n executeBinary: function (bytes, cs, ip, state) { return executeBinary(bytes, cs, ip, state); }" +
   "\n};\n})();\n";
-const instrumented = match[1].replace(/\\n\\}\\)\\(\\);\\s*$/, injection);
+const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injection);
 assert.notEqual(instrumented, match[1], "Test API injection point must exist");
 vm.runInContext(instrumented, context, { timeout: 10000 });
 const api = context.__8086DivideInterruptApi;
