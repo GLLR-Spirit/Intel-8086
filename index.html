@@ -254,7 +254,8 @@ function exerciseMetadata(x,i){
  var title=(x[0]+" "+x[1]).toLowerCase(),chapters=[];
  chapterExerciseMap.forEach(function(ex,chapter){if(ex===i)chapters.push(chapter);});
  var rules=[
- [/architecture|microprocesseur|biu|eu|bus/,0],[/binaire|hexadécimal|numération/,1],[/registre/,2],[/mov|transfert/,3],[/addition|soustraction|arithmétique|mul|div|idiv/,4],[/comparaison|branche|cmp|signe/,5],[/boucle|loop|répét/,6],[/pile|push|pop|stack/,7],[/logique|xor|and|or|masque/,8],[/segment|mémoire|adressage/,9],[/débog|erreur|corrig/,10],[/procédure|call|ret/,11],[/flags|indicateur/,12],[/chaîne|movs|lods|stos|cmps|scas/,13],[/rep|préfixe/,14],[/interrupt|iret|int /,15],[/encodage|opcode|modrm|mod\/rm|binaire machine/,16]
+ [/architecture|microprocesseur|biu|eu|bus/,0],[/binaire|hexadécimal|numération/,1],[/registre/,2],[/mov|transfert/,3],[/addition|soustraction|arithmétique|mul|div|idiv/,4],[/comparaison|branche|cmp|signe/,5],[/boucle|loop|répét/,6],[/pile|push|pop|stack/,7],[/logique|xor|and|or|masque/,8],[/segment|mémoire|adressage/,9],[/débog|erreur|corrig/,10],[/procédure|call|ret/,11],[/flags|indicateur/,12],[/chaîne|movs|lods|stos|cmps|scas/,13],[/rep|préfixe/,14],[/interrupt|iret|int /,15],[/encodage|opcode|modrm|mod\/rm|binaire machine/,16],
+ [/échange|transfert|mov/,3],[/somme|addition|soustraction|mul|div|arithmétique/,4],[/boucle|loop|répét/,6],[/maximum|comparer|comparaison|branche|signé/,5],[/débog|corrig|erreur/,10],[/procédure|call|ret/,11],[/flags|indicateur/,12],[/chaîne|movs|lods|stos|cmps|scas|copie de mots/,13],[/rep|préfixe|répétition/,14],[/interrupt|iret|int /,15]
  ];
  rules.forEach(function(rule){if(rule[0].test(title)&&chapters.indexOf(rule[1])<0)chapters.push(rule[1]);});
  if(!chapters.length)chapters=[Math.min(16,Math.max(0,i%17))];
