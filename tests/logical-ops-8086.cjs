@@ -270,7 +270,7 @@ for (const op of ["OR","AND","XOR","TEST"]) {
       });
       totals.immediateEncodings++;
     } else {
-      const group16 = [0x81, (3 << 3) | ext | 7, 0x34, 0x12];
+      const group16 = [0x81, (ext << 3) | 7, 0x34, 0x12];
       const source16 = op + " WORD PTR [BX], 1234h";
       test(op + " group immediate word 81h", () => {
         assert.deepEqual(Array.from(api.assemble(source16).bytes), group16, source16);
@@ -278,7 +278,7 @@ for (const op of ["OR","AND","XOR","TEST"]) {
       });
       totals.immediateEncodings++;
 
-      const group83 = [0x83, (3 << 3) | ext | 7, 0xFF];
+      const group83 = [0x83, (ext << 3) | 7, 0xFF];
       const source83 = op + " WORD PTR [BX], -1";
       test(op + " sign-extended immediate 83h", () => {
         assert.deepEqual(Array.from(api.assemble(source83).bytes), group83, source83);
