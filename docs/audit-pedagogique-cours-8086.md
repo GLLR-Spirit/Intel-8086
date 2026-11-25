@@ -273,3 +273,8 @@ Ces exemples sont conservés comme aperçus, mais leur théorie précise mainten
 Une trace pas à pas pré-calculée a été ajoutée au chapitre 11 sur le programme binaire `MOV AX,2`, `MOV BX,3`, `ADD AX,BX`, `HLT`. Elle affiche les offsets IP en octets, AX, BX, CX, SP et les neuf FLAGS modélisés, avec commandes précédent/suivant/réinitialiser. Les états affichés ont un oracle final exécuté sur le chemin binaire : AX=5, BX=3, IP=9, SP=FFFEh et PF=1.
 
 Cette visualisation est explicitement étiquetée comme pré-calculée : elle n'est pas un pas-à-pas live du moteur et ne prétend pas simuler la BIU, les cycles ou les accès mémoire. Le test navigateur contrôle chaque transition affichée.
+
+
+### 7.9 Vérification CI de la passe pédagogique
+
+Sur le commit de code `7c8f356771848c797825b78498d02438886976d2`, le workflow de validation a réussi (run `45688448342`) et le test navigateur a réussi (run `45688448597`). Ces runs couvrent notamment les oracles des exemples, les contrôles de questions, les sept démonstrations interactives, la navigation Cours/Exercices/Atelier et les filtres d'exercices.
