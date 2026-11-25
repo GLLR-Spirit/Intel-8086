@@ -337,13 +337,13 @@ La table Intel 4-13 distingue précisément les extensions du groupe FF :
 | `/6` | `PUSH MEM16` | invalide |
 | `/7` | non utilisé | invalide |
 
-Les formes registre de `INC`, `DEC` et `PUSH` utilisent respectivement les opcodes compacts `40–47`, `48–4F` et `50–57`. Elles ne doivent pas être acceptées comme variantes registre de `FF /0`, `FF /1` ou `FF /6`.
+L'assembleur privilégie les opcodes compacts `40–47` pour `INC r16` et `48–4F` pour `DEC r16`. Cela ne rend pas invalides les formes ModR/M `FF /0` et `FF /1` en registre-direct : le manuel MCS-86 décrit explicitement `INC` comme opérande mémoire ou registre (section INC, pp. 5-53 à 5-54), et la même famille d'encodage s'applique à DEC. En revanche, `FF /6` reste mémoire uniquement ; `PUSH r16` utilise les opcodes compacts `50–57`.
 
-**Correction du 25 novembre 2026 :** le désassembleur acceptait auparavant à tort `FF C0` comme `INC AX`, `FF C8` comme `DEC AX` et `FF F0` comme `PUSH AX`. Il conserve désormais ces séquences comme données brutes (`DB`) conformément à la table Intel. Les formes mémoire restent décodées.
+**Correction du 25 novembre 2026 :** le désassembleur reconnaît maintenant `FF C3` comme `INC BX` et `FF CB` comme `DEC BX`. `FF F0` reste invalide (`PUSH` registre-direct via /6) et est conservé comme données brutes (`DB`).
 
 **Tests de régression :**
-- `tests/group-opcodes.cjs` : balayage des 256 valeurs ModR/M du groupe FF ;
-- `tests/modrm-matrix.cjs` : contraintes de validité des extensions ;
+- `tests/group-opcodes.cjs` : balayage des 256 valeurs ModR/M du groupe FF et exécution binaire de INC/DEC sur les huit registres ;
+- `tests/modrm-matrix.cjs` : validation des restrictions /3, /5 et /6 en mode registre-direct ;
 - `tests/addressing-displacement.cjs` : distinction registre/mémoire ;
 - `tests/push-pop-forms-8086.cjs` : huit registres via opcodes compacts, FF /6 mémoire uniquement ;
 - tests intégrés du désassembleur pour les trois encodages registre invalides.
@@ -455,7 +455,7 @@ Cet index relie chaque entrée de la matrice générale à son registre de forme
 |---|---|---|
 | MOV | 14 formes recensées ; ModR/M, moffs, immédiats, segments, mémoire et déplacements | Ciblé ; pas encore toutes les combinaisons opérandes × préfixes |
 | ADD/ADC/SUB/SBB/CMP | 9 formes par instruction, extensions 80/81/83 | Vecteurs indépendants ciblés ; couverture exhaustive des directions octet/mot à terminer |
-| INC/DEC | FE /0,/1 r/m8 ; FF /0,/1 MEM16 ; registres via opcodes compacts | Restrictions FF registre-direct corrigées et testées |
+| INC/DEC | FE /0,/1 r/m8 ; FF /0,/1 r/m16 (registre ou mémoire) ; registres aussi via opcodes compacts | FF /0,/1 Mod=11 valides ; restrictions /3,/5,/6 testées |
 | PUSH/POP | registres compacts, segments valides, FF /6 MEM16, 8F /0 r/m16, PUSH SP 8086 | Tests source/binaire et contraintes ; FF /6 mémoire uniquement ; PUSH SP empile le SP décrémenté |
 | CALL | E8, 9A, FF /2 r/m16, FF /3 MEM16 | Indirect near/far, huit modes mémoire, segment overrides, CS:IP, pile et neuf FLAGS testés |
 | JMP | EB, E9, EA, FF /4 r/m16, FF /5 MEM16 | Near/far indirect, huit modes mémoire, source/binaire et neuf FLAGS testés |
@@ -470,7 +470,7 @@ Cet index relie chaque entrée de la matrice générale à son registre de forme
 
 ### Restrictions FF réconciliées avec Intel
 
-Le groupe FF est désormais traité ainsi : /0 INC MEM16, /1 DEC MEM16, /2 CALL near REG16/MEM16, /3 CALL far MEM16, /4 JMP near REG16/MEM16, /5 JMP far MEM16, /6 PUSH MEM16, /7 non utilisé. Les formes Mod=11 sont invalides pour /0, /1, /3, /5 et /6. Les tests group-opcodes, modrm-matrix, addressing-displacement et push-pop-forms doivent rester synchronisés sur cette règle.
+Le groupe FF est traité ainsi : /0 INC r/m16, /1 DEC r/m16, /2 CALL near r/m16, /3 CALL far m16:16, /4 JMP near r/m16, /5 JMP far m16:16, /6 PUSH m16, /7 non utilisé. Les formes Mod=11 sont valides pour /0, /1, /2 et /4 ; elles sont invalides pour /3, /5 et /6. Les tests group-opcodes et modrm-matrix balayent les 256 octets ModR/M et distinguent ces restrictions.
 
 ### Décision de calcul
 
