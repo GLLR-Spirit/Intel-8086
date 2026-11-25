@@ -138,3 +138,18 @@ Sur le commit `e1da4b507dc9786fc7cc19905dcc3732f365979f`, la CI a réussi avec *
 La fiche de `NEG` contenait un statut erroné « Non pris en charge » alors que l'assembleur, le désassembleur et le moteur d'exécution possèdent des chemins pour cette instruction. Son statut a été corrigé en « Pris en charge » pour le simulateur et « Partiel » pour l'assembleur et le désassembleur, en attendant l'audit complet des formes mémoire. Les trois fiches BCD ont été mises à « Pris en charge » dans les trois composants, car leurs formes implicites uniques sont testées en exécution, assemblage et désassemblage.
 
 **Limites :** ces vecteurs valident le sous-ensemble décrit, pas toutes les formes mémoire ni l'ensemble des interactions entre instructions. Ils ne constituent pas une mesure sur processeur physique. Les comportements exacts des cas d'exception matériels, des timings et des indicateurs indéfinis restent hors de cette validation logicielle.
+
+## Complément — limite négative propre à IDIV sur 8086 — 25 novembre 2026
+
+Le manuel Intel *8086 Family User's Manual* d'octobre 1979 (section IDIV, p. 2-37) donne les plages de quotient suivantes pour le 8086 original :
+
+- diviseur 8 bits : −127 à +127 ;
+- diviseur 16 bits : −32 767 à +32 767.
+
+Le manuel précise qu'un quotient en dehors de ces plages déclenche l'interruption de type 0. Les processeurs ultérieurs ont élargi la borne négative et acceptent −128 et −32 768. Cette différence est également décrite dans la note Microsoft Q68599 sur les processeurs 8086/8088.
+
+L'ancien moteur acceptait à tort les deux valeurs minimales négatives. La borne basse de `executeMultiplyDivide` a été corrigée, les tests intégrés ont été adaptés, et la suite indépendante couvre maintenant explicitement `AX=FF80h, IDIV BL=1` ainsi que `DX:AX=FFFF8000h, IDIV BX=1` comme cas de dépassement.
+
+La CI sur le commit `2ebc6c23543694bbfa51ee42cd97edf501fa36bc` a réussi avec **6 792 assertions** : [run CI](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45581647925).
+
+**Limite importante :** le simulateur signale encore ces divisions invalides par une erreur contrôlée. Il ne reproduit pas encore le cadre matériel complet de l'interruption 0 (empilement de FLAGS/CS/IP, transfert au vecteur 0 et exécution du gestionnaire). La suite valide la détection des dépassements, pas l'intégralité du mécanisme d'interruption matériel.
