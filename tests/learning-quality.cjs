@@ -376,7 +376,7 @@ const disassembled=learning.disassembleBytes([0xB8,0x34,0x12,0xF4]).rows;
 assert.equal(JSON.stringify(disassembled.map(r=>r.instruction)),JSON.stringify(["MOV AX, 1234h","HLT"]),"C33 L2 independent disassembly");
 const unknown=learning.disassembleBytes([0x64]).rows;
 assert.ok(unknown[0].instruction.startsWith("DB "),"C33 L3 unknown byte remains raw data");
-sameBytes(bytesOf(learning.curriculum[33][5][1][2]),[0xF0,0xFF,0x06,0x00,0x01,0x8B,0x06,0x00,0x01,0xF4],"C34 L2 LOCK INC memory encoding");
+sameBytes(bytesOf(learning.curriculum[33][5][1][2]),[0xC7,0x06,0x00,0x01,0x01,0x00,0xF0,0xFF,0x06,0x00,0x01,0x8B,0x06,0x00,0x01,0xF4],"C34 L2 complete initialized LOCK INC memory example");
 console.log("Advanced course audit: 73/73 additional lesson examples pass independent state or encoding oracles.");
 
 console.log("Learning quality: 36 chapters, 324 intermediate questions, 360 final questions, " +
