@@ -367,7 +367,8 @@ for (const invalid of [
   "XCHG AL, BX",
   "XCHG BYTE PTR [BX], CX",
   "XCHG WORD PTR [BX], AL",
-  "XCHG CS, DS"
+  "XCHG CS, DS",
+  "LOCK XCHG AX, BX"
 ]) {
   test("Forme interdite rejetée : " + invalid, () => {
     assert.throws(() => api.assemble(invalid));
@@ -385,6 +386,75 @@ test("XCHG r/m16,r16 et XCHG r/m8,r8 décodent leurs deux sens", () => {
 });
 test("LOCK XCHG mémoire assemble avec préfixe F0h", () => {
   assert.deepEqual(bytes("LOCK XCHG WORD PTR [BX], AX"), [0xF0, 0x87, modrm(0, 0, 7)]);
+  totals.special++;
+});
+
+// J. Signed displacement boundaries: source and binary memory exchanges.
+const displacementVectors = [
+  { expr: "[BX+SI+127]", offset: (0x7788 + 0x0010 + 127) & 0xFFFF, segment: 0x1000 },
+  { expr: "[BX+SI-128]", offset: (0x7788 + 0x0010 - 128) & 0xFFFF, segment: 0x1000 },
+  { expr: "[BP+DI+32767]", offset: (0x1200 + 0x0020 + 32767) & 0xFFFF, segment: 0x3000 },
+  { expr: "[BP+DI-32768]", offset: (0x1200 + 0x0020 - 32768) & 0xFFFF, segment: 0x3000 }
+];
+for (const vector of displacementVectors) {
+  test("Source XCHG WORD déplacement limite " + vector.expr, () => {
+    const source = [
+      setSourceFlags(),
+      "MOV AX, 1000h", "MOV DS, AX",
+      "MOV AX, 3000h", "MOV SS, AX",
+      ...initSourceRegs(),
+      "MOV AX, 0C33h",
+      "MOV WORD PTR " + vector.expr + ", 0A55Ah",
+      "XCHG AX, WORD PTR " + vector.expr,
+      "HLT"
+    ].join("\n");
+    const state = runSource(source);
+    assert.equal(state.reg.AX, 0xA55A, "AX receives the memory word");
+    assert.equal(state.mem[physical(vector.segment, vector.offset)], 0x33,
+      "Memory low byte receives the previous AL");
+    assert.equal(state.mem[physical(vector.segment, (vector.offset + 1) & 0xFFFF)], 0x0C,
+      "Memory high byte receives the previous AH");
+    assertFlags(state, "source displacement boundary");
+    totals.memory++;
+    totals.flags++;
+  });
+
+  test("Binaire XCHG WORD déplacement limite " + vector.expr, () => {
+    const code = [...bytes("XCHG AX, WORD PTR " + vector.expr), 0xF4];
+    const initial = setInitialBinary();
+    initial.reg.AX = 0x0C33;
+    initial.mem = {
+      [physical(vector.segment, vector.offset)]: 0x5A,
+      [physical(vector.segment, (vector.offset + 1) & 0xFFFF)]: 0xA5
+    };
+    const state = runBinary(code, 0x5000, 0x0100, initial);
+    assert.equal(state.reg.AX, 0xA55A, "AX receives the memory word");
+    assert.equal(state.mem[physical(vector.segment, vector.offset)], 0x33);
+    assert.equal(state.mem[physical(vector.segment, (vector.offset + 1) & 0xFFFF)], 0x0C);
+    assertFlags(state, "binary displacement boundary");
+    totals.memory++;
+    totals.binary++;
+    totals.flags++;
+  });
+}
+
+// LOCK is accepted for a memory exchange and rejected for register-only XCHG.
+test("Binaire LOCK XCHG mémoire exécute l'échange et préserve FLAGS", () => {
+  const code = [...bytes("LOCK XCHG WORD PTR [BX], AX"), 0xF4];
+  assert.deepEqual(code.slice(0, 3), [0xF0, 0x87, 0x07]);
+  const initial = setInitialBinary();
+  initial.reg.AX = 0x1234;
+  initial.mem = {
+    [physical(0x1000, 0x7788)]: 0xCD,
+    [physical(0x1000, 0x7789)]: 0xAB
+  };
+  const state = runBinary(code, 0x5000, 0x0100, initial);
+  assert.equal(state.reg.AX, 0xABCD);
+  assert.equal(state.mem[physical(0x1000, 0x7788)], 0x34);
+  assert.equal(state.mem[physical(0x1000, 0x7789)], 0x12);
+  assertFlags(state, "LOCK memory XCHG");
+  totals.binary++;
+  totals.flags++;
   totals.special++;
 });
 
