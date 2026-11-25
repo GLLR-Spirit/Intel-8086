@@ -115,6 +115,40 @@ for (const instruction of instructions) {
   }
 }
 
+// Signed and unsigned displacement boundaries for the F6/F7 memory forms.
+const displacementBoundaries = [
+  { expression: "[BX+SI-128]", mod: 1, tail: [0x80] },
+  { expression: "[BX+SI+127]", mod: 1, tail: [0x7F] },
+  { expression: "[BX+SI-32768]", mod: 2, tail: [0x00, 0x80] },
+  { expression: "[BX+SI+32767]", mod: 2, tail: [0xFF, 0x7F] },
+  { expression: "[BX+SI+65535]", mod: 2, tail: [0xFF, 0xFF] },
+  { expression: "[65535]", mod: 0, rm: 6, tail: [0xFF, 0xFF] }
+];
+let displacementBoundaryCases = 0;
+for (const instruction of instructions) {
+  for (const bits of [8, 16]) {
+    const opcode = bits === 8 ? 0xF6 : 0xF7;
+    const ptr = bits === 8 ? "BYTE PTR " : "WORD PTR ";
+    for (const item of displacementBoundaries) {
+      const rm = item.rm === undefined ? 0 : item.rm;
+      const expected = [opcode, modrm(item.mod, instruction.ext, rm), ...item.tail];
+      const source = instruction.op + " " + ptr + item.expression;
+      test("Limite déplacement F6/F7 " + source, () => {
+        same(api.assemble(source).bytes, expected, source);
+      });
+      displacementBoundaryCases++;
+    }
+  }
+}
+for (const instruction of instructions) {
+  test("Rejet déplacement inférieur à -32768 · " + instruction.op, () => {
+    assert.throws(() => api.assemble(instruction.op + " BYTE PTR [BX-32769]"));
+  });
+  test("Rejet déplacement supérieur à 65535 · " + instruction.op, () => {
+    assert.throws(() => api.assemble(instruction.op + " BYTE PTR [BX+65536]"));
+  });
+}
+
 // BP used without an explicit displacement is encoded as mod=01, disp8=0;
 // mod=00,r/m=110 is the direct disp16 form, never [BP].
 for (const instruction of instructions) {
@@ -359,6 +393,7 @@ for (const opcode of [0xF6, 0xF7]) {
 }
 
 console.log("Encodages/désassemblages mémoire : " + encodingCases);
+console.log("Limites de déplacement mémoire : " + displacementBoundaryCases + " ; rejets hors plage : 8");
 console.log("Overrides de segment : " + segmentCasesCount);
 console.log("Exécutions source/binaires : " + executionCases);
 console.log("Erreurs de division mémoire : " + faultCases);
