@@ -150,7 +150,7 @@ Cette tranche s'appuie sur les tests ciblés dédiés aux appels, retours, branc
 | JMP short | relatif rel8 | EB cb | Implémenté | Implémenté | Testé | Bornes rel8 |
 | JMP near | relatif rel16 | E9 cw | Implémenté | Implémenté | Testé | Déplacement rel16 |
 | JMP near indirect | r/m16 | FF /4 | Implémenté | Implémenté | Test ciblé | Registre et mémoire |
-| JMP far direct | ptr16:16 | EA cd | Présence à réconcilier | Présence à réconcilier | Test ciblé à compléter | À inscrire dans la matrice exhaustive |
+| JMP far direct | ptr16:16 | EA cd | Implémenté | Implémenté | Testé source et binaire | `jmp-far-8086`, GNU as ; CS:IP, SP et FLAGS |
 | JMP far indirect | m16:16 | FF /5 | Présence à réconcilier | Présence à réconcilier | Test ciblé à compléter | À inscrire dans la matrice exhaustive |
 | RET near | sans immédiat / imm16 | C3 / C2 iw | Implémenté | Implémenté | Testé | Pile, SP et nettoyage impair |
 | RETF | sans immédiat / imm16 | CB / CA iw | Implémenté | Implémenté | Testé | CS:IP, SP et nettoyage impair |
@@ -280,3 +280,17 @@ La phase 2 demeure ouverte : aucune somme de mnémoniques ou de suites exécuté
 - WAIT dépend du signal TEST du coprocesseur ; le modèle logiciel n'émule pas ce signal.
 
 Les lignes de ce tableau sont une liste de formes à valider, pas un décompte de formes toutes certifiées. Les tests existants sont ciblés ; il reste à relier chaque ligne à une preuve indépendante propre, en source et en binaire lorsque cela a un sens.
+
+
+### 14.1 JMP far direct — ajout validé
+
+La forme `JMP FAR ptr16:16` est maintenant implémentée dans le parseur, l'assembleur, le désassembleur et les chemins source/binaire. L'opcode EA encode l'offset puis le segment, chacun little-endian. Le test vérifie :
+- encodage `EA offset-low offset-high segment-low segment-high` ;
+- désassemblage en `JMP FAR segment:offset` ;
+- saut source vers une autre valeur de CS et offset exact ;
+- saut binaire vers du code placé dans un segment distinct ;
+- absence de cadre de retour sur la pile ;
+- préservation des neuf FLAGS modélisés ;
+- comparaison octet par octet avec GNU as via `ljmp`.
+
+Preuve dédiée : `tests/jmp-far-8086.cjs` et extension de `tests/call-ret-gnu-crosscheck.cjs`. La validation finale dépend du run CI qui inclut cette extension GNU as.
