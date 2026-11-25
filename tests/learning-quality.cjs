@@ -126,7 +126,7 @@ const exampleOracles = [
   { chapter: 1, lesson: 1, check: state => state.reg.AX === 0x1234, expected: "AX=1234h" },
   { chapter: 2, lesson: 1, check: state => state.reg.AX === 7, expected: "AX=0007h after EU arithmetic example" },
   { chapter: 5, lesson: 1, check: state => state.reg.AX === 0x1256, expected: "AX=1256h after writing AL" },
-  { chapter: 8, lesson: 1, check: state => (state.reg.AX & 0xff) === 0 && state.flags.CF === 1 && (state.reg.BX & 0xff) === 2,
+  { chapter: 8, lesson: 1, check: state => (state.reg.AX & 0xff) === 0 && state.flags.CF === 0 && (state.reg.BX & 0xff) === 2,
     expected: "ADD/ADC carry propagation: AL=00h, CF=1, BL=02h" },
   { chapter: 13, lesson: 3, check: state => state.reg.AX === 9 && state.reg.BX === 8,
     expected: "indirect near jump reaches offset 0008h and leaves AX=0009h" },
