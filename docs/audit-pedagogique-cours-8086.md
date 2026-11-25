@@ -24,6 +24,12 @@ La passe suivante a confirmé **108/108 exemples exécutables sans erreur du sim
 - Le saut indirect du chapitre 13 explicite désormais l'hypothèse de positionnement de l'image ; un offset codé en dur ne doit pas être présenté comme une adresse universelle.
 - La leçon sur la division présente maintenant un cas valide à la limite de capacité, puis distingue ce cas de l'exception de division provoquée par un quotient hors plage.
 
+### Vérifications sémantiques supplémentaires
+
+Une vérification ciblée des états de sortie a révélé une imprécision dans l'exemple ADD/ADC du chapitre 8 : le texte laissait entendre que CF restait à 1 après l'instruction ADC. En réalité, ADD produit d'abord CF=1 ; ADC consomme cette retenue et met à jour les indicateurs à nouveau. Avec les valeurs de l'exemple, le résultat final est AL=00h, BL=02h et CF=0. Le texte et l'oracle de test ont été corrigés.
+
+Six exemples représentatifs disposent maintenant d'oracles d'état qui vérifient les valeurs attendues de registres et, pour ADD/ADC, l'état final de CF. Cette couverture est ciblée : elle ne remplace pas encore un oracle indépendant pour les 108 exemples.
+
 ## 3. Contrôles automatiques des questions
 
 Les tests vérifient désormais :
