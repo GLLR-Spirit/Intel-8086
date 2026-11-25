@@ -21,7 +21,7 @@ Périmètre : chapitres 12 à 17, 18 leçons, 54 questions intermédiaires et 60
 | Compilation syntaxique des scripts de test | Réussie |
 | Auto-tests navigateur Playwright sur Chromium | **Réussis** |
 | Workflow CI complet sur le commit `1720bf5` | **Réussi** |
-| 17 étapes de validation du moteur | **Toutes réussies** |
+| 14 suites de validation du moteur | **Toutes réussies** |
 | Auto-tests intégrés de l'application | **375/375 réussis** |
 | Exemples pédagogiques assemblés et exécutés | **18/18** |
 | Modes d'exécution comparés | Interpréteur source et exécution du flux binaire |
