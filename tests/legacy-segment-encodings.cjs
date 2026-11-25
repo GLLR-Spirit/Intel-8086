@@ -161,8 +161,55 @@ test("Assembler retains MOV memory, CS as a valid 8C /1 form", () => {
   expectBytes("MOV WORD PTR [BX], CS", [0x8C, 0x0F]);
 });
 
+const segmentMemoryForms = [
+  { expression: "[BX+SI]", mod: 0, rm: 0, displacement: [] },
+  { expression: "[BX+DI]", mod: 0, rm: 1, displacement: [] },
+  { expression: "[BP+SI]", mod: 0, rm: 2, displacement: [] },
+  { expression: "[BP+DI]", mod: 0, rm: 3, displacement: [] },
+  { expression: "[SI]", mod: 0, rm: 4, displacement: [] },
+  { expression: "[DI]", mod: 0, rm: 5, displacement: [] },
+  { expression: "[BP]", mod: 1, rm: 6, displacement: [0x00] },
+  { expression: "[BX]", mod: 0, rm: 7, displacement: [] },
+  { expression: "[BX+SI+1]", mod: 1, rm: 0, displacement: [0x01] },
+  { expression: "[BX+SI+256]", mod: 2, rm: 0, displacement: [0x00, 0x01] },
+  { expression: "[4660]", mod: 0, rm: 6, displacement: [0x34, 0x12] }
+];
+
+for (const selector of [0, 1, 2, 3]) {
+  for (const form of segmentMemoryForms) {
+    const source = "MOV WORD PTR " + form.expression + ", " + canonical[selector];
+    const expected = [0x8C, modrm(form.mod, selector, form.rm), ...form.displacement];
+    test("Assemblage 8C /" + selector + " mémoire " + form.expression, () => {
+      expectBytes(source, expected);
+    });
+    test("Désassemblage 8C /" + selector + " mémoire " + form.expression, () => {
+      const decoded = api.disassemble(expected);
+      assert.equal(decoded.rows.length, 1);
+      assert.deepEqual(Array.from(decoded.rows[0].bytes), expected);
+      assert.ok(decoded.rows[0].instruction.startsWith("MOV "));
+      assert.ok(decoded.rows[0].instruction.includes(canonical[selector]));
+    });
+  }
+}
+
+for (const selector of [0, 2, 3]) {
+  for (const form of segmentMemoryForms) {
+    const source = "MOV " + canonical[selector] + ", WORD PTR " + form.expression;
+    const expected = [0x8E, modrm(form.mod, selector, form.rm), ...form.displacement];
+    test("Assemblage 8E /" + selector + " mémoire " + form.expression, () => {
+      expectBytes(source, expected);
+    });
+    test("Désassemblage 8E /" + selector + " mémoire " + form.expression, () => {
+      const decoded = api.disassemble(expected);
+      assert.equal(decoded.rows.length, 1);
+      assert.deepEqual(Array.from(decoded.rows[0].bytes), expected);
+      assert.ok(decoded.rows[0].instruction.startsWith("MOV " + canonical[selector] + ","));
+    });
+  }
+}
+
 console.log("Décodage 8C/8E : vecteurs fixes registre et mémoire, CS destination et sélecteurs /4..7 rejetés.");
-console.log("Assemblage 8C/8E : 64 formes source→registre et 48 formes registre→segment valides.");
+console.log("Assemblage 8C/8E : 64 formes source→registre, 48 formes registre→segment et 693 vecteurs mémoire assemblage/désassemblage.");
 console.log("Transferts CS : lecture autorisée, chargement interdit.");
 console.log("Résultat segment legacy : " + passed + " réussis, " + failed + " échecs.");
 if (failed) process.exit(1);
