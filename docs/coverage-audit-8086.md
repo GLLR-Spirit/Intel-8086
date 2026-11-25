@@ -646,3 +646,12 @@ Nouveaux contrôles :
 - étape CI dédiée « Run 8086 LOCK prefix and repeated string tests ».
 
 **Limite :** cette actualisation valide l'acceptation et les effets fonctionnels du préfixe, pas le signal LOCK sur le bus. Les interactions exhaustives entre F0h, F2h/F3h, overrides de segment, flux tronqués et ordre de préfixes restent à inscrire dans le registre forme-par-forme. Aucun pourcentage global n'est calculé.
+
+
+## Vérification CI des ajouts de transferts far et préfixes
+
+Sur le commit de code `7c8f356771848c797825b78498d02438886976d2` :
+- CI `45688448342` : succès ;
+- audit navigateur `45688448597` : succès.
+
+Le CI inclut désormais les tests dédiés `LOCK REP MOVSB`, `JMP FAR` direct et `JMP FAR` indirect sur huit modes mémoire, ainsi que la comparaison GNU as pour les formes far directes et les formes indirectes [BX]/[BX+SI]. La matrice générale reste provisoire et aucun pourcentage global n'est publié.
