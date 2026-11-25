@@ -152,16 +152,17 @@ chapterLearning=curriculum.map(function(c,ci){
  });
  var a=c[4][0],b=c[4][1],d=c[4][2];
  var exam=[
- ["Quel est l'objectif principal de ce chapitre ?",[c[3],"Optimiser exclusivement la vitesse d'affichage du navigateur","Remplacer le système d'exploitation"],0,c[3]],
- ["Quel concept est fondamental dans la première leçon ?",[a[4],b[4],d[4]],0,"La première leçon établit le concept : "+a[4]+"."],
- ["Quel exemple correspond à la deuxième leçon ?",[b[2],a[2],d[2]],0,"La deuxième leçon porte sur "+b[0]+"."],
- ["Quelle règle ou précaution doit être respectée ?",[c[5],"Ignorer les tailles et les registres implicites","Supposer que toutes les formes d'instruction sont interchangeables"],0,c[5]],
- ["Quel est le résultat attendu du premier exemple ?",[a[3],b[3],d[3]],0,"Le premier exemple est conçu pour obtenir : "+a[3]+"."],
- ["Quel résultat est associé à la troisième leçon ?",[d[3],a[3],b[3]],0,"La troisième leçon aboutit à : "+d[3]+"."],
- ["Quel programme illustre directement le thème du chapitre ?",[b[2],d[2],a[2]],0,"Cet exemple illustre "+b[0]+"."],
- ["Quelle affirmation résume correctement le principe étudié ?",[b[1], "Les instructions n'ont aucun effet sur l'état machine","Le processeur ignore les opérandes"],0,b[1]],
- ["Quel piège faut-il éviter lors de l'application ?",[c[5],"Supprimer les tests de validation","Confondre le code source avec les octets affichés"],0,c[5]],
- ["Quelle démarche est la plus rigoureuse pour résoudre un problème de ce chapitre ?",["Identifier les prérequis, appliquer la règle, tracer l'état et vérifier le résultat","Modifier plusieurs registres au hasard jusqu'à obtenir une valeur","Ignorer les cas limites et ne tester que le cas nominal"],0,"Une démarche rigoureuse relie la spécification, les règles architecturales, la trace et les tests."]];
+ ["Quelle est la finalité essentielle de ce chapitre ?",[c[3],"Optimiser exclusivement l'affichage du navigateur","Remplacer le système d'exploitation"],0,c[3],"Définition"],
+ ["Quel principe est introduit dans la première leçon ?",[a[4],b[4],d[4]],0,"La première leçon établit le concept : "+a[4]+".","Compréhension"],
+ ["Quelle séquence assembleur illustre la deuxième leçon ?",[b[2],a[2],d[2]],0,"Cette séquence met en pratique "+b[0]+".","Syntaxe"],
+ ["Quelle restriction ou précaution doit impérativement être respectée ?",[c[5],"Ignorer les tailles et les registres implicites","Supposer que toutes les formes d'instruction sont interchangeables"],0,c[5],"Restrictions"],
+ ["Quel résultat faut-il prévoir pour le premier exemple ?",[a[3],b[3],d[3]],0,"Le premier exemple doit produire : "+a[3]+".","Prédiction"],
+ ["Quel résultat est attendu après la troisième leçon ?",[d[3],a[3],b[3]],0,"La troisième leçon aboutit à : "+d[3]+".","Calcul / prédiction"],
+ ["Que démontre le programme de la deuxième leçon ?",[b[1],"Les instructions n'ont aucun effet sur l'état machine","Le processeur ignore les opérandes"],0,b[1],"Analyse de programme"],
+ ["Quelle observation correspond à l'exécution de la troisième leçon ?",[d[3],a[3],b[3]],0,"L'état attendu est : "+d[3]+".","Analyse de résultat"],
+ ["Quel défaut faut-il rechercher en priorité lors du débogage ?",[c[5],"Supprimer les tests de validation","Confondre le code source avec les octets affichés"],0,c[5],"Débogage"],
+ ["Quelle démarche permet de résoudre rigoureusement un problème de ce chapitre ?",["Identifier les prérequis, appliquer la règle, tracer l'état et vérifier le résultat","Modifier plusieurs registres au hasard jusqu'à obtenir une valeur","Ignorer les cas limites et ne tester que le cas nominal"],0,"Une démarche rigoureuse relie la spécification, les règles architecturales, la trace et les tests.","Raisonnement"]
+ ].map(function(q,qi){return rotateQuiz(q,ci+qi);});
  return {goal:c[3],theory:c[4].map(function(l){return l[1];}).join(" "),walk:c[4].map(function(l){return l[2]+" Résultat attendu : "+l[3];}).join(" "),lessons:lq,quiz:exam,prereq:c[2],pitfall:c[5]};
 });
 function renderLessons(){
@@ -174,7 +175,7 @@ function renderLessons(){
  if(mode==="guided"&&!completed.size)showLesson(0,0);
 }
 function buildQuizHtml(questions,prefix){
- return questions.map(function(q,n){return '<div class="lesson-question"><b>'+(n+1)+'. '+q[0]+'</b><div class="lesson-options">'+q[1].map(function(a,j){return '<label><input type="radio" name="'+prefix+'-'+n+'" value="'+j+'"> '+a+'</label>';}).join("")+'</div><div class="status" id="'+prefix+'-feedback-'+n+'"></div></div>';}).join("");
+ return questions.map(function(q,n){return '<div class="lesson-question"><div class="eyebrow">'+(q[4]||'Question')+'</div><b>'+(n+1)+'. '+q[0]+'</b><div class="lesson-options">'+q[1].map(function(a,j){return '<label><input type="radio" name="'+prefix+'-'+n+'" value="'+j+'"> '+a+'</label>';}).join("")+'</div><div class="status" id="'+prefix+'-feedback-'+n+'"></div></div>';}).join("");
 }
 function evaluateQuiz(questions,prefix,scoreNode,storage,key){
  var score=0;
