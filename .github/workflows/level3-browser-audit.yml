@@ -1,0 +1,34 @@
+name: Niveau 3 — audit navigateur
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "tests/level3-browser-audit.cjs"
+      - ".github/workflows/level3-browser-audit.yml"
+  push:
+    branches: [audit/niveau-3-chapitres-12-17]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Installer Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Démarrer le serveur statique
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/8086-server.log 2>&1 &
+          echo $! > /tmp/8086-server.pid
+      - name: Exécuter les auto-tests, 18 exemples et 16 conditions Jcc
+        run: node tests/level3-browser-audit.cjs
