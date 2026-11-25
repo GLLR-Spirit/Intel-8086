@@ -58,7 +58,7 @@ function decode(bytes, mnemonic, message) {
   check(d.rows[0].instruction.includes(mnemonic), message + " decoded mnemonic");
   if (bytes[0] === 0xF0) {
     check(d.rows[0].instruction.startsWith("LOCK "), message + " LOCK prefix retained");
-  } else {
+  } else if ([0x26, 0x2E, 0x36, 0x3E].includes(bytes[0])) {
     const segmentName = bytes[0] === 0x26 ? "ES" :
       bytes[0] === 0x2E ? "CS" : bytes[0] === 0x36 ? "SS" : "DS";
     check(d.rows[0].instruction.includes(segmentName + ":"),
@@ -87,13 +87,16 @@ for (const op of OPS) {
         "HLT"
       ].join("\n");
       const opcode = op.base + (direction === "memory-source" ? 2 : 0);
-      const expected = [seg.prefix, opcode, 0x0F];
+      // DS is the default segment for [BX], so an explicit DS override is redundant
+      // and is canonically omitted by the assembler.
+      const segmentPrefix = seg.name === "DS" ? [] : [seg.prefix];
+      const expected = [...segmentPrefix, opcode, 0x0F];
       same(encoded(source), [
         0xB8,0x00,0x10, 0x8E,0xD8,
         0xB8,0x00,0x20, 0x8E,0xC0,
         0xB8,0x00,0x30, 0x8E,0xD0,
         0xBB,0x00,0x02,
-        seg.prefix,0xC6,0x07,0x10,
+        ...segmentPrefix,0xC6,0x07,0x10,
         0xB1,0x01,0xF8,
         ...expected,0xF4
       ], op.name + " " + seg.name + " " + direction + " assembled stream");
