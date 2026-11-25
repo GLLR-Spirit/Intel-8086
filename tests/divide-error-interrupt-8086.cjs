@@ -58,20 +58,22 @@ function sourceProgram(fault) {
   ].join("\n");
 }
 const faults = [
-  { name: "DIV 8-bit division by zero", setup: ["MOV AX, 1234h", "MOV BL, 0"], instruction: "DIV BL" },
-  { name: "IDIV 8-bit division by zero", setup: ["MOV AX, 1234h", "MOV BL, 0"], instruction: "IDIV BL" },
-  { name: "DIV 16-bit division by zero", setup: ["MOV DX, 0", "MOV AX, 1234h", "MOV BX, 0"], instruction: "DIV BX" },
-  { name: "IDIV 16-bit division by zero", setup: ["MOV DX, 0", "MOV AX, 1234h", "MOV BX, 0"], instruction: "IDIV BX" },
-  { name: "DIV 8-bit quotient overflow", setup: ["MOV AX, 0100h", "MOV BL, 1"], instruction: "DIV BL" },
-  { name: "IDIV 8-bit quotient overflow", setup: ["MOV AX, 0FF80h", "MOV BL, 1"], instruction: "IDIV BL" },
-  { name: "DIV 16-bit quotient overflow", setup: ["MOV DX, 1", "MOV AX, 0", "MOV BX, 1"], instruction: "DIV BX" },
-  { name: "IDIV 16-bit quotient overflow", setup: ["MOV DX, 0FFFFh", "MOV AX, 8000h", "MOV BX, 1"], instruction: "IDIV BX" }
+  { name: "DIV 8-bit division by zero", setup: ["MOV AX, 1234h", "MOV BL, 0"], instruction: "DIV BL", expectedAX: 0x1234, expectedDX: 0 },
+  { name: "IDIV 8-bit division by zero", setup: ["MOV AX, 1234h", "MOV BL, 0"], instruction: "IDIV BL", expectedAX: 0x1234, expectedDX: 0 },
+  { name: "DIV 16-bit division by zero", setup: ["MOV DX, 0", "MOV AX, 1234h", "MOV BX, 0"], instruction: "DIV BX", expectedAX: 0x1234, expectedDX: 0 },
+  { name: "IDIV 16-bit division by zero", setup: ["MOV DX, 0", "MOV AX, 1234h", "MOV BX, 0"], instruction: "IDIV BX", expectedAX: 0x1234, expectedDX: 0 },
+  { name: "DIV 8-bit quotient overflow", setup: ["MOV AX, 0100h", "MOV BL, 1"], instruction: "DIV BL", expectedAX: 0x0100, expectedDX: 0 },
+  { name: "IDIV 8-bit quotient overflow", setup: ["MOV AX, 0FF80h", "MOV BL, 1"], instruction: "IDIV BL", expectedAX: 0xFF80, expectedDX: 0 },
+  { name: "DIV 16-bit quotient overflow", setup: ["MOV DX, 1", "MOV AX, 0", "MOV BX, 1"], instruction: "DIV BX", expectedAX: 0, expectedDX: 1 },
+  { name: "IDIV 16-bit quotient overflow", setup: ["MOV DX, 0FFFFh", "MOV AX, 8000h", "MOV BX, 1"], instruction: "IDIV BX", expectedAX: 0x8000, expectedDX: 0xFFFF }
 ];
 
 for (const fault of faults) {
   test("Source VECTOR 00h: " + fault.name, () => {
     const state = api.execute(sourceProgram(fault));
     assert.ok(!state.error, state.error || "Execution failed");
+    assert.equal(state.reg.AX, fault.expectedAX, "Fault must not commit a quotient/remainder");
+    assert.equal(state.reg.DX, fault.expectedDX, "Fault must preserve DX");
     assert.equal(state.reg.SI, 0x5678, "Handler must execute");
     assert.equal(state.reg.DI, 0xABCD, "IRET must resume after the faulting DIV/IDIV");
     assert.equal(state.reg.CX & 0x0300, 0, "IF and TF must be cleared inside the handler");
@@ -98,7 +100,7 @@ function binaryProgram(fault) {
     "IRET"
   ].join("\n");
 }
-for (const fault of [faults[0], faults[5], faults[6], faults[7]]) {
+for (const fault of faults) {
   test("Binary IVT 00h: " + fault.name, () => {
     const assembled = api.assemble(binaryProgram(fault));
     const handler = assembled.symbols.HANDLER;
@@ -115,6 +117,8 @@ for (const fault of [faults[0], faults[5], faults[6], faults[7]]) {
       mem: ivt
     });
     assert.ok(!state.error, state.error || "Binary execution failed");
+    assert.equal(state.reg.AX, fault.expectedAX, "Fault must not commit a quotient/remainder");
+    assert.equal(state.reg.DX, fault.expectedDX, "Fault must preserve DX");
     assert.equal(state.reg.SI, 0x5678, "IVT handler must execute");
     assert.equal(state.reg.DI, 0xABCD, "IRET must resume after the faulting instruction");
     assert.equal(state.reg.CX & 0x0300, 0, "IF and TF must be cleared inside the handler");
@@ -137,7 +141,7 @@ test("Binary division fault without initialized IVT 00h remains a diagnostic", (
 });
 
 console.log("Interruptions de division — source VECTOR 00h : 8 cas");
-console.log("Interruptions de division — IVT binaire : 4 cas");
+console.log("Interruptions de division — IVT binaire : 8 cas");
 console.log("Contrôles : cadre FLAGS/CS/IP, IF/TF, IRET, reprise IP et pile.");
 console.log("Audit divide-error interrupt : " + passed + " réussis, " + failed + " échecs.");
 if (failed) process.exit(1);
