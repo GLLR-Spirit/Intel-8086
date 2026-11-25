@@ -112,7 +112,56 @@ test("8086 MOV AX, CS remains valid", () => {
   assert.equal(decode([0x8C, 0xC8]), "MOV AX, CS");
 });
 
-console.log("Décodage 8C/8E : 128 vecteurs fixes, CS destination et sélecteurs non utilisés rejetés.");
+test("8086 CS destination is rejected for every memory addressing mode", () => {
+  for (let mod = 0; mod < 4; mod++) {
+    for (let rm = 0; rm < 8; rm++) {
+      const displacement = mod === 0 && rm === 6 ? [0x34, 0x12]
+        : mod === 1 ? [0x7F]
+        : mod === 2 ? [0x34, 0x12] : [];
+      const code = [0x8E, modrm(mod, 1, rm), ...displacement];
+      const result = api.disassemble(code);
+      assert.ok(result.rows[0].instruction.startsWith("DB "),
+        "8E /1 must remain unsupported: " + code.map(x => x.toString(16)));
+      assert.deepEqual(Array.from(result.rows[0].bytes), [0x8E],
+        "the invalid CS-load opcode must not be reinterpreted");
+      assert.equal(result.size, code.length);
+      assert.equal(result.rows.reduce((sum, row) => sum + row.size, 0), code.length,
+        "the complete stream must still be consumed");
+    }
+  }
+});
+
+test("8086 reserved segment selectors /4..7 are rejected in all memory modes", () => {
+  for (const opcode of [0x8C, 0x8E]) {
+    for (let selector = 4; selector < 8; selector++) {
+      for (let mod = 0; mod < 4; mod++) {
+        for (let rm = 0; rm < 8; rm++) {
+          const displacement = mod === 0 && rm === 6 ? [0x34, 0x12]
+            : mod === 1 ? [0x7F]
+            : mod === 2 ? [0x34, 0x12] : [];
+          const code = [opcode, modrm(mod, selector, rm), ...displacement];
+          const result = api.disassemble(code);
+          assert.ok(result.rows[0].instruction.startsWith("DB "),
+            opcode.toString(16) + " /" + selector + " must remain reserved");
+          assert.equal(result.size, code.length);
+          assert.equal(result.rows.reduce((sum, row) => sum + row.size, 0), code.length);
+        }
+      }
+    }
+  }
+});
+
+test("Assembler rejects MOV CS from memory as well as from registers", () => {
+  for (const operand of ["WORD PTR [BX]", "WORD PTR [BP+SI+4]", "WORD PTR [1234h]"]) {
+    assert.throws(() => api.assemble("MOV CS, " + operand), /MOV CS comme destination/);
+  }
+});
+
+test("Assembler retains MOV memory, CS as a valid 8C /1 form", () => {
+  expectBytes("MOV WORD PTR [BX], CS", [0x8C, 0x0F]);
+});
+
+console.log("Décodage 8C/8E : vecteurs fixes registre et mémoire, CS destination et sélecteurs /4..7 rejetés.");
 console.log("Assemblage 8C/8E : 64 formes source→registre et 48 formes registre→segment valides.");
 console.log("Transferts CS : lecture autorisée, chargement interdit.");
 console.log("Résultat segment legacy : " + passed + " réussis, " + failed + " échecs.");
