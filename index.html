@@ -568,12 +568,37 @@ function parity(v){var c=0;for(var i=0;i<8;i++)c+=(v>>i)&1;return c%2===0?1:0;}
 function logicFlags(v,b){var mask=b===8?255:65535,sign=b===8?128:32768;v&=mask;cpu.flags.ZF=v===0?1:0;cpu.flags.SF=(v&sign)?1:0;cpu.flags.PF=parity(v&255);cpu.flags.CF=0;cpu.flags.OF=0;}
 function arithmetic(a,b,kind,bits){var mask=bits===8?255:65535,sign=bits===8?128:32768,carryIn=(kind==="ADC"||kind==="SBB")?(cpu.flags.CF&1):0,isAdd=kind==="ADD"||kind==="ADC",raw=isAdd?a+b+carryIn:a-b-carryIn,res=raw&mask;cpu.flags.CF=isAdd?(raw>mask?1:0):(raw<0?1:0);cpu.flags.ZF=res===0?1:0;cpu.flags.SF=(res&sign)?1:0;cpu.flags.PF=parity(res&255);var sa=signedValue(a,bits),sb=signedValue(b,bits),signedRaw=isAdd?sa+sb+carryIn:sa-sb-carryIn,min=bits===8?-128:-32768,max=bits===8?127:32767;cpu.flags.OF=signedRaw<min||signedRaw>max?1:0;cpu.flags.AF=isAdd?(((a&15)+(b&15)+carryIn)>15?1:0):((a&15)<((b&15)+carryIn)?1:0);return res;}
 function signedValue(v,bits){var sign=bits===8?128:32768,mod=bits===8?256:65536;return v&sign?v-mod:v;}
+function enterDivideError(op,reason){
+var message=op+" : "+reason+".";
+if(dynamicExecution){
+var loIP=cpu.mem[0],hiIP=cpu.mem[1],loCS=cpu.mem[2],hiCS=cpu.mem[3];
+if(loIP===undefined||hiIP===undefined||loCS===undefined||hiCS===undefined)throw Error(message+" Vecteur 00h : entrée IVT non initialisée ou incomplète en mémoire.");
+if(cpu.stack.length>32765)throw Error("Pile pleine : cadre d’interruption de division impossible.");
+var interruptIP=loIP|(hiIP<<8),interruptCS=loCS|(hiCS<<8);
+pushWord(packFlags(cpu.flags),"iret-flags");
+pushWord(cpu.reg.CS,"iret-cs");
+pushWord(nextInstructionOffset(),"iret-ip");
+cpu.flags.IF=0;cpu.flags.TF=0;cpu.reg.CS=interruptCS;
+return codeIndexAt(interruptIP,"INT 00h");
+}
+if(vectors[0]!==undefined){
+var target=resolveLabelIndex(vectors[0],"INT 00h");
+if(target===undefined)throw Error("Gestionnaire du vecteur 00h introuvable : "+vectors[0]+".");
+if(cpu.stack.length>32765)throw Error("Pile pleine : cadre d’interruption de division impossible.");
+pushWord(packFlags(cpu.flags),"iret-flags");
+pushWord(cpu.reg.CS,"iret-cs");
+pushWord(nextInstructionOffset(),"iret-ip");
+cpu.flags.IF=0;cpu.flags.TF=0;
+return target;
+}
+throw Error(message);
+}
 function executeMultiplyDivide(op,args){if(args.length!==1)throw Error(op+" attend un seul opérande.");var operand=args[0],m=memoryOperand(operand),r=info(operand);if(!m&&!r)throw Error(op+" exige un opérande registre ou mémoire, pas une valeur immédiate.");var bits=width(operand),value=get(operand,bits);if(bits!==8&&bits!==16)throw Error(op+" accepte uniquement un opérande de 8 ou 16 bits.");var signed=op==="IMUL"||op==="IDIV";
 if(op==="MUL"||op==="IMUL"){var left=bits===8?(cpu.reg.AX&255):cpu.reg.AX,product=signed?signedValue(left,bits)*signedValue(value,bits):left*value;if(bits===8){cpu.reg.AX=product&65535;var fits=signed?product>=-128&&product<=127:product<=255;cpu.flags.CF=cpu.flags.OF=fits?0:1;}else{var low=product&65535,high=Math.floor(product/65536)&65535;cpu.reg.AX=low;cpu.reg.DX=high;var fits16=signed?product>=-32768&&product<=32767:high===0;cpu.flags.CF=cpu.flags.OF=fits16?0:1;}return null;}
-var divisor=signed?signedValue(value,bits):value;if(divisor===0)throw Error(op+" : division par zéro.");
+var divisor=signed?signedValue(value,bits):value;if(divisor===0)return enterDivideError(op,"division par zéro");
 var dividend=bits===8?(signed?signedValue(cpu.reg.AX,16):cpu.reg.AX):(signed?((cpu.reg.DX<<16)|cpu.reg.AX):cpu.reg.DX*65536+cpu.reg.AX);
 var quotient=Math.trunc(dividend/divisor),remainder=dividend-quotient*divisor,min=signed?(bits===8?-127:-32767):0,max=signed?(bits===8?127:32767):(bits===8?255:65535);
-if(quotient<min||quotient>max)throw Error(op+" : dépassement de quotient (résultat hors plage).");
+if(quotient<min||quotient>max)return enterDivideError(op,"dépassement de quotient (résultat hors plage)");
 if(bits===8){cpu.reg.AX=((remainder&255)<<8)|(quotient&255);}else{cpu.reg.AX=quotient&65535;cpu.reg.DX=remainder&65535;}return null;}
 function packFlags(f){return 0xF002|(f.CF&1)|((f.PF&1)<<2)|((f.AF&1)<<4)|((f.ZF&1)<<6)|((f.SF&1)<<7)|((f.TF&1)<<8)|((f.IF&1)<<9)|((f.DF&1)<<10)|((f.OF&1)<<11);}
 function unpackFlags(word){var f={CF:0,PF:0,AF:0,ZF:0,SF:0,TF:0,IF:0,DF:0,OF:0};Object.keys(f).forEach(function(k){var bit={CF:0,PF:2,AF:4,ZF:6,SF:7,TF:8,IF:9,DF:10,OF:11}[k];f[k]=(word>>bit)&1;});return f;}
