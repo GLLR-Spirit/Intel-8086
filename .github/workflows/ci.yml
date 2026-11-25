@@ -96,5 +96,7 @@ jobs:
         run: node tests/jmp-far-indirect-8086.cjs
       - name: Run near indirect JMP register and memory tests
         run: node tests/jmp-near-indirect-8086.cjs
+      - name: Run PUSH/POP forms and stack semantics tests
+        run: node tests/push-pop-forms-8086.cjs
       - name: Run dynamic differential audit
         run: node tests/dynamic-differential.cjs
