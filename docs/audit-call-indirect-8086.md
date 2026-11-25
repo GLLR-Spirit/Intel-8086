@@ -3,7 +3,7 @@
 **Branche :** `audit/niveau-3-chapitres-12-17`  
 **Périmètre :** `FF /2` (CALL near indirect) et `FF /3` (CALL far indirect), assembleur, désassembleur, exécution source et binaire.  
 **Référence d'encodage indépendante :** GNU Binutils `as` 2.46, mode `.code16`.  
-**Statut :** tests automatisés du moteur réussis ; validation Playwright du dernier correctif en cours au moment de cette rédaction. Aucune conclusion de validation globale 8086 n'en découle.
+**Statut :** tests automatisés du moteur et validation Playwright réussis sur les commits de test référencés ci-dessous. Aucune conclusion de validation globale 8086 n'en découle.
 
 ## 1. Règles architecturales vérifiées
 
@@ -76,7 +76,7 @@ Sur le commit `acc2b0908bb167d1e5c8b19ff81642c78dcc0c72` :
 - CALL far direct : **4/4** ;
 - suite complète CI principale : **success**, run [45661398723](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45661398723).
 
-Le workflow navigateur inclut désormais un scénario Playwright distinct pour CALL near indirect, CALL far indirect, l'ordre de pile, RETF et exécution binaire. Le premier essai a détecté une assertion erronée du test sur l'étiquette d'affichage de pile (la vue expose les mots comme données, pas comme chaînes « RET »). Cette assertion a été corrigée ; le nouveau run doit réussir avant de marquer la validation Playwright comme acquise.
+Le workflow navigateur inclut un scénario Playwright distinct pour CALL near indirect, CALL far indirect, l'ordre de pile, RETF et exécution binaire. Après correction de l'assertion d'affichage de pile, le workflow navigateur est passé avec succès sur le commit `e932b74c99b08e652a38c452d31baf6d0c451d8c`, run [45661559133](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45661559133). Le scénario vérifie les clics réels sur « Pas à pas », les valeurs CS:IP, les mots de pile, le retour RETF et le chemin d'exécution binaire.
 
 ## 6. Limites du modèle à maintenir dans la documentation
 
