@@ -544,14 +544,14 @@ test("IDIV word rejects quotient -32768 on original 8086", () => {
 
 test("IDIV byte accepts the lower valid quotient -127", () => {
   verifyIdivBoundary(
-    ["MOV AX, 3F80h", "MOV BL, 80h", "IDIV BL", "HLT"].join("\n"),
+    ["MOV AX, FF81h", "MOV BL, 1", "IDIV BL", "HLT"].join("\n"),
     0xFF81, 0, "IDIV BL", [0xF6, 0xFB]
   );
 });
 
 test("IDIV word accepts the lower valid quotient -32767", () => {
   verifyIdivBoundary(
-    ["MOV DX, 4000h", "MOV AX, 8000h", "MOV BX, 8000h", "IDIV BX", "HLT"].join("\n"),
+    ["MOV DX, FFFFh", "MOV AX, 8001h", "MOV BX, 1", "IDIV BX", "HLT"].join("\n"),
     0x8001, 0, "IDIV BX", [0xF7, 0xFB]
   );
 });
