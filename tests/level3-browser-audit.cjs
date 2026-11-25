@@ -152,6 +152,12 @@ const assert = require("node:assert/strict");
   await page.locator("#decodeModRM").click();
   assert.match(await page.locator("#modrmDemoResult").textContent(), /MOD=1 · REG=AX · R\/M=\[BX\+SI\]/);
 
+  await page.locator('[data-lesson="1"]').click();
+  const animationName = await page.locator(".architecture-flow").evaluate(el => getComputedStyle(el, "::after").animationName);
+  assert.equal(animationName, "busPacket", "The BIU/EU flow illustration must expose its schematic animation.");
+  console.log("Course visual interaction audit: 6/6 interactive demonstrations and BIU animation PASS.");
+
+
   assert.deepEqual(report.failures, [], report.failures.join("\n"));
   assert.deepEqual(errors, [], "Erreurs JavaScript dans la page : "+errors.join("; "));
   console.log(JSON.stringify({integratedSelfTests:summary,...report},null,2));
