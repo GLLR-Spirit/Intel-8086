@@ -174,10 +174,10 @@ for (const [chapter, lesson, check, expected] of foundationalExampleOracles) {
 for (let chapterIndex = 0; chapterIndex < 5; chapterIndex++) {
   const chapter = learning.chapterLearning[chapterIndex];
   assert.equal(chapter.quiz.length, 10, "Foundational chapter must retain ten final questions.");
-  assert.deepEqual(chapter.quiz.map(q => q[4]), [
+  assert.equal(JSON.stringify(chapter.quiz.map(q => q[4])), JSON.stringify([
     "Définition","Compréhension","Syntaxe","Restrictions","Prédiction",
     "Calcul / prédiction","Analyse de programme","Analyse de résultat","Débogage","Raisonnement"
-  ], "Foundational final assessment must use the ten audited categories in order.");
+  ]), "Foundational final assessment must use the ten audited categories in order.");
   assert.ok(chapter.lessons.every(lesson => lesson.quiz.length === 3),
     "Each foundational lesson must retain exactly three questions.");
 }
