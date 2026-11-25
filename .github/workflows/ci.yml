@@ -48,6 +48,8 @@ jobs:
         run: node tests/mul-div-memory-8086.cjs
       - name: Run independent 8086 NEG instruction audit
         run: node tests/neg-8086.cjs
+      - name: Run independent 8086 LAHF and SAHF audit
+        run: node tests/lahf-sahf-8086.cjs
       - name: Run operand constraint tests
         run: node tests/operand-constraints.cjs
       - name: Run original 8086 segment selector vectors
