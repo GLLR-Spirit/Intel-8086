@@ -738,7 +738,7 @@ for(var oi=0;oi<ops.length;oi++){offsets[oi]=size;size+=ops[oi]._binarySize;}
 offsets[ops.length]=size;
 for(var bi=0;bi<ops.length;bi++){
 var candidate=ops[bi];
-if(candidate.op!=="JMP"||candidate._shortBranch)continue;
+if(candidate.op!=="JMP"||candidate._shortBranch||/^FAR(?:\s+PTR)?\s+[0-9A-F]+H:[0-9A-F]+H$/i.test(candidate.args[0]))continue;
 var candidateIndirect=(info(candidate.args[0])||memoryOperand(candidate.args[0]));
 if(candidateIndirect)continue;
 var candidateIndex=parsed.labels[candidate.args[0].toUpperCase()];
