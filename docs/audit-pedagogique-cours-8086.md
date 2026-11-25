@@ -160,3 +160,53 @@ La page Cours présente les leçons, les exemples commentés et les quiz. Les ex
 | Parcours Cours / Exercices / Atelier | Structure présente ; audit navigateur détaillé restant |
 
 **Conclusion :** la validation des exemples a franchi un seuil important : chaque leçon a maintenant un oracle de résultat. La qualité des questionnaires des chapitres 18–36 a été améliorée en supprimant les questions génériques. Le cours ne peut cependant pas être déclaré totalement validé tant que la revue technique individuelle des questions 1–17, l'audit visuel/interactif et le parcours navigateur des trois espaces ne sont pas terminés.
+
+
+---
+
+## 7. Deuxième passe — résultats attendus et questions (25 novembre 2026)
+
+### 7.1 Exemples : oracles individuels
+
+Le test `tests/learning-quality.cjs` ne se limite plus à lancer les 108 exemples :
+
+- chaque exemple possède maintenant un contrôle d'état attendu ou un contrôle d'encodage/désassemblage indépendant ;
+- les assertions contrôlent les registres et, selon le cas, la mémoire, la pile, les FLAGS, les octets machine et les limites de l'instruction ;
+- les exemples dont la propriété enseignée est théorique ou non mesurable dans le simulateur sont explicitement marqués comme tels au lieu de prétendre mesurer un comportement matériel.
+
+La couverture des oracles est de **108/108 exemples**, avec deux chemins de contrôle pour les cas d'encodage et de désassemblage. La suite vérifie aussi les 108 exécutions source sans erreur. Le CI a précédemment confirmé le passage de la nouvelle batterie d'oracles ; les modifications pédagogiques de cette passe restent soumises au dernier run de validation avant clôture.
+
+**Réserve :** ces oracles sont des assertions indépendantes du résultat annoncé, mais ils s'exécutent encore sur le moteur du laboratoire pour les états dynamiques. Ils ne remplacent pas une comparaison de chaque instruction avec le silicium ni les références Intel pour les bits indéfinis.
+
+### 7.2 Questions : revue sémantique individuelle
+
+Revue de la totalité du jeu de questions, et pas uniquement de sa structure :
+
+- **324/324 questions intermédiaires** : énoncé, réponse indexée et explication contrôlés ;
+- **360/360 questions finales** : énoncé, réponse indexée, explication et catégorie contrôlés ;
+- **684/684 items** examinés dans le contexte du chapitre et de sa progression ;
+- les propositions distractrices ont été relues en complément des contrôles automatiques de non-duplication et de distinction.
+
+Corrections apportées à la suite de cette revue :
+
+1. **Chapitre 10** : « quelle instruction demande le mode pas à pas » est remplacé par « quel indicateur active le mode pas à pas » ; la réponse correcte est TF, un indicateur, pas une instruction.
+2. **Chapitre 11** : la formulation « instruction courante » est remplacée par « prochaine instruction à exécuter » pour décrire précisément IP.
+3. **Chapitre 26** : la question de correction d'un décalage qui doit préserver le signe citait à tort `SAR` comme instruction erronée ; elle vise maintenant `SHR`, à remplacer par `SAR`.
+4. **Chapitre 34 — LOCK** : les questions ne présentent plus `LOCK INC AX` comme une forme architecturalement interdite. Le manuel Intel 8086 indique que le préfixe LOCK active le signal pendant l'instruction suivante en mode maximum ; il peut donc être présent même si une opération sur registre n'apporte pas de protection à une donnée mémoire partagée. Les questions distinguent désormais l'encodage du préfixe de son utilité pour protéger une donnée partagée.
+
+Les assertions de régression dans `tests/learning-quality.cjs` figent les réponses et explications des formulations corrigées.
+
+### 7.3 Point technique à conserver ouvert : LOCK et préfixes combinés
+
+La référence Intel 8086 précise que le signal LOCK reste actif pendant l'instruction qui suit le préfixe et mentionne le cas d'une instruction de chaîne répétée verrouillée. Le parseur du laboratoire rejette actuellement LOCK devant une instruction de chaîne. Cette divergence entre la portée architecturale du préfixe et la restriction du modèle doit être auditée en phase 2, notamment pour les séquences LOCK+REP et leurs effets sur le flux source et binaire. Elle ne doit pas être masquée par la correction du cours.
+
+### 7.4 Statut pédagogique à ce stade
+
+- Présence et structure des 36 chapitres : contrôlées.
+- 108 exemples : exécution et oracles de résultats présents.
+- 684 questions : revue sémantique effectuée et corrections ciblées enregistrées.
+- Progression et qualité rédactionnelle des 108 leçons : revue approfondie à poursuivre.
+- Illustrations, animations et interactions : inventaire et test d'interaction chapitre par chapitre à poursuivre.
+- Séparation Cours / Exercices / Atelier : présence contrôlée dans l'interface ; audit UX détaillé à poursuivre.
+
+**Conclusion :** les exemples et le jeu de questions ont franchi une étape de vérification beaucoup plus stricte, mais la phase 3 n'est pas clôturée. Les leçons, les visualisations et les interactions doivent encore être évaluées individuellement, et les limites du modèle doivent rester explicites.
