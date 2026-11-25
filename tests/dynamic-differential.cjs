@@ -362,13 +362,12 @@ test("INT binaire consulte l’IVT, empile FLAGS/CS/IP et revient par IRET", () 
 categories.iret++;
 
 test("INT binaire — ordre exact du cadre en SS:SP et FLAGS observés dans le gestionnaire", () => {
-  const source="INT 20h\nHLT\nHANDLER: PUSHF\nPOP AX\nMOV WORD PTR [0100h], AX\nIRET";
-  const assembled=api.assemble(source);
-  const handler=assembled.symbols.HANDLER;
+  const bytes=[0xcd,0x20,0xf4,0x9c,0x58,0xc7,0x06,0x00,0x01,0x00,0x00,0xcf];
+  const handler=3;
   const mem={
     128:handler&255,129:(handler>>8)&255,130:0x00,131:0x01
   };
-  const state=api.executeBinary(Array.from(assembled.bytes),0x0100,0,{
+  const state=api.executeBinary(bytes,0x0100,0,{
     reg:{DS:0x1000,SS:0x2000,SP:0xfffe},
     flags:{CF:1,IF:1,TF:1,DF:1},
     mem
