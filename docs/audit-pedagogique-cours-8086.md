@@ -302,3 +302,5 @@ Le contrôle de la progression rédactionnelle, la qualité de chaque explicatio
 - **C20 L2** : ajout de la particularité 8086 de PUSH SP : la valeur empilée est celle de SP après décrémentation ; elle diffère du comportement de processeurs ultérieurs.
 - **C27** : le prérequis précise maintenant les segments implicites : DS:SI (ou source substituée) pour la lecture et ES:DI pour les destinations MOVS, CMPS, SCAS et STOS.
 - **C32 L1–L3** : correction d'une erreur conceptuelle du prérequis : R/M=100 désigne [SI], il n'est pas réservé. R/M=110 avec Mod=00 encode le direct disp16 ; avec Mod=01/10, il désigne BP avec déplacement. Le texte distingue maintenant les trois valeurs de Mod et le rôle des champs Mod, Reg et R/M.
+- **C14 L3** : rappel explicite que les 16 Jcc du 8086 utilisent exclusivement un déplacement relatif court rel8, calculé depuis l'instruction suivante.
+- **C26 L3** : précision de compatibilité : sur 8086, le compte de décalage/rotation est 1 ou CL ; les formes à immédiat 8 bits sont postérieures.
