@@ -111,6 +111,32 @@ for(const [stem,answer,explanation] of semanticQuestionOracles){
 assert.equal(learning.chapterLearning.reduce((n,c)=>n+c.lessons.reduce((m,l)=>m+l.quiz.length,0)+c.quiz.length,0),684,
   "All 684 assessment items must be included in the individually reviewed bank.");
 
+const semanticKey = JSON.parse(fs.readFileSync("docs/question-semantic-key-8086.json","utf8"));
+assert.equal(semanticKey.questions.length,684,"The independent semantic key must pin all 684 questions.");
+const runtimeQuestionMap = new Map();
+learning.chapterLearning.forEach((chapter,ci)=>{
+  chapter.lessons.forEach((lesson,li)=>lesson.quiz.forEach((q,qi)=>{
+    runtimeQuestionMap.set("C"+String(ci+1).padStart(2,"0")+"-L"+(li+1)+"-Q"+(qi+1),q);
+  }));
+  chapter.quiz.forEach((q,qi)=>{
+    runtimeQuestionMap.set("C"+String(ci+1).padStart(2,"0")+"-F-Q"+(qi+1),q);
+  });
+});
+assert.equal(runtimeQuestionMap.size,684,"Every runtime question must have a unique chapter/lesson identifier.");
+const semanticKeyFailures=[];
+for(const expected of semanticKey.questions){
+  const actual=runtimeQuestionMap.get(expected.id);
+  if(!actual){semanticKeyFailures.push({id:expected.id,problem:"missing runtime question"});continue;}
+  const sameChoices=JSON.stringify([...actual[1]].sort())===JSON.stringify([...expected.choices].sort());
+  if(actual[0]!==expected.stem||actual[1][actual[2]]!==expected.correctAnswer||actual[3]!==expected.explanation||!sameChoices){
+    semanticKeyFailures.push({id:expected.id,stem:actual[0],answer:actual[1][actual[2]],explanation:actual[3],choices:actual[1]});
+  }
+}
+assert.equal(semanticKeyFailures.length,0,
+  "All 684 question stems, choices, keyed answers and explanations must match the individually reviewed semantic key: "+JSON.stringify(semanticKeyFailures.slice(0,20)));
+console.log("Question semantic key: 684/684 individual answers and explanations match the reviewed key.");
+
+
 const requiredFinalCategories = ["Définition","Compréhension","Syntaxe","Restrictions","Prédiction","Calcul / prédiction","Analyse de programme","Analyse de résultat","Débogage","Raisonnement"];
 for (let chapterIndex = 0; chapterIndex < learning.chapterLearning.length; chapterIndex++) {
   const chapter = learning.chapterLearning[chapterIndex];
