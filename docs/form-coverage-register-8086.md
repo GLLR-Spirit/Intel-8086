@@ -207,10 +207,10 @@ Les formes ci-dessous sont les formes architecturales de référence à suivre. 
 
 | Famille | Formes / opcodes 8086 à inventorier | Preuves présentes | Validation restante |
 |---|---|---|---|
-| AND | r/m8,r8 ; r/m16,r16 ; r8/r16,r/m ; AL/AX,imm ; r/m8/16,imm (80/81/83) | `logical-ops-8086`, vecteurs indépendants | Matrice directionnelle octet/mot, tous modes mémoire et extensions |
-| OR | mêmes formes directionnelles et immédiates ; groupe 80/81/83 /1 | `logical-ops-8086`, balayage de groupes | Toutes combinaisons source/destination et immédiats |
-| XOR | mêmes formes directionnelles et immédiates ; groupe 80/81/83 /6 | `logical-ops-8086`, vecteurs FLAGS | Toutes combinaisons et AF indéfini |
-| TEST | r/m8,r8 (84 /r), r/m16,r16 (85 /r), AL/AX,imm (A8/A9), r/m8/16,imm (F6/F7 /0) | `logical-ops-8086`, `group-opcodes` | Toutes formes mémoire, immédiats et contraintes |
+| AND | r/m8,r8 ; r/m16,r16 ; r8/r16,r/m ; AL/AX,imm ; r/m8/16,imm (80/81/83) | `logical-ops-8086`, `logical-prefix-interactions-8086.cjs` | Matrice directionnelle, tous modes mémoire, extensions et préfixes |
+| OR | mêmes formes directionnelles et immédiates ; groupe 80/81/83 /1 | `logical-ops-8086`, `logical-prefix-interactions-8086.cjs` | Toutes combinaisons source/destination, immédiats et préfixes |
+| XOR | mêmes formes directionnelles et immédiates ; groupe 80/81/83 /6 | `logical-ops-8086`, `logical-prefix-interactions-8086.cjs` | Toutes combinaisons, préfixes et AF indéfini |
+| TEST | r/m8,r8 (84 /r), r/m16,r16 (85 /r), AL/AX,imm (A8/A9), r/m8/16,imm (F6/F7 /0) | `logical-ops-8086`, `group-opcodes`, `logical-prefix-interactions-8086.cjs` | Toutes formes mémoire, immédiats, overrides et contraintes |
 | NOT | r/m8 (F6 /2), r/m16 (F7 /2) | `group-opcodes`, `not-forms-8086.cjs`, balayage ModR/M | 16 formes registre, 48 formes mémoire, préfixes et FLAGS |
 | INC / DEC | r16 (40–4F), r/m8 (FE /0,/1), r/m16 (FF /0,/1) | `instruction-vectors`, `group-opcodes`, FLAGS différentiels | Chaque registre, mémoire, SP et limites |
 | NEG | r/m8 (F6 /3), r/m16 (F7 /3) | `neg-8086`, `group-opcodes` | Toutes formes mémoire, limites 80h/8000h, FLAGS |
@@ -397,11 +397,11 @@ Cet index relie chaque entrée de la matrice générale à son registre de forme
 | DAS | §12 | `2Fh` — aucun opérande ; ajustement décimal après SUB packed BCD ; contrôler CF/AF et résultat. | `bcd-multiply-divide-8086.cjs`, `instruction-vectors.cjs` |
 | CBW | §12 | `98h` — aucun opérande ; extension de signe AL vers AX. | `bcd-multiply-divide-8086.cjs`, `instruction-vectors.cjs` |
 | CWD | §12 | `99h` — aucun opérande ; extension de signe AX vers DX:AX. | `bcd-multiply-divide-8086.cjs`, `instruction-vectors.cjs` |
-| AND | §12 | `20–23h` r/m↔reg ; `24/25h` AL/AX,imm ; `80/81/83 /4` r/m,imm ; LOCK F0 seulement si destination mémoire. | `logical-ops-8086.cjs`, `modrm-matrix.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs` |
-| OR | §12 | `08–0Bh` r/m↔reg ; `0C/0Dh` AL/AX,imm ; `80/81/83 /1` r/m,imm ; LOCK F0 seulement si destination mémoire. | `logical-ops-8086.cjs`, `modrm-matrix.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs` |
-| XOR | §12 | `30–33h` r/m↔reg ; `34/35h` AL/AX,imm ; `80/81/83 /6` r/m,imm ; LOCK F0 seulement si destination mémoire. | `logical-ops-8086.cjs`, `modrm-matrix.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs` |
+| AND | §12 | `20–23h` r/m↔reg ; `24/25h` AL/AX,imm ; `80/81/83 /4` r/m,imm ; overrides segment sur mémoire ; LOCK vérifié. | `logical-ops-8086.cjs`, `modrm-matrix.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs`, `logical-prefix-interactions-8086.cjs` |
+| OR | §12 | `08–0Bh` r/m↔reg ; `0C/0Dh` AL/AX,imm ; `80/81/83 /1` r/m,imm ; overrides segment sur mémoire ; LOCK vérifié. | `logical-ops-8086.cjs`, `modrm-matrix.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs`, `logical-prefix-interactions-8086.cjs` |
+| XOR | §12 | `30–33h` r/m↔reg ; `34/35h` AL/AX,imm ; `80/81/83 /6` r/m,imm ; overrides segment sur mémoire ; LOCK vérifié. | `logical-ops-8086.cjs`, `modrm-matrix.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs`, `logical-prefix-interactions-8086.cjs` |
 | NOT | §12 | `F6 /2` r/m8 ; `F7 /2` r/m16 ; FLAGS préservés ; LOCK possible sur mémoire. | `logical-ops-8086.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs`, `not-forms-8086.cjs` |
-| TEST | §12 | `84/85h` r/m,reg ; `A8/A9h` AL/AX,imm ; `F6/F7 /0` r/m,imm ; FLAGS modifiés, opérande non écrit, pas de LOCK. | `logical-ops-8086.cjs`, `modrm-matrix.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs` |
+| TEST | §12 | `84/85h` r/m,reg ; `A8/A9h` AL/AX,imm ; `F6/F7 /0` r/m,imm ; FLAGS modifiés, opérande non écrit ; overrides mémoire testés. | `logical-ops-8086.cjs`, `modrm-matrix.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs`, `logical-prefix-interactions-8086.cjs` |
 | ROL | §12 | `D0/D1 /0` count=1 ; `D2/D3 /0` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire. | `shift-rotate-8086.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs` |
 | ROR | §12 | `D0/D1 /1` count=1 ; `D2/D3 /1` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire. | `shift-rotate-8086.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs` |
 | RCL | §12 | `D0/D1 /2` count=1 ; `D2/D3 /2` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire. | `shift-rotate-8086.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs` |
@@ -630,3 +630,15 @@ La suite `tests/not-forms-8086.cjs` isole NOT de la suite générique F6/F7 :
 **Résultat :** **327 assertions réussies** dans la suite NOT ; la CI principale a réussi au commit `7d5914ce7f2be249cd97c7d44435259ebf522d96`. [Workflow CI](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45711153433).
 
 Le désassembleur conserve désormais un override de segment lorsqu'il existe un opérande mémoire explicite, y compris pour les formes unaires dont la représentation textuelle peut varier. Cela ne modélise pas le bus ; cela garantit que le préfixe décodé reste attaché à l'instruction mémoire correspondante.
+
+### 16.10 AND, OR, XOR et TEST — interactions de préfixes
+
+La suite `tests/logical-prefix-interactions-8086.cjs` complète les **68 605 contrôles logiques** déjà présents par les interactions de préfixes :
+
+- **28 cas d'override de segment** : AND, OR et XOR dans les deux directions mémoire/registre ; TEST dans sa forme r/m,reg ; ES, CS, SS et DS ; exécutions source et binaire.
+- Vérification des octets de préfixe, du ModR/M et du désassemblage. Le segment DS par défaut sur `[BX]` est omis canoniquement.
+- Rejet de REP/REPE/REPNE devant ces quatre instructions et des overrides de segment sans opérande mémoire.
+- Vérification de LOCK sur les formes mémoire de AND, OR et XOR.
+- Contrôle des doubles préfixes et des séquences dupliquées couvertes par la suite.
+
+**Résultat CI :** la suite passe avec **296 assertions** dans le workflow [Validate Intel 8086 Lab](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45711516325), commit `edcfa404000f4a117a6886c63e139684bab56ca3`. Le résultat valide les interactions dans le modèle assembleur/désassembleur et l'exécution logicielle ; il ne simule pas l'assertion électrique du signal LOCK ni l'arbitrage du bus.
