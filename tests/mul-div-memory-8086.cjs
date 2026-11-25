@@ -360,6 +360,17 @@ for (const instruction of instructions) {
   }
 }
 
+for (const source of [
+  "REP\nMUL BL",
+  "REPNE\nDIV BYTE PTR [BX]",
+  "REPE\nIMUL WORD PTR [BX]",
+  "REPZ\nIDIV BL"
+]) {
+  test("Préfixe de répétition interdit hors instruction de chaîne : "+source.replace(/\n/g," / "),()=>{
+    assert.throws(()=>api.assemble(source));
+  });
+}
+
 // LOCK is a bus-control prefix on the original 8086, not an x86-386 #UD
 // restriction. MUL/DIV read their explicit memory source; LOCK still prefixes
 // the instruction and holds the bus for its duration in maximum mode.
@@ -371,7 +382,7 @@ for (const instruction of instructions) {
     const bytes=Array.from(assembled.bytes);
     const lockIndex=bytes.indexOf(0xF0);
     assert.ok(lockIndex>=0,"LOCK prefix byte emitted");
-    assert.deepEqual(bytes.slice(lockIndex,lockIndex+3),[0xF0,0xF6,0x27]);
+    assert.deepEqual(bytes.slice(lockIndex,lockIndex+3),[0xF0,0xF6,modrm(0,instruction.ext,7)]);
     const decoded=api.disassemble(bytes);
     assert.ok(decoded.rows.some(row=>row.instruction==="LOCK "+instruction.op+" BYTE PTR [BX]"));
     const state=api.execute(source);
