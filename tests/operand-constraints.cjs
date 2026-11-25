@@ -110,11 +110,21 @@ for (let s = 0; s < 4; s++) {
     });
     counts.movSegment++;
     const toSegment = [0x8E, modrm(3, s, r)];
-    test("MOV registre vers segment · " + regs[r] + " → " + seg[s], () => {
-      same(bytes("MOV " + seg[s] + ", " + regs[r]), toSegment,
-        "MOV " + seg[s] + ", " + regs[r]);
-      assert.ok(decoded(toSegment).startsWith("MOV " + seg[s] + ", " + regs[r]));
-    });
+    if (s === 1) {
+      test("MOV CS destination interdit · " + regs[r], () => {
+        assert.throws(() => bytes("MOV CS, " + regs[r]), /MOV CS comme destination/);
+        const rows = api.disassemble(toSegment).rows;
+        assert.ok(rows[0].instruction.startsWith("DB "));
+        assert.deepEqual(Array.from(rows[0].bytes), [0x8E]);
+      });
+      counts.invalid++;
+    } else {
+      test("MOV registre vers segment · " + regs[r] + " → " + seg[s], () => {
+        same(bytes("MOV " + seg[s] + ", " + regs[r]), toSegment,
+          "MOV " + seg[s] + ", " + regs[r]);
+        assert.ok(decoded(toSegment).startsWith("MOV " + seg[s] + ", " + regs[r]));
+      });
+    }
     counts.movSegment++;
   }
 }
@@ -124,8 +134,7 @@ const segmentMemory = [
   { source: "MOV WORD PTR [BX], CS", code: [0x8C, 0x0F] },
   { source: "MOV WORD PTR [BP+SI+4], SS", code: [0x8C, 0x52, 0x04] },
   { source: "MOV DS, WORD PTR [BX]", code: [0x8E, 0x1F] },
-  { source: "MOV ES, WORD PTR [BP+DI+4]", code: [0x8E, 0x43, 0x04] },
-  { source: "MOV CS, WORD PTR [BX]", code: [0x8E, 0x0F] }
+  { source: "MOV ES, WORD PTR [BP+DI+4]", code: [0x8E, 0x43, 0x04] }
 ];
 for (const item of segmentMemory) {
   test("MOV segment/mémoire · " + item.source, () => {
@@ -136,7 +145,9 @@ for (const item of segmentMemory) {
 }
 for (const source of [
   "MOV BYTE PTR [BX], DS",
-  "MOV DS, BYTE PTR [BX]"
+  "MOV DS, BYTE PTR [BX]",
+  "MOV CS, AX",
+  "MOV CS, WORD PTR [BX]"
 ]) {
   test("MOV segment restriction · " + source, () => assert.throws(() => bytes(source)));
   counts.invalid++;
@@ -144,7 +155,7 @@ for (const source of [
 
 // D. Intel 8086 Table 4-13 segment-selector encodings.
 // The field is 0SR: /0..3 are ES/CS/SS/DS; /4..7 are marked "not used".
-// MOV CS (/1) is valid on the original 8086.
+// Intel ASM86 explicitly disallows CS as the destination of MOV (8E /1).
 for (const opcode of [0x8C, 0x8E]) {
   for (let ext = 4; ext < 8; ext++) {
     test("MOV segment reserved selector 8086 · " + opcode.toString(16) + " /" + ext, () => {
@@ -157,8 +168,11 @@ for (let ext = 0; ext < 4; ext++) {
   test("MOV vers segment 8086 · /" + ext, () => {
     const instruction = decoded([0x8E, modrm(3, ext, 0)]);
     const expected = ["ES", "CS", "SS", "DS"][ext];
-    assert.ok(instruction.includes(expected), instruction);
-    assert.ok(!instruction.startsWith("DB "), instruction);
+    if (ext === 1) assert.ok(instruction.startsWith("DB "), instruction);
+    else {
+      assert.ok(instruction.includes(expected), instruction);
+      assert.ok(!instruction.startsWith("DB "), instruction);
+    }
   });
 }
 
@@ -211,16 +225,14 @@ test("LES charge offset et ES ; LDS charge offset et DS", () => {
 });
 counts.execution++;
 
-test("MOV CS, AX et lecture de CS sur 8086", () => {
+test("MOV CS destination est rejeté ; la lecture de CS reste valide", () => {
+  assert.throws(() => api.assemble("MOV CS, AX"), /MOV CS comme destination/);
   const state = api.execute([
-    "MOV AX, 2345h",
-    "MOV CS, AX",
     "MOV BX, CS",
     "HLT"
   ].join("\n"));
-  assert.ok(!state.error, state.error || "MOV CS execution failed");
-  assert.equal(state.reg.CS, 0x2345);
-  assert.equal(state.reg.BX, 0x2345);
+  assert.ok(!state.error, state.error || "MOV AX, CS execution failed");
+  assert.equal(state.reg.BX, 0);
 });
 counts.execution++;
 
