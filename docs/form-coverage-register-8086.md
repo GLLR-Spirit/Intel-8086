@@ -212,7 +212,7 @@ Les formes ci-dessous sont les formes architecturales de référence à suivre. 
 | XOR | mêmes formes directionnelles et immédiates ; groupe 80/81/83 /6 | `logical-ops-8086`, `logical-prefix-interactions-8086.cjs` | Toutes combinaisons, préfixes et AF indéfini |
 | TEST | r/m8,r8 (84 /r), r/m16,r16 (85 /r), AL/AX,imm (A8/A9), r/m8/16,imm (F6/F7 /0) | `logical-ops-8086`, `group-opcodes`, `logical-prefix-interactions-8086.cjs` | Toutes formes mémoire, immédiats, overrides et contraintes |
 | NOT | r/m8 (F6 /2), r/m16 (F7 /2) | `group-opcodes`, `not-forms-8086.cjs`, balayage ModR/M | 16 formes registre, 48 formes mémoire, préfixes et FLAGS |
-| INC / DEC | r16 (40–4F), r/m8 (FE /0,/1), r/m16 (FF /0,/1) | `instruction-vectors`, `group-opcodes`, FLAGS différentiels | Chaque registre, mémoire, SP et limites |
+| INC / DEC | r16 (40–4F), r/m8 (FE /0,/1), r/m16 (FF /0,/1) | `instruction-vectors`, `group-opcodes`, `unary-arithmetic-prefix-8086.cjs`, FLAGS différentiels | Chaque registre, mémoire, préfixes et limites |
 | NEG | r/m8 (F6 /3), r/m16 (F7 /3) | `neg-8086`, `group-opcodes` | Toutes formes mémoire, limites 80h/8000h, FLAGS |
 | MUL / IMUL | r/m8 (F6 /4,/5), r/m16 (F7 /4,/5) ; accumulateurs implicites AL/AX et résultats AX/DX:AX | `bcd-multiply-divide`, `mul-div-memory` | Toutes formes registre/mémoire, produits limites et flags indéfinis |
 | DIV / IDIV | r/m8 (F6 /6,/7), r/m16 (F7 /6,/7) ; dividendes implicites AX ou DX:AX | `divide-error-interrupt`, `mul-div-memory` | Toutes formes, quotient maximal, signe, division par zéro et retour d'interruption |
@@ -381,9 +381,9 @@ Cet index relie chaque entrée de la matrice générale à son registre de forme
 | ADC | §3 | `10–13h` r/m↔reg ; `14/15h` AL/AX,imm ; `80/81/83 /2` r/m,imm ; LOCK F0 seulement si destination mémoire. | `modrm-matrix.cjs`, `gnu-as-crosscheck.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs`, `dynamic-differential.cjs` |
 | SUB | §3 | `28–2Bh` r/m↔reg ; `2C/2Dh` AL/AX,imm ; `80/81/83 /5` r/m,imm ; LOCK F0 seulement si destination mémoire. | `modrm-matrix.cjs`, `gnu-as-crosscheck.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs`, `dynamic-differential.cjs` |
 | SBB | §3 | `18–1Bh` r/m↔reg ; `1C/1Dh` AL/AX,imm ; `80/81/83 /3` r/m,imm ; LOCK F0 seulement si destination mémoire. | `modrm-matrix.cjs`, `gnu-as-crosscheck.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs`, `dynamic-differential.cjs` |
-| INC | §12 | `40–47h` r16 ; `FE /0` r/m8 ; `FF /0` r/m16 (registre ou mémoire) ; CF préservé ; LOCK possible sur mémoire. | `group-opcodes.cjs`, `push-pop-forms-8086.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs` |
-| DEC | §12 | `48–4Fh` r16 ; `FE /1` r/m8 ; `FF /1` r/m16 (registre ou mémoire) ; CF préservé ; LOCK possible sur mémoire. | `group-opcodes.cjs`, `push-pop-forms-8086.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs` |
-| NEG | §12 | `F6 /3` r/m8 ; `F7 /3` r/m16 ; CF/OF selon résultat ; LOCK possible sur mémoire. | `neg-8086.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs` |
+| INC | §12 | `40–47h` r16 ; `FE /0` r/m8 ; `FF /0` r/m16 (registre ou mémoire) ; CF préservé ; overrides de segment et LOCK mémoire vérifiés. | `group-opcodes.cjs`, `push-pop-forms-8086.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs`, `unary-arithmetic-prefix-8086.cjs` |
+| DEC | §12 | `48–4Fh` r16 ; `FE /1` r/m8 ; `FF /1` r/m16 (registre ou mémoire) ; CF préservé ; overrides de segment et LOCK mémoire vérifiés. | `group-opcodes.cjs`, `push-pop-forms-8086.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs`, `unary-arithmetic-prefix-8086.cjs` |
+| NEG | §12 | `F6 /3` r/m8 ; `F7 /3` r/m16 ; CF/OF selon résultat ; overrides de segment et LOCK mémoire vérifiés. | `neg-8086.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs`, `unary-arithmetic-prefix-8086.cjs` |
 | CMP | §3 | `38–3Bh` r/m↔reg ; `3C/3Dh` AL/AX,imm ; `80/81/83 /7` r/m,imm ; FLAGS modifiés, destination non écrite, pas de LOCK. | `modrm-matrix.cjs`, `gnu-as-crosscheck.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs` |
 | MUL | §12 | `F6 /4` r/m8 ; `F7 /4` r/m16 ; multiplicande implicite AL/AX ; résultat AX ou DX:AX ; FLAGS CF/OF définis, autres indéfinis. | `bcd-multiply-divide-8086.cjs`, `mul-div-memory-8086.cjs`, `instruction-vectors.cjs` |
 | IMUL | §12 | `F6 /5` r/m8 ; `F7 /5` r/m16 ; multiplicande implicite AL/AX ; résultat AX ou DX:AX ; FLAGS CF/OF définis, autres indéfinis. | `bcd-multiply-divide-8086.cjs`, `mul-div-memory-8086.cjs`, `instruction-vectors.cjs` |
@@ -642,3 +642,17 @@ La suite `tests/logical-prefix-interactions-8086.cjs` complète les **68 605 con
 - Contrôle des doubles préfixes et des séquences dupliquées couvertes par la suite.
 
 **Résultat CI :** la suite passe avec **296 assertions** dans le workflow [Validate Intel 8086 Lab](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45711516325), commit `edcfa404000f4a117a6886c63e139684bab56ca3`. Le résultat valide les interactions dans le modèle assembleur/désassembleur et l'exécution logicielle ; il ne simule pas l'assertion électrique du signal LOCK ni l'arbitrage du bus.
+
+### 16.11 INC, DEC et NEG — préfixes et opérandes mémoire
+
+La suite `tests/unary-arithmetic-prefix-8086.cjs` ajoute une matrice dédiée aux trois opérations unaires :
+
+- **24 cas source/binaire** : INC, DEC et NEG × octet/mot × ES, CS, SS et DS.
+- Les formes mémoire sont encodées avec leurs groupes exacts : FE /0 et /1 pour INC/DEC octet, FF /0 et /1 pour INC/DEC mot, F6 /3 et F7 /3 pour NEG.
+- Les overrides de segment sont vérifiés jusqu'à l'adresse mémoire réellement modifiée ; DS redondant est omis pour `[BX]`.
+- LOCK est contrôlé sur les six formes mémoire octet/mot ; REP/REPE/REPNE et les overrides de segment sans opérande mémoire sont rejetés.
+- Les résultats octet/mot, CF et OF sont vérifiés sur des frontières choisies ; les mots mémoire sont contrôlés en deux octets little-endian.
+
+Le premier passage a révélé une erreur dans le test lui-même : il comparait une valeur mot à un seul octet de mémoire. La vérification a été corrigée pour contrôler séparément l'octet bas et l'octet haut.
+
+**État :** les étapes dédiées INC/DEC/NEG, ALU, logique et NOT passent dans la CI du commit `19ccaab8e9315265e1fba1e699c70e7b6c9f4b83`. Le workflow global était encore en cours au moment de cette mise à jour ; ne pas interpréter le seul succès de l'étape comme une CI complète.
