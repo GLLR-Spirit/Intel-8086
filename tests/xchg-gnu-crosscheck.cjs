@@ -108,8 +108,8 @@ try {
   // Pin representative architectural bytes independently of both assembler outputs.
   assert.deepEqual(gnuBytes.slice(0, 6), [
     0x86, 0xC0, // XCHG AL,AL
-    0x86, 0xC1, // XCHG AL,CL
-    0x86, 0xC2  // XCHG AL,DL
+    0x86, 0xC8, // XCHG AL,CL (ModR/M reg=CL, r/m=AL)
+    0x86, 0xD0  // XCHG AL,DL (ModR/M reg=DL, r/m=AL)
   ], "Known byte-register ModR/M encodings");
   const wordStart = 64 * 2;
   assert.deepEqual(gnuBytes.slice(wordStart, wordStart + 8),
