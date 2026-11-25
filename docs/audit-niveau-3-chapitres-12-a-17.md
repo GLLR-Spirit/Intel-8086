@@ -18,7 +18,10 @@ Périmètre : chapitres 12 à 17, 18 leçons, 54 questions intermédiaires et 60
 
 | Contrôle | Résultat |
 |---|---:|
-| Compilation syntaxique du script JavaScript | Réussie |
+| Compilation syntaxique des scripts de test | Réussie |
+| Auto-tests navigateur Playwright sur Chromium | **Réussis** |
+| Workflow CI complet sur le commit `1720bf5` | **Réussi** |
+| 17 étapes de validation du moteur | **Toutes réussies** |
 | Auto-tests intégrés de l'application | **375/375 réussis** |
 | Exemples pédagogiques assemblés et exécutés | **18/18** |
 | Modes d'exécution comparés | Interpréteur source et exécution du flux binaire |
@@ -41,12 +44,12 @@ Périmètre : chapitres 12 à 17, 18 leçons, 54 questions intermédiaires et 60
 
 L'exécution des tests a été effectuée dans un environnement JavaScript isolé, avec des éléments DOM simulés pour initialiser l'application. Le moteur réel du projet, ses fonctions d'assemblage, d'interprétation et d'exécution binaire ont été appelés ; il ne s'agit donc pas uniquement d'une vérification textuelle.
 
-Cette méthode ne constitue toutefois pas un test complet de l'interface dans un navigateur Chromium réel. Un workflow Playwright GitHub Actions a été ajouté, mais aucun résultat de workflow n'a encore été récupéré au moment de ce rapport.
+Le workflow Playwright GitHub Actions a ensuite exécuté le site dans Chromium headless. Le chargement de la page, les auto-tests intégrés, les 18 exemples, les 16 conditions Jcc dans les deux sens, les quatre opcodes de boucle et les vérifications de questions ont tous réussi. Le workflow CI principal a également terminé avec succès toutes ses étapes sur le commit `1720bf5664cd651de49bcdbbc80c5a3c74e4e918`.
 
 L'exécution binaire reste celle du simulateur logiciel du projet. Elle ne prouve pas une équivalence matérielle complète avec un processeur Intel 8086 physique : les signaux de bus, la prélecture BIU, les temporisations et les cycles matériels ne sont pas reproduits. Les résultats internes ne remplacent pas non plus une comparaison avec un assembleur/désassembleur indépendant externe.
 
 ## 4. État de validation
 
-Les contrôles moteur ciblés sont réussis. La validation de l'interface réelle dans Chromium et la confirmation du workflow CI restent en attente. Le niveau 3 n'est donc pas déclaré définitivement terminé.
+Les contrôles ciblés du niveau 3 pour les chapitres 12 à 17 sont réussis, y compris l’exécution Chromium et le workflow CI complet. Cela valide cette phase de contrôle automatisé, mais ne constitue pas l’audit exhaustif de l’ensemble des 36 chapitres ni une validation matérielle complète du 8086. Les vérifications architecturales indépendantes complémentaires restent à poursuivre.
 
 Aucune modification n'a été fusionnée dans `main`.
