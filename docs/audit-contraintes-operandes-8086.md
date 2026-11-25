@@ -29,7 +29,7 @@ Références de codage : manuel Intel 8086, table « Instruction Set Summary » 
 ### MOV entre registre général/mémoire et registre de segment (8C/8E)
 - Les quatre champs canoniques ES, CS, SS, DS et les huit registres généraux.
 - Sur 8086/8088, les valeurs de sélecteur 4..7 aliasent respectivement ES, CS, SS et DS.
-- `MOV CS, r/m16` via 8E /1 est accepté sur le 8086 d'origine ; ne pas appliquer la restriction des générations ultérieures.
+- `MOV CS, r/m16` via 8E /1 est interdit dans le jeu d'instructions documenté par Intel. En revanche, `MOV r/m16, CS` via 8C /1 permet de lire CS vers un registre général ou la mémoire.
 - Formes mémoire word testées.
 - Qualificateurs BYTE incompatibles rejetés.
 - Le désassembleur a été corrigé pour décoder ces alias et le transfert vers CS.
@@ -61,6 +61,6 @@ Validation CI finale sur le commit `a20a4c98a4a21983d51ba713ed7f50f2c3a4c70b` :
 
 Cette suite ne prouve pas l'exhaustivité de tout le jeu d'instructions 8086. Elle certifie uniquement les formes et les contraintes listées ci-dessus. Les extensions de groupes non encore décodées restent à traiter séparément. Une forme reconnue comme invalide par le désassembleur ne doit pas être confondue avec une forme valide mais non encore prise en charge.
 
-Le désassembleur interprète désormais les valeurs du champ segment modulo 4 et décode `8E /1` comme `MOV CS, ...`. L'assembleur accepte la forme, le validateur ne la rejette plus et l'interpréteur sait lire/écrire CS. Les tests internes ont été ajustés en conséquence.
+Le désassembleur reconnaît `/0`, `/2` et `/3` pour les destinations ES, SS et DS ; `8E /1` (destination CS) reste un octet de données non décodé comme MOV. L'assembleur et le validateur rejettent `MOV CS, r/m16`. La lecture de CS via `8C /1` reste valide.
 
 Bilan agrégé CI : 354 smoke + 114 vecteurs indépendants + 2 352 ModR/M + 187 adressage/déplacements + 3 412 FLAGS + 274 contraintes + 194 vecteurs legacy = **6 887 vérifications réussies**.
