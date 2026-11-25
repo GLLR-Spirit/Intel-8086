@@ -152,4 +152,20 @@ L'ancien moteur acceptait à tort les deux valeurs minimales négatives. La born
 
 La CI sur le commit `2ebc6c23543694bbfa51ee42cd97edf501fa36bc` a réussi avec **6 792 assertions** : [run CI](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45581647925).
 
-**Limite importante :** le simulateur signale encore ces divisions invalides par une erreur contrôlée. Il ne reproduit pas encore le cadre matériel complet de l'interruption 0 (empilement de FLAGS/CS/IP, transfert au vecteur 0 et exécution du gestionnaire). La suite valide la détection des dépassements, pas l'intégralité du mécanisme d'interruption matériel.
+**État à ce commit historique :** le simulateur signalait encore ces divisions invalides par une erreur contrôlée. Le complément ci-dessous décrit la correction ultérieure sur la même branche.
+
+## Interruption de division — raccordement au vecteur 0 — 25 novembre 2026
+
+Les erreurs de `DIV` et `IDIV` sont désormais raccordées au mécanisme d'interruption déjà présent dans le simulateur, au lieu d'être systématiquement remontées comme des erreurs terminales.
+
+- Dans l'exécution du programme source, un gestionnaire `VECTOR 0, ETIQUETTE` reçoit les divisions par zéro et les dépassements de quotient.
+- Dans l'exécution binaire, le moteur lit l'entrée IVT du vecteur 0 aux adresses physiques `00000h` à `00003h` (offset IP puis segment CS).
+- Les deux chemins empilent `FLAGS`, `CS` et l'IP de reprise dans cet ordre, effacent `IF` et `TF` à l'entrée, puis transfèrent le contrôle au gestionnaire.
+- `IRET` restaure le cadre et reprend après l'instruction `DIV`/`IDIV` fautive, conformément au comportement historique du 8086 pour cette exception.
+- Si le gestionnaire source n'est pas déclaré ou si l'entrée IVT binaire est absente/incomplète, le simulateur conserve un diagnostic explicite au lieu de poursuivre silencieusement.
+
+La suite `tests/divide-error-interrupt-8086.cjs` vérifie huit scénarios source et les huit scénarios correspondants en exécution binaire : division par zéro et dépassement de quotient, `DIV` et `IDIV`, opérandes 8 et 16 bits. Elle contrôle aussi la conservation de `AX`/`DX` sur le chemin d'exception, l'exécution du gestionnaire, l'effacement temporaire de `IF`/`TF`, la restauration des FLAGS, le retour à l'instruction suivant la division et la restauration de `SS:SP`. Deux cas supplémentaires vérifient le diagnostic en l'absence de gestionnaire.
+
+La suite complète de CI du commit `12239566043af5befb6201c58ca7ce11c8e5e06d` a réussi ; l'étape dédiée « Run 8086 divide-error interrupt tests » est verte (https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45583099100).
+
+**Périmètre restant :** cette correction modélise l'exception logicielle de type 0 dans le moteur pédagogique. Elle ne simule pas les signaux électriques, les cycles, l'arbitrage des interruptions matérielles INTR/NMI ni le matériel physique. Les formes mémoire de `MUL`/`IMUL`/`DIV`/`IDIV` et l'audit approfondi de `NEG` restent à traiter séparément.
