@@ -60,7 +60,7 @@ const overrideTarget=overrideFirst.symbols.TARGET;
 overrideLines[3]="ES: MOV WORD PTR [0100h], "+hx(overrideTarget);
 const overrideSource=overrideLines.join("\n"),overrideBytes=Array.from(api.assemble(overrideSource).bytes);
 const overrideRow=api.disassemble(overrideBytes).rows.find(r=>r.instruction.includes("JMP FAR"));
-assert.ok(overrideRow&&overrideRow.instruction.startsWith("ES:"),"ES override must survive far JMP disassembly");
+assert.ok(overrideRow&&(overrideRow.instruction.startsWith("ES:")||/ES:\s*\[/.test(overrideRow.instruction)),"ES override must survive far JMP disassembly: "+(overrideRow&&overrideRow.instruction));
 const overrideSourceState=api.execute(overrideSource);
 assert.equal(overrideSourceState.error,undefined,"source ES override far JMP");
 assert.equal(overrideSourceState.reg.ES,0x3000);
