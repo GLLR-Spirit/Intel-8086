@@ -641,7 +641,7 @@ if(regs.length===0){if(disp<0||disp>65535)throw Error("Adresse directe hors plag
 else if(disp===0&&rm!==6){mod=0;}
 else if(disp>=-128&&disp<=127){mod=1;tail=[disp&255];}
 else{if(disp< -32768||disp>65535)throw Error("Déplacement hors plage 16 bits.");mod=2;tail=encodingWord(disp);}
-var defaultSeg=regs.indexOf("BP")>=0?"SS":"DS",prefix=explicit&&explicit!==defaultSeg?({"ES":38,"CS":46,"SS":54,"DS":62}[explicit]):null;
+var defaultSeg=regs.indexOf("BP")>=0?"SS":"DS",prefix=explicit?({"ES":38,"CS":46,"SS":54,"DS":62}[explicit]):null;
 return {mod:mod,rm:rm,tail:tail,prefix:prefix,defaultSegment:defaultSeg,explicitSegment:explicit};
 }
 function encodingModRM(regField,operand){
