@@ -55,7 +55,7 @@ function sourceProgram(fault) {
     "POP CX",
     "MOV SI, 5678h",
     "IRET"
-  ].join("\\n");
+  ].join("\n");
 }
 const faults = [
   { name: "DIV 8-bit division by zero", setup: ["MOV AX, 1234h", "MOV BL, 0"], instruction: "DIV BL" },
@@ -96,7 +96,7 @@ function binaryProgram(fault) {
     "POP CX",
     "MOV SI, 5678h",
     "IRET"
-  ].join("\\n");
+  ].join("\n");
 }
 for (const fault of [faults[0], faults[5], faults[6], faults[7]]) {
   test("Binary IVT 00h: " + fault.name, () => {
@@ -126,11 +126,11 @@ for (const fault of [faults[0], faults[5], faults[6], faults[7]]) {
 }
 
 test("Source division fault without VECTOR 00h remains a diagnostic", () => {
-  const state = api.execute("MOV AX, 1\\nMOV BL, 0\\nDIV BL\\nHLT");
+  const state = api.execute("MOV AX, 1\nMOV BL, 0\nDIV BL\nHLT");
   assert.match(state.error || "", /division par zéro/i);
 });
 test("Binary division fault without initialized IVT 00h remains a diagnostic", () => {
-  const bytes = api.assemble("MOV AX, 1\\nMOV BL, 0\\nDIV BL\\nHLT").bytes;
+  const bytes = api.assemble("MOV AX, 1\nMOV BL, 0\nDIV BL\nHLT").bytes;
   const state = api.executeBinary(bytes, 0x1000, 0);
   assert.match(state.error || "", /division par zéro/i);
   assert.match(state.error || "", /IVT/i);
