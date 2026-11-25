@@ -254,3 +254,14 @@ La revue des 108 leçons a aussi conduit aux clarifications suivantes :
 - **C35 L2–L3** : l'exemple LOOP précise quel branchement est pris ; l'exemple d'optimisation ne prétend plus démontrer un gain de cycles.
 
 Le CI de la branche doit confirmer ces oracles et les tests navigateur avant que cette passe soit considérée comme stabilisée.
+
+
+### 7.7 Cohérence des prérequis et notions anticipées
+
+La revue des 36 objectifs et de leurs prérequis confirme une progression générale cohérente : architecture et numération, registres et syntaxe, arithmétique/FLAGS, branchements et boucles, mémoire/pile/procédures, opérations avancées, puis encodage et limites matérielles.
+
+Deux exemples utilisent toutefois une notion avant sa formalisation complète :
+- **C7 L3** utilise `[BX]` pour montrer LDS/LES ;
+- **C17 L3** utilise `[SI]` pour une recherche séquentielle.
+
+Ces exemples sont conservés comme aperçus, mais leur théorie précise maintenant que l'adressage indirect simple et l'accès DS:SI sont des prévisualisations ; la segmentation et les huit modes d'adressage sont formalisés aux chapitres 18 et 19. Cela évite de présenter ces notions comme déjà entièrement acquises.
