@@ -449,6 +449,40 @@ Cet index relie chaque entrée de la matrice générale à son registre de forme
 | WAIT | §14 | dépend du signal TEST ; pas de coprocesseur matériel simulé |
 | ESC | §14 | D8–DF + ModR/M ; pas d'émulation 8087 |
 
+
+## 15.1 Rapprochement des suites indépendantes
+
+Cette table relie les 93 mnémoniques aux suites qui fournissent des contrôles indépendants. Une suite listée confirme l'existence de vecteurs ciblés ; elle ne signifie pas que toutes les formes, tous les préfixes et toutes les interactions sont déjà exhaustifs.
+
+| Famille | Mnémoniques couverts | Suites indépendantes présentes |
+|---|---|---|
+| Transferts et adresses | MOV, XCHG, LEA, LES, LDS, XLAT | `modrm-matrix.cjs`, `legacy-segment-encodings.cjs`, `operand-constraints.cjs`, `xchg-8086.cjs`, `xchg-gnu-crosscheck.cjs`, `xchg-interactive-8086.cjs`, `lea-8086.cjs`, `lea-gnu-crosscheck.cjs`, `lea-interactive-8086.cjs`, `lds-les-8086.cjs`, `lds-les-gnu-crosscheck.cjs`, `lds-les-interactive-8086.cjs`, `xlat-8086.cjs`, `xlat-gnu-crosscheck.cjs`, `xlat-interactive-8086.cjs`, `xlat-state-8086.cjs` |
+| Pile et FLAGS | PUSH, POP, PUSHF, POPF, LAHF, SAHF, IRET | `push-pop-forms-8086.cjs`, `control-stack.cjs`, `call-ret-stack-boundaries.cjs`, `call-ret-interactive-8086.cjs`, `lahf-sahf-8086.cjs`, `instruction-vectors.cjs` |
+| Chaînes | MOVSB, MOVSW, CMPSB, CMPSW, SCASB, SCASW, LODSB, LODSW, STOSB, STOSW | `string-instructions-8086.cjs`, `lock-prefix-8086.cjs`, `dynamic-differential.cjs` |
+| Arithmétique binaire | ADD, ADC, SUB, SBB, CMP | `modrm-matrix.cjs`, `gnu-as-crosscheck.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs`, `dynamic-differential.cjs` |
+| Arithmétique unaire et produits/divisions | INC, DEC, NEG, MUL, IMUL, DIV, IDIV | `group-opcodes.cjs`, `neg-8086.cjs`, `bcd-multiply-divide-8086.cjs`, `mul-div-memory-8086.cjs`, `divide-error-interrupt-8086.cjs`, `instruction-vectors.cjs` |
+| Logique et décalages | AND, OR, XOR, NOT, TEST, ROL, ROR, RCL, RCR, SHL, SHR, SAR | `logical-ops-8086.cjs`, `group-opcodes.cjs`, `shift-rotate-8086.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs` |
+| Ajustements et conversions | AAA, AAS, AAM, AAD, DAA, DAS, CBW, CWD | `bcd-multiply-divide-8086.cjs`, `instruction-vectors.cjs` |
+| Contrôle de flux | JO, JNO, JB, JAE, JE, JNE, JBE, JA, JS, JNS, JP, JNP, JL, JGE, JLE, JG, JCXZ, LOOP, LOOPE, LOOPNE, CALL, RET, JMP | `instruction-vectors.cjs`, `byte-offset-execution.cjs`, `call-indirect-8086.cjs`, `call-ret-8086.cjs`, `call-ret-gnu-crosscheck.cjs`, `jmp-far-8086.cjs`, `jmp-far-indirect-8086.cjs`, `jmp-near-indirect-8086.cjs` |
+| Interruptions et contrôle FLAGS | INT, INTO, IRET, CLC, STC, CMC, CLD, STD, CLI, STI | `divide-error-interrupt-8086.cjs`, `into-8086.cjs`, `control-stack.cjs`, `flags-differential.cjs` |
+| Divers | NOP, HLT, WAIT, ESC, IN, OUT | `smoke.cjs`, `instruction-vectors.cjs`, `io-ports-8086.cjs`, `opcode-byte-sweep.cjs` |
+
+**Limites à conserver dans l'audit :** les vecteurs GNU `as` sont des comparaisons d'encodage, pas des preuves d'exécution ; les tests navigateur vérifient le parcours UI et le chemin binaire, pas chaque combinaison d'opérandes ; les suites de famille doivent encore être rapprochées d'une liste canonique de cas positifs/négatifs par instruction.
+
+## 15.2 Matrice des préfixes 8086
+
+| Préfixe | Octet | Domaine et règle à vérifier | Suites |
+|---|---:|---|---|
+| ES override | `26h` | Remplace le segment par défaut d'un opérande mémoire explicite ; pour les chaînes, peut sélectionner la source, jamais remplacer ES:DI destination | `legacy-segment-encodings.cjs`, `string-instructions-8086.cjs`, `call-indirect-8086.cjs`, `xlat-8086.cjs` |
+| CS override | `2Eh` | Même règle pour l'accès mémoire ; ne rend pas valide `MOV CS, r/m16` | `legacy-segment-encodings.cjs`, `operand-constraints.cjs`, suites CALL/JMP indirectes |
+| SS override | `36h` | Remplace le segment mémoire par défaut, notamment DS pour les formes explicites ; ne change pas le segment implicite de pile | `operand-constraints.cjs`, suites CALL/JMP indirectes |
+| DS override | `3Eh` | Force DS sur l'accès mémoire ; peut être redondant si DS est déjà le segment par défaut | `legacy-segment-encodings.cjs`, `string-instructions-8086.cjs`, `xlat-8086.cjs` |
+| LOCK | `F0h` | Préfixe conservé dans l'encodage/désassemblage ; tests sur `LOCK INC AX` et `LOCK REP MOVSB`. Le signal électrique de verrouillage du bus n'est pas simulé | `lock-prefix-8086.cjs` |
+| REP/REPE | `F3h` | Répétition avec CX ; pour CMPS/SCAS, continuation conditionnée par ZF=1 ; pour MOVS/LODS/STOS, répétition jusqu'à CX=0 | `string-instructions-8086.cjs`, `lock-prefix-8086.cjs` |
+| REPNE | `F2h` | Pour CMPS/SCAS, continuation conditionnée par ZF=0 ; vérifier CX=0, arrêt sur égalité/différence et préservation des registres/FLAGS non concernés | `string-instructions-8086.cjs` |
+
+Les préfixes de segment, LOCK et REP sont des octets distincts des champs ModR/M. Les résultats des matrices ModR/M ne doivent donc pas être présentés comme une validation exhaustive de leurs combinaisons. Les combinaisons de préfixes non explicitement testées restent hors couverture certifiée.
+
 ## 16. État de réconciliation par famille au 25 novembre 2026
 
 | Famille | Formes principales couvertes par les tests présents | État de validation |
