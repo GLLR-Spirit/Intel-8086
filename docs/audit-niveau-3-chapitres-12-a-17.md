@@ -232,3 +232,68 @@ Résultat : octets émis identiques pour les 80 instructions. Les vecteurs fixes
 LEA est validée pour le périmètre logiciel audité : calcul de l'offset, modes d'adressage, destinations, déplacements, FLAGS, assemblage, désassemblage, exécution source et binaire, préfixe de segment, interface interactive et comparaison indépendante des encodages.
 
 Cette conclusion ne constitue pas une validation sur processeur physique. Le simulateur ne reproduit pas les signaux électriques ni les cycles de bus réels. LDS et LES ne sont pas inclus dans cette conclusion et feront l'objet d'audits distincts.
+
+
+## 8. Audit approfondi de LDS et LES (C5h /r et C4h /r)
+
+Date : 25 novembre 2026  
+Commit de code audité : `f56f79e41a4fa1e4a659995409fd4c990185bf3c`  
+Commit de correction de temporisation : `9113a791284886e2ffefb93d6543f5e71e15f12f`
+
+### Règles architecturales de référence
+
+- `LES r16,m16:16` lit un pointeur far de 32 bits en mémoire : le premier mot (octets EA et EA+1) est l'offset chargé dans le registre général ; le second mot (EA+2 et EA+3) est le segment chargé dans ES.
+- `LDS r16,m16:16` effectue le même transfert, mais charge DS.
+- La source doit être en mémoire ; la destination est l'un des huit registres généraux 16 bits. Une source registre-direct n'est pas valide.
+- Les deux mots sont little-endian. Les neuf FLAGS modélisés sont inchangés.
+- Encodage : `LES = C4h /r`, `LDS = C5h /r`. Le champ REG du ModR/M sélectionne le registre général destination ; le champ r/m décrit l'opérande mémoire.
+- Préfixe de segment : sélectionne le segment de lecture de la source ; il ne change pas le registre de segment destination imposé par l'opcode.
+- Temporisation de référence 8086 : 16 cycles + EA.
+
+Références consultées : Intel 8086 Family User's Manual (1979) et ASM86 Assembly Language Reference Manual (1985/1983). Le manuel ASM86 donne explicitement l'ordre offset puis segment, les octets EA à EA+3, les effets sur DS/ES, l'absence d'effet sur FLAGS et 16 + EA. <https://www.inf.pucrs.br/~calazans/undergrad/orgcomp_EC/mat_microproc/intel-8086_family_Users_Manual.pdf> ; <https://mark-ogden.uk/files/intel/publications/122385-001%20ASM86%20Assembly%20Language%20Reference%20Manual-Jun85.pdf>
+
+### Défaut corrigé
+
+Le désassembleur rejetait les formes binaires avec préfixe de segment, par exemple `LDS CX, ES:[BX+SI+4]` et `LES CX, ES:[BX+SI+4]`. La validation générique des préfixes ne reconnaissait pas ces deux mnémotechniques comme des instructions dont l'opérande mémoire est exprimée entre crochets.
+
+Correction dans `index.html` : les formes LDS/LES avec opérande mémoire préfixée sont désormais reconnues. Le préfixe est conservé pour sélectionner le segment source ; l'instruction charge toujours DS pour LDS et ES pour LES. La métadonnée de temporisation a aussi été corrigée en `16 cycles + EA`.
+
+### Suite LDS/LES dédiée
+
+Le fichier `tests/lds-les-8086.cjs` passe **69/69 tests** :
+
+- Les huit modes d'adressage 8086 et l'adressage direct disp16.
+- Les huit registres généraux 16 bits comme destination pour LDS et LES.
+- Vérification de l'ordre du pointeur : offset dans le registre destination, segment dans DS/ES, avec octets little-endian.
+- Préfixe de segment ES sur la lecture source.
+- Sélection implicite de SS avec BP.
+- Lecture du pointeur à l'offset FFFFh avec retour de l'offset à 0000h pour les octets suivants.
+- Préservation des neuf FLAGS dans les chemins source et binaire.
+- Encodages et désassemblages C4/C5 ; rejet du ModR/M registre-direct.
+- Rejet des destinations mémoire, 8 bits et segment, des sources registre/immediate, des qualificateurs BYTE/WORD incompatibles et des adresses invalides.
+- Comparaison des états source et binaire : registres généraux, segments et FLAGS.
+
+### Comparaison indépendante
+
+Le fichier `tests/lds-les-gnu-crosscheck.cjs` compare **160 instructions** à GNU as en mode `.code16` :
+
+- 128 combinaisons : LDS/LES × huit registres destination × huit modes d'adressage.
+- 18 cas de déplacements aux limites disp8/disp16.
+- Adressage direct disp16, cas spécial [BP] et préfixes CS, DS, ES et SS.
+
+Résultat : octets identiques pour l'ensemble des vecteurs comparés.
+
+### Exécution interactive et régressions
+
+- Chromium/Playwright : LDS et LES exécutées via le véritable bouton « Pas à pas », avec préfixe ES ; offset, segment destination et neuf FLAGS contrôlés : réussi.
+- Workflow CI principal : run **45653024876**, succès.
+- Workflow navigateur : run **45653024935**, succès.
+- Suite LDS/LES dédiée : **69/69**.
+- Comparaison GNU as : **160/160 instructions, octets identiques**.
+- Les étapes précédentes de régression, XLAT, XCHG et LEA, sont également passées dans les deux workflows.
+
+### Conclusion LDS/LES
+
+LDS et LES sont validées pour le périmètre logiciel audité : lecture du pointeur 16:16, ordre offset/segment, adressage, destination, préfixes, FLAGS, assemblage, désassemblage, exécution source et binaire, interaction navigateur et comparaison indépendante des encodages.
+
+Cette conclusion ne constitue pas une certification sur processeur physique. Le simulateur ne reproduit pas tous les détails électriques, temporels et de bus d'un 8086 réel. Les interruptions matérielles et les comportements externes au modèle mémoire pédagogique restent hors de ce périmètre.
