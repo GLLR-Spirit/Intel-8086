@@ -655,3 +655,17 @@ Sur le commit de code `7c8f356771848c797825b78498d02438886976d2` :
 - audit navigateur `45688448597` : succès.
 
 Le CI inclut désormais les tests dédiés `LOCK REP MOVSB`, `JMP FAR` direct et `JMP FAR` indirect sur huit modes mémoire, ainsi que la comparaison GNU as pour les formes far directes et les formes indirectes [BX]/[BX+SI]. La matrice générale reste provisoire et aucun pourcentage global n'est publié.
+
+
+## Transferts de contrôle indirects — nouvelle validation
+
+La passe de tests sur JMP complète la couverture précédente de CALL :
+- `JMP r/m16` — `FF /4` : huit registres 16 bits et huit modes d'adressage mémoire, source et binaire.
+- `JMP ptr16:16` — `EA` : far direct, CS:IP vérifiés en source et binaire.
+- `JMP m16:16` — `FF /5` : huit modes mémoire, override ES, exécution vers un segment distinct.
+- GNU as : comparaisons near indirect registre/mémoire, far direct et far indirect [BX]/[BX+SI].
+- Les tests contrôlent SP, absence de cadre de retour pour JMP et neuf FLAGS modélisés.
+
+Run CI `45689117952` : succès, y compris les tests directs et indirects JMP, les tests LOCK et la suite différentielle.
+
+Cela ferme une tranche importante des transferts indirects, mais ne clôt pas la matrice des 93 instructions : les autres familles, formes et préfixes restent à réconcilier. Aucun pourcentage global n'est publié.
