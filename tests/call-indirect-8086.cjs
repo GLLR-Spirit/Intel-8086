@@ -76,8 +76,9 @@ test("CALL r/m16 register forms execute near calls in source and binary for all 
   const template=["MOV AX, 2000h","MOV SS, AX","MOV AX, 0FD7h","PUSH AX","POPF","MOV "+reg+", 0000h","CALL "+reg,"HLT","TARGET: RET"].join("\n");
   const first=api.assemble(template),target=first.symbols.TARGET,source=template.replace("0000h",hex(target)),assembled=api.assemble(source);
   const a=api.execute(source),b=api.binary(Array.from(assembled.bytes),0,0);
-  checkState(a,target,target,"source CALL "+reg);
-  checkState(b,target,target,"binary CALL "+reg);
+  const expectedSP=reg==="SP"?target:0xFFFE;
+  checkState(a,expectedSP,target,"source CALL "+reg);
+  checkState(b,expectedSP,target,"binary CALL "+reg);
  }
 });
 for(const form of forms){
