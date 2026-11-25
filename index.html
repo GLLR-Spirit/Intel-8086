@@ -142,13 +142,14 @@ var chapterScores=JSON.parse(localStorage.getItem("i86-chapter-scores-v2")||"{}"
 var lessonScores=JSON.parse(localStorage.getItem("i86-lesson-scores")||"{}");
 var chapterExerciseMap=curriculum.map(function(c,i){return Math.min(exercises.length-1,Math.floor(i*exercises.length/curriculum.length));});
 lessons=curriculum.map(function(c,i){return [c[0],"Niveau "+(c[1])+" · "+(["Fondations","Instructions","Algorithmique","Mémoire et structuration","Systèmes avancés","Architecture interne"][i<5?0:i<11?1:i<17?2:i<23?3:i<30?4:5]),"<p>"+c[3]+"</p><p><b>Prérequis :</b> "+c[2]+"</p>",c[4][0][2]];});
+function rotateQuiz(q,seed){var shift=seed%q[1].length;return [q[0],q[1].slice(shift).concat(q[1].slice(0,shift)),(q[2]-shift+q[1].length)%q[1].length,q[3],q[4]||""];}
 chapterLearning=curriculum.map(function(c,ci){
  var lq=c[4].map(function(l,li){
   var choices=[l[4],"Un détail sans rapport avec le fonctionnement étudié","Une opération effectuée uniquement par le système d'exploitation"];
   return {title:l[0],theory:l[1],example:l[2],expected:l[3],concept:l[4],quiz:[
    ["Quelle notion est au centre de cette leçon ?",choices,0,"La notion centrale est : "+l[4]+"."],
    ["Pourquoi cette notion est-elle importante ?",[c[3],"Pour remplacer toutes les instructions du processeur","Pour éviter de connaître l'état des registres"],0,c[3]],
-   ["Que faut-il vérifier dans l'exemple guidé ?",[l[3],"Uniquement le nom du fichier source","Le nombre de commentaires"],0,"Le résultat attendu est : "+l[3]+"."]]};
+   ["Que faut-il vérifier dans l'exemple guidé ?",[l[3],"Uniquement le nom du fichier source","Le nombre de commentaires"],0,"Le résultat attendu est : "+l[3]+"."]].map(function(q,qi){q[4]=["Compréhension","Application","Vérification"][qi];return rotateQuiz(q,ci+li+qi);})};
  });
  var a=c[4][0],b=c[4][1],d=c[4][2];
  var exam=[
