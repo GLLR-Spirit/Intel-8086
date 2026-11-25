@@ -8,6 +8,7 @@ on:
       - "tests/xlat-interactive-8086.cjs"
       - "tests/xchg-interactive-8086.cjs"
       - "tests/lea-interactive-8086.cjs"
+      - "tests/lds-les-interactive-8086.cjs"
       - ".github/workflows/level3-browser-audit.yml"
   push:
     branches: [audit/niveau-3-chapitres-12-17]
@@ -41,3 +42,5 @@ jobs:
         run: node tests/xchg-interactive-8086.cjs
       - name: Vérifier LEA via le vrai bouton Pas à pas
         run: node tests/lea-interactive-8086.cjs
+      - name: Vérifier LDS et LES via le vrai bouton Pas à pas
+        run: node tests/lds-les-interactive-8086.cjs
