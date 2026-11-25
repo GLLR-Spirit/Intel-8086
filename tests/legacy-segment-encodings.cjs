@@ -21,7 +21,7 @@ const context = {
 vm.createContext(context);
 const injection = "\nglobalThis.__8086LegacySegmentApi = {" +
   "\n assemble: function (source) { return assembleProgram(source); }," +
-  "\n disassemble: function (bytes) { return disassembleBytes(bytes); }" +
+  "\n disassemble: function (bytes, maxRows) { return disassembleBytes(bytes, maxRows); }" +
   "\n};\n})();\n";
 const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injection);
 assert.notEqual(instrumented, match[1], "Test API injection point must exist");
@@ -63,7 +63,7 @@ for (let selector = 0; selector < 8; selector++) {
       });
       if (selector === 1) {
         test("8E CS destination is invalid and remains DB", () => {
-          const rows = api.disassemble(codeFromRM).rows;
+          const rows = api.disassemble(codeFromRM, 1).rows;
           assert.ok(rows[0].instruction.startsWith("DB "));
           assert.deepEqual(Array.from(rows[0].bytes), [0x8E]);
         });
@@ -104,7 +104,7 @@ for (let selector = 0; selector < 4; selector++) {
 }
 
 test("8086 8E /1 is not disassembled as MOV CS", () => {
-  const rows = api.disassemble([0x8E, 0xC8]).rows;
+  const rows = api.disassemble([0x8E, 0xC8], 1).rows;
   assert.ok(rows[0].instruction.startsWith("DB "));
   assert.deepEqual(Array.from(rows[0].bytes), [0x8E]);
 });
