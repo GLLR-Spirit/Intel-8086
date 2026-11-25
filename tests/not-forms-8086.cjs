@@ -118,8 +118,8 @@ for(const seg of SEG){
   ].join("\n");
   const expected=[...prefix,0xF6,0x17];
   const bytes=assemble(source);
-  const start=bytes.length-expected.length;
-  same(bytes.slice(start),expected,"NOT "+seg.name+" segment prefix bytes");
+  const start=bytes.length-1-expected.length; // exclude trailing HLT
+  same(bytes.slice(start,start+expected.length),expected,"NOT "+seg.name+" segment prefix bytes");
   decode(expected,"NOT","NOT "+seg.name+" decode");
   const sourceState=api.execute(source);
   const binaryState=api.binary(bytes,0,0,{});
