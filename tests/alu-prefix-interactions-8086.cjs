@@ -56,9 +56,13 @@ function decode(bytes, mnemonic, message) {
   check(d.rows.length === 1, message + " one decoded row");
   same(Array.from(d.rows[0].bytes), bytes, message + " exact length");
   check(d.rows[0].instruction.includes(mnemonic), message + " decoded mnemonic");
-  check(d.rows[0].instruction.startsWith(bytes[0] === 0x26 ? "ES:" :
-    bytes[0] === 0x2E ? "CS:" : bytes[0] === 0x36 ? "SS:" : "DS:"),
-    message + " segment override retained");
+  if (bytes[0] === 0xF0) {
+    check(d.rows[0].instruction.startsWith("LOCK "), message + " LOCK prefix retained");
+  } else {
+    check(d.rows[0].instruction.startsWith(bytes[0] === 0x26 ? "ES:" :
+      bytes[0] === 0x2E ? "CS:" : bytes[0] === 0x36 ? "SS:" : "DS:"),
+      message + " segment override retained");
+  }
 }
 
 // Every explicit segment override is tested with all five ALU operations,
