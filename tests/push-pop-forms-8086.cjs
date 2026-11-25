@@ -60,4 +60,4 @@ for(const [mode,state] of executeBoth(flagsSource)){
  for(const flag of ["CF","PF","AF","ZF","SF","TF","IF","OF"])assert.equal(state.flags[flag],1,mode+" "+flag);
  assert.equal(state.flags.DF,0,mode+" DF");
 }
-console.log("8086 PUSH/POP: eight registers, segment forms, FF /6, 8F /0, PUSH SP/POP SP 8086 semantics, FLAGS, source and binary PASS.");
+console.log("8086 PUSH/POP: eight compact register forms, segment forms, FF /6 memory-only, 8F /0 register/memory, PUSH SP/POP SP 8086 semantics, FLAGS, source and binary PASS.");
