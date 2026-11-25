@@ -445,7 +445,7 @@ for (const [chapter,lesson,needle] of lessonTextOracles) {
   const text=data[1]+" "+data[3];
   assert.ok(text.includes(needle),"C"+chapter+"L"+lesson+" must retain its audited technical clarification: "+needle);
 }
-assert.ok(learning.curriculum[10][5][2][2].includes("STC\\nINC AL"),"C11 L3 must establish CF before testing INC preservation.");
+assert.ok(learning.curriculum[10][5][2][2].includes("STC\nINC AL"),"C11 L3 must establish CF before testing INC preservation.");
 
 console.log("Learning quality: 36 chapters, 324 intermediate questions, 360 final questions, " +
   learning.exercises.length + " exercises; all guided corrections execute and pass their validators.");
