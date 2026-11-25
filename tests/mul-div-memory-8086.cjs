@@ -257,7 +257,13 @@ function faultCase(op, bits, fault) {
   } else {
     setup = ["MOV DX, 0", "MOV AX, 8000h", "MOV " + memory + ", 1"];
   }
-  return [
+  const expected = fault === "zero"
+    ? { ax: 0x1234, dx: 0 }
+    : bits === 8 && op === "DIV" ? { ax: 0x0100, dx: 0 }
+    : bits === 8 && op === "IDIV" ? { ax: 0x0080, dx: 0 }
+    : bits === 16 && op === "DIV" ? { ax: 0x0000, dx: 0x0001 }
+    : { ax: 0x8000, dx: 0x0000 };
+  return { expected, source: [
     "VECTOR 0, HANDLER",
     "MOV AX, 1000h", "MOV DS, AX",
     "MOV AX, 2000h", "MOV SS, AX",
@@ -271,18 +277,22 @@ function faultCase(op, bits, fault) {
     "POP CX",
     "MOV SI, 5678h",
     "IRET"
-  ].join("\n");
+  ].join("\n") };
 }
 
 let faultCases = 0;
 for (const op of ["DIV", "IDIV"]) {
   for (const bits of [8, 16]) {
     for (const fault of ["zero", "overflow"]) {
-      const source = faultCase(op, bits, fault);
+      const scenario = faultCase(op, bits, fault);
+      const source = scenario.source;
       const label = op + " memory " + bits + "-bit " + fault;
       test("Erreur division source · " + label, () => {
         const state = api.execute(source);
         assert.ok(!state.error, state.error || label);
+        assert.equal(state.reg.AX, scenario.expected.ax, "Fault must not commit quotient/remainder to AX");
+        assert.equal(state.reg.DX, scenario.expected.dx, "Fault must not commit quotient/remainder to DX");
+        assert.equal(state.reg.CX & 0x0300, 0, "IF/TF must be cleared in the handler");
         assert.equal(state.reg.SI, 0x5678, "Vector 00h handler must execute");
         assert.equal(state.reg.DI, 0xABCD, "IRET must resume after the faulting instruction");
         assert.equal(state.stack.length, 0, "IRET must consume the interrupt frame");
@@ -300,6 +310,9 @@ for (const op of ["DIV", "IDIV"]) {
           flags: { IF: 1, TF: 1 }, mem: ivt
         });
         assert.ok(!state.error, state.error || label);
+        assert.equal(state.reg.AX, scenario.expected.ax, "Fault must not commit quotient/remainder to AX");
+        assert.equal(state.reg.DX, scenario.expected.dx, "Fault must not commit quotient/remainder to DX");
+        assert.equal(state.reg.CX & 0x0300, 0, "IF/TF must be cleared in the handler");
         assert.equal(state.reg.SI, 0x5678, "IVT handler must execute");
         assert.equal(state.reg.DI, 0xABCD, "IRET must resume after the faulting instruction");
         assert.equal(state.stack.length, 0, "IRET must consume the interrupt frame");
@@ -315,7 +328,7 @@ for (const op of ["DIV", "IDIV"]) {
 // Interactive stepper: one memory-based divide fault must also route through
 // VECTOR 00h and return to the instruction following DIV.
 test("Pas à pas interactif · DIV BYTE PTR mémoire déclenche INT 00h", () => {
-  api.prepare(faultCase("DIV", 8, "zero"));
+  api.prepare(faultCase("DIV", 8, "zero").source);
   let steps = 0;
   while (!api.isHalted() && steps < 80) { api.tick(); steps++; }
   const state = api.getState();
