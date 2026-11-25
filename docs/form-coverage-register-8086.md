@@ -133,3 +133,67 @@ Le groupe `83h` est bien présent dans le codage 8086 : le champ `S:W = 11` indi
 Les quatre formes `MOV moffs` (`A0h`–`A3h`) sont maintenant encodées et décodées. Pour préserver les cas ModR/M explicites déjà utilisés dans le laboratoire, l’assembleur choisit moffs pour les formes directes non qualifiées avec AL/AX ; une qualification BYTE/WORD PTR explicite conserve la forme ModR/M.
 
 **Validation CI 238** : [354/354 tests de fumée et 114/114 vecteurs indépendants réussis](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45443738198). Cela valide les cas ajoutés, mais ne certifie pas toutes les combinaisons d’adressage et de FLAGS.
+
+
+---
+
+## 8. Deuxième tranche — transferts de contrôle et opérandes indirects (25 novembre 2026)
+
+Cette tranche s'appuie sur les tests ciblés dédiés aux appels, retours, branchements et transferts indirects. Elle distingue les formes encodées de leur profondeur de validation.
+
+| Instruction | Forme Intel | Opcode / extension | Assembleur | Désassembleur | Exécution source et binaire | Preuve ciblée |
+|---|---|---|---|---|---|---|
+| CALL near | relatif rel16 | E8 cw | Implémenté | Implémenté | Testé | `call-ret-8086`, GNU as |
+| CALL near indirect | r/m16 | FF /2 | Implémenté | Implémenté | Testé | Registres et mémoire, formes d'adressage |
+| CALL far direct | ptr16:16 | 9A cd | Implémenté | Implémenté | Testé | CS:IP et cadre de pile |
+| CALL far indirect | m16:16 | FF /3 | Implémenté | Implémenté | Testé | Mémoire seule, huit modes d'adressage, préfixes |
+| JMP short | relatif rel8 | EB cb | Implémenté | Implémenté | Testé | Bornes rel8 |
+| JMP near | relatif rel16 | E9 cw | Implémenté | Implémenté | Testé | Déplacement rel16 |
+| JMP near indirect | r/m16 | FF /4 | Implémenté | Implémenté | Test ciblé | Registre et mémoire |
+| JMP far direct | ptr16:16 | EA cd | Présence à réconcilier | Présence à réconcilier | Test ciblé à compléter | À inscrire dans la matrice exhaustive |
+| JMP far indirect | m16:16 | FF /5 | Présence à réconcilier | Présence à réconcilier | Test ciblé à compléter | À inscrire dans la matrice exhaustive |
+| RET near | sans immédiat / imm16 | C3 / C2 iw | Implémenté | Implémenté | Testé | Pile, SP et nettoyage impair |
+| RETF | sans immédiat / imm16 | CB / CA iw | Implémenté | Implémenté | Testé | CS:IP, SP et nettoyage impair |
+| Jcc | rel8, 16 conditions | 70–7F cb | Implémenté | Implémenté | Testé | Conditions et limites |
+| LOOP | rel8 | E2 cb | Implémenté | Implémenté | Testé | CX, FLAGS et cible |
+| LOOPE / LOOPZ | rel8 | E1 cb | Implémenté | Implémenté | Testé | CX et ZF |
+| LOOPNE / LOOPNZ | rel8 | E0 cb | Implémenté | Implémenté | Testé | CX et ZF |
+| JCXZ | rel8 | E3 cb | Implémenté | Implémenté | Testé | CX préservé et cible |
+
+**Attention :** la mention « testé » signifie que les chemins concernés ont des vecteurs ciblés dans les suites nommées. Elle ne remplace pas une matrice de toutes les valeurs de déplacement, de tous les modes d'adressage et de toutes les formes invalides.
+
+## 9. Transferts, adresses effectives et pointeurs far
+
+| Instruction | Forme Intel | Opcode / extension | État ciblé |
+|---|---|---|---|
+| XCHG | r/m8,r8 et r/m16,r16 | 86 /r, 87 /r | Source, assembleur, désassembleur et binaire testés ; formes registre et mémoire |
+| XCHG AX,r16 | échange avec AX | 90–97 | Encodages dédiés et round-trip testés |
+| LEA | r16,m | 8D /r | Calcul d'offset et absence de lecture mémoire testés |
+| LDS | r16,m16:16 | C5 /r | Offset, segment et ordre little-endian testés |
+| LES | r16,m16:16 | C4 /r | Offset, segment et ordre little-endian testés |
+| XLAT | AL ← DS:[BX+AL] | D7 | Source, binaire, segment override et préservation FLAGS testés |
+
+## 10. Chaînes et préfixes — première matrice fonctionnelle
+
+| Forme | Opcode | État actuel | Limite à conserver |
+|---|---|---|---|
+| MOVSB / MOVSW | A4 / A5 | Test fonctionnel | Matrice complète DF, segments et limites mémoire à compléter |
+| CMPSB / CMPSW | A6 / A7 | Test fonctionnel ciblé | FLAGS, préfixes et parcours inversé à étendre |
+| STOSB / STOSW | AA / AB | Test fonctionnel ciblé | Limites et parcours inversé à étendre |
+| LODSB / LODSW | AC / AD | Test fonctionnel ciblé | Préfixes et parcours inversé à étendre |
+| SCASB / SCASW | AE / AF | Test fonctionnel ciblé | FLAGS, REPE/REPNE et limites à étendre |
+| REP / REPE / REPNE | F3 / F2 | Test fonctionnel | Combinaisons et interruptions entre itérations à documenter |
+| LOCK | F0 | Source, assembleur, désassembleur et binaire testés | Le signal LOCK et l'arbitrage du bus ne sont pas simulés |
+
+Le préfixe LOCK est accepté devant l'instruction suivante, y compris `LOCK REP MOVSB`. Le test vérifie le flux `F0 F3 A4`, les octets transférés, CX, SI, DI et la préservation des neuf FLAGS modélisés. Cela valide le comportement logiciel observable, pas l'atomicité matérielle du bus.
+
+## 11. Reste à auditer avant tout score global
+
+1. Compléter les formes de toutes les instructions restantes, en distinguant formes implicites, registres, mémoire, immédiats, accumulateur et pointeurs far.
+2. Relever chaque extension ModR/M autorisée, non utilisée et invalide pour chaque groupe.
+3. Étendre les matrices aux huit modes d'adressage, déplacements absents/disp8/disp16, limites et adresses directes.
+4. Auditer les interactions des préfixes F0/F2/F3 et des overrides CS/DS/ES/SS, y compris ordre, répétitions et flux tronqués.
+5. Associer chaque forme à des tests source, assembleur, désassembleur, binaire et, lorsque possible, à un oracle indépendant.
+6. Ne calculer le score pondéré qu'une fois ces unités recensées et les règles de pondération publiées.
+
+Aucun pourcentage global n'est calculé dans cette tranche.
