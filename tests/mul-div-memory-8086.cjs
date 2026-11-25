@@ -412,14 +412,14 @@ test("IDIV byte still traps for quotient -129 below the minimum", () => {
   const source = ["MOV AX, 4080h", "MOV BL, 80h", "IDIV BL", "HLT"].join("\n");
   assert.match(api.execute(source).error || "", /dépassement de quotient/i);
   const bytes = api.assemble(source).bytes;
-  assert.match(api.executeBinary(bytes, 0, 0).error || "", /dépassement de quotient/i);
+  assert.match(api.executeBinary(bytes, 0x1000, 0).error || "", /dépassement de quotient/i);
 });
 
 test("IDIV word still traps for quotient -32769 below the minimum", () => {
   const source = ["MOV DX, 4000h", "MOV AX, 8000h", "MOV BX, 8000h", "IDIV BX", "HLT"].join("\n");
   assert.match(api.execute(source).error || "", /dépassement de quotient/i);
   const bytes = api.assemble(source).bytes;
-  assert.match(api.executeBinary(bytes, 0, 0).error || "", /dépassement de quotient/i);
+  assert.match(api.executeBinary(bytes, 0x1000, 0).error || "", /dépassement de quotient/i);
 });
 
 // ---------------------------------------------------------------------------
