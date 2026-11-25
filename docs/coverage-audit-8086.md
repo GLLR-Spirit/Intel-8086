@@ -33,7 +33,7 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | LEA | Oui | Oui | Oui | Oui | À faire |
 | LES | Oui | Oui | Oui | Oui | À faire |
 | LDS | Oui | Oui | Oui | Oui | À faire |
-| XLAT | Oui | Non | Non | Non | À faire |
+| XLAT | Oui | Oui | Oui | Oui | Partiel |
 | PUSH | Oui | Oui | Oui | Oui | Partiel |
 | POP | Oui | Oui | Partiel | Partiel | Partiel |
 | PUSHF | Oui | Oui | Oui | Oui | Partiel |
@@ -425,3 +425,21 @@ La suite dédiée `tests/lahf-sahf-8086.cjs` est maintenant intégrée au workfl
 Résultat CI : [run 45592060463](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45592060463), commit `aaa1b499a3147b654a73cad6cbb4dc1b9ad131a0` — **298 réussis, 0 échec** pour la suite dédiée.
 
 Les lignes LAHF/SAHF passent de « non prises en charge » à « présentes » pour le simulateur, l'assembleur et le désassembleur. Le statut de tests reste **Partiel** dans la matrice globale : la suite couvre de manière exhaustive les valeurs d'entrée pertinentes de ces deux instructions dans le modèle logiciel, mais ne constitue pas une comparaison avec un 8086 physique ou un émulateur indépendant complet.
+
+
+## Audit indépendant de XLAT — 25 novembre 2026
+
+La suite `tests/xlat-8086.cjs` est intégrée au workflow CI. L'inspection préalable a confirmé que XLAT était déjà implémentée dans le moteur source, l'assembleur, le désassembleur et le chemin binaire ; la matrice précédente sous-estimait donc l'état réel du code. La validation indépendante permet maintenant de documenter ce support sans le qualifier d'exhaustif.
+
+- **Encodage/désassemblage : 9 contrôles** — opcode fixe `D7h`, frontières avec HLT et préfixes de segment ES (`26 D7`), CS (`2E D7`), SS (`36 D7`) et DS (`3E D7`).
+- **Exécution source : 5 cas** — quatre sélecteurs de segment (DS explicite, ES, SS, CS) et DS par défaut.
+- **Exécution binaire : 6 cas** — mêmes quatre sélecteurs, DS par défaut et rebouclage physique sur 20 bits.
+- **FLAGS : 8 contrôles** — les neuf indicateurs représentés par le simulateur sont préchargés et vérifiés inchangés dans les chemins source et binaire.
+- **Adresses : 3 contrôles** — addition BX+AL avec rebouclage 16 bits, sélection du segment et adresse physique 20 bits.
+- **Rejets : 4 contrôles** — lecture d'un octet non initialisé en source et en binaire, et rejet de deux syntaxes avec opérandes superflus.
+
+La suite vérifie notamment que `BX+AL` est ramené sur 16 bits avant la formation de l'adresse physique, que DS est le segment par défaut, que le préfixe explicite sélectionne le segment demandé et qu'une lecture non initialisée provoque une erreur au lieu de retourner implicitement zéro.
+
+Résultat : [workflow CI 45593318116](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45593318116), commit `50b982ca58e9b0cd4ae2d7e31c130876eb1f17ab` — **24 réussis, 0 échec** pour la suite XLAT ; workflow global **success**.
+
+La matrice passe à « Oui » pour la présence dans le simulateur, l'assembleur et le désassembleur. Le statut des tests reste **Partiel** : les scénarios indépendants listés sont vérifiés, mais aucune comparaison complète avec un 8086 physique ou un émulateur matériel indépendant n'a été effectuée.
