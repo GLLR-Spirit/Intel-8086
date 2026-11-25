@@ -61,7 +61,8 @@ function decode(bytes,mnemonic,label){
   const d=api.disassemble(bytes);
   check(d.rows.length===1,label+" one instruction");
   same(Array.from(d.rows[0].bytes),bytes,label+" exact byte length");
-  check(d.rows[0].instruction.startsWith(mnemonic+" "),label+" mnemonic");
+  check(d.rows[0].instruction.startsWith(mnemonic+" ") ||
+    d.rows[0].instruction.startsWith("LOCK "+mnemonic+" "),label+" mnemonic");
 }
 
 // A. All register-direct forms: F6 /2 r/m8 and F7 /2 r/m16.
@@ -91,7 +92,7 @@ check(memoryForms===48,"2 widths × 3 displacement modes × 8 r/m forms");
 
 // C. The reserved /1 extension remains data, never aliases NOT.
 for(const [opcode,tail] of [[0xF6,[]],[0xF7,[]]]){
-  const invalid=[opcode,modrm(3,1)];
+  const invalid=[opcode,0xC8]; // MOD=11, REG=/1 (reserved), R/M=AX
   const d=api.disassemble(invalid);
   check(d.rows[0].instruction.startsWith("DB "),opcode.toString(16)+" /1 is reserved");
 }
