@@ -210,3 +210,47 @@ La référence Intel 8086 précise que le signal LOCK reste actif pendant l'inst
 - Séparation Cours / Exercices / Atelier : présence contrôlée dans l'interface ; audit UX détaillé à poursuivre.
 
 **Conclusion :** les exemples et le jeu de questions ont franchi une étape de vérification beaucoup plus stricte, mais la phase 3 n'est pas clôturée. Les leçons, les visualisations et les interactions doivent encore être évaluées individuellement, et les limites du modèle doivent rester explicites.
+
+
+### 7.5 Illustrations, animations et séparation des espaces
+
+L'inventaire du rendu `courseVisual(i)` donne dix chapitres avec une visualisation dédiée :
+
+| Chapitre | Visualisation | Nature |
+|---:|---|---|
+| 2 | Chaîne BIU → EU → ALU et bus | Schéma animé |
+| 5 | Décomposition AX en AH/AL | Interactive |
+| 12 | Comparateur et FLAGS | Interactive |
+| 18 | Segment:offset et adresse physique | Interactive |
+| 20 | Calcul d'adresse effective | Interactive |
+| 21 | Pile LIFO | Interactive |
+| 27 | Transfert de chaîne DS:SI → ES:DI | Schéma |
+| 29 | Cadre d'interruption | Schéma |
+| 31 | Opcode et champs d'encodage | Schéma |
+| 32 | Décodeur ModR/M | Interactive |
+
+Le test navigateur vérifie les six interactions (AX, FLAGS, segment:offset, adresse effective, pile et ModR/M) et l'animation BIU. L'animation est schématique, ne représente pas des cycles matériels et respecte `prefers-reduced-motion`.
+
+**Lacune identifiée :** il n'existe pas encore de visualisation de trace pédagogique intégrée qui avance instruction par instruction en affichant simultanément AX, BX, CX, IP, SP, FLAGS et les modifications mémoire. Le mode pas à pas de l'atelier est distinct de cette visualisation de cours. De plus, 26 chapitres ne possèdent pas de diagramme spécifique dans `courseVisual`; leur texte et leurs exemples restent consultables, mais la couverture visuelle est inégale.
+
+La séparation d'interface est maintenant contrôlée par le test navigateur :
+- **Cours** : `view-learn` ;
+- **Exercices** : `view-exercises`, avec recherche, chapitre, difficulté et type ;
+- **Atelier** : `view-editor`.
+
+Le test vérifie la navigation entre ces vues, le filtrage de la liste et la remise à zéro des filtres. Cette séparation est conservée : les exercices pratiques ne sont pas réintroduits dans les leçons du cours.
+
+### 7.6 Corrections techniques complémentaires des leçons
+
+La revue des 108 leçons a aussi conduit aux clarifications suivantes :
+
+- **C11 L3** : l'exemple d'INC commence maintenant par STC ; il démontre réellement que CF reste à 1 après l'incrémentation de FFh vers 00h.
+- **C17 L1** : le texte explique les variantes JA/JAE et JB/JBE et la politique choisie pour l'égalité.
+- **C21 L3** : le résultat numérique de MUL AX est explicité : DX:AX=0000:0009h.
+- **C24 L3** : la distinction CF/OF entre MUL (moitié haute non nulle) et IMUL (résultat non représentable sur la largeur signée) est explicitée.
+- **C30 L1** : l'espace de ports est décrit comme 16 bits ; le numéro immédiat est encodé sur 8 bits et DX fournit 16 bits. AL/AX définissent la largeur du transfert.
+- **C30 L3** : NOP est décrit précisément : aucun changement des registres généraux, de la mémoire ou de FLAGS, tandis que IP avance normalement.
+- **C33 L2–L3** : le cours distingue maintenant un flux réellement assemblé/désassemblé d'un octet externe fourni au désassembleur.
+- **C35 L2–L3** : l'exemple LOOP précise quel branchement est pris ; l'exemple d'optimisation ne prétend plus démontrer un gain de cycles.
+
+Le CI de la branche doit confirmer ces oracles et les tests navigateur avant que cette passe soit considérée comme stabilisée.
