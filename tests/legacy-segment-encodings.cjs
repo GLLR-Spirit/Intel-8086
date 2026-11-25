@@ -119,7 +119,7 @@ test("8086 CS destination is rejected for every memory addressing mode", () => {
       const displacement = mod === 0 && rm === 6 ? [0x34, 0x12]
         : mod === 1 ? [0x7F]
         : mod === 2 ? [0x34, 0x12] : [];
-      const code = [0x8E, memoryModrm(mod, 1, rm), ...displacement];
+      const code = [0x8E, memoryModrm(mod, 1, rm), ...displacement, ...Array(32).fill(0x90)];
       const result = api.disassemble(code);
       assert.ok(result.rows[0].instruction.startsWith("DB "),
         "8E /1 must remain unsupported: " + code.map(x => x.toString(16)));
@@ -140,7 +140,7 @@ test("8086 reserved segment selectors /4..7 are rejected in all memory modes", (
           const displacement = mod === 0 && rm === 6 ? [0x34, 0x12]
             : mod === 1 ? [0x7F]
             : mod === 2 ? [0x34, 0x12] : [];
-          const code = [opcode, modrm(mod, selector, rm), ...displacement];
+          const code = [opcode, memoryModrm(mod, selector, rm), ...displacement, ...Array(32).fill(0x90)];
           const result = api.disassemble(code);
           assert.ok(result.rows[0].instruction.startsWith("DB "),
             opcode.toString(16) + " /" + selector + " must remain reserved");
