@@ -207,7 +207,7 @@ for (const op of ["OR", "AND", "XOR"]) {
     for (let mod = 0; mod <= 2; mod++) for (let rm = 0; rm < 8; rm++) {
       const widthName = bits === 8 ? "BYTE" : "WORD";
       const expr = memExpr(mod, rm);
-      const ext = { OR:1, AND:4, XOR:6 }[op];
+      const ext = 0; // /r form: REG encodes the source register, not an opcode extension.
       const opcode = { OR:0x08, AND:0x20, XOR:0x30 }[op] + (bits === 8 ? 0 : 1);
       const fixed = [opcode, (mod << 6) | (ext << 3) | rm, ...dispBytes(mod,rm)];
       const source = op + " " + widthName + " PTR " + expr + ", " + (bits === 8 ? "AL" : "AX");
@@ -253,7 +253,7 @@ for (const op of ["OR","AND","XOR","TEST"]) {
     totals.immediateEncodings++;
 
     const ext = op === "TEST" ? 0 : immediateExt[op];
-    const group8 = [op === "TEST" ? 0xF6 : 0x80, (3 << 3) | ext, immValue & 255];
+    const group8 = [op === "TEST" ? 0xF6 : 0x80, (3 << 3) | ext | 7, immValue & 255];
     const group8Source = op + " BYTE PTR [BX], " + byte(immValue);
     test(op + " group immediate byte", () => {
       assert.deepEqual(Array.from(api.assemble(group8Source).bytes), group8, group8Source);
@@ -262,7 +262,7 @@ for (const op of ["OR","AND","XOR","TEST"]) {
     totals.immediateEncodings++;
 
     if (op === "TEST") {
-      const group16 = [0xF7, (3 << 3), 0x34, 0x12];
+      const group16 = [0xF7, 0x07, 0x34, 0x12];
       const source16 = "TEST WORD PTR [BX], 1234h";
       test("TEST group immediate word", () => {
         assert.deepEqual(Array.from(api.assemble(source16).bytes), group16, source16);
@@ -270,7 +270,7 @@ for (const op of ["OR","AND","XOR","TEST"]) {
       });
       totals.immediateEncodings++;
     } else {
-      const group16 = [0x81, (3 << 3) | ext, 0x34, 0x12];
+      const group16 = [0x81, (3 << 3) | ext | 7, 0x34, 0x12];
       const source16 = op + " WORD PTR [BX], 1234h";
       test(op + " group immediate word 81h", () => {
         assert.deepEqual(Array.from(api.assemble(source16).bytes), group16, source16);
@@ -278,7 +278,7 @@ for (const op of ["OR","AND","XOR","TEST"]) {
       });
       totals.immediateEncodings++;
 
-      const group83 = [0x83, (3 << 3) | ext, 0xFF];
+      const group83 = [0x83, (3 << 3) | ext | 7, 0xFF];
       const source83 = op + " WORD PTR [BX], -1";
       test(op + " sign-extended immediate 83h", () => {
         assert.deepEqual(Array.from(api.assemble(source83).bytes), group83, source83);
