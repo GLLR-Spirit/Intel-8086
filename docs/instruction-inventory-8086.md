@@ -39,10 +39,10 @@ Cet inventaire est indépendant des 58 cartes de l'interface. Il contient un reg
 | DEC | Décrémentation | — | À auditer |
 | NEG | Négation arithmétique | — | À auditer |
 | CMP | Comparaison par soustraction | — | À auditer |
-| MUL | Multiplication non signée | — | À auditer |
-| IMUL | Multiplication signée | — | À auditer |
-| DIV | Division non signée | — | À auditer |
-| IDIV | Division signée | — | À auditer |
+| MUL | Multiplication non signée | — | Formes 8086 auditées (tranche ciblée) |
+| IMUL | Multiplication signée | — | Formes 8086 auditées (tranche ciblée) |
+| DIV | Division non signée | — | Formes 8086 auditées (tranche ciblée) |
+| IDIV | Division signée | — | Formes 8086 auditées (tranche ciblée) |
 | AAA | Ajustement ASCII après addition | — | À auditer |
 | AAS | Ajustement ASCII après soustraction | — | À auditer |
 | AAM | Ajustement ASCII après multiplication | — | À auditer |
@@ -351,3 +351,9 @@ La matrice actuelle des 93 entrées canoniques, avec statuts séparés pour la d
 `PORT numéro, valeur` est une directive propre au laboratoire, et non une instruction Intel 8086. Elle initialise la carte logicielle des ports pour permettre à `IN` de lire une valeur déterministe en mode source. Elle n'émet aucun octet machine. Pour le chemin binaire, l'état des ports est fourni par `initialState.io` ; l'interface d'exécution binaire reprend les directives PORT du programme source courant comme état initial.
 
 Les ports sont des valeurs logicielles 16 bits ; IN/OUT AL tronque ou écrit 8 bits, IN/OUT AX utilise 16 bits. Aucun contrôleur matériel, temporisation de bus ni périphérique n'est simulé.
+
+## 7. Actualisation ciblée — MUL, IMUL, DIV et IDIV
+
+Les formes 8086 à un opérande F6/F7 ont été contrôlées dans l'assembleur, le désassembleur, l'exécution source et l'exécution binaire. Le rapport détaillé et les nombres de tests figurent dans `docs/form-coverage-register-8086.md`, section 16.12.
+
+Cette mention ne signifie pas que l'inventaire complet des 93 entrées est certifié. Elle indique que les quatre instructions ont franchi leur audit ciblé de formes, d'opérandes, de préfixes et de cas de division.
