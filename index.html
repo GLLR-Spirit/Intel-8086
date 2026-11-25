@@ -151,7 +151,7 @@ chapterLearning=curriculum.map(function(c,ci){
    ["Pourquoi cette notion est-elle importante ?",[c[3],"Pour remplacer toutes les instructions du processeur","Pour éviter de connaître l'état des registres"],0,c[3]],
    ["Que faut-il vérifier dans l'exemple guidé ?",[l[3],"Uniquement le nom du fichier source","Le nombre de commentaires"],0,"Le résultat attendu est : "+l[3]+"."]].map(function(q,qi){q[4]=["Compréhension","Application","Vérification"][qi];return rotateQuiz(q,ci+li+qi);})};
  });
- var a=c[5][0],b=c[5][1],d=c[5][2],previous=curriculum[Math.max(0,ci-1)],next=curriculum[Math.min(curriculum.length-1,ci+1)],debugRule="Tracer l'exécution de "+b[0]+" et comparer le premier état divergent au résultat attendu.";
+ var a=c[5][0],b=c[5][1],d=c[5][2],previous=curriculum[ci===0?2:ci-1],next=curriculum[ci===curriculum.length-1?ci-2:ci+1],debugRule="Tracer l'exécution de "+b[0]+" et comparer le premier état divergent au résultat attendu.";
  var exam=[
  ["Quelle est la finalité essentielle de ce chapitre ?",[c[3],previous[3],next[3]],0,c[3],"Définition"],
  ["Quel principe est introduit dans la première leçon ?",[a[4],b[4],d[4]],0,"La première leçon établit le concept : "+a[4]+".","Compréhension"],
