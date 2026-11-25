@@ -66,15 +66,18 @@ for (const op of ["AAA", "AAS"]) {
     for (const af of [0, 1]) {
       for (const cf of [0, 1]) {
         const adjust = ((al & 15) > 9) || af === 1;
+        const initialAH = (al * 13 + af * 71 + cf * 29) & 255;
         const expectedAL = adjust
           ? ((al + (op === "AAA" ? 6 : -6)) & 15)
           : (al & 15);
-        const expectedAH = adjust ? (op === "AAA" ? 1 : 255) : 0;
+        const expectedAH = adjust
+          ? ((initialAH + (op === "AAA" ? 1 : -1)) & 255)
+          : initialAH;
         const label = op + " AL=" + byteLiteral(al) + " AF=" + af + " CF-in=" + cf;
         test("ASCII adjust " + label, () => {
           const state = run([
-            "MOV AX, " + wordLiteral(al),
-            flagsInput(af, cf),
+            "MOV AX, " + wordLiteral((initialAH << 8) | al),
+            flagsInput(af, cf, initialAH),
             op,
             "HLT"
           ].join("\n"));
@@ -147,7 +150,7 @@ for (const op of ["DAA", "DAS"]) {
         test("BCD adjust " + label, () => {
           const state = run([
             "MOV AX, " + wordLiteral(al),
-            flagsInput(af, cf),
+            flagsInput(af, cf, 0),
             op,
             "HLT"
           ].join("\n"));
