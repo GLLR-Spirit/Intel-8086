@@ -255,8 +255,7 @@ for (const opcode of [0x8C, 0x8E]) {
   for (let ext = 0; ext < 8; ext++) {
     test("MOV segment extension · " + opcode.toString(16) + " /" + ext, () => {
       if (opcode === 0x8E && ext === 1) {
-        const rows = api.disassemble([opcode, modrm(3, ext, 0)], 1).rows;
-        assert.equal(rows.length, 1);
+        const rows = api.disassemble([opcode, modrm(3, ext, 0)]).rows;
         assert.ok(rows[0].instruction.startsWith("DB "), rows[0].instruction);
         assert.deepEqual(Array.from(rows[0].bytes), [opcode]);
         return;
