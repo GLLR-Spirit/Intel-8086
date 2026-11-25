@@ -278,3 +278,24 @@ Cette visualisation est explicitement étiquetée comme pré-calculée : elle n'
 ### 7.9 Vérification CI de la passe pédagogique
 
 Sur le commit de code `7c8f356771848c797825b78498d02438886976d2`, le workflow de validation a réussi (run `45688448342`) et le test navigateur a réussi (run `45688448597`). Ces runs couvrent notamment les oracles des exemples, les contrôles de questions, les sept démonstrations interactives, la navigation Cours/Exercices/Atelier et les filtres d'exercices.
+
+### 7.10 Contrôles complémentaires — 25 novembre 2026
+
+Les oracles de résultats sont maintenant consolidés dans le test d'apprentissage :
+- 108/108 leçons disposent d'au moins un oracle indépendant de résultat attendu ;
+- le test vérifie l'identifiant de chaque couple chapitre/leçon et refuse toute leçon sans oracle ;
+- les contrôles portent sur les registres, les FLAGS, la mémoire et les valeurs d'adresse quand l'exemple les mobilise ;
+- les cas conceptuels sans calcul exécuté par le processeur sont explicitement distingués des résultats calculés par le programme.
+
+Les 684 questions sont figées dans le manifeste de référence `docs/question-semantic-key-8086.json`. Le test compare, pour chaque identifiant, l'énoncé, l'ensemble des choix, la réponse correcte et l'explication avec le manifeste. La vérification du manifeste est un contrôle de non-régression ; la validation technique repose sur la revue sémantique enregistrée dans la section 7.2 et sur les règles Intel citées dans le registre des formes.
+
+Corrections et renforcements d'exemples :
+- **C29 L1** : l'exemple calcule maintenant réellement 30h × 4 par MUL et vérifie AX=00C0h, au lieu de ne présenter qu'un commentaire non exécuté.
+- **C31 L2** : l'exemple utilise CX=5678h et contrôle B9 78 56, distinct du MOV AX immédiat de la leçon précédente.
+- **C32 L1** : l'exemple initialise BX/SI et contrôle le codage ModR/M avec disp8 pour BX+SI+4.
+- **C32 L2** : l'exemple initialise et relit les huit formes d'adressage mémoire du 8086 ; il vérifie les valeurs en mémoire et le segment par défaut DS ou SS selon l'emploi de BP.
+- **C32 L3** : l'adressage direct disp16 est écrit puis relu, avec contrôle des octets little-endian.
+- **C34 L1** : l'override CS est comparé à une donnée initialisée dans le segment choisi.
+- **C34 L2–L3** : LOCK INC mémoire et REP MOVSB sont vérifiés sur les états et les octets attendus, sans prétendre simuler l'atomicité électrique du bus.
+
+Le contrôle de la progression rédactionnelle, la qualité de chaque explication, l'exhaustivité des visualisations et le test interactif de chaque chapitre restent à terminer. La phase 3 n'est donc pas déclarée close.
