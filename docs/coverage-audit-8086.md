@@ -390,3 +390,12 @@ Une anomalie de référence a également été corrigée : pour `MOV Sreg` (`8C`
 Le préfixe LOCK est désormais contrôlé de manière cohérente entre le désassembleur et le sous-ensemble de formes accepté par l'analyseur. Le verrouillage réel du bus, les autres maîtres de bus et l'atomicité matérielle ne sont toujours pas simulés.
 
 Validation : run 45512297498 — commit `f0573072cf57ad741a0b6e33165f0ffa61d9cd75`, CI success.
+
+
+## Audit ciblé des chaînes et interruptions — 25 novembre 2026
+
+La suite différentielle vérifie désormais les dix formes MOVS/LODS/STOS/CMPS/SCAS en octet et en mot, les cas REP avec CX=0 et CX=1, les arrêts REPE/REPNE sur ZF, le parcours DF=1 avec override CS et le maintien de ES comme segment de destination. Deux exercices intégrateurs associent les chaînes, les branchements, la pile et INT/IRET.
+
+Détail des vecteurs, règles de segment, limites restantes et résultats : [audit-chain-strings-8086.md](audit-chain-strings-8086.md).
+
+CI vérifiée sur le commit `a3bb746b158c67e3f2ca8c45ea2df96a0ae4e0e5` : **78/78 tests différentiels**, **17 chapitres**, **34 questions**, **27 exercices** et toutes les corrections guidées validées. Les résultats restent limités aux scénarios explicitement testés ; ils ne certifient pas une émulation matérielle complète.
