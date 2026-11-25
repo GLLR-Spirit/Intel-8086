@@ -154,6 +154,67 @@ for (const [bits, regs] of [[8, regs8], [16, regs16]]) {
   }
 }
 
+// D. Dynamic-binary execution for every register pair, both operand widths.
+for (const [bits, regs] of [[8, regs8], [16, regs16]]) {
+  for (let r = 0; r < 8; r++) for (let m = 0; m < 8; m++) {
+    const code = bits === 8
+      ? [0x86, modrm(3, r, m), 0xF4]
+      : [(r === 0 || m === 0) ? 0x90 + (r === 0 ? m : r) : 0x87, ...(r === 0 || m === 0 ? [] : [modrm(3, r, m)]), 0xF4];
+    const expected = expectedRegSwap(regs[m], regs[r], bits);
+    test("Binaire échange " + bits + " bits " + regs[m] + "/" + regs[r], () => {
+      const state = runBinary(code, 0x5000, 0x0100, { reg: { ...initial16 }, flags: { ...flagPattern } });
+      assertRegSet(state, expected, "binaire " + regs[m] + "/" + regs[r]);
+      assertFlags(state, "binaire " + regs[m] + "/" + regs[r]);
+      totals.binary++;
+      totals.flags++;
+    });
+  }
+}
+
+// E. Direct disp16 memory form (ModR/M mod=00,r/m=110), distinct from [BP].
+for (const bits of [8, 16]) {
+  const size = bits === 8 ? "BYTE" : "WORD";
+  const reg = bits === 8 ? "AL" : "AX";
+  const code = [bits === 8 ? 0x86 : 0x87, modrm(0, 0, 6), 0x00, 0x02];
+  const oldReg = bits === 8 ? 0xC3 : 0x0C33;
+  const memoryValue = bits === 8 ? 0x5A : 0xA55A;
+  const source = [
+    setSourceFlags(), "MOV AX, 1000h", "MOV DS, AX", "MOV AX, 3000h", "MOV SS, AX",
+    ...initSourceRegs(),
+    "MOV " + reg + ", " + (bits === 8 ? "0C3h" : "0C33h"),
+    "MOV " + size + " PTR [0200h], " + (bits === 8 ? "5Ah" : "0A55Ah"),
+    "XCHG " + reg + ", " + size + " PTR [0200h]", "HLT"
+  ].join("\n");
+  test("Encodage XCHG direct disp16 " + bits + " bits", () => {
+    assert.deepEqual(bytes("XCHG " + reg + ", " + size + " PTR [0200h]"), code);
+    assert.match(disassemble(code), /^XCHG /);
+    totals.memory++;
+  });
+  test("Source XCHG direct disp16 " + bits + " bits", () => {
+    const state = runSource(source);
+    assert.equal(bits === 8 ? state.reg.AX & 255 : state.reg.AX, memoryValue);
+    assert.equal(state.mem[physical(0x1000, 0x0200)], oldReg & 255);
+    if (bits === 16) assert.equal(state.mem[physical(0x1000, 0x0201)], oldReg >> 8);
+    assertFlags(state, "source direct disp16");
+    totals.flags++;
+  });
+  test("Binaire XCHG direct disp16 " + bits + " bits", () => {
+    const initial = setInitialBinary();
+    initial.reg.AX = oldReg;
+    initial.mem = {
+      [physical(0x1000, 0x0200)]: memoryValue & 255,
+      ...(bits === 16 ? { [physical(0x1000, 0x0201)]: memoryValue >> 8 } : {})
+    };
+    const state = runBinary([...code, 0xF4], 0x5000, 0x0100, initial);
+    assert.equal(bits === 8 ? state.reg.AX & 255 : state.reg.AX, memoryValue);
+    assert.equal(state.mem[physical(0x1000, 0x0200)], oldReg & 255);
+    if (bits === 16) assert.equal(state.mem[physical(0x1000, 0x0201)], oldReg >> 8);
+    assertFlags(state, "binaire direct disp16");
+    totals.binary++;
+    totals.flags++;
+  });
+}
+
 // D. All eight 8086 effective-address forms for byte and word operands.
 // [BP] is encoded as mod=01, disp8=0; mod=00,r/m=110 is direct disp16.
 const ea = ["BX+SI", "BX+DI", "BP+SI", "BP+DI", "SI", "DI", "BP", "BX"];
