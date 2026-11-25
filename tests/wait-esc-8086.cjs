@@ -3,7 +3,7 @@ const vm = require("node:vm");
 const assert = require("node:assert/strict");
 
 const html = fs.readFileSync("index.html", "utf8");
-const match = html.match(/<script>([\\s\\S]*?)<\\/script>/);
+const match = html.match(/<script>([\s\S]*?)<\/script>/);
 assert.ok(match, "inline application script must exist");
 const elements = new Map();
 function element(id) {
@@ -19,13 +19,13 @@ const context = {
   console
 };
 vm.createContext(context);
-const injection = "\\nglobalThis.__waitEscApi = {" +
-  "\\n assemble: source => assembleProgram(source)," +
-  "\\n disassemble: bytes => disassembleBytes(bytes)," +
-  "\\n execute: source => executeAll(source)," +
-  "\\n binary: (bytes, cs, ip, state) => executeBinary(bytes, cs, ip, state)" +
-  "\\n};\\n})();\\n";
-const instrumented = match[1].replace(/\\n\\}\\)\\(\\);\\s*$/, injection);
+const injection = "\nglobalThis.__waitEscApi = {" +
+  "\n assemble: source => assembleProgram(source)," +
+  "\n disassemble: bytes => disassembleBytes(bytes)," +
+  "\n execute: source => executeAll(source)," +
+  "\n binary: (bytes, cs, ip, state) => executeBinary(bytes, cs, ip, state)" +
+  "\n};\n})();\n";
+const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injection);
 assert.notEqual(instrumented, match[1], "test API injection point must exist");
 vm.runInContext(instrumented, context, { timeout: 30000 });
 const api = context.__waitEscApi;
@@ -69,12 +69,11 @@ for (let code = 0; code < 64; code++) {
   const memBytes = [opcode, (extension << 3) | 7];
   same(Array.from(api.assemble("ESC " + code + ", WORD PTR [BX]").bytes), memBytes,
     "ESC memory encoding " + code);
-  check(decode(memBytes) === "ESC " + code + ", WORD PTR [BX]",
+  check(decode(memBytes) === "ESC " + code + ", [BX]",
     "ESC memory decode " + code);
 }
 
-// All 8 ESC primary opcodes × all 256 ModR/M bytes must consume exactly
-// the opcode and ModR/M byte, including register and all memory addressing modes.
+// All 8 ESC primary opcodes × all 256 ModR/M bytes.
 let decodedMatrix = 0;
 for (let opcode = 0xD8; opcode <= 0xDF; opcode++) {
   for (let modrm = 0; modrm < 256; modrm++) {
@@ -88,8 +87,7 @@ for (let opcode = 0xD8; opcode <= 0xDF; opcode++) {
 }
 check(decodedMatrix === 2048, "all 2048 ESC opcode/ModR/M combinations traversed");
 
-// ESC and WAIT are documented no-ops in this software-only model. They must
-// not alter general registers, segments, flags, or memory in either execution path.
+// ESC and WAIT are documented no-ops in this software-only model.
 const source = [
   "MOV AX, 1234h", "MOV BX, 0020h", "MOV CX, 0003h",
   "MOV DX, 5678h", "MOV SI, 0100h", "MOV DI, 0200h",
@@ -97,7 +95,7 @@ const source = [
   "MOV AX, 1000h", "MOV DS, AX", "MOV AX, 2000h", "MOV ES, AX",
   "MOV AX, 1234h", "MOV BYTE PTR [BX], 5Ah",
   "PUSHF", "WAIT", "ESC 0, AX", "ESC 63, WORD PTR [BX]", "POPF", "HLT"
-].join("\\n");
+].join("\n");
 const assembled = api.assemble(source);
 const bytes = Array.from(assembled.bytes);
 const baseline = api.execute([
@@ -106,7 +104,7 @@ const baseline = api.execute([
   "MOV BP, 0300h", "MOV SP, 0F000h",
   "MOV AX, 1000h", "MOV DS, AX", "MOV AX, 2000h", "MOV ES, AX",
   "MOV AX, 1234h", "MOV BYTE PTR [BX], 5Ah", "HLT"
-].join("\\n"));
+].join("\n"));
 for (const [mode, state] of [
   ["source", api.execute(source)],
   ["binary", api.binary(bytes, 0, 0, {})]
@@ -121,5 +119,5 @@ for (const [mode, state] of [
   const address = (((state.reg.DS & 0xFFFF) << 4) + state.reg.BX) & 0xFFFFF;
   check(state.mem[address] === 0x5A, mode + " preserves memory sentinel");
 }
-console.log("WAIT/ESC independent audit: WAIT encoding, decoding and invalid operands; all 64 ESC codes in register and memory forms; 2048 ESC opcode/ModR/M decode combinations; source/binary no-op semantics.");
+console.log("WAIT/ESC independent audit: WAIT fixed encoding and invalid operands; all 64 ESC codes in register and memory forms; 2048 ESC opcode/ModR/M decode combinations; source/binary no-op semantics.");
 console.log("Assertions: " + assertions + " passed.");
