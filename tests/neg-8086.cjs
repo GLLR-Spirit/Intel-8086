@@ -281,6 +281,7 @@ function memoryRuntimeCase(bits, expression, segmentOverride) {
   const lines = [
     "MOV AX, 1000h", "MOV DS, AX",
     "MOV AX, 2000h", "MOV SS, AX",
+    "MOV AX, 3000h", "MOV ES, AX",
     "MOV BX, 0010h", "MOV BP, 0020h",
     "MOV SI, 0030h", "MOV DI, 0050h",
     "MOV " + mem + ", " + (bits === 8 ? byteHex(value) : wordHex(value)),
@@ -326,7 +327,7 @@ for (const item of segmentVectors) {
     const state = runSource(scenario.source);
     const offset = item.expr === "[BP]" ? 0x20 : item.expr === "[BP+SI]" ? 0x50 :
       item.expr === "[BX+DI]" ? 0x60 : 0x10;
-    const physical = (((({ ES: 0x2000, CS: 0, SS: 0x2000, DS: 0x1000 })[item.segment]) << 4) + offset) & 0xFFFFF;
+    const physical = (((({ ES: 0x3000, CS: 0, SS: 0x2000, DS: 0x1000 })[item.segment]) << 4) + offset) & 0xFFFFF;
     assert.equal(state.mem[physical], 0x7F);
     assert.equal(state.flags.CF, 1);
   });
@@ -346,7 +347,7 @@ for (const source of [
   });
   counts.invalid++;
 }
-for (const code of [[0xF6], [0xF6, 0x18], [0xF7], [0xF7, 0x18], [0xF7, 0x1E, 0x34]]) {
+for (const code of [[0xF6], [0xF6, 0x1E], [0xF7], [0xF7, 0x1E], [0xF7, 0x1E, 0x34]]) {
   test("NEG flux binaire tronqué · " + code.map(x => x.toString(16)).join(" "), () => {
     assert.throws(() => api.disassemble(code), /tronqué/i);
   });
