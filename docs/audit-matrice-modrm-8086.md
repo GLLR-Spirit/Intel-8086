@@ -176,3 +176,21 @@ Sur le commit `21b6c66fb35bf8057e0e81c73fa168a099a83b89`, le workflow CI princip
 La matrice ciblée de 2 352 cas ne couvre sémantiquement que les familles explicitement énumérées dans `tests/modrm-matrix.cjs`. Les autres familles ModR/M nécessitent encore des références d'octets indépendantes, des cas valides/invalides par extension, et des contrôles d'assembleur, de désassembleur et d'exécution adaptés à leur sémantique.
 
 **Décision actualisée :** la suite ModR/M ciblée et les balayages structurels passent. La Phase 2 « matrice générale des 93 entrées » reste **incomplète** tant que le registre exhaustif des formes n'est pas réconcilié instruction par instruction et relié à des tests sémantiques indépendants.
+
+
+## Mise à jour 2 — extension de la matrice sémantique (25 novembre 2026)
+
+Sur le commit `b753b71f7470527f3b806b15fd934b154481cc09`, le workflow CI principal **1260** a terminé avec succès (49 étapes, aucune en échec). La suite `tests/modrm-matrix.cjs` a été étendue et rapporte désormais :
+
+| Contrôle | Résultat | Portée |
+|---|---:|---|
+| Assemblage | **512** | Vecteurs assembleur existants, toujours limités aux formes MOV ciblées |
+| Désassemblage | **11 008** | 43 familles × 256 octets ModR/M : 32 formes ALU (8 opérations × 4 directions/largeurs), 4 formes MOV, 2 XCHG, 2 TEST et 3 groupes immédiats |
+| Validité | **48** | Extensions C6/C7, FE/FF et sélecteurs de registres de segment |
+| Total de la suite | **11 568/11 568** | Somme des trois catégories ci-dessus |
+
+Les contrôles complémentaires exécutés par le même workflow comprennent le balayage de 256 octets ModR/M pour le groupe FF, les tests des formes registre-direct de `INC/DEC`, les contraintes mémoire et les vecteurs de segments. Les tests de `MOV` segment incluent maintenant 154 assertions mémoire d'assemblage/désassemblage couvrant les huit modes effectifs, les déplacements et l'adressage direct.
+
+Les balayages structurels `opcode-byte-sweep.cjs` (17 408 cas) et différentiels `dynamic-differential.cjs` (83 assertions) restent des contrôles complémentaires ; ils ne sont pas additionnés au total de 11 568, car ils ne mesurent pas la même couverture.
+
+**Limite maintenue :** cette extension ne certifie pas encore les 93 entrées canoniques. En particulier, les 512 cas d'assemblage ne couvrent pas encore systématiquement les formes assembleur de chaque famille, et les 43 familles de désassemblage ne représentent pas l'ensemble des 93 entrées. La Phase 2 générale reste donc **incomplète**.
