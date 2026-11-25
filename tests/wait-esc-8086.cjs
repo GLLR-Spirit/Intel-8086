@@ -56,6 +56,17 @@ for (const invalid of ["WAIT AX", "WAIT 1", "WAIT [BX]"]) {
   check(rejected, "invalid WAIT operands rejected: " + invalid);
 }
 
+for (const invalid of ["ESC 64, AX", "ESC -1, AX", "ESC 0, 1", "ESC 0", "ESC 0, AX, BX"]) {
+  let rejected = false;
+  try { api.assemble(invalid); } catch (_) { rejected = true; }
+  check(rejected, "invalid ESC form rejected: " + invalid);
+}
+for (const truncated of [[0xD8], [0xD8, 0x06], [0xD8, 0x40], [0xD8, 0x80, 0x34]]) {
+  let rejected = false;
+  try { api.disassemble(truncated); } catch (_) { rejected = true; }
+  check(rejected, "truncated ESC encoding rejected: " + truncated.map(x => x.toString(16)));
+}
+
 // ESC carries a six-bit escape number and a ModR/M r/m operand.
 // Exercise every escape number for register-direct and memory-direct forms.
 for (let code = 0; code < 64; code++) {
