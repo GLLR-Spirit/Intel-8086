@@ -210,7 +210,7 @@ for (const [name, machineBytes, expectedText] of decoderVectors) {
 
 test("Préfixes de chaîne — doublons et combinaisons non admises explicitement", () => {
   assert.throws(() => bytesOf("REP REP MOVSB"), /imbriqués|répétés|doit précéder/i);
-  assert.throws(() => bytesOf("CS: DS: MOVSB"), /imbriqués|répétés/i);
+  assert.throws(() => bytesOf("CS:\nDS: MOVSB"), /imbriqués|répétés/i);
   assert.throws(() => bytesOf("LOCK MOVSB"), /LOCK.*chaîne/i);
   assert.throws(() => disassemble([0xF3,0xF2,0xA4]), /REP répétés/i);
   assert.throws(() => disassemble([0x2E,0x3E,0xA4]), /segment répétés/i);
