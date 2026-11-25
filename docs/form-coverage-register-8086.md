@@ -601,3 +601,17 @@ La suite `tests/alu-forms-8086.cjs` complète les cinq familles arithmétiques e
 **Règles de canonicalisation confirmées par les octets attendus :** pour les opérandes registre-registre, l'assembleur normalise la direction vers les formes r/m,reg (opcodes de base), même lorsque la syntaxe source présente le registre destination en premier. De même, les opérandes AL/AX avec immédiat utilisent les opcodes accumulateur dédiés plutôt que le groupe 80/81/83. Les attentes de test tiennent compte de ces choix canoniques sans réduire les formes que le décodeur doit reconnaître.
 
 **Résultat CI principal :** [workflow réussi](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45709806928), commit `760efc03d6cb139bd4e2d0b854c58d5094108928`. La nouvelle suite est exécutée après la matrice ModR/M existante ; les 11 568 assertions de cette dernière passent également. Les tests de formes ne certifient pas encore toutes les valeurs de données et tous les états de FLAGS ; les interactions de préfixes seront contrôlées séparément par classe d'instruction.
+
+### 16.8 Préfixes appliqués à ADD, ADC, SBB, SUB et CMP
+
+La suite `tests/alu-prefix-interactions-8086.cjs` vérifie les interactions de préfixes pour les cinq instructions arithmétiques/comparaison :
+
+- Les quatre overrides de segment (ES, CS, SS, DS) sont exercés sur une destination mémoire et une source mémoire, pour chacune des cinq instructions : **40 cas source/binaire**.
+- Les octets de préfixe et le ModR/M sont contrôlés au désassemblage ; les exécutions source et binaire vérifient que l'accès mémoire utilise bien le segment demandé.
+- Un override DS redondant devant `[BX]` est omis canoniquement, puisque DS est déjà le segment par défaut de cette adresse ; ce n'est pas un défaut de génération.
+- REP, REPE et REPNE sont rejetés devant les cinq instructions non-chaînes ; les overrides de segment sans opérande mémoire sont rejetés ; les doubles préfixes et les séquences mal ordonnées couvertes par les tests sont rejetés.
+- LOCK est vérifié en octets et au désassemblage sur les formes mémoire de ADD, ADC, SBB et SUB. Le modèle ne prétend pas simuler le signal électrique ni l'atomicité du bus.
+
+**Référence matérielle :** le manuel Intel *8086 Family User's Manual* (octobre 1979), §2.5, indique que LOCK maintient le signal actif pendant l'instruction suivante et prévoit explicitement le cas d'une chaîne répétée verrouillée. Le même manuel décrit l'usage de LOCK avec XCHG mémoire pour protéger une mise à jour de sémaphore. Le laboratoire n'émule pas le bus partagé. <Cite ref="turn276112view0"/> <Cite ref="turn508198view0"/>
+
+**Validation :** le workflow principal du commit `184b01b32f9259a8545773106ed78a213c7f65a5` a réussi ; les suites ALU, interactions de préfixes, chaînes, transferts et WAIT/ESC ont toutes passé dans ce run. [Résultats CI](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45710283500).
