@@ -7,10 +7,12 @@ Périmètre : chapitres 12 à 17, 18 leçons, 54 questions intermédiaires et 60
 ## 1. Corrections apportées
 
 - Chapitre 13, leçon 1 : suppression du qualificatif `SHORT` non accepté par le parseur. Le cours montre maintenant le choix automatique du saut court et son encodage `EB 03`.
+- Pendant l'exécution, le contrôle a aussi révélé une ancienne assertion de test qui utilisait ce même qualificatif non pris en charge ; l'assertion a été corrigée.
+- Le contrôle de structure a révélé que la première version de la banque intermédiaire avait une imbrication incorrecte et seulement six groupes. Elle a été restructurée en 18 groupes distincts de trois questions ; le rattachement par leçon a été vérifié.
 - Chapitre 13, leçon 2 : remplacement de l'exemple indirect redondant par un `JMP` direct relatif dont la cible est à +130 octets. L'assembleur doit produire `E9 82 00`, et non un saut court.
 - Chapitre 13, leçon 3 : maintien d'un exemple distinct de `JMP BX`, saut indirect near encodé `FF E3`.
 - Chapitre 17 : les exemples démontrent désormais le calcul séparé du maximum et du minimum, la somme et le comptage d'éléments, puis une recherche séquentielle réelle dans un tableau de trois octets.
-- Les 54 questions intermédiaires sont réparties en 18 groupes de trois questions, un groupe par leçon. Les 60 questions finales sont réparties en six groupes de dix questions.
+- Les 54 questions intermédiaires sont réparties en 18 groupes de trois questions, un groupe par leçon. Les 60 questions finales sont réparties en six groupes de dix questions. La répartition contrôlée est `[3, 3, 3, 3, 3, 3]` pour chacune des six leçons intermédiaires et `[10, 10, 10, 10, 10, 10]` pour les six évaluations finales.
 
 ## 2. Résultats exécutés
 
