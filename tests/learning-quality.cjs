@@ -267,7 +267,7 @@ const level2Oracles = [
   [10,3, state => state.flags.CF === 1, "POPF restores CF saved by PUSHF"],
   [11,1, state => state.reg.AX === 5, "trace example reaches AX=5"],
   [11,2, state => state.reg.AX === 7, "diagnostic example reaches AX=7"],
-  [11,3, state => (state.reg.AX & 0xff) === 0, "INC wraps FFh to 00h while preserving CF"]
+  [11,3, state => (state.reg.AX & 0xff) === 0 && state.flags.CF === 1, "STC then INC wraps FFh to 00h while preserving CF=1"]
 ];
 for (const [chapter, lesson, check, expected] of level2Oracles) {
   const source = learning.curriculum[chapter - 1][5][lesson - 1][2];
@@ -357,7 +357,7 @@ const advancedExampleOracles = [
   [32,2,s=>s.reg.AX===0xabcd,"BX+SI+disp8 effective address reads ABCDh"],
   [32,3,s=>s.reg.AX===0xbeef,"direct disp16 memory form reads BEEFh"],
   [33,1,s=>s.reg.IP>=0&&s.reg.SP===initialSP,"assembler resolves FIN and execution reaches HLT"],
-  [33,2,s=>s.reg.IP>=0,"commentary bytes are checked by the independent disassembler below"],
+  [33,2,s=>s.reg.AX===0x1234,"MOV AX,1234h executes; its bytes are checked by the independent disassembler below"],
   [33,3,s=>s.reg.IP>=0,"unknown-byte example is checked by the independent disassembler below"],
   [34,1,s=>(s.reg.AX&255)===0x5a,"CS override reads the byte written at the selected segment:offset"],
   [34,2,s=>s.reg.AX===2&&word(s,s.reg.DS,0x100)===2,"LOCK INC memory updates the word from 1 to 2"],
@@ -395,6 +395,7 @@ const regMoveBytes=bytesOf(learning.curriculum[30][5][2][2]);
 assert.ok(JSON.stringify(regMoveBytes)===JSON.stringify([0xBB,0x34,0x12,0x89,0xD8,0xF4])||JSON.stringify(regMoveBytes)===JSON.stringify([0xBB,0x34,0x12,0x8B,0xC3,0xF4]),"C31 L3 equivalent register MOV encoding after initializing BX");
 sameBytes(bytesOf(learning.curriculum[31][5][0][2]),[0xBB,0x00,0x01,0xBE,0x02,0x00,0xC7,0x40,0x04,0xCD,0xAB,0x8B,0x40,0x04,0xF4],"C32 L1 complete initialized ModR/M disp8 example");
 sameBytes(bytesOf(learning.curriculum[31][5][2][2]),[0xC7,0x06,0x34,0x12,0xEF,0xBE,0x8B,0x06,0x34,0x12,0xF4],"C32 L3 direct disp16");
+sameBytes(bytesOf(learning.curriculum[32][5][1][2]),[0xB8,0x34,0x12,0xF4],"C33 L2 assembled stream for sequential disassembly");
 
 sameBytes(bytesOf("MOV WORD PTR [BX+SI+4], ABCDh"),[0xC7,0x40,0x04,0xCD,0xAB],"C32 memory immediate ModR/M disp8");
 sameBytes(bytesOf("JMP FIN\nNOP\nFIN:\nHLT"),[0xEB,0x01,0x90,0xF4],"C33 symbolic short branch resolution");
