@@ -476,7 +476,7 @@ Le statut des tests passe à **Partiel** : les formes et chemins explicitement �
 **CI :** [run 45676144779](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45676144779) — succès  
 **Navigateur :** [run 45676144619](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45676144619) — succès
 
-Cette section remplace les statuts de l'ancienne matrice au niveau des 93 mnémoniques. Les tableaux antérieurs restent un instantané historique. L'ancienne synthèse contenait déjà un écart arithmétique : ses lignes donnaient 66/6/21 pour le simulateur, et non 62/6/25.
+Cette section conserve les 93 mnémoniques comme inventaire de travail. Les statuts affichés sont provisoires : ils n'ont pas encore été réconciliés pour toutes les formes d'opérandes, tailles, extensions ModR/M, préfixes et chemins source/binaire. Les tableaux antérieurs restent un instantané historique. L'ancienne synthèse contenait déjà un écart arithmétique : ses lignes donnaient 66/6/21 pour le simulateur, et non 62/6/25.
 
 ## Convention de cette actualisation
 
