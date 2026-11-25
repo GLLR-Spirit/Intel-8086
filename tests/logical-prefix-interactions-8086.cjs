@@ -128,7 +128,7 @@ for(const op of OPS.slice(0,3)){
   const source="MOV BX,0200h\nMOV BYTE PTR [BX],0F0h\nMOV CL,0Fh\nLOCK\n"+
     op.name+" BYTE PTR [BX], CL\nHLT";
   const stream=assemble(source);
-  const at=stream.indexOf(0xF0);
+  const at=stream.lastIndexOf(0xF0); // avoid matching the 0F0h data immediate
   check(at>=0,"LOCK emitted for "+op.name);
   same(stream.slice(at,at+3),[0xF0,op.base,0x0F],"LOCK "+op.name+" encoding");
   decodeOne([0xF0,op.base,0x0F],op.name,"LOCK "+op.name+" decode");
