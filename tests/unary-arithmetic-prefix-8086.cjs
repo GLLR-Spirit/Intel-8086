@@ -62,7 +62,12 @@ for(const op of OPS)for(const seg of SEG)for(const bits of [8,16]){
  const addr=physical(seg.value,0x0200);
  for(const [mode,state] of [["source",src],["binary",bin]]){
   check(state.error===undefined,op.name+" "+width+" "+seg.name+" "+mode+" execution");
-  same(state.mem[addr],result,op.name+" "+width+" "+seg.name+" "+mode+" result");
+  if(bits===8){
+   same(state.mem[addr],result,op.name+" "+width+" "+seg.name+" "+mode+" result");
+  }else{
+   same(state.mem[addr],result&0xFF,op.name+" "+width+" "+seg.name+" "+mode+" low byte");
+   same(state.mem[(addr+1)&0xFFFFF],(result>>8)&0xFF,op.name+" "+width+" "+seg.name+" "+mode+" high byte");
+  }
   same(state.flags.CF,op.cf,op.name+" "+width+" "+mode+" CF");
   same(state.flags.OF,op.of,op.name+" "+width+" "+mode+" OF");
   same(state.flags.DF,1,op.name+" "+width+" "+mode+" DF preserved");
