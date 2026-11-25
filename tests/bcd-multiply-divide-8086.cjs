@@ -51,7 +51,7 @@ function parity8(value) {
 function flagsInput(af, cf, initialAX) {
   // POPF loads AF/CF without borrowing AH, then MOV restores the implicit AX operand.
   const flagsWord = (af << 4) | (cf ? 1 : 0) | 2;
-  return "MOV AX, " + wordLiteral(flagsWord) + "\\nPUSH AX\\nPOPF\\nMOV AX, " +
+  return "MOV AX, " + wordLiteral(flagsWord) + "\nPUSH AX\nPOPF\nMOV AX, " +
     wordLiteral(initialAX);
 }
 function byteLiteral(value) {
