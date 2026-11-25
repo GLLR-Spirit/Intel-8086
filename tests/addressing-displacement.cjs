@@ -85,7 +85,7 @@ const segmentCases = [
   { source: "MOV AX, WORD PTR [BX]", expected: [0x8B, 0x07] },
   { source: "MOV AX, WORD PTR DS:[BP]", expected: [0x3E, 0x8B, 0x46, 0x00] },
   { source: "MOV AX, WORD PTR ES:[BX]", expected: [0x26, 0x8B, 0x07] },
-  { source: "MOV AX, WORD PTR SS:[BP]", expected: [0x8B, 0x46, 0x00] },
+  { source: "MOV AX, WORD PTR SS:[BP]", expected: [0x36, 0x8B, 0x46, 0x00] },
   { source: "MOV AX, WORD PTR CS:[SI]", expected: [0x2E, 0x8B, 0x04] }
 ];
 for (const item of segmentCases) {
