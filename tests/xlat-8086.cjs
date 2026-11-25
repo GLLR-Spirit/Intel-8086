@@ -3,7 +3,7 @@ const vm = require("node:vm");
 const assert = require("node:assert/strict");
 
 const html = fs.readFileSync("index.html", "utf8");
-const match = html.match(/<script>([\\s\\S]*?)<\\/script>/);
+const match = html.match(/<script>([\s\S]*?)<\/script>/);
 assert.ok(match, "Inline application script must exist");
 
 const elements = new Map();
@@ -20,13 +20,13 @@ const context = {
   console
 };
 vm.createContext(context);
-const injection = "\\nglobalThis.__8086XlatApi = {" +
-  "\\n assemble: source => assembleProgram(source)," +
-  "\\n execute: source => executeAll(source)," +
-  "\\n executeBinary: (bytes, cs, ip, initialState) => executeBinary(bytes, cs, ip, initialState)," +
-  "\\n disassemble: bytes => disassembleBytes(bytes)" +
-  "\\n};\\n})();\\n";
-const instrumented = match[1].replace(/\\n\\}\\)\\(\\);\\s*$/, injection);
+const injection = "\nglobalThis.__8086XlatApi = {" +
+  "\n assemble: source => assembleProgram(source)," +
+  "\n execute: source => executeAll(source)," +
+  "\n executeBinary: (bytes, cs, ip, initialState) => executeBinary(bytes, cs, ip, initialState)," +
+  "\n disassemble: bytes => disassembleBytes(bytes)" +
+  "\n};\n})();\n";
+const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injection);
 assert.notEqual(instrumented, match[1], "Test API injection point must exist");
 vm.runInContext(instrumented, context, { timeout: 30000 });
 const api = context.__8086XlatApi;
@@ -106,7 +106,7 @@ for (const item of segments) {
     "MOV AL, 10h",
     (item.prefix || "") + "XLAT",
     "HLT"
-  ].join("\\n");
+  ].join("\n");
   test("Source segment " + item.name + " et FLAGS préservés", () => {
     const state = sourceRun(source);
     assert.equal(state.reg.AX & 0xFF, item.value);
@@ -124,7 +124,7 @@ test("Source DS par défaut et débordement BX+AL : FFF0h + 20h = 0010h", () => 
     "MOV BYTE PTR DS:[0010h], 0A6h",
     "MOV BX, 0FFF0h", "MOV AL, 20h",
     "XLAT", "HLT"
-  ].join("\\n");
+  ].join("\n");
   const state = sourceRun(source);
   assert.equal(state.reg.AX & 255, 0xA6);
   totals.source++;
@@ -178,7 +178,7 @@ test("Binaire adresse physique 20 bits rebouclée à 00000h", () => {
 
 // F. Uninitialized source bytes must not silently become zero.
 test("Source : lecture XLAT non initialisée rejetée", () => {
-  const state = api.execute(["MOV BX, 1234h", "MOV AL, 02h", "XLAT", "HLT"].join("\\n"));
+  const state = api.execute(["MOV BX, 1234h", "MOV AL, 02h", "XLAT", "HLT"].join("\n"));
   assert.ok(state.error, "uninitialized XLAT source must fail");
   assert.match(state.error, /XLAT.*non initialisé/i);
   totals.invalid++;
