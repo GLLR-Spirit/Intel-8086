@@ -1310,7 +1310,7 @@ function runSelfTests(){var cases=[
 ["LOOPNE branche avec ZF=0","MOV CX, 2\nMOV AX, 1\nCMP AX, 2\nLOOPNE SUITE\nMOV BX, 0\nSUITE:\nMOV BX, 1\nHLT",function(s){return !s.error&&s.reg.BX===1&&s.reg.CX===1;}],
 ["JCXZ ne décrémente pas CX","MOV CX, 0\nMOV AX, 7\nJCXZ FIN\nINC AX\nFIN:\nHLT",function(s){return !s.error&&s.reg.AX===7&&s.reg.CX===0;}],
 ["JMP BX encode un saut indirect near","HLT",function(s){return assembleProgram("JMP BX").bytes[0]===255&&assembleProgram("JMP BX").bytes[1]===227;}],
-["JMP short encode EB","HLT",function(s){return assembleProgram("JMP SHORT CIBLE\nCIBLE:\nHLT").bytes[0]===235;}]
+["JMP short encode EB","HLT",function(s){return assembleProgram("JMP CIBLE\nCIBLE:\nHLT").bytes[0]===235;}]
 ,
 ["Exemple CMP du chapitre 12 : AX préservé","MOV AX, 7\nMOV BX, 9\nCMP AX, BX\nHLT",function(s){return !s.error&&s.reg.AX===7&&s.reg.BX===9&&s.flags.CF===1&&s.flags.ZF===0;}],
 ["Exemple TEST du chapitre 12 : masque actif","MOV AL, 5\nTEST AL, 4\nHLT",function(s){return !s.error&&(s.reg.AX&255)===5&&s.flags.ZF===0&&s.flags.CF===0&&s.flags.OF===0;}],
