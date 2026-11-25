@@ -71,6 +71,28 @@ assert.equal(learning.chapterLearning.reduce((n, c) => n + c.lessons.reduce((m, 
   "The 36 chapters must contain 324 intermediate questions (3 × 3 × 36)");
 assert.equal(learning.chapterLearning.reduce((n, c) => n + c.quiz.length, 0), 360,
   "The 36 chapters must contain 360 final assessment questions (10 × 36)");
+
+const requiredFinalCategories = ["Définition","Compréhension","Syntaxe","Restrictions","Prédiction","Calcul / prédiction","Analyse de programme","Analyse de résultat","Débogage","Raisonnement"];
+for (let chapterIndex = 0; chapterIndex < learning.chapterLearning.length; chapterIndex++) {
+  const chapter = learning.chapterLearning[chapterIndex];
+  assert.deepEqual(chapter.quiz.map(q => q[4]), requiredFinalCategories,
+    "Chapter " + (chapterIndex + 1) + " final questions must follow the ten technical categories in order.");
+  for (let lessonIndex = 0; lessonIndex < chapter.lessons.length; lessonIndex++) {
+    assert.deepEqual(chapter.lessons[lessonIndex].quiz.map(q => q[4]), ["Compréhension","Application","Vérification"],
+      "Chapter " + (chapterIndex + 1) + ", lesson " + (lessonIndex + 1) + " must have three distinct learning checks.");
+  }
+}
+for (let chapterIndex = 17; chapterIndex < 36; chapterIndex++) {
+  const chapter = learning.chapterLearning[chapterIndex];
+  const questions = chapter.lessons.flatMap(l => l.quiz).concat(chapter.quiz);
+  for (const q of questions) {
+    assert.ok(!/Quelle notion est au centre de cette leçon|Pourquoi cette notion est-elle importante|Que faut-il vérifier dans l'exemple guidé|Quelle est la finalité essentielle de ce chapitre|Quel principe est introduit dans la première leçon|Quelle séquence assembleur illustre la deuxième leçon/.test(q[0]),
+      "Chapter " + (chapterIndex + 1) + " must not use generic placeholder question stems.");
+    assert.ok(q[1].every(choice => !/Un détail sans rapport avec le fonctionnement étudié|Une opération effectuée uniquement par le système d'exploitation|Uniquement le nom du fichier source|Le nombre de commentaires/.test(choice)),
+      "Chapter " + (chapterIndex + 1) + " must not use generic placeholder distractors.");
+  }
+}
+
 const expectedLevels = [1, 6, 12, 18, 24, 31];
 assert.deepEqual(expectedLevels.map(n => learning.curriculum[n - 1][0]), [
   "Introduction au microprocesseur Intel 8086", "Premiers programmes assembleur", "Comparaison des données",
