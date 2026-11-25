@@ -36,6 +36,8 @@ jobs:
         run: node tests/addressing-displacement.cjs
       - name: Run FLAGS differential vectors
         run: node tests/flags-differential.cjs
+      - name: Run 8086 shift and rotate flag tests
+        run: node tests/shift-rotate-8086.cjs
       - name: Run operand constraint tests
         run: node tests/operand-constraints.cjs
       - name: Run original 8086 segment selector vectors
