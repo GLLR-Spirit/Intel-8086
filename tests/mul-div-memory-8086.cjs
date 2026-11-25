@@ -373,6 +373,56 @@ test("Pas à pas interactif · DIV BYTE PTR mémoire déclenche INT 00h", () => 
 });
 
 // ---------------------------------------------------------------------------
+// E. Signed IDIV quotient boundaries: the minimum negative quotient is valid
+//    for both byte and word division. Test source and emitted-binary execution.
+// ---------------------------------------------------------------------------
+function verifyIdivBoundary(source, expectedAX, expectedDX, mnemonic, expectedOpcode) {
+  const assembled = api.assemble(source);
+  assert.ok(Array.from(assembled.bytes).some((_, i) =>
+    assembled.bytes[i] === expectedOpcode[0] &&
+    assembled.bytes[i + 1] === expectedOpcode[1]),
+    mnemonic + " exact F6/F7 encoding");
+  const decoded = api.disassemble(assembled.bytes);
+  assert.ok(decoded.rows.some(row => row.instruction === mnemonic),
+    mnemonic + " independent disassembly");
+  const sourceState = api.execute(source);
+  const binaryState = api.executeBinary(assembled.bytes, 0, 0);
+  for (const [mode, state] of [["source", sourceState], ["binary", binaryState]]) {
+    assert.ok(!state.error, mode + " " + mnemonic + ": " + (state.error || ""));
+    assert.equal(state.reg.AX, expectedAX, mode + " AX quotient/remainder");
+    assert.equal(state.reg.DX, expectedDX, mode + " DX");
+  }
+}
+
+test("IDIV byte accepts the minimum quotient -128 in AL", () => {
+  verifyIdivBoundary(
+    ["MOV AX, 4000h", "MOV BL, 80h", "IDIV BL", "HLT"].join("\n"),
+    0x0080, 0, "IDIV BL", [0xF6, 0xFB]
+  );
+});
+
+test("IDIV word accepts the minimum quotient -32768 in AX", () => {
+  verifyIdivBoundary(
+    ["MOV DX, 4000h", "MOV AX, 0000h", "MOV BX, 8000h", "IDIV BX", "HLT"].join("\n"),
+    0x8000, 0, "IDIV BX", [0xF7, 0xFB]
+  );
+});
+
+test("IDIV byte still traps for quotient -129 below the minimum", () => {
+  const source = ["MOV AX, 4080h", "MOV BL, 80h", "IDIV BL", "HLT"].join("\n");
+  assert.match(api.execute(source).error || "", /dépassement de quotient/i);
+  const bytes = api.assemble(source).bytes;
+  assert.match(api.executeBinary(bytes, 0, 0).error || "", /dépassement de quotient/i);
+});
+
+test("IDIV word still traps for quotient -32769 below the minimum", () => {
+  const source = ["MOV DX, 4000h", "MOV AX, 8000h", "MOV BX, 8000h", "IDIV BX", "HLT"].join("\n");
+  assert.match(api.execute(source).error || "", /dépassement de quotient/i);
+  const bytes = api.assemble(source).bytes;
+  assert.match(api.executeBinary(bytes, 0, 0).error || "", /dépassement de quotient/i);
+});
+
+// ---------------------------------------------------------------------------
 // E. Invalid extension /1 remains reserved for F6/F7 in memory and register
 //    forms; /4..7 must retain their architectural operation names.
 // ---------------------------------------------------------------------------
@@ -397,6 +447,7 @@ console.log("Limites de déplacement mémoire : " + displacementBoundaryCases + 
 console.log("Overrides de segment : " + segmentCasesCount);
 console.log("Exécutions source/binaires : " + executionCases);
 console.log("Erreurs de division mémoire : " + faultCases);
+console.log("Bornes IDIV signées : 4 vecteurs source/binaire ; quotient minimum accepté, sous-dépassement rejeté.");
 console.log("Extensions F6/F7 : " + extensionCases);
 console.log("Audit mémoire MUL/IMUL/DIV/IDIV : " + passed + " réussis, " + failed + " échecs.");
 if (failed) process.exit(1);
