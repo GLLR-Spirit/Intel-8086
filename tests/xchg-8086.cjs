@@ -458,6 +458,17 @@ test("Binaire LOCK XCHG mémoire exécute l'échange et préserve FLAGS", () => 
   totals.special++;
 });
 
+// K. Guard the documented 8086 timing and explicit LOCK semantics against regression.
+test("Fiche XCHG distingue les timings 86h/87h et 90h–97h", () => {
+  assert.ok(html.includes(
+    'timing:"Registre-registre 86h/87h : 4 cycles ; forme AX, 90h–97h : 3 cycles ; mémoire : 17 cycles + EA (référence 8086)."'
+  ));
+});
+test("Fiche XCHG exige LOCK explicite pour protéger l'échange mémoire sur 8086", () => {
+  assert.ok(html.includes("Sur 8086 en mode maximum, LOCK doit précéder XCHG mémoire"));
+  assert.ok(!html.includes("Une forme mémoire verrouille implicitement le bus sur 8086"));
+});
+
 // J. Source and binary FLAGS preservation on a register-register exchange.
 test("Source XCHG conserve CF PF AF ZF SF TF IF DF OF", () => {
   const state = runSource([setSourceFlags(), "MOV AX, 1234h", "MOV BX, 5678h", "XCHG AX, BX", "HLT"].join("\n"));
