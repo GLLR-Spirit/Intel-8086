@@ -365,7 +365,7 @@ function sameBytes(actual,expected,label) {
 sameBytes(bytesOf(learning.curriculum[30][5][0][2]),[0xB8,0x34,0x12,0xF4],"C31 L1 MOV immediate");
 sameBytes(bytesOf(learning.curriculum[30][5][1][2]),[0xB8,0x34,0x12,0xF4],"C31 L2 MOV immediate length");
 const regMoveBytes=bytesOf(learning.curriculum[30][5][2][2]);
-assert.ok(JSON.stringify(regMoveBytes)===JSON.stringify([0x89,0xD8,0xF4])||JSON.stringify(regMoveBytes)===JSON.stringify([0x8B,0xC3,0xF4]),"C31 L3 equivalent register MOV encoding");
+assert.ok(JSON.stringify(regMoveBytes)===JSON.stringify([0xBB,0x34,0x12,0x89,0xD8,0xF4])||JSON.stringify(regMoveBytes)===JSON.stringify([0xBB,0x34,0x12,0x8B,0xC3,0xF4]),"C31 L3 equivalent register MOV encoding after initializing BX");
 sameBytes(bytesOf(learning.curriculum[31][5][0][2]),[0x8B,0x40,0x04,0xF4],"C32 L1 ModR/M disp8");
 sameBytes(bytesOf(learning.curriculum[31][5][2][2]),[0xC7,0x06,0x34,0x12,0xEF,0xBE,0x8B,0x06,0x34,0x12,0xF4],"C32 L3 direct disp16");
 const disassembled=learning.disassembleBytes([0xB8,0x34,0x12,0xF4]).rows;
