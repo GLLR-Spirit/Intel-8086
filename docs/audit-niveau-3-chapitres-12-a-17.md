@@ -20,7 +20,7 @@ Périmètre : chapitres 12 à 17, 18 leçons, 54 questions intermédiaires et 60
 |---|---:|
 | Compilation syntaxique des scripts de test | Réussie |
 | Auto-tests navigateur Playwright sur Chromium | **Réussis** |
-| Workflow CI complet sur le commit `1720bf5` | **Réussi** |
+| Workflow CI complet sur le commit `8103475` | **Réussi** |
 | 14 suites de validation du moteur | **Toutes réussies** |
 | Auto-tests intégrés de l'application | **375/375 réussis** |
 | Exemples pédagogiques assemblés et exécutés | **18/18** |
@@ -44,7 +44,7 @@ Périmètre : chapitres 12 à 17, 18 leçons, 54 questions intermédiaires et 60
 
 L'exécution des tests a été effectuée dans un environnement JavaScript isolé, avec des éléments DOM simulés pour initialiser l'application. Le moteur réel du projet, ses fonctions d'assemblage, d'interprétation et d'exécution binaire ont été appelés ; il ne s'agit donc pas uniquement d'une vérification textuelle.
 
-Le workflow Playwright GitHub Actions a ensuite exécuté le site dans Chromium headless. Le chargement de la page, les auto-tests intégrés, les 18 exemples, les 16 conditions Jcc dans les deux sens, les quatre opcodes de boucle et les vérifications de questions ont tous réussi. Le workflow CI principal a également terminé avec succès toutes ses étapes sur le commit `1720bf5664cd651de49bcdbbc80c5a3c74e4e918`.
+Le workflow Playwright GitHub Actions a exécuté le site dans Chromium headless. Le chargement de la page, les auto-tests intégrés (376/376), les 18 exemples, les 16 conditions Jcc dans les deux sens, les quatre opcodes de boucle, les vérifications de questions et le test interactif XLAT via le bouton réel « Pas à pas » ont réussi. Le workflow CI principal a également terminé avec succès toutes ses étapes sur le commit `8103475c6867cfd88929b4e91623d7da8a8bc6aa`.
 
 L'exécution binaire reste celle du simulateur logiciel du projet. Elle ne prouve pas une équivalence matérielle complète avec un processeur Intel 8086 physique : les signaux de bus, la prélecture BIU, les temporisations et les cycles matériels ne sont pas reproduits. Les résultats internes ne remplacent pas non plus une comparaison avec un assembleur/désassembleur indépendant externe.
 
@@ -53,3 +53,41 @@ L'exécution binaire reste celle du simulateur logiciel du projet. Elle ne prouv
 Les contrôles ciblés du niveau 3 pour les chapitres 12 à 17 sont réussis, y compris l’exécution Chromium et le workflow CI complet. Cela valide cette phase de contrôle automatisé, mais ne constitue pas l’audit exhaustif de l’ensemble des 36 chapitres ni une validation matérielle complète du 8086. Les vérifications architecturales indépendantes complémentaires restent à poursuivre.
 
 Aucune modification n'a été fusionnée dans `main`.
+
+
+## 5. Audit complémentaire de XLAT (D7h)
+
+Date : 25 novembre 2026  
+Commit audité : `8103475c6867cfd88929b4e91623d7da8a8bc6aa`
+
+L'implémentation de XLAT dans `index.html` n'a pas été modifiée : aucune anomalie fonctionnelle certaine n'a été démontrée pendant cette intervention. Le travail a porté sur le renforcement des preuves de test.
+
+### Tests ajoutés
+
+| Fichier | Portée | Résultat |
+|---|---|---:|
+| `tests/xlat-state-8086.cjs` | Préservation des registres généraux, des segments et des 9 FLAGS, source et binaire | **2/2** |
+| `tests/xlat-gnu-crosscheck.cjs` | Comparaison de l'assembleur du projet avec GNU as en mode .code16 | **Réussi** |
+| `tests/xlat-interactive-8086.cjs` | Exécution réelle dans Chromium via le bouton « Pas à pas » | **Réussi** |
+
+### Résultats vérifiés
+
+- La lecture source et la lecture binaire conservent AH, BX, CX, DX, SP, BP, SI, DI, CS, DS, ES, SS et les neuf indicateurs suivis par le simulateur.
+- AL reçoit bien l'octet de la table ; l'exemple interactif vérifie notamment `AX=5A03h` avant XLAT puis `AX=5AC7h` après `ES: XLAT`.
+- Le test navigateur exécute les 19 instructions préparatoires puis déclenche XLAT par le bouton réel « Pas à pas » ; il contrôle l'état affiché avant et après l'instruction.
+- GNU as 2.46 en mode `.code16` et l'assembleur du projet produisent les mêmes octets : `D7 26 D7 2E D7 36 D7 3E D7` (XLAT sans préfixe, puis ES, CS, SS et DS).
+- La suite initiale `tests/xlat-8086.cjs` reste à **24/24**.
+- Les tests de conservation et le contrôle GNU sont intégrés au workflow CI principal ; le test navigateur est intégré au workflow Playwright.
+
+### Exécutions CI
+
+- Workflow principal : run **714**, succès, commit `8103475c6867cfd88929b4e91623d7da8a8bc6aa`.
+- Workflow navigateur : run **186**, succès, même commit.
+- Les étapes XLAT existantes (24 tests), conservation (2 tests) et comparaison GNU as ont toutes réussi.
+- Auto-tests intégrés de l'application : **376/376**.
+
+### Conclusion XLAT
+
+Les contrôles ciblés demandés pour cette intervention sont réussis : conservation architecturale dans les chemins source et binaire, exécution interactive réelle, et comparaison indépendante des octets émis. XLAT peut être considérée comme validée pour ce périmètre logiciel testé.
+
+Cette conclusion ne prouve pas une équivalence matérielle complète avec un processeur Intel 8086 physique. Elle ne remplace pas non plus une validation sur silicium ou une campagne exhaustive de toutes les conditions externes.
