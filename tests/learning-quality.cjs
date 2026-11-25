@@ -55,7 +55,7 @@ assert.equal(learning.chapterLearning.reduce((n, c) => n + c.quiz.length, 0), 36
   "The 36 chapters must contain 360 final assessment questions (10 × 36)");
 const expectedLevels = [5, 6, 12, 18, 24, 31];
 assert.deepEqual(expectedLevels.map(n => learning.curriculum[n - 1][0]), [
-  "Introduction au microprocesseur Intel 8086", "Premiers programmes assembleur", "Sauts inconditionnels",
+  "Introduction au microprocesseur Intel 8086", "Premiers programmes assembleur", "Comparaison des données",
   "Organisation de la mémoire", "Multiplication", "Encodage des instructions"
 ], "The curriculum must preserve the requested chapter order and level boundaries");
 
