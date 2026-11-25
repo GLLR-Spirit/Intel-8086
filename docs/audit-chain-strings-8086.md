@@ -86,3 +86,24 @@ Restent notamment à couvrir ou à distinguer :
 - le comportement BIU, la prélecture, les cycles bus et les timings réels.
 
 Le simulateur demeure un modèle pédagogique du sous-ensemble implémenté, et non un émulateur matériel cycle-exact.
+
+## 8. Extension des vérifications — frontières, FLAGS, IVT et encodages
+
+La suite a été étendue après l'audit initial :
+
+- SI et DI passent de `FFFFh` à `0000h` en sens croissant et de `0000h` à `FFFFh` en sens décroissant ;
+- les transferts de mots à l'offset `FFFFh` vérifient le bouclage séparé de l'octet haut vers l'offset `0000h` ;
+- MOVS, LODS et STOS préservent chaque FLAGS modélisé ; CMPS et SCAS actualisent les indicateurs selon la soustraction de comparaison ;
+- les overrides CS sont vérifiés sur LODS et CMPS ; SCAS continue à lire ES:DI même si un préfixe de segment source est présent ;
+- l'entrée INT binaire vérifie l'ordre physique du cadre : IP au sommet, puis CS, puis FLAGS ;
+- un gestionnaire binaire indépendant lit PUSHF pendant son exécution et confirme que IF/TF sont effacés, puis IRET restaure les valeurs pré-interruption ;
+- les dix opcodes de chaîne (A4h–A7h et AAh–AFh) ont des vecteurs assembleur et désassembleur indépendants ;
+- les préfixes F3h/F2h et le couple override CS + REP sont vérifiés avec des octets machine fixes ;
+- les doublons de préfixes REP/segment et LOCK sur instruction de chaîne sont rejetés explicitement par la politique de ce laboratoire.
+
+**CI vérifiée sur le commit `217c0a413c937d1248573e1f1f9f879c57d69ba6` :**
+- vecteurs assembleur/désassembleur indépendants : **143 réussis** ;
+- audit différentiel : **83 réussis, 0 échec** ;
+- parcours pédagogique : **17 chapitres, 34 questions, 27 corrections exécutables validées**.
+
+Ces tests ciblent les frontières et comportements listés. Ils ne constituent pas une preuve exhaustive de toutes les séquences de préfixes ni de tous les états matériels possibles.
