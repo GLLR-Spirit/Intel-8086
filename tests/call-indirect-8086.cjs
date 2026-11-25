@@ -97,12 +97,13 @@ for(const form of forms){
   }
  }
 }
-test("Explicit segment prefixes are emitted even when redundant with the 8086 default",()=>{
- for(const [form,seg] of [[forms[0],"DS"],[forms[2],"SS"],[forms[8],"DS"]]){
+test("Segment override encoding omits the default segment and emits non-default overrides",()=>{
+ const checks=[[forms[0],"DS",null],[forms[2],"SS",null],[forms[8],"DS",null],[forms[0],"ES",0x26],[forms[2],"DS",0x3E],[forms[8],"ES",0x26]];
+ for(const [form,seg,prefix] of checks){
   const a=api.assemble("CALL WORD PTR "+seg+":["+form.expr+"]");
-  assert.equal(a.bytes[0],segPrefix[seg]);
+  assert.equal(a.bytes[0],prefix===null?0xFF:prefix);
   const f=api.assemble("CALL FAR PTR "+seg+":["+form.expr+"]");
-  assert.equal(f.bytes[0],segPrefix[seg]);
+  assert.equal(f.bytes[0],prefix===null?0xFF:prefix);
  }
 });
 test("Near indirect pointer word wraps offset FFFFh to 0000h",()=>{
