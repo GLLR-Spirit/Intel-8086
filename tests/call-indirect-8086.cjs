@@ -70,6 +70,16 @@ test("CALL r/m16 register forms encode FF /2 for all eight word registers",()=>{
 test("CALL FAR register operand is rejected by the assembler",()=>{
  assert.throws(()=>api.assemble("CALL FAR PTR AX"),/Étiquette inconnue/);
 });
+test("CALL r/m16 register forms execute near calls in source and binary for all eight registers",()=>{
+ const regs=["AX","CX","DX","BX","SP","BP","SI","DI"];
+ for(const reg of regs){
+  const template=["MOV AX, 2000h","MOV SS, AX","MOV AX, 0FD7h","PUSH AX","POPF","MOV "+reg+", 0000h","CALL "+reg,"HLT","TARGET: RET"].join("\n");
+  const first=api.assemble(template),target=first.symbols.TARGET,source=template.replace("0000h",hex(target)),assembled=api.assemble(source);
+  const a=api.execute(source),b=api.binary(Array.from(assembled.bytes),0,0);
+  checkState(a,target,target,"source CALL "+reg);
+  checkState(b,target,target,"binary CALL "+reg);
+ }
+});
 for(const form of forms){
  test("Assembler/disassembler FF /2 near "+form.name,()=>{
   const a=api.assemble("CALL WORD PTR ["+form.expr+"]");
@@ -107,17 +117,26 @@ test("Segment override encoding omits the default segment and emits non-default 
   assert.equal(f.bytes[0],prefix===null?0xFF:prefix);
  }
 });
-test("Near indirect pointer word wraps offset FFFFh to 0000h",()=>{
- const src="MOV AX,1000h\nMOV DS,AX\nMOV WORD PTR DS:[0FFFFh],0010h\nCALL WORD PTR DS:[0FFFFh]\nHLT\nTARGET: RET";
+test("Near indirect pointer word wraps offset FFFFh to 0000h in source and binary",()=>{
+ const template="MOV AX,1000h\nMOV DS,AX\nMOV WORD PTR DS:[0FFFFh],0000h\nCALL WORD PTR DS:[0FFFFh]\nHLT\nTARGET: RET";
+ const first=api.assemble(template),target=first.symbols.TARGET,src=template.replace("0000h",hex(target));
  const a=api.assemble(src),s=api.execute(src);
- assert.ok(!s.error,s.error);assert.equal(s.reg.SP,0xFFFE);assert.equal(s.stack.length,0);assert.equal(s.reg.IP,a.symbols.TARGET);
- const b=api.binary(Array.from(api.assemble("CALL WORD PTR DS:[0FFFFh]\nHLT\nTARGET: RET").bytes),0,0,{reg:{DS:0x1000},mem:{131071:0x10,65536:0x00}});
- assert.ok(!b.error,b.error);assert.equal(b.reg.SP,0xFFFE);assert.equal(b.reg.IP,3);
+ assert.ok(!s.error,s.error);assert.equal(s.reg.SP,0xFFFE);assert.equal(s.stack.length,0);assert.equal(s.reg.IP,target);
+ const bin=api.assemble("CALL WORD PTR DS:[0FFFFh]\nHLT\nTARGET: RET"),bt=bin.symbols.TARGET;
+ const b=api.binary(Array.from(bin.bytes),0,0,{reg:{DS:0x1000},mem:{131071:bt&255,65536:(bt>>8)&255}});
+ assert.ok(!b.error,b.error);assert.equal(b.reg.SP,0xFFFE);assert.equal(b.reg.IP,bt);
 });
-test("Far pointer wraps its offset while reading offset and segment words",()=>{
- const src="MOV AX,0FFFFh\nMOV DS,AX\nMOV WORD PTR DS:[0FFFEh],0017h\nMOV WORD PTR DS:[0000h],1234h\nCALL FAR PTR DS:[0FFFEh]\nHLT\nTARGET: RETF";
+test("Far pointer reads both words across FFFFh/0000h in source and binary",()=>{
+ const template="MOV AX,0FFFFh\nMOV DS,AX\nMOV WORD PTR DS:[0FFFEh],0000h\nMOV WORD PTR DS:[0000h],0000h\nCALL FAR PTR DS:[0FFFEh]\nHLT\nTARGET: RETF";
+ const first=api.assemble(template),target=first.symbols.TARGET,src=template.replace("0000h",hex(target));
  const a=api.assemble(src),s=api.execute(src);
- assert.ok(!s.error,s.error);assert.equal(s.reg.CS,0);assert.equal(s.reg.SP,0xFFFE);assert.equal(s.stack.length,0);assert.equal(s.reg.IP,a.symbols.TARGET);
+ assert.ok(!s.error,s.error);assert.equal(s.reg.CS,0);assert.equal(s.reg.SP,0xFFFE);assert.equal(s.stack.length,0);assert.equal(s.reg.IP,target);
+ const bin=api.assemble("CALL FAR PTR DS:[0FFFEh]\nHLT\nTARGET: RETF"),bt=bin.symbols.TARGET;
+ const mem={};
+ mem[phys(0xFFFF,0xFFFE)]=bt&255;mem[phys(0xFFFF,0xFFFF)]=(bt>>8)&255;
+ mem[phys(0xFFFF,0)]=0;mem[phys(0xFFFF,1)]=0;
+ const b=api.binary(Array.from(bin.bytes),0,0,{reg:{DS:0xFFFF},mem});
+ assert.ok(!b.error,b.error);assert.equal(b.reg.CS,0);assert.equal(b.reg.SP,0xFFFE);assert.equal(b.stack.length,0);assert.equal(b.reg.IP,bt);
 });
 for(const sp of [0x0000,0x0001,0xFFFE]){
  for(const far of [false,true]){
