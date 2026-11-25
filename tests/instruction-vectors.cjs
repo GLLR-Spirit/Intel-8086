@@ -113,7 +113,21 @@ const assemblerVectors = [
   ["MOV word moffs with SS override", "MOV SS:[1234h], AX", [0x36, 0xA3, 0x34, 0x12]],
   ["ADD disp8 memory operand", "ADD WORD PTR [BX+SI+5], AX", [0x01, 0x40, 0x05]],
   ["ADD disp16 memory operand", "ADD WORD PTR [BX+SI+300], AX", [0x01, 0x80, 0x2C, 0x01]],
-  ["ADD memory operand with ES override", "ADD WORD PTR ES:[BX+SI], AX", [0x26, 0x01, 0x00]]
+  ["ADD memory operand with ES override", "ADD WORD PTR ES:[BX+SI], AX", [0x26, 0x01, 0x00]],
+  ["MOVSB opcode", "MOVSB", [0xA4]],
+  ["MOVSW opcode", "MOVSW", [0xA5]],
+  ["CMPSB opcode", "CMPSB", [0xA6]],
+  ["CMPSW opcode", "CMPSW", [0xA7]],
+  ["STOSB opcode", "STOSB", [0xAA]],
+  ["STOSW opcode", "STOSW", [0xAB]],
+  ["LODSB opcode", "LODSB", [0xAC]],
+  ["LODSW opcode", "LODSW", [0xAD]],
+  ["SCASB opcode", "SCASB", [0xAE]],
+  ["SCASW opcode", "SCASW", [0xAF]],
+  ["REP MOVSB prefix", "REP MOVSB", [0xF3, 0xA4]],
+  ["REPE CMPSW prefix", "REPE CMPSW", [0xF3, 0xA7]],
+  ["REPNE SCASB prefix", "REPNE SCASB", [0xF2, 0xAE]],
+  ["CS override followed by REP MOVSB", "CS: REP MOVSB", [0x2E, 0xF3, 0xA4]]
 ];
 for (const [name, source, expected] of assemblerVectors) {
   test("Assembler · " + name, () => {
@@ -169,7 +183,21 @@ const decoderVectors = [
   ["MOV word moffs with SS override", [0x36, 0xA3, 0x34, 0x12], /MOVWORDPTRSS:\[1234h\],AX/i],
   ["ADD disp8 memory operand", [0x01, 0x40, 0x05], /ADDWORDPTR\[BX\+SI\+5\],AX/i],
   ["ADD disp16 memory operand", [0x01, 0x80, 0x2C, 0x01], /ADDWORDPTR\[BX\+SI\+300\],AX/i],
-  ["ADD memory operand with ES override", [0x26, 0x01, 0x00], /ADDWORDPTRES:\[BX\+SI\],AX/i]
+  ["ADD memory operand with ES override", [0x26, 0x01, 0x00], /ADDWORDPTRES:\[BX\+SI\],AX/i],
+  ["MOVSB opcode", [0xA4], /^MOVSB$/i],
+  ["MOVSW opcode", [0xA5], /^MOVSW$/i],
+  ["CMPSB opcode", [0xA6], /^CMPSB$/i],
+  ["CMPSW opcode", [0xA7], /^CMPSW$/i],
+  ["STOSB opcode", [0xAA], /^STOSB$/i],
+  ["STOSW opcode", [0xAB], /^STOSW$/i],
+  ["LODSB opcode", [0xAC], /^LODSB$/i],
+  ["LODSW opcode", [0xAD], /^LODSW$/i],
+  ["SCASB opcode", [0xAE], /^SCASB$/i],
+  ["SCASW opcode", [0xAF], /^SCASW$/i],
+  ["REP MOVSB prefix", [0xF3,0xA4], /^REP MOVSB$/i],
+  ["REPE CMPSW prefix", [0xF3,0xA7], /^REP CMPSW$/i],
+  ["REPNE SCASB prefix", [0xF2,0xAE], /^REPNE SCASB$/i],
+  ["CS override plus REP MOVSB", [0x2E,0xF3,0xA4], /^CS: REP MOVSB$/i]
 ];
 for (const [name, machineBytes, expectedText] of decoderVectors) {
   test("Désassembleur · " + name, () => {
@@ -179,6 +207,15 @@ for (const [name, machineBytes, expectedText] of decoderVectors) {
     assert.deepEqual(Array.from(result.rows[0].bytes), machineBytes);
   });
 }
+
+test("Préfixes de chaîne — doublons et combinaisons non admises explicitement", () => {
+  assert.throws(() => bytesOf("REP REP MOVSB"), /imbriqués|répétés/i);
+  assert.throws(() => bytesOf("CS: DS: MOVSB"), /imbriqués|répétés/i);
+  assert.throws(() => bytesOf("LOCK MOVSB"), /LOCK.*chaîne/i);
+  assert.throws(() => disassemble([0xF3,0xF2,0xA4]), /REP répétés/i);
+  assert.throws(() => disassemble([0x2E,0x3E,0xA4]), /segment répétés/i);
+});
+
 test("Assembleur · immédiat court signé utilise 83h pour les cinq opérations", () => {
   const extensions = { ADD: 0, ADC: 2, SBB: 3, SUB: 5, CMP: 7 };
   for (const [op, ext] of Object.entries(extensions)) {
