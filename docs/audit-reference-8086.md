@@ -111,3 +111,30 @@ Résultat : **2 505 assertions réussies** dans le workflow CI du commit `03bff1
 La fiche d'instructions a été clarifiée pour énoncer explicitement les cas `OF` indéfini et le cas du compte nul. Le modèle logiciel peut produire une valeur concrète pour un indicateur indéfini ; cette valeur ne doit pas être présentée comme une garantie architecturale.
 
 **Limites :** ce lot valide les sémantiques testées du simulateur par rapport au modèle dérivé du manuel Intel. Il ne constitue pas une mesure sur silicium, ne vérifie pas les timings matériels et ne clôt pas l'audit des autres familles d'instructions ou de tous les cas de bord.
+
+## Ajustements BCD/ASCII et multiplication/division — 25 novembre 2026
+
+Une suite de référence distincte a été ajoutée dans `tests/bcd-multiply-divide-8086.cjs` et intégrée à la CI.
+
+### Ajustements décimaux et ASCII
+
+Les vecteurs couvrent les six instructions :
+
+- `AAA` et `AAS` : toutes les 256 valeurs initiales de AL, les deux états de AF et les deux états de CF, avec contrôle de AL, AH, AF et CF ;
+- `AAM` et `AAD` : la base implicite décimale 10 du 8086, des valeurs réparties sur AX et toutes les valeurs de AL avec AH nul ou non nul ;
+- `DAA` et `DAS` : toutes les 256 valeurs de AL avec les quatre combinaisons AF/CF, contrôle du résultat, AF, CF, SF, ZF et PF.
+
+Les six encodages canoniques sont comparés à des octets fixes et leur désassemblage est vérifié. Les indicateurs indéfinis ne sont pas comparés : SF/ZF/PF/OF après AAA/AAS, AF/CF/OF après AAM/AAD, et OF après DAA/DAS.
+
+### Multiplication et division
+
+- `MUL` et `IMUL` : 1 300 vecteurs 8/16 bits, contrôle des produits complets dans AX ou DX:AX et des seuls indicateurs définis CF/OF.
+- `DIV` et `IDIV` : 340 vecteurs couvrant les tailles 8/16 bits, les dividendes signés/non signés, les quotients valides, les dépassements de quotient et la division par zéro. Les FLAGS ne sont pas comparés, car ils sont indéfinis après ces opérations.
+
+### Résultat CI et correction de métadonnées
+
+Sur le commit `e1da4b507dc9786fc7cc19905dcc3732f365979f`, la CI a réussi avec **6 772 assertions** et aucune défaillance ([run CI](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45581069336)). Le total comprend 2 048 vecteurs AAA/AAS, 1 024 AAM/AAD, 2 048 DAA/DAS, 1 300 MUL/IMUL, 340 DIV/IDIV et 12 vérifications d'encodage/désassemblage BCD.
+
+La fiche de `NEG` contenait un statut erroné « Non pris en charge » alors que l'assembleur, le désassembleur et le moteur d'exécution possèdent des chemins pour cette instruction. Son statut a été corrigé en « Pris en charge » pour le simulateur et « Partiel » pour l'assembleur et le désassembleur, en attendant l'audit complet des formes mémoire. Les trois fiches BCD ont été mises à « Pris en charge » dans les trois composants, car leurs formes implicites uniques sont testées en exécution, assemblage et désassemblage.
+
+**Limites :** ces vecteurs valident le sous-ensemble décrit, pas toutes les formes mémoire ni l'ensemble des interactions entre instructions. Ils ne constituent pas une mesure sur processeur physique. Les comportements exacts des cas d'exception matériels, des timings et des indicateurs indéfinis restent hors de cette validation logicielle.
