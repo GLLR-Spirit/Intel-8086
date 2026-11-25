@@ -353,101 +353,101 @@ Cette restriction est contrôlée indépendamment de la présence des mnémoniqu
 
 Cet index relie chaque entrée de la matrice générale à son registre de formes. Il ne transforme pas un statut d'implémentation en validation exhaustive. Les contraintes ci-dessous sont les contraintes architecturales structurantes à vérifier dans chaque chemin concerné ; les tableaux précédents détaillent les formes recensées et les tests associés.
 
-| Mnémonique canonique | Registre de formes | Forme / contrainte structurante |
-|---|---|---|
-| MOV | §2 | 14 formes répertoriées ; restrictions Sreg, C6/C7 /0 et moffs |
-| XCHG | §9 | 86/87 ModR/M ; 90–97 avec AX ; pas mémoire-mémoire |
-| LEA | §9 | r16, adresse effective mémoire ; ne lit pas la donnée |
-| LES | §9 | r16, m16:16 ; pointeur far en mémoire |
-| LDS | §9 | r16, m16:16 ; pointeur far en mémoire |
-| XLAT | §9 | AL reçoit DS:[BX+AL] ; override source contrôlé |
-| PUSH | §14 | 50–57 registres ; 06/0E/16/1E segments ; FF /6 MEM16 uniquement ; pas d'immédiat 8086 |
-| POP | §14 | 58–5F registres ; 07/17/1F segments ; 8F /0 r/m16 ; POP CS invalide |
-| PUSHF | §14 | `9Ch` — aucun opérande ; empile FLAGS via SS:SP ; pas de préfixe REP/LOCK. |
-| POPF | §14 | `9Dh` — aucun opérande ; dépile FLAGS via SS:SP ; vérifier les bits réservés et les bits modifiables. |
-| LAHF | §14 | `9Fh` — aucun opérande ; copie SF/ZF/AF/PF/CF dans AH, avec bits fixes 1 et 0. |
-| SAHF | §14 | `9Eh` — aucun opérande ; restaure SF/ZF/AF/PF/CF depuis AH ; les autres FLAGS sont préservés. |
-| MOVSB | §10 | `A4h` — `ES:[DI] ← DS:[SI]`, octet ; SI/DI avancent ou reculent selon DF ; override de segment sur la source uniquement ; REP F3. |
-| MOVSW | §10 | `A5h` — `ES:[DI] ← DS:[SI]`, mot ; SI/DI avancent ou reculent de 2 selon DF ; override de segment sur la source uniquement ; REP F3. |
-| CMPSB | §10 | `A6h` — compare `DS:[SI]` à `ES:[DI]`, octet ; met à jour FLAGS ; REPE/REPNE (F3/F2) selon ZF ; override source uniquement. |
-| CMPSW | §10 | `A7h` — compare `DS:[SI]` à `ES:[DI]`, mot ; met à jour FLAGS ; REPE/REPNE (F3/F2) selon ZF ; override source uniquement. |
-| SCASB | §10 | `AEh` — compare AL à `ES:[DI]`, octet ; REPE/REPNE (F3/F2) selon ZF ; destination ES fixe. |
-| SCASW | §10 | `AFh` — compare AX à `ES:[DI]`, mot ; REPE/REPNE (F3/F2) selon ZF ; destination ES fixe. |
-| LODSB | §10 | `ACh` — `AL ← DS:[SI]`, octet ; SI suit DF ; override source possible ; REP F3. |
-| LODSW | §10 | `ADh` — `AX ← DS:[SI]`, mot ; SI suit DF par pas de 2 ; override source possible ; REP F3. |
-| STOSB | §10 | `AAh` — `ES:[DI] ← AL`, octet ; DI suit DF ; destination ES fixe ; REP F3. |
-| STOSW | §10 | `ABh` — `ES:[DI] ← AX`, mot ; DI suit DF par pas de 2 ; destination ES fixe ; REP F3. |
-| ADD | §3 | `00–03h` r/m↔reg ; `04/05h` AL/AX,imm ; `80/81/83 /0` r/m,imm ; LOCK F0 seulement si destination mémoire. |
-| ADC | §3 | `10–13h` r/m↔reg ; `14/15h` AL/AX,imm ; `80/81/83 /2` r/m,imm ; LOCK F0 seulement si destination mémoire. |
-| SUB | §3 | `28–2Bh` r/m↔reg ; `2C/2Dh` AL/AX,imm ; `80/81/83 /5` r/m,imm ; LOCK F0 seulement si destination mémoire. |
-| SBB | §3 | `18–1Bh` r/m↔reg ; `1C/1Dh` AL/AX,imm ; `80/81/83 /3` r/m,imm ; LOCK F0 seulement si destination mémoire. |
-| INC | §12 | `40–47h` r16 ; `FE /0` r/m8 ; `FF /0` r/m16 (registre ou mémoire) ; CF préservé ; LOCK possible sur mémoire. |
-| DEC | §12 | `48–4Fh` r16 ; `FE /1` r/m8 ; `FF /1` r/m16 (registre ou mémoire) ; CF préservé ; LOCK possible sur mémoire. |
-| NEG | §12 | `F6 /3` r/m8 ; `F7 /3` r/m16 ; CF/OF selon résultat ; LOCK possible sur mémoire. |
-| CMP | §3 | `38–3Bh` r/m↔reg ; `3C/3Dh` AL/AX,imm ; `80/81/83 /7` r/m,imm ; FLAGS modifiés, destination non écrite, pas de LOCK. |
-| MUL | §12 | `F6 /4` r/m8 ; `F7 /4` r/m16 ; multiplicande implicite AL/AX ; résultat AX ou DX:AX ; FLAGS CF/OF définis, autres indéfinis. |
-| IMUL | §12 | `F6 /5` r/m8 ; `F7 /5` r/m16 ; multiplicande implicite AL/AX ; résultat AX ou DX:AX ; FLAGS CF/OF définis, autres indéfinis. |
-| DIV | §12 | `F6 /6` r/m8 ; `F7 /6` r/m16 ; dividende implicite AX ou DX:AX ; quotient hors plage ou diviseur nul → INT 0. |
-| IDIV | §12 | `F6 /7` r/m8 ; `F7 /7` r/m16 ; dividende signé AX ou DX:AX ; quotient signé `−128..127` ou `−32768..32767` ; dépassement/diviseur nul → INT 0. |
-| AAA | §12 | `37h` — aucun opérande ; ajustement ASCII après ADD sur chiffres non signés ; FLAGS non définis hors CF/AF selon l'architecture. |
-| AAS | §12 | `3Fh` — aucun opérande ; ajustement ASCII après SUB ; contrôler AL/AH et CF/AF. |
-| AAM | §12 | `D4 ib` — base immédiate, valeur 0Ah par défaut (`D4 0A`) ; division de AL par la base vers AH:AL. |
-| AAD | §12 | `D5 ib` — base immédiate, valeur 0Ah par défaut (`D5 0A`) ; combine AH:AL avant DIV. |
-| DAA | §12 | `27h` — aucun opérande ; ajustement décimal après ADD packed BCD ; contrôler CF/AF et résultat. |
-| DAS | §12 | `2Fh` — aucun opérande ; ajustement décimal après SUB packed BCD ; contrôler CF/AF et résultat. |
-| CBW | §12 | `98h` — aucun opérande ; extension de signe AL vers AX. |
-| CWD | §12 | `99h` — aucun opérande ; extension de signe AX vers DX:AX. |
-| AND | §12 | `20–23h` r/m↔reg ; `24/25h` AL/AX,imm ; `80/81/83 /4` r/m,imm ; LOCK F0 seulement si destination mémoire. |
-| OR | §12 | `08–0Bh` r/m↔reg ; `0C/0Dh` AL/AX,imm ; `80/81/83 /1` r/m,imm ; LOCK F0 seulement si destination mémoire. |
-| XOR | §12 | `30–33h` r/m↔reg ; `34/35h` AL/AX,imm ; `80/81/83 /6` r/m,imm ; LOCK F0 seulement si destination mémoire. |
-| NOT | §12 | `F6 /2` r/m8 ; `F7 /2` r/m16 ; FLAGS préservés ; LOCK possible sur mémoire. |
-| TEST | §12 | `84/85h` r/m,reg ; `A8/A9h` AL/AX,imm ; `F6/F7 /0` r/m,imm ; FLAGS modifiés, opérande non écrit, pas de LOCK. |
-| ROL | §12 | `D0/D1 /0` count=1 ; `D2/D3 /0` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire. |
-| ROR | §12 | `D0/D1 /1` count=1 ; `D2/D3 /1` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire. |
-| RCL | §12 | `D0/D1 /2` count=1 ; `D2/D3 /2` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire. |
-| RCR | §12 | `D0/D1 /3` count=1 ; `D2/D3 /3` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire. |
-| SHL | §12 | `D0/D1 /4` count=1 ; `D2/D3 /4` count=CL ; alias SAL ; r/m8 ou r/m16 ; LOCK possible sur mémoire ; pas de C0/C1 sur 8086. |
-| SHR | §12 | `D0/D1 /5` count=1 ; `D2/D3 /5` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire ; pas de C0/C1 sur 8086. |
-| SAR | §12 | `D0/D1 /7` count=1 ; `D2/D3 /7` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire ; /6 non utilisé. |
-| JMP | §8–9 | EB short ; E9 near ; EA far direct ; FF /4 near r/m16 ; FF /5 far MEM16 uniquement |
-| CALL | §8–9 | E8 near direct ; 9A far direct ; FF /2 near r/m16 ; FF /3 far MEM16 uniquement |
-| RET | §8–9 | C3/C2 near ; CB/CA far |
-| INT | §14 | `CCh` INT3 sans immédiat ; `CD ib` INT avec vecteur imm8 ; vecteur 00h pour division ; cadre FLAGS:CS:IP. |
-| INTO | §14 | `CEh` — aucun opérande ; déclenche INT 4 si OF=1, sinon continue. |
-| IRET | §14 | `CFh` — aucun opérande ; dépile IP, CS, FLAGS ; vérification SS:SP et métadonnées de pile. |
-| JCXZ | §8–9 | `E3 cb` — branchement relatif signé 8 bits si CX=0 ; CX n'est pas modifié. |
-| LOOP | §8–9 | `E2 cb` — décrémente CX puis branche si CX≠0 ; déplacement signé 8 bits. |
-| LOOPE | §8–9 | `E1 cb` — décrémente CX puis branche si CX≠0 et ZF=1 ; déplacement signé 8 bits. |
-| LOOPNE | §8–9 | `E0 cb` — décrémente CX puis branche si CX≠0 et ZF=0 ; déplacement signé 8 bits. |
-| JO | §8–9 | `70 cb` — rel8 si OF=1. |
-| JNO | §8–9 | `71 cb` — rel8 si OF=0. |
-| JB | §8–9 | `72 cb` — rel8 si CF=1 (alias JC/JNAE). |
-| JAE | §8–9 | `73 cb` — rel8 si CF=0 (alias JNB/JNC). |
-| JE | §8–9 | `74 cb` — rel8 si ZF=1 (alias JZ). |
-| JNE | §8–9 | `75 cb` — rel8 si ZF=0 (alias JNZ). |
-| JBE | §8–9 | `76 cb` — rel8 si CF=1 ou ZF=1 (alias JNA). |
-| JA | §8–9 | `77 cb` — rel8 si CF=0 et ZF=0 (alias JNBE). |
-| JS | §8–9 | `78 cb` — rel8 si SF=1. |
-| JNS | §8–9 | `79 cb` — rel8 si SF=0. |
-| JP | §8–9 | `7A cb` — rel8 si PF=1 (alias JPE). |
-| JNP | §8–9 | `7B cb` — rel8 si PF=0 (alias JPO). |
-| JL | §8–9 | `7C cb` — rel8 si SF≠OF (alias JNGE). |
-| JGE | §8–9 | `7D cb` — rel8 si SF=OF (alias JNL). |
-| JLE | §8–9 | `7E cb` — rel8 si ZF=1 ou SF≠OF (alias JNG). |
-| JG | §8–9 | `7F cb` — rel8 si ZF=0 et SF=OF (alias JNLE). |
-| CLC | §14 | `F8h` — aucun opérande ; CF←0. |
-| STC | §14 | `F9h` — aucun opérande ; CF←1. |
-| CMC | §14 | `F5h` — aucun opérande ; CF←¬CF. |
-| CLD | §14 | `FCh` — aucun opérande ; DF←0. |
-| STD | §14 | `FDh` — aucun opérande ; DF←1. |
-| CLI | §14 | `FAh` — aucun opérande ; IF←0. |
-| STI | §14 | `FBh` — aucun opérande ; IF←1. |
-| IN | §14 | AL/AX depuis port imm8 ou DX |
-| OUT | §14 | AL/AX vers port imm8 ou DX |
-| NOP | §14 | `90h` — aucun opérande ; alias XCHG AX,AX ; aucun état architectural modifié. |
-| HLT | §14 | `F4h` — aucun opérande ; arrêt pédagogique ; reprise/interruptions matérielles hors périmètre si non simulées. |
-| WAIT | §14 | dépend du signal TEST ; pas de coprocesseur matériel simulé |
-| ESC | §14 | D8–DF + ModR/M ; pas d'émulation 8087 |
+| Mnémonique canonique | Registre de formes | Forme / contrainte structurante | Suites de tests indépendants |
+|---|---|---|---|
+| MOV | §2 | 14 formes répertoriées ; restrictions Sreg, C6/C7 /0 et moffs | `modrm-matrix.cjs`, `legacy-segment-encodings.cjs`, `operand-constraints.cjs`, `gnu-as-crosscheck.cjs |
+| XCHG | §9 | 86/87 ModR/M ; 90–97 avec AX ; pas mémoire-mémoire | `xchg-8086.cjs`, `xchg-gnu-crosscheck.cjs`, `xchg-interactive-8086.cjs` |
+| LEA | §9 | r16, adresse effective mémoire ; ne lit pas la donnée | `lea-8086.cjs`, `lea-gnu-crosscheck.cjs`, `lea-interactive-8086.cjs` |
+| LES | §9 | r16, m16:16 ; pointeur far en mémoire | `lds-les-8086.cjs`, `lds-les-gnu-crosscheck.cjs`, `lds-les-interactive-8086.cjs` |
+| LDS | §9 | r16, m16:16 ; pointeur far en mémoire | `lds-les-8086.cjs`, `lds-les-gnu-crosscheck.cjs`, `lds-les-interactive-8086.cjs` |
+| XLAT | §9 | AL reçoit DS:[BX+AL] ; override source contrôlé | `xlat-8086.cjs`, `xlat-gnu-crosscheck.cjs`, `xlat-interactive-8086.cjs`, `xlat-state-8086.cjs` |
+| PUSH | §14 | 50–57 registres ; 06/0E/16/1E segments ; FF /6 MEM16 uniquement ; pas d'immédiat 8086 | `push-pop-forms-8086.cjs`, `control-stack.cjs` |
+| POP | §14 | 58–5F registres ; 07/17/1F segments ; 8F /0 r/m16 ; POP CS invalide | `push-pop-forms-8086.cjs`, `control-stack.cjs` |
+| PUSHF | §14 | `9Ch` — aucun opérande ; empile FLAGS via SS:SP ; pas de préfixe REP/LOCK. | `push-pop-forms-8086.cjs`, `control-stack.cjs`, `instruction-vectors.cjs` |
+| POPF | §14 | `9Dh` — aucun opérande ; dépile FLAGS via SS:SP ; vérifier les bits réservés et les bits modifiables. | `push-pop-forms-8086.cjs`, `control-stack.cjs`, `instruction-vectors.cjs` |
+| LAHF | §14 | `9Fh` — aucun opérande ; copie SF/ZF/AF/PF/CF dans AH, avec bits fixes 1 et 0. | `lahf-sahf-8086.cjs`, `instruction-vectors.cjs` |
+| SAHF | §14 | `9Eh` — aucun opérande ; restaure SF/ZF/AF/PF/CF depuis AH ; les autres FLAGS sont préservés. | `lahf-sahf-8086.cjs`, `instruction-vectors.cjs` |
+| MOVSB | §10 | `A4h` — `ES:[DI] ← DS:[SI]`, octet ; SI/DI avancent ou reculent selon DF ; override de segment sur la source uniquement ; REP F3. | `string-instructions-8086.cjs`, `lock-prefix-8086.cjs` |
+| MOVSW | §10 | `A5h` — `ES:[DI] ← DS:[SI]`, mot ; SI/DI avancent ou reculent de 2 selon DF ; override de segment sur la source uniquement ; REP F3. | `string-instructions-8086.cjs` |
+| CMPSB | §10 | `A6h` — compare `DS:[SI]` à `ES:[DI]`, octet ; met à jour FLAGS ; REPE/REPNE (F3/F2) selon ZF ; override source uniquement. | `string-instructions-8086.cjs` |
+| CMPSW | §10 | `A7h` — compare `DS:[SI]` à `ES:[DI]`, mot ; met à jour FLAGS ; REPE/REPNE (F3/F2) selon ZF ; override source uniquement. | `string-instructions-8086.cjs` |
+| SCASB | §10 | `AEh` — compare AL à `ES:[DI]`, octet ; REPE/REPNE (F3/F2) selon ZF ; destination ES fixe. | `string-instructions-8086.cjs` |
+| SCASW | §10 | `AFh` — compare AX à `ES:[DI]`, mot ; REPE/REPNE (F3/F2) selon ZF ; destination ES fixe. | `string-instructions-8086.cjs` |
+| LODSB | §10 | `ACh` — `AL ← DS:[SI]`, octet ; SI suit DF ; override source possible ; REP F3. | `string-instructions-8086.cjs` |
+| LODSW | §10 | `ADh` — `AX ← DS:[SI]`, mot ; SI suit DF par pas de 2 ; override source possible ; REP F3. | `string-instructions-8086.cjs` |
+| STOSB | §10 | `AAh` — `ES:[DI] ← AL`, octet ; DI suit DF ; destination ES fixe ; REP F3. | `string-instructions-8086.cjs` |
+| STOSW | §10 | `ABh` — `ES:[DI] ← AX`, mot ; DI suit DF par pas de 2 ; destination ES fixe ; REP F3. | `string-instructions-8086.cjs` |
+| ADD | §3 | `00–03h` r/m↔reg ; `04/05h` AL/AX,imm ; `80/81/83 /0` r/m,imm ; LOCK F0 seulement si destination mémoire. | `modrm-matrix.cjs`, `gnu-as-crosscheck.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs`, `dynamic-differential.cjs` |
+| ADC | §3 | `10–13h` r/m↔reg ; `14/15h` AL/AX,imm ; `80/81/83 /2` r/m,imm ; LOCK F0 seulement si destination mémoire. | `modrm-matrix.cjs`, `gnu-as-crosscheck.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs`, `dynamic-differential.cjs` |
+| SUB | §3 | `28–2Bh` r/m↔reg ; `2C/2Dh` AL/AX,imm ; `80/81/83 /5` r/m,imm ; LOCK F0 seulement si destination mémoire. | `modrm-matrix.cjs`, `gnu-as-crosscheck.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs`, `dynamic-differential.cjs` |
+| SBB | §3 | `18–1Bh` r/m↔reg ; `1C/1Dh` AL/AX,imm ; `80/81/83 /3` r/m,imm ; LOCK F0 seulement si destination mémoire. | `modrm-matrix.cjs`, `gnu-as-crosscheck.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs`, `dynamic-differential.cjs` |
+| INC | §12 | `40–47h` r16 ; `FE /0` r/m8 ; `FF /0` r/m16 (registre ou mémoire) ; CF préservé ; LOCK possible sur mémoire. | `group-opcodes.cjs`, `push-pop-forms-8086.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs` |
+| DEC | §12 | `48–4Fh` r16 ; `FE /1` r/m8 ; `FF /1` r/m16 (registre ou mémoire) ; CF préservé ; LOCK possible sur mémoire. | `group-opcodes.cjs`, `push-pop-forms-8086.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs` |
+| NEG | §12 | `F6 /3` r/m8 ; `F7 /3` r/m16 ; CF/OF selon résultat ; LOCK possible sur mémoire. | `neg-8086.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs` |
+| CMP | §3 | `38–3Bh` r/m↔reg ; `3C/3Dh` AL/AX,imm ; `80/81/83 /7` r/m,imm ; FLAGS modifiés, destination non écrite, pas de LOCK. | `modrm-matrix.cjs`, `gnu-as-crosscheck.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs` |
+| MUL | §12 | `F6 /4` r/m8 ; `F7 /4` r/m16 ; multiplicande implicite AL/AX ; résultat AX ou DX:AX ; FLAGS CF/OF définis, autres indéfinis. | `bcd-multiply-divide-8086.cjs`, `mul-div-memory-8086.cjs`, `instruction-vectors.cjs` |
+| IMUL | §12 | `F6 /5` r/m8 ; `F7 /5` r/m16 ; multiplicande implicite AL/AX ; résultat AX ou DX:AX ; FLAGS CF/OF définis, autres indéfinis. | `bcd-multiply-divide-8086.cjs`, `mul-div-memory-8086.cjs`, `instruction-vectors.cjs` |
+| DIV | §12 | `F6 /6` r/m8 ; `F7 /6` r/m16 ; dividende implicite AX ou DX:AX ; quotient hors plage ou diviseur nul → INT 0. | `bcd-multiply-divide-8086.cjs`, `mul-div-memory-8086.cjs`, `divide-error-interrupt-8086.cjs` |
+| IDIV | §12 | `F6 /7` r/m8 ; `F7 /7` r/m16 ; dividende signé AX ou DX:AX ; quotient signé `−128..127` ou `−32768..32767` ; dépassement/diviseur nul → INT 0. | `bcd-multiply-divide-8086.cjs`, `mul-div-memory-8086.cjs`, `divide-error-interrupt-8086.cjs` |
+| AAA | §12 | `37h` — aucun opérande ; ajustement ASCII après ADD sur chiffres non signés ; FLAGS non définis hors CF/AF selon l'architecture. | `bcd-multiply-divide-8086.cjs`, `instruction-vectors.cjs` |
+| AAS | §12 | `3Fh` — aucun opérande ; ajustement ASCII après SUB ; contrôler AL/AH et CF/AF. | `bcd-multiply-divide-8086.cjs`, `instruction-vectors.cjs` |
+| AAM | §12 | `D4 ib` — base immédiate, valeur 0Ah par défaut (`D4 0A`) ; division de AL par la base vers AH:AL. | `bcd-multiply-divide-8086.cjs`, `instruction-vectors.cjs` |
+| AAD | §12 | `D5 ib` — base immédiate, valeur 0Ah par défaut (`D5 0A`) ; combine AH:AL avant DIV. | `bcd-multiply-divide-8086.cjs`, `instruction-vectors.cjs` |
+| DAA | §12 | `27h` — aucun opérande ; ajustement décimal après ADD packed BCD ; contrôler CF/AF et résultat. | `bcd-multiply-divide-8086.cjs`, `instruction-vectors.cjs` |
+| DAS | §12 | `2Fh` — aucun opérande ; ajustement décimal après SUB packed BCD ; contrôler CF/AF et résultat. | `bcd-multiply-divide-8086.cjs`, `instruction-vectors.cjs` |
+| CBW | §12 | `98h` — aucun opérande ; extension de signe AL vers AX. | `bcd-multiply-divide-8086.cjs`, `instruction-vectors.cjs` |
+| CWD | §12 | `99h` — aucun opérande ; extension de signe AX vers DX:AX. | `bcd-multiply-divide-8086.cjs`, `instruction-vectors.cjs` |
+| AND | §12 | `20–23h` r/m↔reg ; `24/25h` AL/AX,imm ; `80/81/83 /4` r/m,imm ; LOCK F0 seulement si destination mémoire. | `logical-ops-8086.cjs`, `modrm-matrix.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs` |
+| OR | §12 | `08–0Bh` r/m↔reg ; `0C/0Dh` AL/AX,imm ; `80/81/83 /1` r/m,imm ; LOCK F0 seulement si destination mémoire. | `logical-ops-8086.cjs`, `modrm-matrix.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs` |
+| XOR | §12 | `30–33h` r/m↔reg ; `34/35h` AL/AX,imm ; `80/81/83 /6` r/m,imm ; LOCK F0 seulement si destination mémoire. | `logical-ops-8086.cjs`, `modrm-matrix.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs` |
+| NOT | §12 | `F6 /2` r/m8 ; `F7 /2` r/m16 ; FLAGS préservés ; LOCK possible sur mémoire. | `logical-ops-8086.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs` |
+| TEST | §12 | `84/85h` r/m,reg ; `A8/A9h` AL/AX,imm ; `F6/F7 /0` r/m,imm ; FLAGS modifiés, opérande non écrit, pas de LOCK. | `logical-ops-8086.cjs`, `modrm-matrix.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs` |
+| ROL | §12 | `D0/D1 /0` count=1 ; `D2/D3 /0` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire. | `shift-rotate-8086.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs` |
+| ROR | §12 | `D0/D1 /1` count=1 ; `D2/D3 /1` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire. | `shift-rotate-8086.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs` |
+| RCL | §12 | `D0/D1 /2` count=1 ; `D2/D3 /2` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire. | `shift-rotate-8086.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs` |
+| RCR | §12 | `D0/D1 /3` count=1 ; `D2/D3 /3` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire. | `shift-rotate-8086.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs` |
+| SHL | §12 | `D0/D1 /4` count=1 ; `D2/D3 /4` count=CL ; alias SAL ; r/m8 ou r/m16 ; LOCK possible sur mémoire ; pas de C0/C1 sur 8086. | `shift-rotate-8086.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs` |
+| SHR | §12 | `D0/D1 /5` count=1 ; `D2/D3 /5` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire ; pas de C0/C1 sur 8086. | `shift-rotate-8086.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs` |
+| SAR | §12 | `D0/D1 /7` count=1 ; `D2/D3 /7` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire ; /6 non utilisé. | `shift-rotate-8086.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs` |
+| JMP | §8–9 | EB short ; E9 near ; EA far direct ; FF /4 near r/m16 ; FF /5 far MEM16 uniquement | `byte-offset-execution.cjs`, `jmp-far-8086.cjs`, `jmp-far-indirect-8086.cjs`, `jmp-near-indirect-8086.cjs`, `instruction-vectors.cjs` |
+| CALL | §8–9 | E8 near direct ; 9A far direct ; FF /2 near r/m16 ; FF /3 far MEM16 uniquement | `call-indirect-8086.cjs`, `call-ret-8086.cjs`, `call-ret-stack-boundaries.cjs`, `call-ret-interactive-8086.cjs`, `call-ret-gnu-crosscheck.cjs` |
+| RET | §8–9 | C3/C2 near ; CB/CA far | `call-ret-8086.cjs`, `call-ret-stack-boundaries.cjs`, `call-ret-interactive-8086.cjs` |
+| INT | §14 | `CCh` INT3 sans immédiat ; `CD ib` INT avec vecteur imm8 ; vecteur 00h pour division ; cadre FLAGS:CS:IP. | `divide-error-interrupt-8086.cjs`, `control-stack.cjs` |
+| INTO | §14 | `CEh` — aucun opérande ; déclenche INT 4 si OF=1, sinon continue. | `into-8086.cjs` |
+| IRET | §14 | `CFh` — aucun opérande ; dépile IP, CS, FLAGS ; vérification SS:SP et métadonnées de pile. | `divide-error-interrupt-8086.cjs`, `control-stack.cjs` |
+| JCXZ | §8–9 | `E3 cb` — branchement relatif signé 8 bits si CX=0 ; CX n'est pas modifié. | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| LOOP | §8–9 | `E2 cb` — décrémente CX puis branche si CX≠0 ; déplacement signé 8 bits. | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| LOOPE | §8–9 | `E1 cb` — décrémente CX puis branche si CX≠0 et ZF=1 ; déplacement signé 8 bits. | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| LOOPNE | §8–9 | `E0 cb` — décrémente CX puis branche si CX≠0 et ZF=0 ; déplacement signé 8 bits. | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| JO | §8–9 | `70 cb` — rel8 si OF=1. | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| JNO | §8–9 | `71 cb` — rel8 si OF=0. | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| JB | §8–9 | `72 cb` — rel8 si CF=1 (alias JC/JNAE). | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| JAE | §8–9 | `73 cb` — rel8 si CF=0 (alias JNB/JNC). | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| JE | §8–9 | `74 cb` — rel8 si ZF=1 (alias JZ). | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| JNE | §8–9 | `75 cb` — rel8 si ZF=0 (alias JNZ). | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| JBE | §8–9 | `76 cb` — rel8 si CF=1 ou ZF=1 (alias JNA). | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| JA | §8–9 | `77 cb` — rel8 si CF=0 et ZF=0 (alias JNBE). | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| JS | §8–9 | `78 cb` — rel8 si SF=1. | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| JNS | §8–9 | `79 cb` — rel8 si SF=0. | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| JP | §8–9 | `7A cb` — rel8 si PF=1 (alias JPE). | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| JNP | §8–9 | `7B cb` — rel8 si PF=0 (alias JPO). | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| JL | §8–9 | `7C cb` — rel8 si SF≠OF (alias JNGE). | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| JGE | §8–9 | `7D cb` — rel8 si SF=OF (alias JNL). | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| JLE | §8–9 | `7E cb` — rel8 si ZF=1 ou SF≠OF (alias JNG). | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| JG | §8–9 | `7F cb` — rel8 si ZF=0 et SF=OF (alias JNLE). | `byte-offset-execution.cjs`, `instruction-vectors.cjs`, `dynamic-differential.cjs` |
+| CLC | §14 | `F8h` — aucun opérande ; CF←0. | `flags-differential.cjs`, `instruction-vectors.cjs` |
+| STC | §14 | `F9h` — aucun opérande ; CF←1. | `flags-differential.cjs`, `instruction-vectors.cjs` |
+| CMC | §14 | `F5h` — aucun opérande ; CF←¬CF. | `flags-differential.cjs`, `instruction-vectors.cjs` |
+| CLD | §14 | `FCh` — aucun opérande ; DF←0. | `flags-differential.cjs`, `string-instructions-8086.cjs` |
+| STD | §14 | `FDh` — aucun opérande ; DF←1. | `flags-differential.cjs`, `string-instructions-8086.cjs` |
+| CLI | §14 | `FAh` — aucun opérande ; IF←0. | `flags-differential.cjs`, `instruction-vectors.cjs` |
+| STI | §14 | `FBh` — aucun opérande ; IF←1. | `flags-differential.cjs`, `instruction-vectors.cjs` |
+| IN | §14 | AL/AX depuis port imm8 ou DX | `io-ports-8086.cjs` |
+| OUT | §14 | AL/AX vers port imm8 ou DX | `io-ports-8086.cjs` |
+| NOP | §14 | `90h` — aucun opérande ; alias XCHG AX,AX ; aucun état architectural modifié. | `smoke.cjs`, `instruction-vectors.cjs` |
+| HLT | §14 | `F4h` — aucun opérande ; arrêt pédagogique ; reprise/interruptions matérielles hors périmètre si non simulées. | `smoke.cjs`, `instruction-vectors.cjs` |
+| WAIT | §14 | dépend du signal TEST ; pas de coprocesseur matériel simulé | À renforcer : aucun vecteur sémantique dédié identifié ; `opcode-byte-sweep.cjs` est structurel. |
+| ESC | §14 | D8–DF + ModR/M ; pas d'émulation 8087 | À renforcer : aucun vecteur sémantique indépendant identifié ; `opcode-byte-sweep.cjs` est structurel. |
 
 
 ## 15.1 Rapprochement des suites indépendantes
