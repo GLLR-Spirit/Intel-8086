@@ -49,4 +49,32 @@ for(const [operand,regs] of modes){
  assert.equal(binaryState.reg.SP,0xFFFE,"binary stack unchanged "+operand);
  for(const flag of ["CF","PF","AF","ZF","SF","TF","IF","DF","OF"])assert.equal(binaryState.flags[flag],1,flag+" preserved "+operand);
 }
+
+const overrideLines=[
+ "MOV AX, 3000h","MOV ES, AX","MOV BX, 0100h",
+ "ES: MOV WORD PTR [0100h], 0000h","ES: MOV WORD PTR [0102h], 2000h",
+ "ES: JMP FAR PTR [BX]","MOV AX, 1","TARGET: HLT"
+];
+const overrideFirst=api.assemble(overrideLines.join("\n"));
+const overrideTarget=overrideFirst.symbols.TARGET;
+overrideLines[3]="ES: MOV WORD PTR [0100h], "+hx(overrideTarget);
+const overrideSource=overrideLines.join("\n"),overrideBytes=Array.from(api.assemble(overrideSource).bytes);
+const overrideRow=api.disassemble(overrideBytes).rows.find(r=>r.instruction.includes("JMP FAR"));
+assert.ok(overrideRow&&overrideRow.instruction.startsWith("ES:"),"ES override must survive far JMP disassembly");
+const overrideSourceState=api.execute(overrideSource);
+assert.equal(overrideSourceState.error,undefined,"source ES override far JMP");
+assert.equal(overrideSourceState.reg.ES,0x3000);
+assert.equal(overrideSourceState.reg.CS,0x2000);
+assert.equal(overrideSourceState.reg.IP,overrideTarget+1);
+assert.equal(overrideSourceState.reg.AX,0x3000);
+const overridePhysical=(0x2000<<4)+overrideTarget;
+const overrideInitial={mem:{[overridePhysical]:0xF4},reg:{SP:0xFFFE},flags:{CF:1,PF:1,AF:1,ZF:1,SF:1,TF:1,IF:1,DF:1,OF:1}};
+const overrideBinaryState=api.binary(overrideBytes,0,0,overrideInitial);
+assert.equal(overrideBinaryState.error,undefined,"binary ES override far JMP");
+assert.equal(overrideBinaryState.reg.ES,0x3000);
+assert.equal(overrideBinaryState.reg.CS,0x2000);
+assert.equal(overrideBinaryState.reg.IP,overrideTarget+1);
+assert.equal(overrideBinaryState.reg.AX,0x3000);
+for(const flag of ["CF","PF","AF","ZF","SF","TF","IF","DF","OF"])assert.equal(overrideBinaryState.flags[flag],1,"ES override "+flag+" preserved");
+
 console.log("8086 JMP FAR indirect: FF /5, eight memory addressing modes, source/binary CS:IP, stack and FLAGS PASS.");
