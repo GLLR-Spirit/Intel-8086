@@ -23,7 +23,11 @@ vm.createContext(context);
 const injection = "\nglobalThis.__8086DivideInterruptApi = {" +
   "\n execute: function (source) { return executeAll(source); }," +
   "\n assemble: function (source) { return assembleProgram(source); }," +
-  "\n executeBinary: function (bytes, cs, ip, state) { return executeBinary(bytes, cs, ip, state); }" +
+  "\n executeBinary: function (bytes, cs, ip, state) { return executeBinary(bytes, cs, ip, state); }," +
+  "\n prepare: function (source) { return prepare(source); }," +
+  "\n tick: function () { return tick(); }," +
+  "\n getState: function () { return JSON.parse(JSON.stringify(cpu)); }," +
+  "\n isHalted: function () { return halted; }" +
   "\n};\n})();\n";
 const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injection);
 assert.notEqual(instrumented, match[1], "Test API injection point must exist");
@@ -129,6 +133,17 @@ for (const fault of faults) {
   });
 }
 
+test("Interactive stepper routes a divide fault through VECTOR 00h", () => {
+  api.prepare(sourceProgram(faults[7]));
+  let steps = 0;
+  while (!api.isHalted() && steps < 40) { api.tick(); steps++; }
+  const state = api.getState();
+  assert.ok(api.isHalted(), "Interactive execution must reach HLT after IRET");
+  assert.equal(state.reg.SI, 0x5678, "Interactive handler must execute");
+  assert.equal(state.reg.DI, 0xABCD, "Interactive IRET must resume after IDIV");
+  assert.equal(state.stack.length, 0, "Interactive interrupt frame must be consumed");
+  assert.equal(state.reg.SP, 0xFFFE, "Interactive SP must be restored");
+});
 test("Source division fault without VECTOR 00h remains a diagnostic", () => {
   const state = api.execute("MOV AX, 1\nMOV BL, 0\nDIV BL\nHLT");
   assert.match(state.error || "", /division par zéro/i);
