@@ -106,3 +106,5 @@ jobs:
         run: node tests/push-pop-forms-8086.cjs
       - name: Run dynamic differential audit
         run: node tests/dynamic-differential.cjs
+      - name: Run independent 8086 WAIT and ESC audit
+        run: node tests/wait-esc-8086.cjs
