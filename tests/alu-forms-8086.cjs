@@ -175,7 +175,7 @@ for (const vector of semanticCases) {
     "MOV AX, 1000h", "MOV DS, AX", "MOV BX, 0200h",
     "MOV BYTE PTR [BX], " + vector.initial.toString(16) + "h",
     vector.carry ? "STC" : "CLC",
-    vector.op + " BYTE PTR [BX], " + (vector.op === "ADD" || vector.op === "ADC" ? "1" : vector.op === "CMP" ? "55h" : "1"),
+    vector.op + " BYTE PTR [BX], " + (vector.op === "ADD" || vector.op === "ADC" || vector.op === "SUB" ? "1" : vector.op === "SBB" ? "0" : "55h"),
     "HLT"
   ];
   if (vector.op === "CMP") setup[3] = "MOV BYTE PTR [BX], 55h";
