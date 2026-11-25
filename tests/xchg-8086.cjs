@@ -193,8 +193,9 @@ for (const bits of [8, 16]) {
       const state = runSource(source);
       assert.equal(bits === 8 ? state.reg.AX & 255 : state.reg.AX, value);
       const address = eaCodes[i].offset & 0xFFFF;
-      assert.equal(state.mem[address], bits === 8 ? 0xC3 : 0x5A);
-      if (bits === 16) assert.equal(state.mem[(address + 1) & 0xFFFF], 0xA5);
+      const defaultSegment = i === 2 || i === 3 || i === 6 ? 0x3000 : 0x1000;
+      assert.equal(state.mem[physical(defaultSegment, address)], bits === 8 ? 0xC3 : 0x33);
+      if (bits === 16) assert.equal(state.mem[physical(defaultSegment, (address + 1) & 0xFFFF)], 0x0C);
       assertFlags(state, "mémoire source " + expr);
       totals.flags++;
     });
@@ -236,24 +237,30 @@ const segmentVectors = [
   { name: "CS", prefix: 0x2E, seg: 0x5000 }
 ];
 for (const item of segmentVectors) {
-  const code = [item.prefix, 0x87, modrm(0, 1, 6), 0x00, 0x02, 0xF4];
+  const useBP = item.name === "DS";
+  const expr = useBP ? "[BP]" : "[BX]";
+  const offset = useBP ? 0x1200 : 0x7788;
+  const rm = useBP ? 6 : 7;
+  const mod = useBP ? 1 : 0;
+  const tail = useBP ? [0] : [];
+  const code = [item.prefix, 0x87, modrm(mod, 1, rm), ...tail, 0xF4];
   test("Préfixe segment " + item.name + " encodage/désassemblage", () => {
-    const source = "XCHG CX, WORD PTR " + item.name + ":[0200h]";
-    assert.deepEqual(bytes(source), code.slice(0, 5));
-    assert.match(disassemble(code.slice(0, 5)), new RegExp("^" + item.name + ": XCHG "));
+    const source = "XCHG CX, WORD PTR " + item.name + ":" + expr;
+    assert.deepEqual(bytes(source), code.slice(0, -1));
+    assert.match(disassemble(code.slice(0, -1)), new RegExp("^" + item.name + ": XCHG "));
     totals.segment++;
   });
   test("Préfixe segment " + item.name + " exécution binaire", () => {
     const initial = setInitialBinary();
     initial.reg.CX = 0x1234;
     initial.mem = {
-      [physical(item.seg, 0x0200)]: 0xCD,
-      [physical(item.seg, 0x0201)]: 0xAB
+      [physical(item.seg, offset)]: 0xCD,
+      [physical(item.seg, (offset + 1) & 0xFFFF)]: 0xAB
     };
     const state = runBinary(code, 0x5000, 0x0100, initial);
     assert.equal(state.reg.CX, 0xABCD);
-    assert.equal(state.mem[physical(item.seg, 0x0200)], 0x34);
-    assert.equal(state.mem[physical(item.seg, 0x0201)], 0x12);
+    assert.equal(state.mem[physical(item.seg, offset)], 0x34);
+    assert.equal(state.mem[physical(item.seg, (offset + 1) & 0xFFFF)], 0x12);
     assertFlags(state, "préfixe " + item.name);
     totals.segment++;
     totals.binary++;
@@ -263,21 +270,24 @@ for (const item of segmentVectors) {
 
 // G. Source path for explicit overrides; default DS and default SS are checked separately.
 for (const item of segmentVectors) {
+  const useBP = item.name === "DS";
+  const expr = useBP ? "[BP]" : "[BX]";
+  const offset = useBP ? 0x1200 : 0x7788;
   const source = [
     setSourceFlags(),
     "MOV AX, 1000h", "MOV DS, AX",
     "MOV AX, 2000h", "MOV ES, AX",
     "MOV AX, 3000h", "MOV SS, AX",
     "MOV CX, 1234h",
-    "MOV WORD PTR " + item.name + ":[0200h], 0ABCDh",
-    "XCHG CX, WORD PTR " + item.name + ":[0200h]",
+    "MOV WORD PTR " + item.name + ":" + expr + ", 0ABCDh",
+    "XCHG CX, WORD PTR " + item.name + ":" + expr,
     "HLT"
   ].join("\n");
   test("Source préfixe segment " + item.name, () => {
     const state = runSource(source);
     assert.equal(state.reg.CX, 0xABCD);
-    assert.equal(state.mem[physical(item.seg, 0x0200)], 0x34);
-    assert.equal(state.mem[physical(item.seg, 0x0201)], 0x12);
+    assert.equal(state.mem[physical(item.seg, offset)], 0x34);
+    assert.equal(state.mem[physical(item.seg, (offset + 1) & 0xFFFF)], 0x12);
     assertFlags(state, "source override " + item.name);
     totals.segment++;
     totals.flags++;
