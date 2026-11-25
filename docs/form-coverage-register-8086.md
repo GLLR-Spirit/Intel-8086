@@ -211,7 +211,7 @@ Les formes ci-dessous sont les formes architecturales de référence à suivre. 
 | OR | mêmes formes directionnelles et immédiates ; groupe 80/81/83 /1 | `logical-ops-8086`, balayage de groupes | Toutes combinaisons source/destination et immédiats |
 | XOR | mêmes formes directionnelles et immédiates ; groupe 80/81/83 /6 | `logical-ops-8086`, vecteurs FLAGS | Toutes combinaisons et AF indéfini |
 | TEST | r/m8,r8 (84 /r), r/m16,r16 (85 /r), AL/AX,imm (A8/A9), r/m8/16,imm (F6/F7 /0) | `logical-ops-8086`, `group-opcodes` | Toutes formes mémoire, immédiats et contraintes |
-| NOT | r/m8 (F6 /2), r/m16 (F7 /2) | `group-opcodes`, balayage ModR/M | FLAGS préservés et matrices complètes |
+| NOT | r/m8 (F6 /2), r/m16 (F7 /2) | `group-opcodes`, `not-forms-8086.cjs`, balayage ModR/M | 16 formes registre, 48 formes mémoire, préfixes et FLAGS |
 | INC / DEC | r16 (40–4F), r/m8 (FE /0,/1), r/m16 (FF /0,/1) | `instruction-vectors`, `group-opcodes`, FLAGS différentiels | Chaque registre, mémoire, SP et limites |
 | NEG | r/m8 (F6 /3), r/m16 (F7 /3) | `neg-8086`, `group-opcodes` | Toutes formes mémoire, limites 80h/8000h, FLAGS |
 | MUL / IMUL | r/m8 (F6 /4,/5), r/m16 (F7 /4,/5) ; accumulateurs implicites AL/AX et résultats AX/DX:AX | `bcd-multiply-divide`, `mul-div-memory` | Toutes formes registre/mémoire, produits limites et flags indéfinis |
@@ -400,7 +400,7 @@ Cet index relie chaque entrée de la matrice générale à son registre de forme
 | AND | §12 | `20–23h` r/m↔reg ; `24/25h` AL/AX,imm ; `80/81/83 /4` r/m,imm ; LOCK F0 seulement si destination mémoire. | `logical-ops-8086.cjs`, `modrm-matrix.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs` |
 | OR | §12 | `08–0Bh` r/m↔reg ; `0C/0Dh` AL/AX,imm ; `80/81/83 /1` r/m,imm ; LOCK F0 seulement si destination mémoire. | `logical-ops-8086.cjs`, `modrm-matrix.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs` |
 | XOR | §12 | `30–33h` r/m↔reg ; `34/35h` AL/AX,imm ; `80/81/83 /6` r/m,imm ; LOCK F0 seulement si destination mémoire. | `logical-ops-8086.cjs`, `modrm-matrix.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs` |
-| NOT | §12 | `F6 /2` r/m8 ; `F7 /2` r/m16 ; FLAGS préservés ; LOCK possible sur mémoire. | `logical-ops-8086.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs` |
+| NOT | §12 | `F6 /2` r/m8 ; `F7 /2` r/m16 ; FLAGS préservés ; LOCK possible sur mémoire. | `logical-ops-8086.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs`, `not-forms-8086.cjs` |
 | TEST | §12 | `84/85h` r/m,reg ; `A8/A9h` AL/AX,imm ; `F6/F7 /0` r/m,imm ; FLAGS modifiés, opérande non écrit, pas de LOCK. | `logical-ops-8086.cjs`, `modrm-matrix.cjs`, `group-opcodes.cjs`, `instruction-vectors.cjs` |
 | ROL | §12 | `D0/D1 /0` count=1 ; `D2/D3 /0` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire. | `shift-rotate-8086.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs` |
 | ROR | §12 | `D0/D1 /1` count=1 ; `D2/D3 /1` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire. | `shift-rotate-8086.cjs`, `instruction-vectors.cjs`, `flags-differential.cjs` |
@@ -615,3 +615,18 @@ La suite `tests/alu-prefix-interactions-8086.cjs` vérifie les interactions de p
 **Référence matérielle :** le manuel Intel *8086 Family User's Manual* (octobre 1979), §2.5, indique que LOCK maintient le signal actif pendant l'instruction suivante et prévoit explicitement le cas d'une chaîne répétée verrouillée. Le même manuel décrit l'usage de LOCK avec XCHG mémoire pour protéger une mise à jour de sémaphore. Le laboratoire n'émule pas le bus partagé. <Cite ref="turn276112view0"/> <Cite ref="turn508198view0"/>
 
 **Validation :** le workflow principal du commit `184b01b32f9259a8545773106ed78a213c7f65a5` a réussi ; les suites ALU, interactions de préfixes, chaînes, transferts et WAIT/ESC ont toutes passé dans ce run. [Résultats CI](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45710283500).
+
+### 16.9 NOT — formes unaires et préfixes
+
+La suite `tests/not-forms-8086.cjs` isole NOT de la suite générique F6/F7 :
+
+- Les huit registres octet et les huit registres mot sont assemblés et désassemblés : **16 formes registre-directes**.
+- Les trois valeurs de MOD et les huit valeurs R/M sont contrôlées pour les deux largeurs : **48 formes mémoire**, avec déplacement direct, disp8 et disp16.
+- L'extension `/2` est vérifiée ; `/1` reste réservée et n'est pas interprétée comme NOT.
+- Les formes à arité ou classe d'opérande incorrectes sont rejetées.
+- Les quatre overrides de segment sont vérifiés ; DS redondant est normalisé. Les préfixes LOCK et les répétitions REP sont testés.
+- Les exécutions source et binaire vérifient le complément bit à bit et comparent les neuf FLAGS modélisés à l'état de référence avant NOT. Le test ne suppose pas qu'un bit indéfini ou non restaurable par POPF prenne une valeur particulière.
+
+**Résultat :** **327 assertions réussies** dans la suite NOT ; la CI principale a réussi au commit `7d5914ce7f2be249cd97c7d44435259ebf522d96`. [Workflow CI](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45711153433).
+
+Le désassembleur conserve désormais un override de segment lorsqu'il existe un opérande mémoire explicite, y compris pour les formes unaires dont la représentation textuelle peut varier. Cela ne modélise pas le bus ; cela garantit que le préfixe décodé reste attaché à l'instruction mémoire correspondante.
