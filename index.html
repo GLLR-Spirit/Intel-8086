@@ -863,7 +863,7 @@ else if(op===140||op===142){
 modrm=read();reg=(modrm>>3)&7;rm=decodeRM(modrm,16,prefix);var segmentNames=["ES","CS","SS","DS"];
 // Intel ASM86 reference: CS is not a valid destination for MOV.
 // Segment selectors with the high REG bit set are not used by the documented 8086 encoding.
-if(reg<4&&!(op===142&&reg===1)){var segmentName=segmentNames[reg];ins=op===142?"MOV "+segmentName+", "+rm.text:"MOV "+rm.text+", "+segmentName;}else{i=start+1;ins=null;}
+if(reg<4&&!(op===142&&reg===1)){var segmentName=segmentNames[reg];ins=op===142?"MOV "+segmentName+", "+rm.text:"MOV "+rm.text+", "+segmentName;}else if(op===142&&reg===1){i=start+1;ins=null;}
 }
 else if([136,137,138,139,134,135,132,133].indexOf(op)>=0){
 bits=(op&1)?16:8;modrm=read();rm=decodeRM(modrm,bits,prefix);reg=(bits===8?reg8:reg16)[(modrm>>3)&7];
