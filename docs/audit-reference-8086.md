@@ -72,7 +72,7 @@ Consulter [coverage-audit-8086.md](coverage-audit-8086.md) pour les statuts sép
 
 ## Révision de la matrice 8C/8E et balayage structurel — 25 novembre 2026
 
-La réinspection de la table 4-13 du manuel Intel 8086 Family User's Manual a révélé une erreur dans une ancienne hypothèse de test : le champ de sélection du registre de segment est `0SR`, et non un champ 3 bits replié par `reg & 3`. Les sélecteurs `/0` à `/3` désignent ES, CS, SS et DS ; `/4` à `/7` sont indiqués « not used ». Le désassembleur et les suites de tests ont été corrigés en conséquence. `MOV CS, r/m16` via `8E /1` reste accepté dans le mode 8086 original.
+La réinspection de la table 4-13 du manuel Intel 8086 Family User's Manual confirme que le champ de sélection du registre de segment est `0SR` : `/0` ES, `/1` CS, `/2` SS, `/3` DS ; `/4` à `/7` sont « not used ». La référence Intel ASM86 précise que CS n'est pas autorisé comme destination de MOV. Ainsi, `MOV r/m16, CS` (`8C /1`) reste valide, mais `MOV CS, r/m16` (`8E /1`) est rejeté par l'assembleur et conservé comme octet non décodé dans le désassembleur.
 
 La CI inclut désormais un balayage structurel des 256 valeurs d'opcode primaire et des 256 valeurs ModR/M pour chacune des 67 familles décodées avec ModR/M. Le test vérifie l'absence de crash, la progression continue des offsets et la consommation exacte des octets. Il ne valide pas le sens de chaque opcode ni les effets d'exécution : ces assertions exigent toujours des oracles indépendants spécifiques.
 
