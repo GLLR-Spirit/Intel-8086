@@ -37,6 +37,7 @@ function test(name, fn) {
 const canonical = ["ES", "CS", "SS", "DS"];
 const general = ["AX", "CX", "DX", "BX", "SP", "BP", "SI", "DI"];
 function modrm(ext, rm) { return 0xC0 | (ext << 3) | rm; }
+function memoryModrm(mod, ext, rm) { return (mod << 6) | (ext << 3) | rm; }
 function decode(bytes) {
   const result = api.disassemble(bytes);
   assert.equal(result.rows.length, 1, "one instruction expected");
@@ -118,7 +119,7 @@ test("8086 CS destination is rejected for every memory addressing mode", () => {
       const displacement = mod === 0 && rm === 6 ? [0x34, 0x12]
         : mod === 1 ? [0x7F]
         : mod === 2 ? [0x34, 0x12] : [];
-      const code = [0x8E, modrm(mod, 1, rm), ...displacement];
+      const code = [0x8E, memoryModrm(mod, 1, rm), ...displacement];
       const result = api.disassemble(code);
       assert.ok(result.rows[0].instruction.startsWith("DB "),
         "8E /1 must remain unsupported: " + code.map(x => x.toString(16)));
@@ -178,7 +179,7 @@ const segmentMemoryForms = [
 for (const selector of [0, 1, 2, 3]) {
   for (const form of segmentMemoryForms) {
     const source = "MOV WORD PTR " + form.expression + ", " + canonical[selector];
-    const expected = [0x8C, modrm(form.mod, selector, form.rm), ...form.displacement];
+    const expected = [0x8C, memoryModrm(form.mod, selector, form.rm), ...form.displacement];
     test("Assemblage 8C /" + selector + " mémoire " + form.expression, () => {
       expectBytes(source, expected);
     });
@@ -195,7 +196,7 @@ for (const selector of [0, 1, 2, 3]) {
 for (const selector of [0, 2, 3]) {
   for (const form of segmentMemoryForms) {
     const source = "MOV " + canonical[selector] + ", WORD PTR " + form.expression;
-    const expected = [0x8E, modrm(form.mod, selector, form.rm), ...form.displacement];
+    const expected = [0x8E, memoryModrm(form.mod, selector, form.rm), ...form.displacement];
     test("Assemblage 8E /" + selector + " mémoire " + form.expression, () => {
       expectBytes(source, expected);
     });
