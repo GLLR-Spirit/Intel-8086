@@ -19,7 +19,7 @@ function element(id) {
 const document = { getElementById: element, querySelectorAll: () => [] };
 const localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
 const context = { document, localStorage, console, confirm: () => true };
-const instrumented = match[1].replace(/\}\)\(\);\s*$/, "globalThis.__learningData = { lessons, chapterLearning, curriculum, exercises, chapterExerciseMap, executeAll, assembleProgram, disassembleBytes };\n})();");
+const instrumented = match[1].replace(/\}\)\(\);\s*$/, "globalThis.__learningData = { lessons, chapterLearning, curriculum, exercises, chapterExerciseMap, executeAll, executeBinary, assembleProgram, disassembleBytes };\n})();");
 assert.notEqual(instrumented, match[1], "Application closure must be instrumented for learning checks");
 vm.runInNewContext(instrumented, context, { timeout: 5000 });
 const learning = context.__learningData;
@@ -31,6 +31,9 @@ assert.match(match[1], /id='axDemoValue'/, "The register chapter must expose an 
 assert.match(match[1], /\$\("axShowHigh"\)\.onclick=function\(\)\{showAX\("AH"\);\}/, "The register chapter must wire the AH control");
 assert.match(match[1], /\$\("axShowLow"\)\.onclick=function\(\)\{showAX\("AL"\);\}/, "The register chapter must wire the AL control");
 assert.match(match[1], /\$\("axWriteLow"\)\.onclick=function\(\)/, "The register chapter must wire the AL write control");
+assert.match(match[1], /10:"<section class='course-visual'><b>Trace pas à pas/, "Chapter 11 must expose the binary register trace.");
+assert.match(match[1], /if\(i===10\)[\s\S]*traceStates/, "Chapter 11 must wire trace navigation.");
+
 
 assert.match(html, /id="view-learn"/, "Cours must remain a separate page");
 assert.match(html, /id="view-exercises"/, "Exercices must remain a separate page");
@@ -446,6 +449,17 @@ for (const [chapter,lesson,needle] of lessonTextOracles) {
   assert.ok(text.includes(needle),"C"+chapter+"L"+lesson+" must retain its audited technical clarification: "+needle);
 }
 assert.ok(learning.curriculum[10][5][2][2].includes("STC\nINC AL"),"C11 L3 must establish CF before testing INC preservation.");
+
+const traceSource="MOV AX, 2\nMOV BX, 3\nADD AX, BX\nHLT";
+const traceBytes=Array.from(learning.assembleProgram(traceSource).bytes);
+assert.equal(traceBytes.length,9,"The binary trace must use the stated instruction boundaries.");
+const traceState=learning.executeBinary(traceBytes,0,0,{});
+assert.equal(traceState.reg.AX,5,"The trace's final AX must match binary execution.");
+assert.equal(traceState.reg.BX,3,"The trace's final BX must match binary execution.");
+assert.equal(traceState.reg.IP,9,"The trace's final IP must be a byte offset.");
+assert.equal(traceState.reg.SP,0xFFFE,"The trace must preserve the initial stack pointer.");
+assert.equal(traceState.flags.PF,1,"ADD 2+3 sets even parity on the low byte.");
+
 
 console.log("Learning quality: 36 chapters, 324 intermediate questions, 360 final questions, " +
   learning.exercises.length + " exercises; all guided corrections execute and pass their validators.");
