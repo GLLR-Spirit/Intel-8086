@@ -10,7 +10,7 @@ function test(name,fn){try{fn();passed++;console.log("PASS "+name);}catch(e){fai
 function physical(seg,off){return (((seg&65535)<<4)+(off&65535))&0xfffff;}
 function checkByte(state,seg,off,value,label){assert.equal(state.mem[physical(seg,off)],value,label+" "+seg.toString(16)+":"+off.toString(16));}
 function checkWord(state,seg,off,value,label){assert.equal(state.mem[physical(seg,off)],value&255,label+" low");assert.equal(state.mem[physical(seg,(off+1)&65535)],(value>>8)&255,label+" high");}
-const flagPattern={CF:1,PF:1,AF:1,ZF:1,SF:1,TF:1,IF:1,DF:1,OF:1};
+const flagPattern={CF:1,PF:1,AF:1,ZF:1,SF:1,TF:1,IF:1,DF:0,OF:1};
 function checkFlags(state,expected,label){for(const k of Object.keys(expected))assert.equal(state.flags[k],expected[k],label+" "+k);}
 function both(source){const assembled=api.assemble(source),bytes=Array.from(assembled.bytes),s=api.execute(source),b=api.binary(bytes,0,0,{});assert.ok(!s.error,"source: "+s.error);assert.ok(!b.error,"binary: "+b.error);assert.equal(s.execution.mode,"binary-offset");assert.equal(b.execution.mode,"dynamic-binary");return {s,b,bytes};}
 const opcodes={MOVSB:0xA4,MOVSW:0xA5,CMPSB:0xA6,CMPSW:0xA7,STOSB:0xAA,STOSW:0xAB,LODSB:0xAC,LODSW:0xAD,SCASB:0xAE,SCASW:0xAF};
@@ -25,7 +25,7 @@ for(const [mnemonic,opcode] of Object.entries(opcodes)){
  });
 }
 test("MOVSB source/binary: DS:SI vers ES:DI, SI/DI +1, neuf FLAGS préservés",()=>{
- const src=["MOV AX,1000h","MOV DS,AX","MOV AX,2000h","MOV ES,AX","MOV SI,0100h","MOV DI,0200h","MOV BYTE PTR [SI],41h","MOV AX,0FD7h","PUSH AX","POPF","MOVSB","HLT"].join("\n");
+ const src=["MOV AX,1000h","MOV DS,AX","MOV AX,2000h","MOV ES,AX","MOV SI,0100h","MOV DI,0200h","MOV BYTE PTR [SI],41h","MOV AX,0BD5h","PUSH AX","POPF","MOVSB","HLT"].join("\n");
  const {s,b}=both(src);for(const st of [s,b]){checkByte(st,0x2000,0x0200,0x41,"MOVSB");assert.equal(st.reg.SI,0x0101);assert.equal(st.reg.DI,0x0201);checkFlags(st,flagPattern,"MOVSB");}
 });
 test("MOVSW source/binary: transfert mot little-endian et SI/DI +2",()=>{
@@ -33,7 +33,7 @@ test("MOVSW source/binary: transfert mot little-endian et SI/DI +2",()=>{
  const {s,b}=both(src);for(const st of [s,b]){checkWord(st,0x2000,0x0200,0x1234,"MOVSW");assert.equal(st.reg.SI,0x0102);assert.equal(st.reg.DI,0x0202);}
 });
 test("LODSB source/binary: AL reçoit DS:SI, seul SI avance",()=>{
- const src=["MOV AX,1000h","MOV DS,AX","MOV SI,0100h","MOV BYTE PTR [SI],5Ah","MOV AX,0FD7h","PUSH AX","POPF","LODSB","HLT"].join("\n");
+ const src=["MOV AX,1000h","MOV DS,AX","MOV SI,0100h","MOV BYTE PTR [SI],5Ah","MOV AX,0BD5h","PUSH AX","POPF","LODSB","HLT"].join("\n");
  const {s,b}=both(src);for(const st of [s,b]){assert.equal(st.reg.AX&255,0x5A);assert.equal(st.reg.SI,0x0101);assert.equal(st.reg.DI,0);checkFlags(st,flagPattern,"LODSB");}
 });
 test("LODSW source/binary: AX reçoit DS:SI, SI avance de deux",()=>{
@@ -41,7 +41,7 @@ test("LODSW source/binary: AX reçoit DS:SI, SI avance de deux",()=>{
  const {s,b}=both(src);for(const st of [s,b]){assert.equal(st.reg.AX,0xBEEF);assert.equal(st.reg.SI,0x0102);}
 });
 test("STOSB source/binary: AL vers ES:DI, seul DI avance",()=>{
- const src=["MOV AX,2000h","MOV ES,AX","MOV DI,0200h","MOV AL,6Ch","MOV AX,0FD7h","PUSH AX","POPF","MOV AL,6Ch","STOSB","HLT"].join("\n");
+ const src=["MOV AX,2000h","MOV ES,AX","MOV DI,0200h","MOV AL,6Ch","MOV AX,0BD5h","PUSH AX","POPF","MOV AL,6Ch","STOSB","HLT"].join("\n");
  const {s,b}=both(src);for(const st of [s,b]){checkByte(st,0x2000,0x0200,0x6C,"STOSB");assert.equal(st.reg.DI,0x0201);assert.equal(st.reg.SI,0);checkFlags(st,flagPattern,"STOSB");}
 });
 test("STOSW source/binary: AX vers ES:DI, DI avance de deux",()=>{
@@ -89,7 +89,7 @@ test("REPNE SCASB: arrêt sur égalité",()=>{
  const {s,b}=both(src);for(const st of [s,b]){assert.equal(st.reg.CX,1);assert.equal(st.reg.DI,0x0202);assert.equal(st.flags.ZF,1);}
 });
 test("REP avec CX=0: aucun accès ni changement des index/FLAGS",()=>{
- const src=["MOV AX,1000h","MOV DS,AX","MOV AX,2000h","MOV ES,AX","MOV SI,0100h","MOV DI,0200h","MOV CX,0","MOV AX,0FD7h","PUSH AX","POPF","REP MOVSB","HLT"].join("\n");
+ const src=["MOV AX,1000h","MOV DS,AX","MOV AX,2000h","MOV ES,AX","MOV SI,0100h","MOV DI,0200h","MOV CX,0","MOV AX,0BD5h","PUSH AX","POPF","REP MOVSB","HLT"].join("\n");
  const {s,b}=both(src);for(const st of [s,b]){assert.equal(st.reg.CX,0);assert.equal(st.reg.SI,0x0100);assert.equal(st.reg.DI,0x0200);checkFlags(st,flagPattern,"REP CX=0");assert.equal(st.mem[physical(0x2000,0x0200)],undefined);}
 });
 test("DF=1: MOVSB décrémente SI et DI",()=>{
