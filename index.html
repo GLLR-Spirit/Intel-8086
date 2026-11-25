@@ -143,13 +143,70 @@ var lessonScores=JSON.parse(localStorage.getItem("i86-lesson-scores-v2")||"{}");
 var chapterExerciseMap=curriculum.map(function(c,i){return Math.min(exercises.length-1,Math.floor(i*exercises.length/curriculum.length));});
 lessons=curriculum.map(function(c,i){return [c[0],"Niveau "+(c[1])+" · "+(["Fondations","Instructions","Algorithmique","Mémoire et structuration","Systèmes avancés","Architecture interne"][i<5?0:i<11?1:i<17?2:i<23?3:i<30?4:5]),"<p>"+c[3]+"</p><p><b>Prérequis :</b> "+c[2]+"</p>",c[5][0][2]];});
 function rotateQuiz(q,seed){var shift=seed%q[1].length;return [q[0],q[1].slice(shift).concat(q[1].slice(0,shift)),(q[2]-shift+q[1].length)%q[1].length,q[3],q[4]||""];}
+var foundationalLessonQuestions=[
+[
+ [["Quel est le rôle central d'un microprocesseur ?",["Exécuter les instructions d'un programme","Fabriquer les données stockées","Remplacer la mémoire"],0,"Le microprocesseur récupère, décode et exécute les instructions."],
+  ["Quel élément est une instruction plutôt qu'une donnée ?",["MOV AX,1234h","La valeur 1234h isolée","Une adresse mémoire"],0,"MOV AX,1234h est une instruction encodée ; 1234h est ici son opérande immédiat."],
+  ["Pourquoi distingue-t-on instructions et données ?",["Elles ont des rôles différents même si elles peuvent résider en mémoire","Les données sont toujours dans AX","Les instructions ne sont jamais stockées en mémoire"],0,"Les instructions décrivent les opérations ; les données sont les valeurs manipulées."]],
+ [["Combien de lignes d'adresse physiques possède le 8086 ?",["16","20","24"],1,"Le bus d'adresses du 8086 comporte 20 lignes."],
+  ["Quelle capacité théorique correspond à 20 bits d'adresse ?",["64 Kio","1 Mio","16 Mio"],1,"2^20 adresses d'octets correspondent à 1 048 576 octets, soit 1 Mio."],
+  ["Quelle largeur a le bus externe de données du 8086 ?",["8 bits","16 bits","20 bits"],1,"Le 8086 possède un bus externe de données de 16 bits ; ses adresses physiques font 20 bits."]],
+ [["Quelle différence essentielle distingue le 8088 du 8086 ?",["Le 8088 a un bus externe de données de 8 bits","Le 8088 a des registres généraux de 32 bits","Le 8088 possède 24 lignes d'adresse"],0,"Le 8088 partage le modèle logiciel général mais son bus externe de données est de 8 bits."],
+  ["Que signifie l'appartenance à la famille x86 ?",["Une filiation architecturale et logicielle, pas des bus identiques sur tous les modèles","Tous les processeurs x86 ont un bus 16 bits","Tous les processeurs x86 exécutent les mêmes cycles matériels"],0,"Les générations x86 diffèrent fortement par leurs bus, leurs modes et leur microarchitecture."],
+  ["Que représente le laboratoire par rapport au processeur physique ?",["Un modèle logiciel pédagogique","Une carte mère 8086 complète","Une mesure électrique des cycles bus"],0,"Le laboratoire simule des états et instructions ; il ne reproduit pas les signaux et temporisations électriques."]]
+],
+[
+ [["Quelle unité décode et exécute les instructions ?",["EU","BIU","Bus de données"],0,"L'EU (Execution Unit) décode et exécute les instructions."],
+  ["Quel composant réalise les opérations arithmétiques et logiques ?",["ALU","File de prélecture","Registre CS"],0,"L'ALU réalise les opérations arithmétiques et logiques commandées par l'EU."],
+  ["L'EU pilote-t-elle directement les cycles du bus externe ?",["Oui, seule","Non, la BIU gère l'interface de bus","Non, le registre AX gère le bus"],1,"La BIU gère les transferts externes et la génération des adresses ; l'EU traite les instructions."]],
+ [["Quelle unité gère les accès mémoire et la prélecture ?",["EU","BIU","ALU"],1,"La BIU (Bus Interface Unit) gère les accès au bus et la file de prélecture."],
+  ["Quelle formule donne l'adresse physique segment:offset ?",["segment + offset","segment × 10h + offset","offset × 10h"],1,"Le segment est multiplié par 16 (décalage de quatre bits), puis l'offset est ajouté."],
+  ["Quelle est la capacité de la file de prélecture du 8086 ?",["4 octets","6 octets","8 octets"],1,"La file de prélecture du 8086 contient six octets ; celle du 8088 en contient quatre."]],
+ [["Que se passe-t-il après un saut qui modifie IP ?",["La file conserve le chemin séquentiel","La file de prélecture est invalidée puis réalimentée à la cible","L'EU exécute les deux chemins"],1,"Un transfert de contrôle rend les octets préchargés du chemin séquentiel inutilisables."],
+  ["La prélecture signifie-t-elle que le 8086 exécute deux instructions simultanément ?",["Oui, comme un processeur superscalaire","Non, elle chevauche la récupération des octets et l'exécution","Oui, l'ALU exécute les instructions en parallèle"],1,"Le chevauchement BIU/EU n'est pas une exécution superscalaire de plusieurs instructions."],
+  ["Dans MOV AX,4 / ADD AX,3 / HLT, quel rôle joue l'ALU ?",["Elle effectue l'addition","Elle charge la file de prélecture","Elle choisit CS"],0,"L'ALU effectue l'addition et le résultat est placé dans AX."]]
+],
+[
+ [["Combien vaut 00001010b en décimal ?",["8","10","12"],1,"Les bits actifs valent 8 et 2 ; leur somme est 10."],
+  ["Quelle puissance de deux correspond au bit de poids faible ?",["2^0","2^1","2^7"],0,"Le bit le plus à droite a le poids 2^0, soit 1."],
+  ["Dans 1010b, quels poids sont additionnés ?",["8 + 2","4 + 1","8 + 4"],0,"1010b vaut 2^3 + 2^1 = 8 + 2 = 10."]],
+ [["Combien de bits représente un chiffre hexadécimal ?",["2","4","8"],1,"La base 16 nécessite quatre bits pour coder ses seize symboles."],
+  ["Quelle est la valeur décimale de 2Ah ?",["32","42","52"],1,"2 × 16 + 10 = 42."],
+  ["Quel motif binaire correspond à A hexadécimal ?",["1010","1100","1110"],0,"A vaut 10 en décimal, soit 1010b sur quatre bits."]],
+ [["Quelle est la valeur décimale de FFh ?",["127","255","256"],1,"FFh = 15 × 16 + 15 = 255."],
+  ["Quelle plage peut contenir un registre AL ?",["0000h à FFFFh","00h à FFh","−255 à +255"],1,"AL est un registre de 8 bits ; sa plage non signée est 0 à 255."],
+  ["Combien vaut 0FFh en décimal ?",["15","255","256"],1,"0FFh = 15 × 16 + 15 = 255."]]
+],
+[
+ [["Quelle unité de mémoire le 8086 adresse-t-il directement ?",["Le bit","L'octet","Le mot de 16 bits uniquement"],1,"L'espace mémoire est adressé par octet ; un mot occupe deux adresses consécutives."],
+  ["Que signifie little-endian pour le mot 1234h ?",["12h est à l'adresse la plus basse","34h est à l'adresse la plus basse","Les deux octets partagent la même adresse"],1,"L'octet faible 34h est stocké à l'adresse la plus basse."],
+  ["Pourquoi MOV AX,1234h ne démontre-t-il pas à lui seul le little-endian ?",["Parce qu'il ne réalise aucune écriture mémoire","Parce qu'AX est un registre 8 bits","Parce que 1234h est décimal"],0,"L'ordre little-endian concerne l'ordre des octets en mémoire, pas l'affichage d'un registre."]],
+ [["Quelle est la plage non signée d'un octet ?",["0 à 127","0 à 255","−128 à +127"],1,"Un octet non signé représente 2^8 valeurs, de 0 à 255."],
+  ["Après AL=FFh puis ADD AL,1, quel est le résultat ?",["AL=FFh, CF=0","AL=00h, CF=1","AL=00h, OF=1 et CF=0"],1,"Le résultat 256 déborde de l'octet : AL conserve 00h et CF signale la retenue."],
+  ["CF et OF décrivent-ils le même type de dépassement ?",["Oui","Non, CF concerne la retenue non signée et OF le débordement signé","OF est le bit de direction"],1,"CF et OF répondent à deux interprétations différentes du même motif binaire."]],
+ [["Quelle est la plage signée sur 8 bits en complément à deux ?",["−127 à +128","−128 à +127","0 à 255"],1,"La plage signée est −2^7 à 2^7−1, soit −128 à +127."],
+  ["Que représente le motif 80h sur 8 bits signés ?",["+128","−128","−80"],1,"En complément à deux sur 8 bits, 80h représente −128."],
+  ["Après 7Fh + 1 sur 8 bits, quel indicateur signale le débordement signé ?",["CF","OF","DF"],1,"+127 + 1 sort de la plage signée et active OF ; CF reste nul dans ce cas."]]
+],
+[
+ [["Combien de bits contient AX ?",["8","16","32"],1,"AX est un registre général de 16 bits."],
+  ["Quelle partie de AX correspond aux bits 7 à 0 ?",["AH","AL","AXH"],1,"AL est l'octet faible ; AH contient les bits 15 à 8."],
+  ["Après AX=1234h puis MOV AL,56h, que vaut AX ?",["5634h","1256h","0056h"],1,"L'écriture dans AL remplace uniquement l'octet faible ; AH reste 12h."]],
+ [["Quel registre sert d'index source dans les instructions de chaîne ?",["DI","SI","BP"],1,"SI est l'index source par défaut pour les instructions de chaîne."],
+  ["Quel segment est utilisé par défaut pour une référence basée sur BP ?",["DS","ES","SS"],2,"Une adresse utilisant BP sélectionne SS par défaut."],
+  ["Quel registre pointe le sommet courant de la pile ?",["SP","IP","DI"],0,"SP contient l'offset du sommet courant de la pile dans SS." ]],
+ [["Quelle paire identifie le flux d'instructions ?",["DS:SI","CS:IP","SS:SP"],1,"CS sélectionne le segment de code et IP l'offset de l'instruction."],
+  ["Quel registre de segment est utilisé par défaut pour les données ordinaires ?",["DS","CS","SS"],0,"DS est le segment par défaut pour la plupart des références mémoire ordinaires."],
+  ["Peut-on charger CS directement avec MOV CS,AX sur le 8086 ?",["Oui","Non","Seulement si AX vaut zéro"],1,"MOV ne peut pas avoir CS comme destination ; les transferts de contrôle changent CS:IP selon leur forme."]]
+]
+];
 chapterLearning=curriculum.map(function(c,ci){
  var lq=c[5].map(function(l,li){
   var choices=[l[4],"Un détail sans rapport avec le fonctionnement étudié","Une opération effectuée uniquement par le système d'exploitation"];
-  return {title:l[0],theory:l[1],example:l[2],expected:l[3],concept:l[4],quiz:[
+  return {title:l[0],theory:l[1],example:l[2],expected:l[3],concept:l[4],quiz:(ci<5?foundationalLessonQuestions[ci][li]:[
    ["Quelle notion est au centre de cette leçon ?",choices,0,"La notion centrale est : "+l[4]+"."],
    ["Pourquoi cette notion est-elle importante ?",[c[3],"Pour remplacer toutes les instructions du processeur","Pour éviter de connaître l'état des registres"],0,c[3]],
-   ["Que faut-il vérifier dans l'exemple guidé ?",[l[3],"Uniquement le nom du fichier source","Le nombre de commentaires"],0,"Le résultat attendu est : "+l[3]+"."]].map(function(q,qi){q[4]=["Compréhension","Application","Vérification"][qi];return rotateQuiz(q,ci+li+qi);})};
+   ["Que faut-il vérifier dans l'exemple guidé ?",[l[3],"Uniquement le nom du fichier source","Le nombre de commentaires"],0,"Le résultat attendu est : "+l[3]+"."]]).map(function(q,qi){q[4]=q[4]||["Compréhension","Application","Vérification"][qi];return rotateQuiz(q,ci+li+qi);})};
  });
  var a=c[5][0],b=c[5][1],d=c[5][2],previous=curriculum[ci===0?2:ci-1],next=curriculum[ci===curriculum.length-1?ci-2:ci+1],debugRule="Tracer l'exécution de "+b[0]+" et comparer le premier état divergent au résultat attendu.";
  var exam=[
