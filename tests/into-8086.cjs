@@ -24,7 +24,7 @@ test("OF=1 source: INTO appelle le vecteur 4 puis IRET restaure CS:IP, FLAGS et 
 test("OF=1 binary: IVT vector 4 is read from physical 00010h",()=>{
  const src=["MOV AL,7Fh","ADD AL,1","INTO","HLT","HANDLER:","MOV BX,AX","IRET"].join("\n");
  const a=api.assemble(src),handler=a.symbols.HANDLER,bytes=Array.from(a.bytes),cs=0x1000,ip=0x0100;
- const mem={0x10:handler&255,0x11:(handler>>8)&255,0x12:cs&255,0x13:(cs>>8)&255};
+ const handlerIP=(ip+handler)&65535;const mem={0x10:handlerIP&255,0x11:(handlerIP>>8)&255,0x12:cs&255,0x13:(cs>>8)&255};
  const state=api.binary(bytes,cs,ip,{mem});
  assert.ok(!state.error,state.error);assert.equal(state.reg.AX&255,0x80);assert.equal(state.reg.BX&255,0x80);
  assert.equal(state.reg.CS,cs);assert.equal(state.reg.SP,api.execute("HLT").reg.SP);assert.equal(state.stack.length,0);
