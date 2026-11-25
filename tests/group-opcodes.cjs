@@ -159,7 +159,7 @@ for (let ext = 0; ext < 8; ext++) {
         assert.equal(result.rows.length, 1);
         assert.deepEqual(Array.from(result.rows[0].bytes), code);
         const instruction = result.rows[0].instruction;
-        if (ext === 7 || (mod === 3 && [0, 1, 3, 5, 6].includes(ext))) {
+        if (ext === 7 || (mod === 3 && [3, 5].includes(ext))) {
           assert.ok(instruction.startsWith("DB "), instruction);
         } else {
           assert.ok(instruction.startsWith(ffNames[ext] + " "), instruction);
