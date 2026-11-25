@@ -214,12 +214,13 @@ La référence Intel 8086 précise que le signal LOCK reste actif pendant l'inst
 
 ### 7.5 Illustrations, animations et séparation des espaces
 
-L'inventaire du rendu `courseVisual(i)` donne dix chapitres avec une visualisation dédiée :
+L'inventaire du rendu `courseVisual(i)` donne maintenant onze chapitres avec une visualisation dédiée :
 
 | Chapitre | Visualisation | Nature |
 |---:|---|---|
 | 2 | Chaîne BIU → EU → ALU et bus | Schéma animé |
 | 5 | Décomposition AX en AH/AL | Interactive |
+| 11 | Trace binaire AX/BX/CX/IP/SP/FLAGS | Interactive, états pré-calculés |
 | 12 | Comparateur et FLAGS | Interactive |
 | 18 | Segment:offset et adresse physique | Interactive |
 | 20 | Calcul d'adresse effective | Interactive |
@@ -229,9 +230,9 @@ L'inventaire du rendu `courseVisual(i)` donne dix chapitres avec une visualisati
 | 31 | Opcode et champs d'encodage | Schéma |
 | 32 | Décodeur ModR/M | Interactive |
 
-Le test navigateur vérifie les six interactions (AX, FLAGS, segment:offset, adresse effective, pile et ModR/M) et l'animation BIU. L'animation est schématique, ne représente pas des cycles matériels et respecte `prefers-reduced-motion`.
+Le test navigateur vérifie les sept interactions (AX, trace binaire, FLAGS, segment:offset, adresse effective, pile et ModR/M) et l'animation BIU. L'animation est schématique, ne représente pas des cycles matériels et respecte `prefers-reduced-motion`.
 
-**Lacune identifiée :** il n'existe pas encore de visualisation de trace pédagogique intégrée qui avance instruction par instruction en affichant simultanément AX, BX, CX, IP, SP, FLAGS et les modifications mémoire. Le mode pas à pas de l'atelier est distinct de cette visualisation de cours. De plus, 26 chapitres ne possèdent pas de diagramme spécifique dans `courseVisual`; leur texte et leurs exemples restent consultables, mais la couverture visuelle est inégale.
+**Limite identifiée :** la nouvelle trace du chapitre 11 est interactive mais pré-calculée ; elle n'avance pas le moteur binaire réel et ne suit pas les modifications mémoire. Le mode pas à pas de l'atelier reste distinct. Vingt-cinq chapitres ne possèdent pas de diagramme spécifique dans `courseVisual`; leur texte et leurs exemples restent consultables, mais la couverture visuelle demeure inégale.
 
 La séparation d'interface est maintenant contrôlée par le test navigateur :
 - **Cours** : `view-learn` ;
@@ -265,3 +266,10 @@ Deux exemples utilisent toutefois une notion avant sa formalisation complète :
 - **C17 L3** utilise `[SI]` pour une recherche séquentielle.
 
 Ces exemples sont conservés comme aperçus, mais leur théorie précise maintenant que l'adressage indirect simple et l'accès DS:SI sont des prévisualisations ; la segmentation et les huit modes d'adressage sont formalisés aux chapitres 18 et 19. Cela évite de présenter ces notions comme déjà entièrement acquises.
+
+
+### 7.8 Trace interactive de registres — chapitre 11
+
+Une trace pas à pas pré-calculée a été ajoutée au chapitre 11 sur le programme binaire `MOV AX,2`, `MOV BX,3`, `ADD AX,BX`, `HLT`. Elle affiche les offsets IP en octets, AX, BX, CX, SP et les neuf FLAGS modélisés, avec commandes précédent/suivant/réinitialiser. Les états affichés ont un oracle final exécuté sur le chemin binaire : AX=5, BX=3, IP=9, SP=FFFEh et PF=1.
+
+Cette visualisation est explicitement étiquetée comme pré-calculée : elle n'est pas un pas-à-pas live du moteur et ne prétend pas simuler la BIU, les cycles ou les accès mémoire. Le test navigateur contrôle chaque transition affichée.
