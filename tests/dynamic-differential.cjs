@@ -872,6 +872,84 @@ test("DF=1 et override CS: REP MOVSB décrémente SI/DI et garde ES en destinati
 });
 categories.memory++;
 
+test("Chaînes — bouclage 16 bits de SI/DI à FFFFh et 0000h", () => {
+  const forward=runStringBinary("MOVSB\nHLT",{
+    reg:{DS:0x1000,ES:0x2000,SI:0xffff,DI:0xffff,CX:0},
+    mem:{[physical(0x1000,0xffff)]:0x5a}
+  });
+  assert.equal(forward.mem[physical(0x2000,0xffff)],0x5a);
+  assert.equal(forward.reg.SI,0);
+  assert.equal(forward.reg.DI,0);
+  const backward=runStringBinary("MOVSB\nHLT",{
+    reg:{DS:0x1000,ES:0x2000,SI:0,DI:0,CX:0},
+    flags:{DF:1},
+    mem:{[physical(0x1000,0)]:0xa5}
+  });
+  assert.equal(backward.mem[physical(0x2000,0)],0xa5);
+  assert.equal(backward.reg.SI,0xffff);
+  assert.equal(backward.reg.DI,0xffff);
+});
+categories.memory++;
+
+test("Chaînes — accès mot à FFFFh reboucle l'offset du second octet", () => {
+  const state=runStringBinary("MOVSW\nHLT",{
+    reg:{DS:0x1000,ES:0x2000,SI:0xffff,DI:0xffff,CX:0},
+    mem:{[physical(0x1000,0xffff)]:0x34,[physical(0x1000,0)]:0x12}
+  });
+  assert.equal(state.mem[physical(0x2000,0xffff)],0x34);
+  assert.equal(state.mem[physical(0x2000,0)],0x12);
+  assert.equal(state.reg.SI,1);
+  assert.equal(state.reg.DI,1);
+});
+categories.memory++;
+
+test("Chaînes — MOVS/LODS/STOS préservent FLAGS ; CMPS/SCAS les actualisent", () => {
+  const initial={CF:1,PF:0,AF:1,ZF:0,SF:1,TF:1,IF:1,DF:0,OF:1};
+  for(const op of ["MOVSB","LODSB","STOSB"]){
+    const state=runStringBinary(op+"\nHLT",{
+      reg:{DS:0x1000,ES:0x2000,SI:0x10,DI:0x20,AX:0x1234},
+      flags:initial,
+      mem:{[physical(0x1000,0x10)]:0x34}
+    });
+    assert.deepEqual(state.flags,initial,op+" must preserve all modeled FLAGS");
+  }
+  const cmps=runStringBinary("CMPSB\nHLT",{
+    reg:{DS:0x1000,ES:0x2000,SI:0x10,DI:0x20},
+    flags:initial,
+    mem:{[physical(0x1000,0x10)]:0x10,[physical(0x2000,0x20)]:0x10}
+  });
+  assert.equal(cmps.flags.ZF,1);
+  assert.equal(cmps.flags.CF,0);
+  const scas=runStringBinary("SCASB\nHLT",{
+    reg:{ES:0x2000,DI:0x20,AX:0x0010},
+    flags:initial,
+    mem:{[physical(0x2000,0x20)]:0x20}
+  });
+  assert.equal(scas.flags.CF,1,"AL - ES:[DI] must set borrow when AL is smaller");
+  assert.equal(scas.flags.ZF,0);
+});
+categories.memory++;
+
+test("Chaînes — override source CS pour LODS/CMPS, destination SCAS reste ES", () => {
+  const mem={};
+  putByte(mem,0x3000,0x10,0x41);
+  putByte(mem,0x1000,0x10,0x99);
+  putByte(mem,0x2000,0x20,0x41);
+  const lods=runStringBinary("CS: LODSB\nHLT",{
+    reg:{CS:0x3000,DS:0x1000,SI:0x10},mem
+  },0x3000);
+  assert.equal(lods.reg.AX&255,0x41);
+  const cmps=runStringBinary("CS: CMPSB\nHLT",{
+    reg:{CS:0x3000,DS:0x1000,ES:0x2000,SI:0x10,DI:0x20},mem
+  },0x3000);
+  assert.equal(cmps.flags.ZF,1);
+  const scas=runStringBinary("CS: SCASB\nHLT",{
+    reg:{CS:0x3000,ES:0x2000,DI:0x20,AX:0x41},mem
+  },0x3000);
+  assert.equal(scas.flags.ZF,1);
+});
+categories.memory++;
+
 test("INTO — vecteur 4, gestionnaire IVT et retour IRET en binaire", () => {
   const source="MOV AX, 7FFFh\nADD AX, 1\nINTO\nHLT\nHANDLER: MOV BX, 1\nIRET";
   const assembled=api.assemble(source),handler=assembled.symbols.HANDLER;
