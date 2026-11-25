@@ -22,7 +22,8 @@ const context = {
 vm.createContext(context);
 const injection = "\nglobalThis.__8086BCDMathApi = {" +
   "\n execute: function (source) { return executeAll(source); }," +
-  "\n assemble: function (source) { return assembleProgram(source); }" +
+  "\n assemble: function (source) { return assembleProgram(source); }," +
+  "\n disassemble: function (bytes) { return disassembleBytes(bytes); }" +
   "\n};\n})();\n";
 const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injection);
 assert.notEqual(instrumented, match[1], "Test API injection point must exist");
@@ -302,7 +303,13 @@ for (const [source, expected] of bcdEncodings) {
   test("8086 BCD encoding " + source, () => {
     assert.deepEqual(Array.from(api.assemble(source).bytes), expected);
   });
-  totals.encodings++;
+  test("8086 BCD disassembly " + source, () => {
+    const decoded = api.disassemble(expected);
+    assert.equal(decoded.rows.length, 1);
+    assert.equal(decoded.rows[0].instruction.split(" ")[0], source);
+    assert.deepEqual(Array.from(decoded.rows[0].bytes), expected);
+  });
+  totals.encodings += 2;
 }
 
 console.log("AAA/AAS vectors : " + totals.aaaAas);
