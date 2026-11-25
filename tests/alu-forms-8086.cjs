@@ -93,9 +93,11 @@ for (const op of OPS) {
           // For identical register operands the assembler canonicalizes the
           // commutative-looking register alias to the r/m,reg opcode direction.
           // The instruction remains semantically identical; pin that canonical byte.
-          const expectedOpcode = mod === 3 && reg === rm && form >= 2
-            ? op.base + (form - 2) : opcode;
-          const expected = [expectedOpcode, modrm(mod, reg, rm), ...displacement(mod, rm)];
+          const registerRegisterReverse = mod === 3 && form >= 2;
+          const expectedOpcode = registerRegisterReverse ? op.base + (form - 2) : opcode;
+          const expectedModRM = registerRegisterReverse
+            ? modrm(3, rm, reg) : modrm(mod, reg, rm);
+          const expected = [expectedOpcode, expectedModRM, ...displacement(mod, rm)];
           same(bytes(source), expected, source + " encoding");
           decodeOne(expected, op.name, source + " decoding");
           directionalCases++;
