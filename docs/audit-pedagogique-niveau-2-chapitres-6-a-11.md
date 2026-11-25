@@ -16,22 +16,24 @@
 
 | Chapitre | Leçon | Contrôle attendu |
 |---|---:|---|
-| 6 — Premiers programmes assembleur | 1 | XCHG échange AX et BX |
-| 6 | 2 | LEA calcule BX+4 sans lecture de la mémoire pointée |
-| 6 | 3 | LDS lit un pointeur far en mémoire ; l'exemple actuel utilise une zone initialisée à zéro |
-| 7 — Transfert de données | 1 | ADD puis ADC propagent la retenue et produisent BL=02h |
-| 7 | 2 | SUB puis SBB propagent l'emprunt et produisent BL=04h |
-| 7 | 3 | NEG 80h conserve le motif 80h et active OF |
-| 8 — Arithmétique fondamentale | 1 | AND 0ACh,0Fh produit 0Ch |
-| 8 | 2 | XOR F0h,FFh produit 0Fh |
-| 8 | 3 | TEST préserve AL et met ZF à 1 lorsque le masque ne correspond pas |
-| 9 — Opérations logiques | 1 | FFh+1 donne AL=00h, CF=1 et ZF=1 |
-| 9 | 2 | CLD/STD/CLD laisse DF=0 |
-| 9 | 3 | POPF restaure CF sauvegardé par PUSHF |
-| 10 — Registre FLAGS | 1 | L'exemple de trace aboutit à AX=0005h |
-| 10 | 2 | L'exemple de diagnostic aboutit à AX=0007h |
-| 10 | 3 | INC FFh donne 00h et préserve CF |
-| 11 — Débogage et traçage | 1–3 | Les exemples sont couverts par les oracles du chapitre et les validations générales d'exécution |
+| 6 — Premiers programmes assembleur | 1 | AX=0005h après MOV AX,5 |
+| 6 | 2 | AX=0001h après MOV AX,BX puis ADD AX,1 avec BX initialisé à zéro |
+| 6 | 3 | AX reste à 0001h : JMP saute MOV AX,2 |
+| 7 — Transfert de données | 1 | XCHG échange AX=5678h et BX=1234h |
+| 7 | 2 | LEA calcule SI=0104h sans lecture mémoire |
+| 7 | 3 | LDS lit un pointeur far dans la mémoire initialisée à zéro ; SI=0 et DS=0 |
+| 8 — Arithmétique fondamentale | 1 | ADD/ADC : AL=00h, BL=02h, CF final=0 |
+| 8 | 2 | SUB/SBB : AL=FFh, BL=04h, CF final=0 |
+| 8 | 3 | NEG 80h : AL=80h, OF=1, CF=1 |
+| 9 — Opérations logiques | 1 | AND 0ACh,0Fh produit 0Ch |
+| 9 | 2 | XOR F0h,FFh produit 0Fh |
+| 9 | 3 | TEST préserve AL=08h et met ZF à 1 |
+| 10 — Registre FLAGS | 1 | FFh+1 donne AL=00h, CF=1 et ZF=1 |
+| 10 | 2 | CLD/STD/CLD laisse DF=0 |
+| 10 | 3 | POPF restaure CF sauvegardé par PUSHF |
+| 11 — Débogage et traçage | 1 | AX=0005h |
+| 11 | 2 | AX=0007h |
+| 11 | 3 | INC FFh donne 00h et préserve CF |
 
 **Attention à la numérotation :** le tableau suit les indices de chapitres du programme. Les noms et exemples sont contrôlés contre le curriculum et les oracles de test.
 
