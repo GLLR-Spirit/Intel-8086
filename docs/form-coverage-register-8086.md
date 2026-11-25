@@ -252,7 +252,7 @@ La phase 2 demeure ouverte : aucune somme de mnémoniques ou de suites exécuté
 | POP registre | AX/CX/DX/BX/SP/BP/SI/DI | 58–5F | Tests de pile et contraintes |
 | PUSH segment | ES, CS, SS, DS | 06, 0E, 16, 1E | Tests de pile ciblés |
 | POP segment | ES, SS, DS ; pas POP CS | 07, 17, 1F | Tests négatifs et pile |
-| PUSH r/m16 | registre ou mémoire | FF /6 | Groupe FF et tests de pile |
+| PUSH mémoire 16 bits | mémoire uniquement (`MEM16`) | FF /6 | Groupe FF, matrice ModR/M et tests de pile |
 | POP r/m16 | registre ou mémoire | 8F /0 | Groupe 8F et tests de pile |
 | PUSHF / POPF | FLAGS vers/de la pile | 9C / 9D | Contrôle de FLAGS et pile |
 | INT imm8 | vecteur immédiat | CD ib | Tests d'interruption logicielle |
