@@ -321,3 +321,31 @@ Preuve : `tests/jmp-near-indirect-8086.cjs` et `tests/call-ret-gnu-crosscheck.cj
 ### 14.4 Préfixe de segment sur JMP far indirect
 
 Le test `jmp-far-indirect-8086.cjs` couvre aussi un pointeur far placé en ES:0100h, avec `ES: JMP FAR PTR [BX]`. L'override ES est vérifié au désassemblage puis dans les exécutions source et binaire ; le pointeur charge toujours l'offset et le segment dans l'ordre prévu. La cible est exécutée dans un segment distinct, sans empiler d'adresse de retour.
+
+### 14.5 FF — restrictions architecturales vérifiées
+
+La table Intel 4-13 distingue précisément les extensions du groupe FF :
+
+| Extension | Forme 8086 | Mod=11 registre-direct |
+|---|---|---|
+| `/0` | `INC MEM16` | invalide |
+| `/1` | `DEC MEM16` | invalide |
+| `/2` | `CALL REG16/MEM16` near | valide |
+| `/3` | `CALL MEM16` far | invalide |
+| `/4` | `JMP REG16/MEM16` near | valide |
+| `/5` | `JMP MEM16` far | invalide |
+| `/6` | `PUSH MEM16` | invalide |
+| `/7` | non utilisé | invalide |
+
+Les formes registre de `INC`, `DEC` et `PUSH` utilisent respectivement les opcodes compacts `40–47`, `48–4F` et `50–57`. Elles ne doivent pas être acceptées comme variantes registre de `FF /0`, `FF /1` ou `FF /6`.
+
+**Correction du 25 novembre 2026 :** le désassembleur acceptait auparavant à tort `FF C0` comme `INC AX`, `FF C8` comme `DEC AX` et `FF F0` comme `PUSH AX`. Il conserve désormais ces séquences comme données brutes (`DB`) conformément à la table Intel. Les formes mémoire restent décodées.
+
+**Tests de régression :**
+- `tests/group-opcodes.cjs` : balayage des 256 valeurs ModR/M du groupe FF ;
+- `tests/modrm-matrix.cjs` : contraintes de validité des extensions ;
+- `tests/addressing-displacement.cjs` : distinction registre/mémoire ;
+- `tests/push-pop-forms-8086.cjs` : huit registres via opcodes compacts, FF /6 mémoire uniquement ;
+- tests intégrés du désassembleur pour les trois encodages registre invalides.
+
+Cette restriction est contrôlée indépendamment de la présence des mnémoniques `INC`, `DEC` et `PUSH` dans le simulateur.
