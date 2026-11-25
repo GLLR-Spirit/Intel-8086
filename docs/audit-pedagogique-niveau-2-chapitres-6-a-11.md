@@ -21,7 +21,7 @@
 | 6 | 3 | AX reste à 0001h : JMP saute MOV AX,2 |
 | 7 — Transfert de données | 1 | XCHG échange AX=5678h et BX=1234h |
 | 7 | 2 | LEA calcule SI=0104h sans lecture mémoire |
-| 7 | 3 | LDS lit un pointeur far dans la mémoire initialisée à zéro ; SI=0 et DS=0 |
+| 7 | 3 | LDS charge le pointeur far initialisé à DS:0100h ; SI=0200h et DS=1000h, avec les quatre octets little-endian vérifiés |
 | 8 — Arithmétique fondamentale | 1 | ADD/ADC : AL=00h, BL=02h, CF final=0 |
 | 8 | 2 | SUB/SBB : AL=FFh, BL=04h, CF final=0 |
 | 8 | 3 | NEG 80h : AL=80h, OF=1, CF=1 |
@@ -52,7 +52,7 @@
 ## Limites restantes
 
 - Les oracles de test contrôlent le résultat du moteur du laboratoire ; ils ne remplacent pas une comparaison différentielle exhaustive avec un émulateur de référence indépendant.
-- L'exemple LDS du chapitre 6 utilise actuellement une zone mémoire par défaut initialisée à zéro ; un exercice dédié avec un pointeur far explicite en mémoire serait plus démonstratif.
+- L'exemple LDS initialise désormais explicitement les quatre octets du pointeur far en mémoire ; l'oracle vérifie SI, DS et les octets little-endian.
 - Le laboratoire ne simule pas les signaux électriques, les cycles de bus réels, l'arbitrage matériel des interruptions ni les effets temporels exacts de TF/IF.
 - Les chapitres 12 à 36 restent à auditer selon la même méthode.
 - L'audit complet des encodages, des cas invalides et des effets FLAGS doit rester distinct de l'audit pédagogique.
