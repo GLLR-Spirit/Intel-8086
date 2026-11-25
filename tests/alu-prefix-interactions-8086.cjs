@@ -59,8 +59,9 @@ function decode(bytes, mnemonic, message) {
   if (bytes[0] === 0xF0) {
     check(d.rows[0].instruction.startsWith("LOCK "), message + " LOCK prefix retained");
   } else {
-    check(d.rows[0].instruction.startsWith(bytes[0] === 0x26 ? "ES:" :
-      bytes[0] === 0x2E ? "CS:" : bytes[0] === 0x36 ? "SS:" : "DS:"),
+    const segmentName = bytes[0] === 0x26 ? "ES" :
+      bytes[0] === 0x2E ? "CS" : bytes[0] === 0x36 ? "SS" : "DS";
+    check(d.rows[0].instruction.includes(segmentName + ":"),
       message + " segment override retained");
   }
 }
