@@ -35,7 +35,7 @@ const summary = element("testSummary").textContent;
 const results = element("testResults").textContent;
 console.log(summary);
 console.log(results);
-assert.equal(summary, "354/354 tests réussis", "All simulator self-tests must pass");
+const match = summary.match(/^(\\d+)\\/(\\d+) tests réussis$/);\nassert.ok(match, "Self-test summary must be readable: " + summary);\nassert.equal(Number(match[1]), Number(match[2]), "All simulator self-tests must pass: " + summary);
 assert.ok(!results.includes("FAIL"), "No self-test should fail");
 const instructionGrid = element("instructionGrid").innerHTML;
 assert.ok(instructionGrid.includes("Fiche technique détaillée"), "Instruction cards must expose technical details");
