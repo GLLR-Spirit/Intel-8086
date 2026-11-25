@@ -271,6 +271,115 @@ for (const item of runtimeOverrides) {
 }
 
 // ---------------------------------------------------------------------------
+// C2. Register forms: all eight byte and word registers, exact ModR/M bytes.
+//     The expected extension and r/m fields are built independently.
+// ---------------------------------------------------------------------------
+const regs8 = ["AL", "CL", "DL", "BL", "AH", "CH", "DH", "BH"];
+const regs16 = ["AX", "CX", "DX", "BX", "SP", "BP", "SI", "DI"];
+for (const instruction of instructions) {
+  for (const [bits, regs] of [[8, regs8], [16, regs16]]) {
+    const opcode = bits === 8 ? 0xF6 : 0xF7;
+    for (let rm = 0; rm < 8; rm++) {
+      const expected = [opcode, modrm(3, instruction.ext, rm)];
+      const source = instruction.op + " " + regs[rm];
+      test("Encodage registre " + source, () => {
+        same(api.assemble(source).bytes, expected, source);
+      });
+      test("Désassemblage registre " + source, () => {
+        const decoded = api.disassemble(expected);
+        assert.equal(decoded.rows.length, 1);
+        assert.deepEqual(Array.from(decoded.rows[0].bytes), expected);
+        assert.equal(decoded.rows[0].instruction, source);
+      });
+    }
+  }
+}
+
+// A segment override on a register-only form is retained as a prefix byte,
+// but does not change the arithmetic operand or the implicit accumulator.
+for (const instruction of instructions) {
+  for (const seg of ["ES", "CS", "SS", "DS"]) {
+    const bits = 8, opcode = 0xF6, rm = 3; // BL
+    const expected = [{ES:0x26,CS:0x2E,SS:0x36,DS:0x3E}[seg], opcode,
+      modrm(3, instruction.ext, rm)];
+    const source = seg + ": " + instruction.op + " BL";
+    test("Préfixe segment sans mémoire " + source, () => {
+      same(api.assemble(source).bytes, expected, source);
+      const decoded = api.disassemble(expected);
+      assert.equal(decoded.rows.length, 1);
+      assert.deepEqual(Array.from(decoded.rows[0].bytes), expected);
+      assert.ok(decoded.rows[0].instruction.includes(seg + ":"));
+    });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// C3. Runtime segment overrides: all four operations, both widths, all four
+//     segment registers, and both source and emitted-binary execution paths.
+//     A distinct DS sentinel makes an ignored override observable.
+// ---------------------------------------------------------------------------
+const runtimeSegments = [
+  {name:"ES", value:0x2000, prefix:0x26},
+  {name:"CS", value:0x0000, prefix:0x2E},
+  {name:"SS", value:0x3000, prefix:0x36},
+  {name:"DS", value:0x1000, prefix:0x3E}
+];
+for (const instruction of instructions) {
+  for (const bits of [8,16]) {
+    const vector = executionVector(instruction.op,bits);
+    for (const seg of runtimeSegments) {
+      const ptr = bits===8 ? "BYTE PTR " : "WORD PTR ";
+      const memory = ptr + seg.name + ":[0200h]";
+      const lines = [
+        "MOV AX, 1000h", "MOV DS, AX",
+        "MOV AX, 2000h", "MOV ES, AX",
+        "MOV AX, 3000h", "MOV SS, AX",
+        "MOV BYTE PTR DS:[0200h], 1",
+        "MOV " + memory + ", " + (bits===8 ? byte(vector.divisor) : word(vector.divisor))
+      ];
+      if (vector.initialDX!==undefined) lines.push("MOV DX, "+word(vector.initialDX));
+      lines.push("MOV AX, "+word(vector.initialAX), instruction.op+" "+memory, "HLT");
+      const source=lines.join("\n");
+      const expectedPrefix=seg.name==="DS" ? [] : [seg.prefix];
+      test("Override segment source/binaire "+instruction.op+" "+bits+" "+seg.name,()=>{
+        const assembled=api.assemble(source);
+        const bytes=Array.from(assembled.bytes);
+        const opIndex=bytes.findIndex((v,i)=>v===(bits===8?0xF6:0xF7) &&
+          bytes[i+1]===modrm(seg.name==="DS"?0:0,instruction.ext,6));
+        assert.ok(opIndex>=0,"F6/F7 group opcode must be present");
+        if(seg.name!=="DS") assert.ok(bytes.includes(seg.prefix),"segment prefix byte");
+        const states=[["source",api.execute(source)],
+          ["binary",api.executeBinary(bytes,0,0)]];
+        for(const [mode,state] of states){
+          assert.ok(!state.error,mode+" "+instruction.op+" "+seg.name+": "+(state.error||""));
+          assert.equal(state.reg.AX,vector.ax,mode+" AX");
+          assert.equal(state.reg.DX,vector.dx,mode+" DX");
+        }
+      });
+    }
+  }
+}
+
+// LOCK is a bus-control prefix on the original 8086, not an x86-386 #UD
+// restriction. MUL/DIV read their explicit memory source; LOCK still prefixes
+// the instruction and holds the bus for its duration in maximum mode.
+for (const instruction of instructions) {
+  const source = "MOV BX, 0200h\nMOV BYTE PTR [BX], 7\nMOV AL, 3\nLOCK\n" +
+    instruction.op + " BYTE PTR [BX]\nHLT";
+  test("LOCK prefix retained for memory-read " + instruction.op,()=>{
+    const assembled=api.assemble(source);
+    const bytes=Array.from(assembled.bytes);
+    const lockIndex=bytes.indexOf(0xF0);
+    assert.ok(lockIndex>=0,"LOCK prefix byte emitted");
+    assert.deepEqual(bytes.slice(lockIndex,lockIndex+3),[0xF0,0xF6,0x27]);
+    const decoded=api.disassemble(bytes);
+    assert.ok(decoded.rows.some(row=>row.instruction==="LOCK "+instruction.op+" BYTE PTR [BX]"));
+    const state=api.execute(source);
+    assert.ok(!state.error,state.error||"source execution");
+  });
+}
+
+// ---------------------------------------------------------------------------
 // D. Divide-error vector 00h when the divisor is in memory: zero and quotient
 //    overflow, for DIV/IDIV and byte/word operands, source and binary paths.
 // ---------------------------------------------------------------------------
