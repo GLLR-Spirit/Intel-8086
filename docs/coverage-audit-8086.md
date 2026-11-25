@@ -621,3 +621,25 @@ Les nombres de plusieurs suites se recouvrent et ne doivent pas être additionn�
 6. Les extensions ModR/M, tailles, formes invalides, préfixes, limites de déplacement et flux tronqués doivent être consignés forme par forme avant le calcul pondéré définitif.
 
 **Conclusion :** cette matrice actualisée fournit un premier score traçable au niveau des 93 entrées. La phase 2 n'est pas clôturée : le registre forme-par-forme et le recalcul pondéré par formes restent obligatoires.
+
+
+---
+
+## Préfixe LOCK — actualisation du 25 novembre 2026
+
+Le préfixe F0h est maintenant traité selon la documentation du 8086 : il peut précéder l'instruction suivante, et le verrouillage reste actif pendant tout le bloc d'une instruction de chaîne répétée. Le modèle logiciel ne simule pas le signal LOCK électrique ni l'arbitrage entre maîtres de bus.
+
+Couverture ajoutée :
+- `LOCK INC AX` : source, assemblage, désassemblage et exécution binaire ; le préfixe est accepté même si l'instruction ne protège aucune donnée mémoire partagée.
+- `LOCK MOVSB` et `LOCK REP MOVSB` : assemblage, désassemblage, exécution source et binaire.
+- `LOCK REP MOVSB` : vérification de CX, SI, DI, octets copiés et préservation des neuf FLAGS modélisés.
+- `LOCK ADD`, `LOCK CMP`, `LOCK MOV` et `LOCK XCHG` : le désassembleur accepte le préfixe sur des formes mémoire et registre.
+- `LOCK` combiné à un override de segment mémoire : contrôle différentiel existant.
+- Préfixes REP répétés et overrides de segment répétés : toujours rejetés par les tests de contraintes.
+
+Nouveaux contrôles :
+- `tests/lock-prefix-8086.cjs`
+- mise à jour de `tests/instruction-vectors.cjs`, `tests/xchg-8086.cjs` et `tests/dynamic-differential.cjs`
+- étape CI dédiée « Run 8086 LOCK prefix and repeated string tests ».
+
+**Limite :** cette actualisation valide l'acceptation et les effets fonctionnels du préfixe, pas le signal LOCK sur le bus. Les interactions exhaustives entre F0h, F2h/F3h, overrides de segment, flux tronqués et ordre de préfixes restent à inscrire dans le registre forme-par-forme. Aucun pourcentage global n'est calculé.
