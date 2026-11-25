@@ -641,7 +641,7 @@ if(regs.length===0){if(disp<0||disp>65535)throw Error("Adresse directe hors plag
 else if(disp===0&&rm!==6){mod=0;}
 else if(disp>=-128&&disp<=127){mod=1;tail=[disp&255];}
 else{if(disp< -32768||disp>65535)throw Error("Déplacement hors plage 16 bits.");mod=2;tail=encodingWord(disp);}
-var defaultSeg=regs.indexOf("BP")>=0?"SS":"DS",prefix=explicit?({"ES":38,"CS":46,"SS":54,"DS":62}[explicit]):null;
+var defaultSeg=regs.indexOf("BP")>=0?"SS":"DS",prefix=explicit&&explicit!==defaultSeg?({"ES":38,"CS":46,"SS":54,"DS":62}[explicit]):null;
 return {mod:mod,rm:rm,tail:tail,prefix:prefix,defaultSegment:defaultSeg,explicitSegment:explicit};
 }
 function encodingModRM(regField,operand){
@@ -1171,7 +1171,7 @@ function runSelfTests(){var cases=[
 ["MOV préfixe ES explicite","MOV ES:[BX], AL",function(s){return JSON.stringify(encodingBytes(parseProgram("MOV ES:[BX], AL").ops[0]))===JSON.stringify([38,136,7]);}],
 ["MOV préfixe SS explicite","MOV SS:[BX], AL",function(s){return JSON.stringify(encodingBytes(parseProgram("MOV SS:[BX], AL").ops[0]))===JSON.stringify([54,136,7]);}],
 ["MOV préfixe DS pour adresse BP","MOV DS:[BP], AL",function(s){return JSON.stringify(encodingBytes(parseProgram("MOV DS:[BP], AL").ops[0]))===JSON.stringify([62,136,70,0]);}],
-["MOV préfixe SS explicite conservé même par défaut","MOV SS:[BP], AL",function(s){return JSON.stringify(encodingBytes(parseProgram("MOV SS:[BP], AL").ops[0]))===JSON.stringify([54,136,70,0]);}],
+["MOV préfixe SS redondant omis par optimisation d’assemblage","MOV SS:[BP], AL",function(s){return JSON.stringify(encodingBytes(parseProgram("MOV SS:[BP], AL").ops[0]))===JSON.stringify([136,70,0]);}],
 ["ADD registre-registre encode ModRM","ADD AX, BX",function(s){return JSON.stringify(encodingBytes(parseProgram("ADD AX, BX").ops[0]))===JSON.stringify([1,216]);}],
 ["SUB registre vers mémoire","SUB BYTE PTR [BX], AL",function(s){return JSON.stringify(encodingBytes(parseProgram("SUB BYTE PTR [BX], AL").ops[0]))===JSON.stringify([40,7]);}],
 ["XOR mémoire vers registre","XOR AL, BYTE PTR [SI]",function(s){return JSON.stringify(encodingBytes(parseProgram("XOR AL, BYTE PTR [SI]").ops[0]))===JSON.stringify([50,4]);}],
