@@ -316,3 +316,8 @@ Preuve : `tests/jmp-far-indirect-8086.cjs`. Le run CI 45688178373 a réussi les 
 La forme `JMP r/m16` (`FF /4`) est maintenant testée sur les huit registres 16 bits et les huit modes d'adressage mémoire. Chaque cas vérifie les octets, le désassemblage, l'exécution source et binaire, la cible IP, CS, SP et les neuf FLAGS modélisés. Les formes registre et mémoire [BX]/[BX+SI] sont également comparées à GNU as.
 
 Preuve : `tests/jmp-near-indirect-8086.cjs` et `tests/call-ret-gnu-crosscheck.cjs`.
+
+
+### 14.4 Préfixe de segment sur JMP far indirect
+
+Le test `jmp-far-indirect-8086.cjs` couvre aussi un pointeur far placé en ES:0100h, avec `ES: JMP FAR PTR [BX]`. L'override ES est vérifié au désassemblage puis dans les exécutions source et binaire ; le pointeur charge toujours l'offset et le segment dans l'ordre prévu. La cible est exécutée dans un segment distinct, sans empiler d'adresse de retour.
