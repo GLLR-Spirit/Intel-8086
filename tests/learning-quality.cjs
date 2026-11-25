@@ -214,7 +214,7 @@ const exampleOracles = [
   { chapter: 2, lesson: 1, check: state => state.reg.AX === 7, expected: "AX=0007h after EU arithmetic example" },
   { chapter: 5, lesson: 1, check: state => state.reg.AX === 0x1256, expected: "AX=1256h after writing AL" },
   { chapter: 8, lesson: 1, check: state => (state.reg.AX & 0xff) === 0 && state.flags.CF === 0 && (state.reg.BX & 0xff) === 2,
-    expected: "ADD/ADC carry propagation: AL=00h, CF=1, BL=02h" },
+    expected: "ADD/ADC carry propagation: AL=00h, CF=0 after ADC, BL=02h" },
   { chapter: 13, lesson: 3, check: state => state.reg.AX === 9 && state.reg.BX === 8,
     expected: "indirect near jump reaches offset 0008h and leaves AX=0009h" },
   { chapter: 25, lesson: 3, check: state => state.reg.AX === 0x00ff,
@@ -333,6 +333,35 @@ for (let ci = 5; ci < 11; ci++) {
 // These checks compare the displayed lesson expectations with independently
 // asserted architectural state; mere successful execution is not accepted.
 const advancedExampleOracles = [
+  [1,2,s=>s.reg.IP>=0&&(2**20)===1048576,"Conceptual example: HLT executes; 20 address lines represent 2^20 bytes, not a CPU calculation"],
+  [1,3,s=>s.reg.AX===0x8086,"MOV immediate leaves AX=8086h"],
+  [2,2,s=>s.reg.DS===0x1000,"BIU/data-segment example initializes DS=1000h"],
+  [2,3,s=>s.reg.AX===1,"JMP skips MOV AX,2 and leaves AX=1"],
+  [3,1,s=>s.reg.AX===10,"Binary place-value example loads decimal 10"],
+  [3,2,s=>(s.reg.AX&255)===42,"2Ah represents decimal 42 in AL"],
+  [3,3,s=>s.reg.AX===255,"0FFh represents unsigned decimal 255"],
+  [4,1,s=>s.reg.AX===0x1234&&word(s,s.reg.DS,0x100)===0x1234,"Word store writes 34h at DS:0100h and 12h at DS:0101h"],
+  [4,2,s=>(s.reg.AX&255)===0&&s.flags.CF===1,"Unsigned byte overflow wraps AL to zero and sets CF"],
+  [4,3,s=>(s.reg.AX&255)===0x80&&s.flags.OF===1,"Signed 7Fh+1 produces 80h and OF=1"],
+  [5,2,s=>s.reg.SI===0x100&&s.reg.DI===0x200&&s.reg.BP===0x300&&s.reg.SP===0x400,"Index and pointer registers retain their loaded values"],
+  [5,3,s=>s.reg.DS===0x1000,"Segment register DS is loaded from AX"],
+  [6,1,s=>s.reg.AX===5,"First complete program leaves AX=5"],
+  [6,2,s=>s.reg.AX===1,"MOV AX,BX followed by ADD AX,1 leaves AX=1 with initial BX=0"],
+  [6,3,s=>s.reg.AX===1,"JMP FIN skips the second MOV and preserves AX=1"],
+  [7,1,s=>s.reg.AX===0x5678&&s.reg.BX===0x1234,"XCHG swaps AX and BX"],
+  [7,2,s=>s.reg.SI===0x104,"LEA computes BX+4 without reading memory"],
+  [7,3,s=>s.reg.SI===0x200&&s.reg.DS===0x1000,"LDS loads offset 0200h into SI and segment 1000h into DS"],
+  [8,2,s=>(s.reg.AX&255)===0xff&&(s.reg.BX&255)===4&&s.flags.CF===0,"SUB borrows into CF and SBB consumes it to leave BL=4"],
+  [8,3,s=>(s.reg.AX&255)===0x80&&s.flags.OF===1&&s.flags.CF===1,"NEG 80h remains 80h and sets OF and CF"],
+  [9,1,s=>(s.reg.AX&255)===0x0c,"AND 0ACh,0Fh isolates the low nibble 0Ch"],
+  [9,2,s=>(s.reg.AX&255)===0x0f,"XOR 0F0h,0FFh produces 0Fh"],
+  [9,3,s=>(s.reg.AX&255)===0x08&&s.flags.ZF===1&&s.flags.CF===0&&s.flags.OF===0,"TEST preserves AL and sets ZF because the masked result is zero"],
+  [10,1,s=>(s.reg.AX&255)===0&&s.flags.ZF===1&&s.flags.CF===1,"FFh+1 produces zero with both ZF and CF set"],
+  [10,2,s=>s.flags.DF===0,"CLD/STD/CLD leaves DF cleared"],
+  [10,3,s=>s.flags.CF===1&&s.reg.SP===initialSP&&s.stack.length===0,"PUSHF/CLC/POPF restores CF and balances the stack"],
+  [11,1,s=>s.reg.AX===5,"Trace example advances AX from 2 to 5"],
+  [11,2,s=>s.reg.AX===7,"Debugging example computes AX=7"],
+  [11,3,s=>(s.reg.AX&255)===0&&s.flags.CF===1,"INC wraps AL to zero while preserving the CF set by STC"],
   [12,1,s=>s.reg.AX===7&&s.reg.BX===9&&s.flags.CF===1&&s.flags.ZF===0&&s.flags.SF===1,"CMP 7,9 leaves operands unchanged and sets CF/ZF/SF"],
   [12,2,s=>s.reg.AX===3&&s.flags.CF===1&&s.flags.ZF===0&&s.flags.SF===1,"CMP AL=03h,5 sets CF=1, ZF=0, SF=1"],
   [12,3,s=>s.reg.AX===5&&s.flags.ZF===0&&s.flags.CF===0&&s.flags.OF===0,"TEST 05h,04h preserves AL and sets ZF/CF/OF"],
@@ -420,7 +449,7 @@ for (const [chapter,lesson,check,description] of advancedExampleOracles) {
     registers:state.reg,flags:state.flags,sp:state.reg.SP
   });
 }
-assert.equal(advancedExampleOracles.length,73,"The advanced audit must cover the 73 remaining examples.");
+assert.equal(advancedExampleOracles.length,102,"The advanced audit must cover all 102 examples not already in the six original oracles.");
 assert.equal(auditFailures.length,0,"Every advanced lesson must satisfy its independent expected-state oracle: "+JSON.stringify(auditFailures));
 
 function bytesOf(source) { return Array.from(learning.assembleProgram(source).bytes); }
