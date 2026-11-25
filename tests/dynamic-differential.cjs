@@ -730,9 +730,9 @@ test("Préfixe segment + REP — CS: REP MOVSB", () => {
   assert.deepEqual(Array.from(row.bytes.slice(0,3)),[0x2e,0xf3,0xa4]);
   assert.equal(binaryState.mem[0x200],0x42);
 });
-function runStringBinary(source, seed) {
+function runStringBinary(source, seed, codeSegment = 0) {
   const assembled = api.assemble(source);
-  const state = api.executeBinary(Array.from(assembled.bytes), 0, 0, seed);
+  const state = api.executeBinary(Array.from(assembled.bytes), codeSegment, 0, seed);
   assert.ok(!state.error, state.error || "string instruction binary execution failed");
   return state;
 }
@@ -862,7 +862,7 @@ test("DF=1 et override CS: REP MOVSB décrémente SI/DI et garde ES en destinati
   const state=runStringBinary("CS: REP MOVSB\nHLT",{
     reg:{CS:0x3000,DS:0x1000,ES:0x2000,SI:0x11,DI:0x21,CX:2},
     flags:{DF:1},mem
-  });
+  },0x3000);
   assert.equal(state.mem[physical(0x2000,0x21)],0xa1);
   assert.equal(state.mem[physical(0x2000,0x20)],0xb2);
   assert.equal(state.reg.SI,0x0f);
