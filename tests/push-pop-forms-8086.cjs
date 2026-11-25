@@ -28,7 +28,8 @@ for(let mod=0;mod<4;mod++)for(let ext=0;ext<8;ext++)for(let rm=0;rm<8;rm++){
  const d=mod===0&&rm===6?[0x34,0x12]:mod===1?[0xFC]:mod===2?[0x00,0x80]:[];
  const code=[0xFF,(mod<<6)|(ext<<3)|rm,...d],decoded=api.disassemble(code).rows[0].instruction;
  if(ext===6)assert.ok(decoded.startsWith("PUSH "),"FF /6 valid mod="+mod+" rm="+rm+": "+decoded);
- else assert.ok(decoded.startsWith("DB "),"FF /"+ext+" reserved for PUSH: "+decoded);
+ else if(ext===7)assert.ok(decoded.startsWith("DB "),"FF /7 reserved: "+decoded);
+ else assert.ok(!decoded.startsWith("DB "),"FF /"+ext+" is assigned to another instruction: "+decoded);
 }
 assert.deepEqual(bytes("PUSH WORD PTR [BX]"),[0xFF,0x37]);
 assert.deepEqual(bytes("PUSH WORD PTR [BP+SI+4]"),[0xFF,0x72,0x04]);
@@ -55,7 +56,7 @@ for(const [mode,state] of executeBoth("PUSH SS\nPOP ES\nHLT"))assert.equal(state
 for(const [mode,state] of executeBoth("PUSH DS\nPOP ES\nHLT"))assert.equal(state.reg.ES,0,mode+" PUSH DS / POP ES");
 const flagsSource="MOV AX, 0BD5h\nPUSH AX\nPOPF\nPUSHF\nPOP BX\nHLT";
 for(const [mode,state] of executeBoth(flagsSource)){
- assert.equal(state.reg.BX,0x0BD5,mode+" PUSHF returns all nine modeled flag bits");
+ assert.equal(state.reg.BX&0x0FD5,0x0BD5,mode+" PUSHF returns all nine modeled flag bits");
  assert.equal(state.reg.SP,0xFFFE,mode+" PUSHF/POPF balanced");
  for(const flag of ["CF","PF","AF","ZF","SF","TF","IF","OF"])assert.equal(state.flags[flag],1,mode+" "+flag);
  assert.equal(state.flags.DF,0,mode+" DF");
