@@ -46,8 +46,9 @@ gasLines.push(...boundary);
 
 // Segment overrides and LOCK prefix: GAS writes legacy prefixes before the mnemonic.
 for (const segment of ["ES", "CS", "SS", "DS"]) {
-  appLines.push("XCHG AX, WORD PTR " + segment + ":[BX]");
-  gasLines.push(segment + " XCHG AX, WORD PTR [BX]");
+  const address = segment === "DS" ? "[BP]" : "[BX]";
+  appLines.push("XCHG AX, WORD PTR " + segment + ":" + address);
+  gasLines.push(segment + " XCHG AX, WORD PTR " + address);
 }
 appLines.push("LOCK XCHG WORD PTR [BX], AX");
 gasLines.push("LOCK XCHG WORD PTR [BX], AX");
@@ -93,6 +94,14 @@ try {
   vm.runInContext(instrumented, context, { timeout: 30000 });
   const appBytes = Array.from(context.__8086XchgGnuApi.assemble(appProgram).bytes);
 
+  if (appBytes.length !== gnuBytes.length || appBytes.some((value, index) => value !== gnuBytes[index])) {
+    const limit = Math.min(appBytes.length, gnuBytes.length);
+    const first = Array.from({ length: limit }, (_, index) => index)
+      .find(index => appBytes[index] !== gnuBytes[index]);
+    console.error("First XCHG GNU mismatch at byte " + first +
+      "; project=" + appBytes.slice(Math.max(0, first - 8), first + 12).map(x => x.toString(16).padStart(2, "0")).join(" ") +
+      "; GNU=" + gnuBytes.slice(Math.max(0, first - 8), first + 12).map(x => x.toString(16).padStart(2, "0")).join(" "));
+  }
   assert.deepEqual(appBytes, gnuBytes,
     "Project XCHG encoder must match GNU as byte-for-byte across register, memory, displacement, segment and LOCK vectors");
 
