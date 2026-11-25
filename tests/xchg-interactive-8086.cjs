@@ -84,14 +84,14 @@ const assert = require("node:assert/strict");
     // Now exercise an 8-bit exchange and read the exchanged memory byte back.
     await step(3);
     const beforeByte = await snapshot();
-    assert.equal(beforeByte.regs.AX, "FD5Ah", "AL setup before byte XCHG");
+    assert.equal(beforeByte.regs.AX, "0F5Ah", "AL setup before byte XCHG");
     for (const [name, value] of Object.entries(expectedFlags)) {
       assert.equal(beforeByte.flags[name], value, "Before byte XCHG FLAGS." + name);
     }
 
     await step(1);
     const afterByte = await snapshot();
-    assert.equal(afterByte.regs.AX, "FDC7h", "AL must receive the previous memory byte");
+    assert.equal(afterByte.regs.AX, "0FC7h", "AL must receive the previous memory byte");
     for (const [name, value] of Object.entries(expectedFlags)) {
       assert.equal(afterByte.flags[name], value, "After byte XCHG FLAGS." + name);
     }
