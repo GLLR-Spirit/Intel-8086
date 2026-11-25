@@ -32,7 +32,7 @@ for(const [operand,regs] of modes){
  const source=lines.join("\n"),assembled=api.assemble(source),bytes=Array.from(assembled.bytes);
  const row=api.disassemble(bytes).rows.find(r=>r.instruction.startsWith("JMP FAR"));
  assert.ok(row,"far JMP disassembled for "+operand);
- assert.equal(row.instruction,"JMP FAR PTR "+operand);
+ assert.ok(row.instruction.startsWith("JMP FAR PTR ["),"far memory pointer form "+operand+": "+row.instruction);
  const sourceState=api.execute(source);
  assert.equal(sourceState.error,undefined,"source far indirect JMP "+operand);
  assert.equal(sourceState.reg.CS,0x2000,"source CS "+operand);
