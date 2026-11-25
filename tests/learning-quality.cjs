@@ -38,11 +38,16 @@ assert.ok(learning.chapterLearning.every(c => c.lessons.every(l => l.title && l.
   "Every lesson must include detailed content, an example and exactly three comprehension questions");
 assert.ok(learning.chapterLearning.every(c => c.quiz.every(q => q[1].length === 3 && q[2] >= 0 && q[2] < 3 && q[3])),
   "Every final question must have three choices, a valid answer and an explanation");
-assert.ok(learning.chapterLearning.every(c => c.quiz.every(q =>
-  q[1].every(choice => typeof choice === "string" && choice.trim().length > 0) &&
-  new Set(q[1].map(choice => choice.trim().toLocaleLowerCase())).size === 3 &&
-  typeof q[3] === "string" && q[3].trim().length >= 12)),
-  "Final questions must have three distinct non-empty choices and a substantive explanation.");
+const weakFinalQuestions = [];
+learning.chapterLearning.forEach((c, ci) => c.quiz.forEach((q, qi) => {
+  if (!(q[1].every(choice => typeof choice === "string" && choice.trim().length > 0) &&
+    new Set(q[1].map(choice => choice.trim().toLocaleLowerCase())).size === 3 &&
+    typeof q[3] === "string" && q[3].trim().length >= 12)) {
+    weakFinalQuestions.push({chapter:ci+1,question:qi+1,stem:q[0],choices:q[1],explanation:q[3]});
+  }
+}));
+if (weakFinalQuestions.length) console.log("Final question quality findings: " + JSON.stringify(weakFinalQuestions));
+assert.equal(weakFinalQuestions.length, 0, "Final questions must have three distinct non-empty choices and a substantive explanation.");
 assert.ok(learning.chapterLearning.every(c => c.lessons.every(l => l.quiz.every(q =>
   q[1].length === 3 && new Set(q[1].map(choice => String(choice).trim().toLocaleLowerCase())).size === 3 &&
   typeof q[3] === "string" && q[3].trim().length >= 12))),
