@@ -158,3 +158,21 @@ Un test round-trip unique qui contient les huit expressions d'adresse ne valide 
 - Les lacunes exactes sont les croisements non systématiques des champs `mod`, `reg`, `r/m`, par famille d'opcodes, ainsi que les tests positifs/négatifs des extensions.
 
 La phase suivante pourra ajouter une suite de certification dédiée et indépendante, sans toucher au moteur tant que la matrice attendue n'est pas spécifiée.
+
+## Mise à jour — exécution de la matrice sur la branche d'audit (25 novembre 2026)
+
+Cette section remplace toute interprétation de la conclusion statique ci-dessus comme décrivant l'état actuel de la branche d'audit. Le texte initial reste un constat historique de la branche `main` au 24 novembre.
+
+Sur le commit `21b6c66fb35bf8057e0e81c73fa168a099a83b89`, le workflow CI principal **1209** a exécuté les suites suivantes avec succès :
+
+| Suite | Résultat | Portée exacte |
+|---|---:|---|
+| `tests/modrm-matrix.cjs` | **2 352/2 352** | 512 cas d'assemblage (MOV 8B/89), 1 792 cas de désassemblage (7 familles × 256 octets ModR/M), 48 cas de validité d'extensions |
+| `tests/opcode-byte-sweep.cjs` | **17 408/17 408** | 256 opcodes primaires + 17 152 combinaisons structurelles ModR/M ; contrôle des frontières et de la consommation des octets |
+| `tests/dynamic-differential.cjs` | **83/83** | dont un balayage structurel de 3 072 combinaisons ModR/M sur 12 groupes |
+
+**Interprétation obligatoire :** ces résultats apportent une couverture systématique réelle aux familles et dimensions indiquées. Ils ne certifient pas encore les 93 entrées canoniques ni toutes les formes d'opérandes de chaque instruction. En particulier, le balayage structurel vérifie la robustesse du décodeur et la consommation exacte du flux ; il ne prouve pas que chaque combinaison produit la bonne instruction, les bons opérandes et les bons effets d'exécution.
+
+La matrice ciblée de 2 352 cas ne couvre sémantiquement que les familles explicitement énumérées dans `tests/modrm-matrix.cjs`. Les autres familles ModR/M nécessitent encore des références d'octets indépendantes, des cas valides/invalides par extension, et des contrôles d'assembleur, de désassembleur et d'exécution adaptés à leur sémantique.
+
+**Décision actualisée :** la suite ModR/M ciblée et les balayages structurels passent. La Phase 2 « matrice générale des 93 entrées » reste **incomplète** tant que le registre exhaustif des formes n'est pas réconcilié instruction par instruction et relié à des tests sémantiques indépendants.
