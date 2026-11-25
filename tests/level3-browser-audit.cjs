@@ -112,6 +112,46 @@ const assert = require("node:assert/strict");
     if(finalCount!==60) failures.push("Questions finales : "+finalCount+"/60");
     return {failures,examples:programs.length,jccConditions:conditions.length,jccTruthCases:conditions.length*2,intermediateCount,finalCount};
   });
+
+  // Interactive course demonstrations: AX split, FLAGS, segment:offset,
+  // effective address, LIFO stack, and ModR/M field decoding.
+  await page.locator('[data-lesson="4"]').click();
+  await page.locator("#axDemoValue").fill("ABCD");
+  await page.locator("#axShowHigh").click();
+  assert.match(await page.locator("#axDemoResult").textContent(), /AH=ABh/);
+  await page.locator("#axWriteLow").click();
+  assert.equal(await page.locator("#axDemoValue").inputValue(), "AB56");
+  assert.match(await page.locator("#axDemoResult").textContent(), /AL=56h/);
+
+  await page.locator('[data-lesson="11"]').click();
+  await page.locator("#calcCmpFlags").click();
+  assert.match(await page.locator("#cmpDemoResult").textContent(), /CF=1 ZF=0 SF=1 OF=0/);
+
+  await page.locator('[data-lesson="17"]').click();
+  await page.locator("#calcSegmentAddress").click();
+  assert.match(await page.locator("#segmentDemoResult").textContent(), /10020h/);
+  await page.locator("#segDemoValue").fill("1001");
+  await page.locator("#offDemoValue").fill("0000");
+  await page.locator("#calcSegmentAddress").click();
+  assert.match(await page.locator("#segmentDemoResult").textContent(), /10010h/);
+
+  await page.locator('[data-lesson="19"]').click();
+  await page.locator("#calcEffectiveAddress").click();
+  assert.match(await page.locator("#eaDemoResult").textContent(), /EA=0106h/);
+
+  await page.locator('[data-lesson="20"]').click();
+  await page.locator("#stackPush1111").click();
+  await page.locator("#stackPush2222").click();
+  assert.match(await page.locator("#stackDemoResult").textContent(), /Sommet=2222h/);
+  await page.locator("#stackPop").click();
+  assert.match(await page.locator("#stackDemoResult").textContent(), /Sommet=1111h/);
+  await page.locator("#stackReset").click();
+  assert.match(await page.locator("#stackDemoResult").textContent(), /pile vide/);
+
+  await page.locator('[data-lesson="31"]').click();
+  await page.locator("#decodeModRM").click();
+  assert.match(await page.locator("#modrmDemoResult").textContent(), /MOD=1 · REG=AX · R\/M=\[BX\+SI\]/);
+
   assert.deepEqual(report.failures, [], report.failures.join("\n"));
   assert.deepEqual(errors, [], "Erreurs JavaScript dans la page : "+errors.join("; "));
   console.log(JSON.stringify({integratedSelfTests:summary,...report},null,2));
