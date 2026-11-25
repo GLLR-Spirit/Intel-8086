@@ -67,7 +67,7 @@ test("CALL r/m16 register forms encode FF /2 for all eight word registers",()=>{
  regs.forEach((r,i)=>{const a=api.assemble("CALL "+r);assert.deepEqual(Array.from(a.bytes),[0xFF,0xD0+i]);const d=api.disassemble(Array.from(a.bytes));assert.equal(d.rows[0].instruction,"CALL "+r);});
 });
 test("CALL FAR register operand is rejected by the assembler",()=>{
- assert.throws(()=>api.assemble("CALL FAR PTR AX"),/Encodage binaire non pris en charge/);
+ assert.throws(()=>api.assemble("CALL FAR PTR AX"),/Étiquette inconnue/);
 });
 for(const form of forms){
  test("Assembler/disassembler FF /2 near "+form.name,()=>{
