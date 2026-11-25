@@ -36,7 +36,7 @@ Sources :
 | 14 | r/m16, imm16 | C7 /0 | Implémenté | Implémenté | Oui |
 
 **Restrictions à conserver dans les tests négatifs :**
-- Sur 8086/8088, `MOV CS,r/m16` via `8E /1` est accepté ; les sélecteurs 4..7 aliasent ES/CS/SS/DS. Ne pas appliquer les restrictions des générations ultérieures.
+- `MOV CS,r/m16` via `8E /1` n'est pas une forme autorisée par la référence Intel ASM86 ; `MOV r/m16,CS` via `8C /1` reste une lecture valide de CS. Les sélecteurs `/4` à `/7` sont non utilisés, pas des alias à compter comme formes canoniques.
 - `C6` et `C7` exigent l'extension ModR/M `/0`.
 - Les transferts immédiats vers un registre de segment ne sont pas une forme 8086 valide.
 - Les formes moffs utilisent une adresse directe 16 bits ; elles ne sont pas équivalentes à une forme ModR/M avec registre de base. L’assembleur les sélectionne pour les formes directes non qualifiées avec AL/AX ; une qualification BYTE/WORD PTR explicite conserve la voie ModR/M.
@@ -103,7 +103,7 @@ La présence de branches (59/59) n’est **pas** un taux de validation exhaustiv
 ## 6. Travail restant sur cette tranche
 
 1. Décliner les vecteurs sur les combinaisons ModR/M registre-direct, base/index, disp8, disp16 et adresse directe.
-2. Ajouter des tests négatifs systématiques pour les extensions ModR/M invalides et les tailles incompatibles ; traiter `MOV CS` et les sélecteurs 4..7 selon les comportements du 8086 d'origine.
+2. Ajouter des tests négatifs systématiques pour les extensions ModR/M invalides et les tailles incompatibles ; vérifier le rejet de `MOV CS` comme destination et conserver les sélecteurs 4..7 comme non utilisés.
 3. Compléter les cas limites simulateur pour AF, CF, OF, PF, SF et ZF en 8 et 16 bits, sans attribuer de valeur aux indicateurs indéfinis.
 4. Confirmer les restrictions et timings forme par forme dans les tableaux primaires Intel avant de clôturer les fiches.
 
