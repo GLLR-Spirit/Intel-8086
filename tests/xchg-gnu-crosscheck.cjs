@@ -97,15 +97,19 @@ try {
     "Project XCHG encoder must match GNU as byte-for-byte across register, memory, displacement, segment and LOCK vectors");
 
   // Pin representative architectural bytes independently of both assembler outputs.
-  const fixed = [
+  assert.deepEqual(gnuBytes.slice(0, 6), [
+    0x86, 0xC0, // XCHG AL,AL
     0x86, 0xC1, // XCHG AL,CL
-    0x91,       // XCHG AX,CX
-    0x87, 0xD3, // XCHG BX,DX
-    0x86, 0x07, // XCHG AL,[BX]
-    0x87, 0x07  // XCHG AX,[BX]
-  ];
-  assert.deepEqual(gnuBytes.slice(0, fixed.length), fixed,
-    "Known 8086 XCHG encodings must match fixed opcode/ModR/M vectors");
+    0x86, 0xC2  // XCHG AL,DL
+  ], "Known byte-register ModR/M encodings");
+  const wordStart = 64 * 2;
+  assert.deepEqual(gnuBytes.slice(wordStart, wordStart + 8),
+    [0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97],
+    "Compact AX-register encodings 90h–97h");
+  const memoryStart = wordStart + 113;
+  assert.deepEqual(gnuBytes.slice(memoryStart, memoryStart + 6),
+    [0x86, 0x00, 0x86, 0x00, 0x87, 0x00],
+    "Known byte/word memory XCHG encodings through [BX+SI]");
 
   const version = execFileSync("as", ["--version"], { encoding: "utf8" }).split("\n")[0];
   console.log("Independent XCHG encoding cross-check: PASS");
