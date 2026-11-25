@@ -116,15 +116,42 @@ for (let mod = 0; mod < 4; mod++) {
 }
 
 // 2. DISASSEMBLER — fixed byte streams enumerate all 256 ModR/M values per family.
-const decoderFamilies = [
-  { opcode: 0x8B, mnemonic: "MOV", tail: 0, name: "MOV r16,r/m16" },
-  { opcode: 0x89, mnemonic: "MOV", tail: 0, name: "MOV r/m16,r16" },
-  { opcode: 0x03, mnemonic: "ADD", tail: 0, name: "ADD r16,r/m16" },
-  { opcode: 0x01, mnemonic: "ADD", tail: 0, name: "ADD r/m16,r16" },
+const decoderFamilies = [];
+const aluBases = [
+  { opcode: 0x00, mnemonic: "ADD" },
+  { opcode: 0x08, mnemonic: "OR" },
+  { opcode: 0x10, mnemonic: "ADC" },
+  { opcode: 0x18, mnemonic: "SBB" },
+  { opcode: 0x20, mnemonic: "AND" },
+  { opcode: 0x28, mnemonic: "SUB" },
+  { opcode: 0x30, mnemonic: "XOR" },
+  { opcode: 0x38, mnemonic: "CMP" }
+];
+// Every 8086 ALU register/memory direction and width: r/m8,r8 ; r/m16,r16 ;
+// r8,r/m8 ; r16,r/m16. All 256 ModR/M bytes are structurally valid per family.
+for (const family of aluBases) {
+  for (let form = 0; form < 4; form++) {
+    decoderFamilies.push({
+      opcode: family.opcode + form,
+      mnemonic: family.mnemonic,
+      tail: 0,
+      name: family.mnemonic + " ALU form " + form
+    });
+  }
+}
+for (const [opcode, name] of [
+  [0x88, "MOV r/m8,r8"], [0x89, "MOV r/m16,r16"],
+  [0x8A, "MOV r8,r/m8"], [0x8B, "MOV r16,r/m16"],
+  [0x86, "XCHG r/m8,r8"], [0x87, "XCHG r/m16,r16"],
+  [0x84, "TEST r/m8,r8"], [0x85, "TEST r/m16,r16"]
+]) {
+  decoderFamilies.push({ opcode, mnemonic: name.split(" ")[0], tail: 0, name });
+}
+decoderFamilies.push(
   { opcode: 0x80, mnemonic: null, tail: 1, name: "Group 1 byte immediate" },
   { opcode: 0x81, mnemonic: null, tail: 2, name: "Group 1 word immediate" },
   { opcode: 0x83, mnemonic: null, tail: 1, name: "Group 1 sign-extended immediate" }
-];
+);
 let decoderCases = 0;
 for (const family of decoderFamilies) {
   for (let mod = 0; mod < 4; mod++) {
