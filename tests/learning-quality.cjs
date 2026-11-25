@@ -24,6 +24,10 @@ assert.notEqual(instrumented, match[1], "Application closure must be instrumente
 vm.runInNewContext(instrumented, context, { timeout: 5000 });
 const learning = context.__learningData;
 assert.ok(learning, "Learning data must be exposed to the isolated test harness");
+assert.match(match[1], /function annotateAssembly\(/, "Course examples must receive instruction-level annotations");
+assert.match(match[1], /function courseVisual\(/, "The course must include chapter-specific visualizations");
+assert.match(match[1], /courseVisual\(i\)/, "Chapter visualizations must be rendered in the lesson view");
+assert.match(match[1], /id='toggleAX'/, "The register chapter must expose an interactive AX/AH/AL explanation");
 
 assert.equal(learning.lessons.length, 36, "All 36 learning chapters must exist");
 assert.equal(learning.curriculum.length, 36, "The canonical curriculum must contain 36 chapters");
