@@ -254,9 +254,16 @@ for (const ext of [2, 3, 4, 5, 6]) {
 for (const opcode of [0x8C, 0x8E]) {
   for (let ext = 0; ext < 8; ext++) {
     test("MOV segment extension · " + opcode.toString(16) + " /" + ext, () => {
+      if (opcode === 0x8E && ext === 1) {
+        const rows = api.disassemble([opcode, modrm(3, ext, 0)], 1).rows;
+        assert.equal(rows.length, 1);
+        assert.ok(rows[0].instruction.startsWith("DB "), rows[0].instruction);
+        assert.deepEqual(Array.from(rows[0].bytes), [opcode]);
+        return;
+      }
       const instruction = decodeInstruction(opcode, ext);
-      // Intel 8086 Table 4-13 encodes the selector as 0SR: /0..3 valid,
-      // /4..7 marked "not used". /1 (MOV CS, r/m16) is valid on 8086.
+      // Intel 8086 Table 4-13: /0..3 select ES/CS/SS/DS, /4..7 are not used.
+      // Intel ASM86 disallows CS as the destination of MOV (8E /1).
       const reservedSelector = ext >= 4;
       assert.equal(instruction.startsWith("DB "), reservedSelector, instruction);
       if (!reservedSelector) {
