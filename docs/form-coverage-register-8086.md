@@ -587,3 +587,17 @@ La suite `tests/wait-esc-8086.cjs` ajoute un contrôle indépendant des deux fam
 **Résultat CI :** [workflow principal réussi](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45707818689), commit `46c4e2e389c23a18d02f71c04593ddb1172e2875`. La suite WAIT/ESC termine avec **6 710 assertions réussies**.
 
 **Limite architecturale explicite :** le laboratoire traite WAIT et ESC comme des no-op pédagogiques. Il ne simule ni le signal TEST, ni un 8087, ni le transfert de commandes/données vers un coprocesseur. Ces vecteurs valident donc le codage, le décodage, les contraintes de syntaxe et la préservation de l'état dans le modèle logiciel ; ils ne certifient pas l'exécution d'un coprocesseur matériel.
+
+### 16.7 ADD, ADC, SBB, SUB et CMP — matrice indépendante des formes
+
+La suite `tests/alu-forms-8086.cjs` complète les cinq familles arithmétiques et de comparaison avec des attentes calculées depuis les champs de l'encodage Intel, indépendamment de la sortie du décodeur :
+
+- **5 120 cas assembleur directionnels** : cinq mnémoniques × quatre opcodes direction/largeur × quatre valeurs de MOD × huit champs REG × huit champs R/M. Les modes mémoire incluent adresse directe, base/index, disp8 et disp16 ; les formes registre-direct couvrent les huit registres octet et mot.
+- **480 cas assembleur immédiats** : cinq mnémoniques × trois groupes 80h/81h/83h × quatre MOD × huit R/M. Les extensions sont explicitement fixées : ADD /0, ADC /2, SBB /3, SUB /5 et CMP /7.
+- **10 formes accumulateur** : AL/imm8 et AX/imm16 pour chaque opération, avec les opcodes dédiés.
+- **8 contraintes négatives** : tailles incompatibles, mémoire-mémoire, arité incorrecte et destination segment non valide.
+- **5 vecteurs sémantiques source + binaire** : débordement ADD/ADC, emprunt SBB/SUB et comparaison CMP sans écriture de l'opérande.
+
+**Règles de canonicalisation confirmées par les octets attendus :** pour les opérandes registre-registre, l'assembleur normalise la direction vers les formes r/m,reg (opcodes de base), même lorsque la syntaxe source présente le registre destination en premier. De même, les opérandes AL/AX avec immédiat utilisent les opcodes accumulateur dédiés plutôt que le groupe 80/81/83. Les attentes de test tiennent compte de ces choix canoniques sans réduire les formes que le décodeur doit reconnaître.
+
+**Résultat CI principal :** [workflow réussi](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45709806928), commit `760efc03d6cb139bd4e2d0b854c58d5094108928`. La nouvelle suite est exécutée après la matrice ModR/M existante ; les 11 568 assertions de cette dernière passent également. Les tests de formes ne certifient pas encore toutes les valeurs de données et tous les états de FLAGS ; les interactions de préfixes seront contrôlées séparément par classe d'instruction.
