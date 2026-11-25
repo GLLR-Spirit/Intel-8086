@@ -151,7 +151,7 @@ Cette tranche s'appuie sur les tests ciblés dédiés aux appels, retours, branc
 | JMP near | relatif rel16 | E9 cw | Implémenté | Implémenté | Testé | Déplacement rel16 |
 | JMP near indirect | r/m16 | FF /4 | Implémenté | Implémenté | Test ciblé | Registre et mémoire |
 | JMP far direct | ptr16:16 | EA cd | Implémenté | Implémenté | Testé source et binaire | `jmp-far-8086`, GNU as ; CS:IP, SP et FLAGS |
-| JMP far indirect | m16:16 | FF /5 | Présence à réconcilier | Présence à réconcilier | Test ciblé à compléter | À inscrire dans la matrice exhaustive |
+| JMP far indirect | m16:16 | FF /5 | Implémenté | Implémenté | Testé source et binaire, huit modes | `jmp-far-indirect-8086` ; CS:IP, SP et neuf FLAGS |
 | RET near | sans immédiat / imm16 | C3 / C2 iw | Implémenté | Implémenté | Testé | Pile, SP et nettoyage impair |
 | RETF | sans immédiat / imm16 | CB / CA iw | Implémenté | Implémenté | Testé | CS:IP, SP et nettoyage impair |
 | Jcc | rel8, 16 conditions | 70–7F cb | Implémenté | Implémenté | Testé | Conditions et limites |
@@ -294,3 +294,18 @@ La forme `JMP FAR ptr16:16` est maintenant implémentée dans le parseur, l'asse
 - comparaison octet par octet avec GNU as via `ljmp`.
 
 Preuve dédiée : `tests/jmp-far-8086.cjs` et extension de `tests/call-ret-gnu-crosscheck.cjs`. La validation finale dépend du run CI qui inclut cette extension GNU as.
+
+
+### 14.2 JMP far indirect — huit modes validés
+
+La forme `JMP FAR PTR m16:16` est testée avec les huit formes d'adressage mémoire du 8086 : `[BX+SI]`, `[BX+DI]`, `[BP+SI]`, `[BP+DI]`, `[SI]`, `[DI]`, `[BP]` et `[BX]`.
+
+Pour chaque forme, le test vérifie :
+- l'extension FF /5 et le décodage en pointeur far mémoire ;
+- l'exécution source et binaire ;
+- le chargement de l'offset puis du segment ;
+- le segment cible et l'offset après l'instruction cible ;
+- l'absence d'empilement d'une adresse de retour ;
+- la préservation des neuf FLAGS modélisés.
+
+Preuve : `tests/jmp-far-indirect-8086.cjs`. Le run CI 45688178373 a réussi les tests directs et indirects, la suite différentielle et la comparaison GNU as du transfert far direct.
