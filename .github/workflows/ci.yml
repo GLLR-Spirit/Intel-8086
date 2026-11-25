@@ -76,6 +76,8 @@ jobs:
         run: node tests/group-opcodes.cjs
       - name: Run POP, control transfer and stack tests
         run: node tests/control-stack.cjs
+      - name: Run CALL/RET stack boundary and odd cleanup tests
+        run: node tests/call-ret-stack-boundaries.cjs
       - name: Run relative branch and displacement tests
         run: node tests/relative-branches.cjs
       - name: Run byte-offset execution tests
