@@ -465,3 +465,159 @@ Les compteurs par dimension se recouvrent : les contrôles FLAGS sont inclus dan
 Résultat : [workflow CI 45597601029](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45597601029), commit `4f78a8417aa1b10002a8a702f77cf933bd38f614` — **471 réussis, 0 échec** pour la suite XCHG ; workflow global **success**.
 
 Le statut des tests passe à **Partiel** : les formes et chemins explicitement énumérés sont testés indépendamment, mais les séquences d'opcodes ne sont pas comparées à un processeur physique ni à un émulateur matériel indépendant. Le verrouillage implicite du bus reste hors du modèle logiciel.
+
+
+---
+
+# Actualisation de la matrice — 25 novembre 2026
+
+**Branche audit :** `audit/niveau-3-chapitres-12-17`  
+**Commit du moteur testé :** `a25dc8c2cfe832dfa525fd2c1b32714c5d40ab91`  
+**CI :** [run 45676144779](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45676144779) — succès  
+**Navigateur :** [run 45676144619](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45676144619) — succès
+
+Cette section remplace les statuts de l'ancienne matrice au niveau des 93 mnémoniques. Les tableaux antérieurs restent un instantané historique. L'ancienne synthèse contenait déjà un écart arithmétique : ses lignes donnaient 66/6/21 pour le simulateur, et non 62/6/25.
+
+## Convention de cette actualisation
+
+- **Oui** : une voie de traitement est présente dans le composant.
+- **Partiel** : une voie existe, mais le modèle ou la couverture de formes reste incomplet.
+- **À faire** : aucune validation indépendante ciblée suffisante n'est établie.
+- Une implémentation présente n'est pas une validation exhaustive. Les 17 152 balayages structurels vérifient la robustesse de décodage et la consommation des octets, pas la sémantique de chaque opcode.
+
+## Matrice des 93 entrées
+
+| Instruction | Simulateur | Assembleur | Désassembleur | Tests indépendants |
+|---|---|---|---|---|
+| MOV | Oui | Partiel | Partiel | Partiel |
+| XCHG | Oui | Oui | Oui | Partiel |
+| LEA | Oui | Oui | Oui | Partiel |
+| LES | Oui | Oui | Oui | Partiel |
+| LDS | Oui | Oui | Oui | Partiel |
+| XLAT | Oui | Oui | Oui | Partiel |
+| PUSH | Oui | Oui | Oui | Partiel |
+| POP | Oui | Partiel | Partiel | Partiel |
+| PUSHF | Oui | Oui | Oui | Partiel |
+| POPF | Oui | Oui | Oui | Partiel |
+| LAHF | Oui | Oui | Oui | Partiel |
+| SAHF | Oui | Oui | Oui | Partiel |
+| MOVSB | Oui | Oui | Oui | Partiel |
+| MOVSW | Oui | Oui | Oui | Partiel |
+| CMPSB | Oui | Oui | Oui | Partiel |
+| CMPSW | Oui | Oui | Oui | Partiel |
+| SCASB | Oui | Oui | Oui | Partiel |
+| SCASW | Oui | Oui | Oui | Partiel |
+| LODSB | Oui | Oui | Oui | Partiel |
+| LODSW | Oui | Oui | Oui | Partiel |
+| STOSB | Oui | Oui | Oui | Partiel |
+| STOSW | Oui | Oui | Oui | Partiel |
+| ADD | Oui | Partiel | Partiel | Partiel |
+| ADC | Oui | Partiel | Partiel | Partiel |
+| SUB | Oui | Partiel | Partiel | Partiel |
+| SBB | Oui | Partiel | Partiel | Partiel |
+| INC | Oui | Oui | Oui | Partiel |
+| DEC | Oui | Oui | Oui | Partiel |
+| NEG | Oui | Oui | Oui | Partiel |
+| CMP | Oui | Partiel | Partiel | Partiel |
+| MUL | Oui | Oui | Oui | Partiel |
+| IMUL | Oui | Oui | Oui | Partiel |
+| DIV | Oui | Oui | Oui | Partiel |
+| IDIV | Oui | Oui | Oui | Partiel |
+| AAA | Oui | Oui | Oui | Partiel |
+| AAS | Oui | Oui | Oui | Partiel |
+| AAM | Oui | Oui | Oui | Partiel |
+| AAD | Oui | Oui | Oui | Partiel |
+| DAA | Oui | Oui | Oui | Partiel |
+| DAS | Oui | Oui | Oui | Partiel |
+| CBW | Oui | Oui | Oui | Partiel |
+| CWD | Oui | Oui | Oui | Partiel |
+| AND | Oui | Partiel | Partiel | Partiel |
+| OR | Oui | Partiel | Partiel | Partiel |
+| XOR | Oui | Partiel | Partiel | Partiel |
+| NOT | Oui | Oui | Oui | Partiel |
+| TEST | Oui | Partiel | Partiel | Partiel |
+| ROL | Oui | Oui | Oui | Partiel |
+| ROR | Oui | Oui | Oui | Partiel |
+| RCL | Oui | Oui | Oui | Partiel |
+| RCR | Oui | Oui | Oui | Partiel |
+| SHL | Oui | Oui | Oui | Partiel |
+| SHR | Oui | Oui | Oui | Partiel |
+| SAR | Oui | Oui | Oui | Partiel |
+| JMP | Partiel | Partiel | Partiel | Partiel |
+| CALL | Partiel | Partiel | Partiel | Partiel |
+| RET | Partiel | Partiel | Partiel | Partiel |
+| INT | Partiel | Oui | Oui | Partiel |
+| INTO | Oui | Oui | Oui | À faire |
+| IRET | Partiel | Oui | Oui | Partiel |
+| JCXZ | Oui | Oui | Oui | Partiel |
+| LOOP | Oui | Oui | Oui | Partiel |
+| LOOPE | Oui | Oui | Oui | Partiel |
+| LOOPNE | Oui | Oui | Oui | Partiel |
+| JO | Oui | Oui | Oui | Partiel |
+| JNO | Oui | Oui | Oui | Partiel |
+| JB | Oui | Oui | Oui | Partiel |
+| JAE | Oui | Oui | Oui | Partiel |
+| JE | Oui | Oui | Oui | Partiel |
+| JNE | Oui | Oui | Oui | Partiel |
+| JBE | Oui | Oui | Oui | Partiel |
+| JA | Oui | Oui | Oui | Partiel |
+| JS | Oui | Oui | Oui | Partiel |
+| JNS | Oui | Oui | Oui | Partiel |
+| JP | Oui | Oui | Oui | Partiel |
+| JNP | Oui | Oui | Oui | Partiel |
+| JL | Oui | Oui | Oui | Partiel |
+| JGE | Oui | Oui | Oui | Partiel |
+| JLE | Oui | Oui | Oui | Partiel |
+| JG | Oui | Oui | Oui | Partiel |
+| CLC | Oui | Oui | Oui | Partiel |
+| STC | Oui | Oui | Oui | Partiel |
+| CMC | Oui | Oui | Oui | Partiel |
+| CLD | Oui | Oui | Oui | Partiel |
+| STD | Oui | Oui | Oui | Partiel |
+| CLI | Oui | Oui | Oui | Partiel |
+| STI | Oui | Oui | Oui | Partiel |
+| IN | Oui | Oui | Oui | À faire |
+| OUT | Oui | Oui | Oui | À faire |
+| NOP | Oui | Oui | Oui | À faire |
+| HLT | Partiel | Oui | Oui | À faire |
+| WAIT | Partiel | Oui | Oui | À faire |
+| ESC | Partiel | Oui | Oui | Partiel |
+
+## Décomptes et scores indicatifs
+
+| Domaine | Oui | Partiel | Non / à faire | Score* |
+|---|---:|---:|---:|---:|
+| Simulateur | 85 | 8 | 0 | 95.7 % |
+| Assembleur | 79 | 14 | 0 | 92.5 % |
+| Désassembleur | 79 | 14 | 0 | 92.5 % |
+| Tests indépendants | 0 | 87 | 6 | 46.8 % |
+
+**Moyenne provisoire des quatre domaines : 81.9 %.**
+
+\* Score = (Oui + 0,5 × Partiel) / 93. Chaque mnémonique canonique a le même poids dans cette première vue. Le score ne pondère pas encore le nombre et la complexité des formes architecturales. Il ne doit pas être présenté comme un taux de conformité au 8086 physique ni comme l'indicateur final demandé.
+
+## Éléments de preuve dans le CI
+
+Le workflow réussi a notamment exécuté :
+- 143 vecteurs indépendants d'instructions ;
+- 2 352 assertions de matrice ModR/M ;
+- 17 152 combinaisons de balayage structurel opcode/ModR/M ;
+- 3 412 contrôles différentiels FLAGS ;
+- 275 contrôles de contraintes d'opérandes ;
+- 1 358 contrôles de groupes F6/F7/FF/C6/C7 ;
+- 305 contrôles de pile et de transferts ;
+- les suites BCD, décalages/rotations, logique, NEG, LAHF/SAHF, XLAT, XCHG, LEA, LDS/LES, CALL indirect et branches ;
+- des oracles indépendants rapportant 393 216 cas arithmétiques 8 bits, 800 cas frontières 16 bits, 1 350 vecteurs ALU binaires, 20 736 cas de décalages/rotations 8 bits, 504 cas 16 bits, 3 072 ajustements AAA/AAS/DAA/DAS, 256 AAM, 65 536 AAD, 256 CBW, 65 536 CWD, 32 cas LAHF/SAHF et 64 codes ESC.
+
+Les nombres de plusieurs suites se recouvrent et ne doivent pas être additionnés comme s'il s'agissait d'entrées uniques.
+
+## Limites qui empêchent encore la clôture de la phase 2
+
+1. Le tableau ci-dessus compte des mnémotechniques, pas toutes les formes d'opérandes.
+2. Les instructions de chaîne nécessitent encore une matrice indépendante DS:SI / ES:DI, DF, CX, préfixes REP et effets FLAGS, en source et en binaire.
+3. IN/OUT sont simulés via un état de ports configurable, pas par un périphérique matériel.
+4. WAIT et ESC n'émulent ni le coprocesseur 8087 ni ses signaux ; leur prise en charge reste partielle côté modèle.
+5. CALL/JMP/RET ont des chemins testés, mais le moteur source utilise un IP logique et n'est pas un processeur matériel.
+6. Les extensions ModR/M, tailles, formes invalides, préfixes, limites de déplacement et flux tronqués doivent être consignés forme par forme avant le calcul pondéré définitif.
+
+**Conclusion :** cette matrice actualisée fournit un premier score traçable au niveau des 93 entrées. La phase 2 n'est pas clôturée : le registre forme-par-forme et le recalcul pondéré par formes restent obligatoires.
