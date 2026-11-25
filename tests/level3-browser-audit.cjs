@@ -174,7 +174,7 @@ const assert = require("node:assert/strict");
   await page.locator('[data-lesson="1"]').click();
   const animationName = await page.locator(".architecture-flow").evaluate(el => getComputedStyle(el, "::after").animationName);
   assert.equal(animationName, "busPacket", "The BIU/EU flow illustration must expose its schematic animation.");
-  console.log("Course visual interaction audit: 6/6 interactive demonstrations and BIU animation PASS.");
+  console.log("Course visual interaction audit: 7/7 interactive demonstrations, BIU animation and register trace PASS.");
 
   // Cours, Exercices et Atelier doivent rester des vues distinctes ; les filtres
   // de la page Exercices doivent mettre à jour la liste puis pouvoir être réinitialisés.
