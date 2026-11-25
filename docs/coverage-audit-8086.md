@@ -583,18 +583,18 @@ Cette section remplace les statuts de l'ancienne matrice au niveau des 93 mnémo
 | WAIT | Partiel | Oui | Oui | À faire |
 | ESC | Partiel | Oui | Oui | Partiel |
 
-## Décomptes et scores indicatifs
+## Décomptes descriptifs — sans pourcentage global
 
-| Domaine | Oui | Partiel | Non / à faire | Score* |
-|---|---:|---:|---:|---:|
-| Simulateur | 85 | 8 | 0 | 95.7 % |
-| Assembleur | 79 | 14 | 0 | 92.5 % |
-| Désassembleur | 79 | 14 | 0 | 92.5 % |
-| Tests indépendants | 0 | 87 | 6 | 46.8 % |
+| Domaine | Oui | Partiel | Non / à faire |
+|---|---:|---:|---:|
+| Simulateur | 85 | 8 | 0 |
+| Assembleur | 79 | 14 | 0 |
+| Désassembleur | 79 | 14 | 0 |
+| Tests indépendants | 0 | 87 | 6 |
 
-**Moyenne provisoire des quatre domaines : 81.9 %.**
+Ces nombres décrivent les statuts des 93 lignes canoniques de cette matrice de travail. **Ils ne constituent pas un taux de conformité ni un pourcentage global.** Les statuts ne distinguent pas encore toutes les formes d'opérandes, tailles, extensions ModR/M, préfixes et limites pour chaque instruction. Une ligne « Oui » indique une prise en charge déclarée au niveau du mnémonique, pas la validation de toutes ses formes.
 
-\* Score = (Oui + 0,5 × Partiel) / 93. Chaque mnémonique canonique a le même poids dans cette première vue. Le score ne pondère pas encore le nombre et la complexité des formes architecturales. Il ne doit pas être présenté comme un taux de conformité au 8086 physique ni comme l'indicateur final demandé.
+Aucun score global n'est publié à ce stade. Le calcul sera effectué seulement après réconciliation du registre forme-par-forme et des preuves indépendantes par domaine, avec pondération explicite et reproductible.
 
 ## Éléments de preuve dans le CI
 
