@@ -218,7 +218,7 @@ for (const bits of [8, 16]) {
 // division by zero and quotient overflow. FLAGS are undefined and ignored.
 function expectDivision(op, bits, dividend, divisor, expectedQuotient, expectedRemainder) {
   const signed = op === "IDIV";
-  const min = signed ? (bits === 8 ? -127 : -32767) : 0;
+  const min = signed ? -(2 ** (bits - 1)) : 0;
   const max = signed ? (bits === 8 ? 127 : 32767) : (bits === 8 ? 255 : 65535);
   const label = op + " " + bits + "-bit dividend=" + dividend + " divisor=" + divisor;
   test("Division " + label, () => {
@@ -250,16 +250,16 @@ for (const bits of [8, 16]) {
       if (divisor === 0) continue;
       const dividends = bits === 8
         ? (op === "DIV" ? [0,1,127,128,255,256,257,999,32767,65535] :
-           [0,1,127,128,255,256,65408,32767,32768,65535])
+           [0,1,127,128,255,256,65407,65408,32767,32768,65535])
         : (op === "DIV" ? [0,1,65535,65536,65537,0x7FFFFFFF,0x80000000,0xFFFFFFFF] :
-           [0,1,65535,65536,0x7FFFFFFF,0x80000000,0xFFFF8000,0xFFFFFFFF]);
+           [0,1,65535,65536,0x7FFFFFFF,0x80000000,0xFFFF7FFF,0xFFFF8000,0xFFFFFFFF]);
       for (const raw of dividends) {
         const dividend = bits === 8
           ? (op === "IDIV" ? signed16(raw) : raw)
           : (op === "IDIV" ? (raw | 0) : raw >>> 0);
         const quotient = Math.trunc(dividend / divisor);
         const remainder = dividend - quotient * divisor;
-        const min = op === "IDIV" ? (bits === 8 ? -127 : -32767) : 0;
+        const min = op === "IDIV" ? -(2 ** (bits - 1)) : 0;
         const max = op === "IDIV" ? (bits === 8 ? 127 : 32767) : (bits === 8 ? 255 : 65535);
         if (quotient >= min && quotient <= max) {
           expectDivision(op, bits, raw, divisorRaw, quotient, remainder);
