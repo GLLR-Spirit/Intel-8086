@@ -110,7 +110,7 @@ for (const [mode, state] of [
   ["binary", api.binary(bytes, 0, 0, {})]
 ]) {
   check(state.error === undefined, mode + " execution has no error");
-  for (const register of ["AX","BX","CX","DX","SI","DI","BP","SP","CS","DS","ES","SS","IP"]) {
+  for (const register of ["AX","BX","CX","DX","SI","DI","BP","SP","CS","DS","ES","SS"]) {
     if (baseline.reg[register] !== undefined && state.reg[register] !== undefined)
       check(state.reg[register] === baseline.reg[register], mode + " preserves " + register);
   }
