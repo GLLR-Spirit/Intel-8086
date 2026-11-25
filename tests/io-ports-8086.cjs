@@ -47,9 +47,9 @@ test("OUT DX,AX: adresse DX 16 bits et transfert mot",()=>{
  const {s,b}=both(src);for(const st of [s,b])assert.equal(st.io[0xF234],0xCDEF);
 });
 for(const [source,pattern] of [
- ["IN BX,10h",/AL ou AX/],["IN DX,10h",/AL ou AX/],["IN AL,1234h",/8 bits/],
- ["OUT 10h,BX",/AL ou AX/],["OUT DX,10h",/AL ou AX/],["OUT 100h,AL",/8 bits/]
+ ["IN BX,10h",/AL ou AX/],["IN DX,10h",/AL ou AX/],["IN AL,1234h",/00h et FFh/],
+ ["OUT 10h,BX",/AL ou AX/],["OUT DX,10h",/AL ou AX/],["OUT 100h,AL",/00h et FFh/]
 ])test("rejet opérande E/S invalide "+source,()=>assert.throws(()=>api.assemble(source),pattern));
-test("PORT refuse un numéro ou une valeur hors 16 bits",()=>assert.throws(()=>api.execute("PORT 10000h,1\nHLT"),/16 bits/));
+test("PORT refuse un numéro hors 16 bits",()=>{const state=api.execute("PORT 10000h,1\nHLT");assert.ok(state.error&&state.error.includes("16 bits"),state.error||"PORT accepted an invalid port number");});
 console.log("8086 IN/OUT audit: "+passed+"/"+(passed+failed)+" tests passed; I/O remains a software port map, not physical hardware.");
 if(failed)process.exit(1);
