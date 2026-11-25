@@ -34,6 +34,21 @@ assert.ok(learning.chapterLearning.every(c => c.lessons.every(l => l.title && l.
   "Every lesson must include detailed content, an example and exactly three comprehension questions");
 assert.ok(learning.chapterLearning.every(c => c.quiz.every(q => q[1].length === 3 && q[2] >= 0 && q[2] < 3 && q[3])),
   "Every final question must have three choices, a valid answer and an explanation");
+assert.ok(learning.chapterLearning.every(c => {
+  const categories = c.quiz.map(q => q[4]);
+  return ["Définition","Compréhension","Syntaxe","Restrictions","Prédiction","Calcul / prédiction","Analyse de programme","Analyse de résultat","Débogage","Raisonnement"].every(x => categories.includes(x));
+}), "Each final assessment must cover the ten required evaluation dimensions");
+assert.ok(learning.chapterLearning.every(c => new Set(c.quiz.map(q => q[2])).size > 1),
+  "Correct answer positions must vary across each final assessment");
+assert.ok(learning.chapterLearning.every(c => c.lessons.every(l => new Set(l.quiz.map(q => q[2])).size > 1)),
+  "Correct answer positions must vary across each lesson quiz");
+assert.deepEqual(
+  [learning.curriculum.slice(0,5),learning.curriculum.slice(5,11),learning.curriculum.slice(11,17),
+   learning.curriculum.slice(17,23),learning.curriculum.slice(23,30),learning.curriculum.slice(30,36)]
+   .map(group => group.every(c => c[1] === group[0][1])),
+  [true,true,true,true,true,true],
+  "All six levels must retain their exact requested chapter boundaries"
+);
 assert.equal(learning.chapterLearning.reduce((n, c) => n + c.lessons.reduce((m, l) => m + l.quiz.length, 0), 0), 324,
   "The 36 chapters must contain 324 intermediate questions (3 × 3 × 36)");
 assert.equal(learning.chapterLearning.reduce((n, c) => n + c.quiz.length, 0), 360,
