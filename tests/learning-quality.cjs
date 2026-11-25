@@ -366,7 +366,7 @@ const advancedExampleOracles = [
   [31,2,s=>s.reg.CX===0x5678,"three-byte MOV CX immediate is executed correctly"],
   [31,3,s=>s.reg.AX===0x1234,"register-to-register MOV transfers BX to AX"],
   [32,1,s=>s.reg.AX===0xabcd,"ModR/M example writes and reloads ABCDh through BX+SI+disp8"],
-  [32,2,s=>s.reg.AX===0x8888&&s.reg.DS===0x1000&&s.reg.SS===0x2000&&word(s,s.reg.DS,0x0102)===0x1111&&word(s,s.reg.DS,0x0104)===0x2222&&word(s,s.reg.SS,0x0108)===0x3333&&word(s,s.reg.SS,0x010a)===0x4444&&word(s,s.reg.DS,0x0002)===0x5555&&word(s,s.reg.DS,0x0004)===0x6666&&word(s,s.reg.SS,0x0006)===0x7777&&word(s,s.reg.DS,0x0100)===0x8888,"All eight 8086 memory addressing forms write and read the expected words with DS/SS defaults"],
+  [32,2,s=>s.reg.AX===0x8888&&s.reg.DS===0x1000&&s.reg.SS===0x2000&&word(s,s.reg.DS,0x0102)===0x1111&&word(s,s.reg.DS,0x0104)===0x2222&&word(s,s.reg.SS,0x0008)===0x3333&&word(s,s.reg.SS,0x000a)===0x4444&&word(s,s.reg.DS,0x0002)===0x5555&&word(s,s.reg.DS,0x0004)===0x6666&&word(s,s.reg.SS,0x0006)===0x7777&&word(s,s.reg.DS,0x0100)===0x8888,"All eight 8086 memory addressing forms write and read the expected words with DS/SS defaults"],
   [32,3,s=>s.reg.AX===0xbeef,"direct disp16 memory form reads BEEFh"],
   [33,1,s=>s.reg.IP>=0&&s.reg.SP===initialSP,"assembler resolves FIN and execution reaches HLT"],
   [33,2,s=>s.reg.AX===0x1234,"MOV AX,1234h executes; its bytes are checked by the independent disassembler below"],
