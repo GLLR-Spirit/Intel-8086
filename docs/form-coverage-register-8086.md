@@ -482,6 +482,27 @@ Aucun score par mnémonique ni score global n'est publié. La pondération ne se
 - `tests/io-ports-8086.cjs` : les huit formes IN/OUT (port imm8 ou DX, AL ou AX) sont vérifiées en encodage, désassemblage et exécution source/binaire. Le test couvre la valeur des ports, les neuf FLAGS préservés et les formes invalides.
 
 Ces suites valident le modèle logiciel du laboratoire ; elles ne prétendent pas simuler le bus électrique, les périphériques ni le minutage matériel.
+
+### 16.3 MOV vers/depuis les registres de segment — extension du contrôle 8C/8E
+
+La règle de destination CS est désormais explicitement réconciliée entre la fiche d'encodage et les tests :
+
+- `8C /0..3` : transfert du registre de segment vers r/m16 ; CS est autorisé comme source (`MOV r/m16,CS`).
+- `8E /0, /2, /3` : transfert de r/m16 vers ES, SS ou DS.
+- `8E /1` : destination CS ; opération indéfinie dans la description Intel MCS-86, donc non admise par l'assembleur et non désassemblée comme instruction valide.
+- `/4..7` : sélecteurs réservés/non utilisés pour les deux opcodes.
+
+**Références primaires :** Intel, *MCS-86 Macro Assembly Language Reference Manual*, septembre 1979, entrée MOV, Type 3 : le manuel indique explicitement que le cas `reg = 01` correspond à une opération indéfinie. Intel, *8086 Family User's Manual*, octobre 1979, table 4-12, décrit les formes de transfert entre registre de segment et opérande r/m. La règle est également contrôlée par `tests/legacy-segment-encodings.cjs`.
+
+**Extension ajoutée à la suite de régression :**
+- balayage des sélecteurs /4..7 sur les 4 valeurs `mod` et les 8 valeurs `r/m`, pour 8C et 8E ;
+- balayage de `8E /1` sur les 4 valeurs `mod` et les 8 valeurs `r/m`, avec déplacements adaptés ;
+- contrôle de la consommation intégrale du flux sans requalifier `8E /1` en `MOV CS` ;
+- rejet de `MOV CS` depuis un registre et depuis une mémoire ;
+- conservation de `MOV WORD PTR [BX],CS` comme forme valide.
+
+Cette extension est une validation exhaustive des combinaisons de champs pour ce sous-ensemble précis de MOV segment ; elle ne doit pas être extrapolée aux autres opcodes ModR/M.
+
 ### 16.2 INTO et comportement PUSH SP
 
 - `tests/into-8086.cjs` vérifie l'opcode CE, le cas OF=0 sans interruption, le cas OF=1 via le vecteur 4, l'IVT physique en exécution binaire et la restauration de CS:IP, FLAGS et SP par IRET.
