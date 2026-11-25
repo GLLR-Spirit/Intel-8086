@@ -39,7 +39,7 @@ for(const code of [[0x68,0x34,0x12],[0x6A,0x01]])assert.ok(api.disassemble(code,
 function executeBoth(source,initial){const b=bytes(source),a=api.execute(source),d=api.binary(b,0,0,initial||{});assert.equal(a.error,undefined,"source "+a.error);assert.equal(d.error,undefined,"binary "+d.error);return [["source",a],["binary",d]];}
 for(const [mode,state] of executeBoth("MOV SP, 2000h\nPUSH SP\nHLT")){
  assert.equal(state.reg.SP,0x1FFE,mode+" PUSH SP decrements SP");
- const physical=0x1FFE;assert.equal(state.mem[physical],0x00,mode+" PUSH SP low byte");assert.equal(state.mem[physical+1],0x20,mode+" PUSH SP high byte");
+ const physical=0x1FFE;assert.equal(state.mem[physical],0xFE,mode+" PUSH SP stores decremented SP low byte");assert.equal(state.mem[physical+1],0x1F,mode+" PUSH SP stores decremented SP high byte");
 }
 for(const [mode,state] of executeBoth("MOV WORD PTR [2000h], 1234h\nMOV SP, 2000h\nPOP SP\nHLT")){
  assert.equal(state.reg.SP,0x1234,mode+" POP SP loads popped value after increment");
