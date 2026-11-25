@@ -147,7 +147,8 @@ for (const [source, expected] of unaryVectors) {
 
 // All FF extensions: /0 INC, /1 DEC, /2 near CALL, /3 far CALL
 // (memory only), /4 near JMP, /5 far JMP (memory only), /6 PUSH,
-// /6 PUSH memory-only, /7 reserved. Check all 256 ModR/M values.
+// /0 INC, /1 DEC and /6 PUSH are memory-only in FF; register forms use compact opcodes.
+// /3 and /5 far transfers are memory-only; /7 is reserved. Check all 256 ModR/M values.
 const ffNames = ["INC", "DEC", "CALL", "CALL FAR", "JMP", "JMP FAR", "PUSH", null];
 for (let ext = 0; ext < 8; ext++) {
   for (let mod = 0; mod < 4; mod++) {
@@ -159,7 +160,7 @@ for (let ext = 0; ext < 8; ext++) {
         assert.equal(result.rows.length, 1);
         assert.deepEqual(Array.from(result.rows[0].bytes), code);
         const instruction = result.rows[0].instruction;
-        if (ext === 7 || (mod === 3 && [3, 5].includes(ext))) {
+        if (ext === 7 || (mod === 3 && [0, 1, 3, 5, 6].includes(ext))) {
           assert.ok(instruction.startsWith("DB "), instruction);
         } else {
           assert.ok(instruction.startsWith(ffNames[ext] + " "), instruction);
