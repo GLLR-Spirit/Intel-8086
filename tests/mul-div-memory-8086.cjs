@@ -345,7 +345,7 @@ test("Pas à pas interactif · DIV BYTE PTR mémoire déclenche INT 00h", () => 
 let extensionCases = 0;
 for (const opcode of [0xF6, 0xF7]) {
   for (let ext = 0; ext < 8; ext++) {
-    const bytes = [opcode, modrm(0, ext, 7)];
+    const bytes = [opcode, modrm(0, ext, 7), ...(ext === 0 ? (opcode === 0xF6 ? [0x00] : [0x00, 0x00]) : [])];
     test("F6/F7 memory extension /" + ext + " opcode " + opcode.toString(16), () => {
       const decoded = api.disassemble(bytes);
       assert.equal(decoded.rows.length, 1);
