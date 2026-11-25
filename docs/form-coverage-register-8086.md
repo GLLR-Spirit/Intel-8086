@@ -584,6 +584,6 @@ La suite `tests/wait-esc-8086.cjs` ajoute un contrôle indépendant des deux fam
 - Rejet des codes ESC hors plage, des opérandes immédiats, des arités invalides et des flux ESC tronqués.
 - Comparaison de l'état des registres, segments, neuf FLAGS modélisés et d'une sentinelle mémoire avant/après WAIT et ESC, en exécution source et binaire.
 
-**Résultat CI :** [workflow principal réussi](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45707818689), commit `46c4e2e389c23a18d02f71c04593ddb1172e2875`. La suite WAIT/ESC termine avec **6 7 1 0 assertions réussies** (6 710).
+**Résultat CI :** [workflow principal réussi](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45707818689), commit `46c4e2e389c23a18d02f71c04593ddb1172e2875`. La suite WAIT/ESC termine avec **6 710 assertions réussies**.
 
 **Limite architecturale explicite :** le laboratoire traite WAIT et ESC comme des no-op pédagogiques. Il ne simule ni le signal TEST, ni un 8087, ni le transfert de commandes/données vers un coprocesseur. Ces vecteurs valident donc le codage, le décodage, les contraintes de syntaxe et la préservation de l'état dans le modèle logiciel ; ils ne certifient pas l'exécution d'un coprocesseur matériel.
