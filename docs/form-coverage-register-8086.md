@@ -456,14 +456,14 @@ Cet index relie chaque entrée de la matrice générale à son registre de forme
 | MOV | 14 formes recensées ; ModR/M, moffs, immédiats, segments, mémoire et déplacements | Ciblé ; pas encore toutes les combinaisons opérandes × préfixes |
 | ADD/ADC/SUB/SBB/CMP | 9 formes par instruction, extensions 80/81/83 | Vecteurs indépendants ciblés ; couverture exhaustive des directions octet/mot à terminer |
 | INC/DEC | FE /0,/1 r/m8 ; FF /0,/1 MEM16 ; registres via opcodes compacts | Restrictions FF registre-direct corrigées et testées |
-| PUSH/POP | registres compacts, segments valides, FF /6 MEM16, 8F /0 r/m16 | Tests source/binaire et contraintes ; FF /6 mémoire uniquement |
+| PUSH/POP | registres compacts, segments valides, FF /6 MEM16, 8F /0 r/m16, PUSH SP 8086 | Tests source/binaire et contraintes ; FF /6 mémoire uniquement ; PUSH SP empile le SP décrémenté |
 | CALL | E8, 9A, FF /2 r/m16, FF /3 MEM16 | Indirect near/far, huit modes mémoire, segment overrides, CS:IP, pile et neuf FLAGS testés |
 | JMP | EB, E9, EA, FF /4 r/m16, FF /5 MEM16 | Near/far indirect, huit modes mémoire, source/binaire et neuf FLAGS testés |
 | RET | C2/C3/CA/CB, nettoyage immédiat pair/impair | Pile, SP, limites et GNU as ciblés ; pas de modèle processeur physique |
 | Jcc et boucles | 16 Jcc courts, LOOP/LOOPE/LOOPNE/JCXZ | Vecteurs de conditions et déplacements ; pas de relâchement vers rel16 pour Jcc sur 8086 |
 | Arithmétique et logique | ALU, groupes F6/F7, NEG, MUL/IMUL/DIV/IDIV, BCD, rotations/décalages | Plusieurs oracles indépendants exhaustifs sur domaines numériques bornés ; chaque forme mémoire et préfixe reste à rapprocher |
 | Chaînes | Les dix opcodes MOVS/CMPS/SCAS/LODS/STOS byte/word ; source/binaire, DS:SI, ES:DI, DF, REP/REPE/REPNE, segment override, FLAGS et wrap 16 bits | Suite dédiée validée ; interactions de préfixes redondants/interruption et cas matériels encore hors modèle |
-| Interruptions | INT/INT3/INTO/IRET, cadre FLAGS/CS/IP | Chemins logiciels et erreurs de division ciblés ; pas d'interruptions matérielles asynchrones |
+| Interruptions | INT/INT3/INTO/IRET, cadre FLAGS/CS/IP | INTO testé source/binaire avec OF=0/1, vecteur 4, IRET et restauration FLAGS/SP ; pas d'interruptions matérielles asynchrones |
 | E/S | Les huit formes IN/OUT immédiat8 ou DX, AL/AX ; octets exacts, source/binaire, FLAGS et opérandes invalides | Suite dédiée validée ; état de ports logiciel, aucun périphérique électrique |
 | WAIT/ESC | WAIT, D8–DF | Décodage et formes ciblés ; aucun signal TEST ni coprocesseur 8087 simulé |
 | FLAGS | CLC/STC/CMC, CLD/STD, CLI/STI, LAHF/SAHF, PUSHF/POPF | Différentiels et oracles ciblés ; les bits indéfinis/non modélisés sont hors garantie |
@@ -482,3 +482,7 @@ Aucun score par mnémonique ni score global n'est publié. La pondération ne se
 - `tests/io-ports-8086.cjs` : les huit formes IN/OUT (port imm8 ou DX, AL ou AX) sont vérifiées en encodage, désassemblage et exécution source/binaire. Le test couvre la valeur des ports, les neuf FLAGS préservés et les formes invalides.
 
 Ces suites valident le modèle logiciel du laboratoire ; elles ne prétendent pas simuler le bus électrique, les périphériques ni le minutage matériel.
+### 16.2 INTO et comportement PUSH SP
+
+- `tests/into-8086.cjs` vérifie l'opcode CE, le cas OF=0 sans interruption, le cas OF=1 via le vecteur 4, l'IVT physique en exécution binaire et la restauration de CS:IP, FLAGS et SP par IRET.
+- `tests/push-pop-forms-8086.cjs` vérifie que sur 8086 PUSH SP empile la valeur après décrémentation de SP. Ce comportement est distinct de celui des générations ultérieures et est documenté dans le cours.
