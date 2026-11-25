@@ -295,20 +295,13 @@ for (const instruction of instructions) {
   }
 }
 
-// A segment override on a register-only form is retained as a prefix byte,
-// but does not change the arithmetic operand or the implicit accumulator.
+// The source assembler requires a memory operand for an explicit segment
+// override. Register-only MUL/IMUL/DIV/IDIV forms must reject that syntax.
 for (const instruction of instructions) {
   for (const seg of ["ES", "CS", "SS", "DS"]) {
-    const bits = 8, opcode = 0xF6, rm = 3; // BL
-    const expected = [{ES:0x26,CS:0x2E,SS:0x36,DS:0x3E}[seg], opcode,
-      modrm(3, instruction.ext, rm)];
     const source = seg + ": " + instruction.op + " BL";
-    test("Préfixe segment sans mémoire " + source, () => {
-      same(api.assemble(source).bytes, expected, source);
-      const decoded = api.disassemble(expected);
-      assert.equal(decoded.rows.length, 1);
-      assert.deepEqual(Array.from(decoded.rows[0].bytes), expected);
-      assert.ok(decoded.rows[0].instruction.includes(seg + ":"));
+    test("Rejet override segment sans mémoire " + source, () => {
+      assert.throws(() => api.assemble(source));
     });
   }
 }
