@@ -373,8 +373,9 @@ test("Pas à pas interactif · DIV BYTE PTR mémoire déclenche INT 00h", () => 
 });
 
 // ---------------------------------------------------------------------------
-// E. Signed IDIV quotient boundaries: the minimum negative quotient is valid
-//    for both byte and word division. Test source and emitted-binary execution.
+// E. Original 8086 signed IDIV bounds: -127..+127 and -32767..+32767.
+//    The 8086 Family User's Manual (Oct. 1979), p. 2-37, explicitly excludes
+//    -128 and -32768; those exact quotients must raise type-0 divide error.
 // ---------------------------------------------------------------------------
 function verifyIdivBoundary(source, expectedAX, expectedDX, mnemonic, expectedOpcode) {
   const assembled = api.assemble(source);
@@ -394,17 +395,44 @@ function verifyIdivBoundary(source, expectedAX, expectedDX, mnemonic, expectedOp
   }
 }
 
-test("IDIV byte accepts the minimum quotient -128 in AL", () => {
-  verifyIdivBoundary(
+function verifyIdivOverflow(source, mnemonic, opcode) {
+  const assembled = api.assemble(source);
+  assert.deepEqual(Array.from(assembled.bytes.slice(-2)), opcode, mnemonic + " fixed F6/F7 bytes");
+  const decoded = api.disassemble(assembled.bytes);
+  assert.ok(decoded.rows.some(row => row.instruction === mnemonic), mnemonic + " disassembly");
+  for (const [mode, state] of [
+    ["source", api.execute(source)],
+    ["binary", api.executeBinary(assembled.bytes, 0x1000, 0)]
+  ]) {
+    assert.match(state.error || "", /dépassement de quotient/i, mode + " must trap at original 8086 lower bound");
+  }
+}
+
+test("IDIV byte rejects quotient -128 on original 8086", () => {
+  verifyIdivOverflow(
     ["MOV AX, 4000h", "MOV BL, 80h", "IDIV BL", "HLT"].join("\n"),
-    0x0080, 0, "IDIV BL", [0xF6, 0xFB]
+    "IDIV BL", [0xF6, 0xFB]
   );
 });
 
-test("IDIV word accepts the minimum quotient -32768 in AX", () => {
-  verifyIdivBoundary(
+test("IDIV word rejects quotient -32768 on original 8086", () => {
+  verifyIdivOverflow(
     ["MOV DX, 4000h", "MOV AX, 0000h", "MOV BX, 8000h", "IDIV BX", "HLT"].join("\n"),
-    0x8000, 0, "IDIV BX", [0xF7, 0xFB]
+    "IDIV BX", [0xF7, 0xFB]
+  );
+});
+
+test("IDIV byte accepts the lower valid quotient -127", () => {
+  verifyIdivBoundary(
+    ["MOV AX, 3F80h", "MOV BL, 80h", "IDIV BL", "HLT"].join("\n"),
+    0xFF81, 0, "IDIV BL", [0xF6, 0xFB]
+  );
+});
+
+test("IDIV word accepts the lower valid quotient -32767", () => {
+  verifyIdivBoundary(
+    ["MOV DX, 4000h", "MOV AX, 8000h", "MOV BX, 8000h", "IDIV BX", "HLT"].join("\n"),
+    0x8001, 0, "IDIV BX", [0xF7, 0xFB]
   );
 });
 
