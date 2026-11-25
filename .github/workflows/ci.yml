@@ -60,6 +60,10 @@ jobs:
         run: node tests/xchg-8086.cjs
       - name: Cross-check XCHG encodings with GNU as
         run: node tests/xchg-gnu-crosscheck.cjs
+      - name: Run independent 8086 LEA instruction audit
+        run: node tests/lea-8086.cjs
+      - name: Cross-check LEA encodings with GNU as
+        run: node tests/lea-gnu-crosscheck.cjs
       - name: Run operand constraint tests
         run: node tests/operand-constraints.cjs
       - name: Run original 8086 segment selector vectors
