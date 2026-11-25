@@ -222,6 +222,32 @@ for (const bits of [8, 16]) {
   }
 }
 
+// Execute every byte and word register form through both source and binary paths.
+for (const [bits, registers] of [[8, regs8], [16, regs16]]) {
+  for (const register of registers) {
+    const value = bits === 8 ? 0x81 : 0x8001;
+    const expected = expectedFlags(value, bits);
+    const source = [
+      "MOV " + register + ", " + (bits === 8 ? byteHex(value) : wordHex(value)),
+      "STC", "STD", "NEG " + register, "HLT"
+    ].join("\n");
+    for (const [path, execute] of [["source", runSource], ["binaire", runBinary]]) {
+      test("NEG registre " + bits + " bits " + register + " · " + path, () => {
+        const state = execute(source);
+        const result = bits === 8
+          ? (register === "AH" || register === "CH" || register === "DH" || register === "BH"
+            ? (state.reg[register[0] + "X"] >> 8) & 0xFF
+            : state.reg[register[0] + "X"] & 0xFF)
+          : state.reg[register];
+        assert.equal(result, expected.result);
+        assertFlags(state, expected, "NEG " + register);
+        assert.equal(state.flags.DF, 1);
+      });
+      counts.execution++;
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------
 // E. Exhaustive byte-result and flag vectors, plus 16-bit boundary vectors.
 // ---------------------------------------------------------------------------
@@ -334,6 +360,26 @@ for (const item of segmentVectors) {
   memoryExecutionCases++;
 }
 
+// Effective-offset wraparound and 20-bit physical-address wraparound.
+test("NEG mémoire word traverse offset FFFFh vers 0000h", () => {
+  const source = [
+    "MOV AX, 1000h", "MOV DS, AX", "MOV BX, 0FFFFh",
+    "MOV WORD PTR [BX], 0001h", "NEG WORD PTR [BX]", "HLT"
+  ].join("\n");
+  const state = runSource(source);
+  assert.equal(state.mem[0x1FFFF], 0xFF);
+  assert.equal(state.mem[0x10000], 0xFF);
+});
+test("NEG mémoire applique le wrap physique 20 bits", () => {
+  const source = [
+    "MOV AX, 0FFFFh", "MOV DS, AX", "MOV BX, 0020h",
+    "MOV BYTE PTR [BX], 01h", "NEG BYTE PTR [BX]", "HLT"
+  ].join("\n");
+  const state = runSource(source);
+  assert.equal(state.mem[0x00010], 0xFF);
+});
+counts.execution += 2;
+
 // ---------------------------------------------------------------------------
 // G. Operand validation and truncated instruction streams.
 // ---------------------------------------------------------------------------
@@ -360,6 +406,6 @@ console.log("NEG limites de déplacement : " + counts.displacement);
 console.log("NEG validations/rejets : " + counts.invalid);
 console.log("NEG FLAGS 8 bits exhaustifs : " + counts.flags8);
 console.log("NEG FLAGS 16 bits frontières : " + counts.flags16);
-console.log("NEG exécutions mémoire source/binaire et segments : " + memoryExecutionCases);
+console.log("NEG exécutions registres + mémoire source/binaire et segments : " + (memoryExecutionCases + counts.execution));
 console.log("Audit NEG : " + passed + " réussis, " + failed + " échecs.");
 if (failed) process.exit(1);
