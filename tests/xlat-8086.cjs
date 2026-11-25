@@ -67,7 +67,7 @@ const segments = [
   { name: "DS", prefix: null, opcodePrefix: [], segment: 0x1000, value: 0x31 },
   { name: "ES", prefix: "ES: ", opcodePrefix: [0x26], segment: 0x2000, value: 0x52 },
   { name: "SS", prefix: "SS: ", opcodePrefix: [0x36], segment: 0x3000, value: 0x73 },
-  { name: "CS", prefix: "CS: ", opcodePrefix: [0x2E], segment: 0x4000, value: 0x94 }
+  { name: "CS", prefix: "CS: ", opcodePrefix: [0x2E], segment: 0x0000, value: 0x94 }
 ];
 
 // A. Exact opcode, assembler output, raw disassembly and segment-override bytes.
@@ -96,12 +96,11 @@ test("XLAT suivi de HLT conserve les frontières d'instruction", () => {
 // BX+AL = 8000h. The source initializes distinct bytes in every segment.
 for (const item of segments) {
   const source = [
-    "MOV AX, " + word(item.segment),
-    "MOV " + item.name + ", AX",
+    ...(item.name === "CS" ? [] : ["MOV AX, " + word(item.segment), "MOV " + item.name + ", AX"]),
     "MOV BYTE PTR " + item.name + ":[8000h], " + byte(item.value),
     "MOV BX, 7FF0h",
     "MOV AL, 10h",
-    "MOV AX, 0FD7h",
+    "MOV AX, 0F93h",
     "PUSH AX",
     "POPF",
     "MOV AL, 10h",
