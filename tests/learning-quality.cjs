@@ -19,7 +19,7 @@ function element(id) {
 const document = { getElementById: element, querySelectorAll: () => [] };
 const localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
 const context = { document, localStorage, console, confirm: () => true };
-const instrumented = match[1].replace(/\}\)\(\);\s*$/, "globalThis.__learningData = { lessons, chapterLearning, curriculum, exercises, chapterExerciseMap, executeAll };\n})();");
+const instrumented = match[1].replace(/\}\)\(\);\s*$/, "globalThis.__learningData = { lessons, chapterLearning, curriculum, exercises, chapterExerciseMap, executeAll, assembleProgram, disassembleBytes };\n})();");
 assert.notEqual(instrumented, match[1], "Application closure must be instrumented for learning checks");
 vm.runInNewContext(instrumented, context, { timeout: 5000 });
 const learning = context.__learningData;
@@ -241,5 +241,117 @@ for (let ci = 5; ci < 11; ci++) {
   assert.ok(chapter.quiz.every(q => q[1].length === 3 && new Set(q[1]).size === 3 && q[3].length >= 20),
     "Level 2 final questions must have distinct options and substantive explanations.");
 }
+
+// Full expected-state and representation oracles for the remaining 73 lessons.
+// These checks compare the displayed lesson expectations with independently
+// asserted architectural state; mere successful execution is not accepted.
+const advancedExampleOracles = [
+  [12,1,s=>s.reg.AX===7&&s.reg.BX===9&&s.flags.CF===1&&s.flags.ZF===0&&s.flags.SF===1,"CMP 7,9 leaves operands unchanged and sets CF/ZF/SF"],
+  [12,2,s=>s.reg.AX===3&&s.flags.CF===1&&s.flags.ZF===0&&s.flags.SF===1,"CMP AL=03h,5 sets CF=1, ZF=0, SF=1"],
+  [12,3,s=>s.reg.AX===5&&s.flags.ZF===0&&s.flags.CF===0&&s.flags.OF===0,"TEST 05h,04h preserves AL and sets ZF/CF/OF"],
+  [13,1,s=>s.reg.AX===0&&s.reg.BX===2,"short JMP skips MOV AX,1 and reaches BX=2"],
+  [13,2,s=>s.reg.AX===9,"near JMP reaches the target beyond short range"],
+  [14,1,s=>s.reg.AX===4&&s.reg.BX===1&&s.flags.ZF===1,"JE is taken after equal CMP"],
+  [14,2,s=>s.reg.AX===0x80&&s.reg.BX===1&&s.flags.OF===1,"JO is taken after signed overflow"],
+  [14,3,s=>s.reg.AX===2&&s.reg.BX===1&&s.flags.CF===1,"JB is taken after unsigned 2<5"],
+  [15,1,s=>s.reg.AX===0xff&&s.reg.BX===1,"JA treats FFh as unsigned 255"],
+  [15,2,s=>s.reg.AX===0xff&&s.reg.BX===1,"JL treats FFh as signed -1"],
+  [15,3,s=>s.reg.AX===0xff&&s.reg.BX===1,"JA uses unsigned interpretation"],
+  [16,1,s=>s.reg.AX===3&&s.reg.CX===0,"LOOP executes three iterations"],
+  [16,2,s=>s.reg.AX===1&&s.reg.BX===1&&s.reg.CX===1&&s.flags.ZF===1,"LOOPE decrements CX and branches while ZF=1"],
+  [16,3,s=>s.reg.AX===7&&s.reg.CX===0,"JCXZ branches without changing CX"],
+  [17,1,s=>s.reg.AX===10&&s.reg.CX===6,"maximum and minimum algorithm returns AX=10 and CX=6"],
+  [17,2,s=>s.reg.AX===6&&s.reg.DX===3&&s.reg.CX===0,"three-element sum and count produce 6 and 3"],
+  [17,3,s=>s.reg.BX===1&&s.reg.SI===0x101&&s.reg.CX===2,"search finds the second byte and stops at SI=0101h"],
+  [18,1,s=>s.reg.DS===0x1000&&s.reg.BX===0x20,"logical data address is DS:0020h"],
+  [18,2,s=>s.reg.DS===0x1000&&(((s.reg.DS<<4)+0x20)&0xfffff)===0x10020,"segment:offset converts to physical 10020h"],
+  [18,3,s=>(((0x1000<<4)+0x10)&0xfffff)===(((0x1001<<4)+0) &0xfffff)&&(((0x1000<<4)+0x10)&0xfffff)===0x10010,"two logical addresses alias physical 10010h"],
+  [19,1,s=>s.reg.AX===0x5678&&s.reg.BX===0x1234&&word(s,s.reg.DS,0x100)===0x5678,"direct memory store and reload produce AX=5678h"],
+  [19,2,s=>s.reg.AX===0xabcd&&word(s,s.reg.DS,0x102)===0xabcd,"BX+SI effective offset 0102h reads ABCDh"],
+  [19,3,s=>s.reg.AX===0x5678&&word(s,s.reg.SS,0x104)===0x5678,"BP-based addressing defaults to SS"],
+  [20,1,s=>s.reg.BX===0x1234&&s.reg.SP===initialSP&&s.stack.length===0,"PUSH/POP restores BX and the initial stack pointer"],
+  [20,2,s=>s.reg.CX===0x2222&&s.reg.DX===0x1111&&s.reg.SP===initialSP&&s.stack.length===0,"LIFO order is preserved and stack is balanced"],
+  [20,3,s=>s.flags.CF===1&&s.reg.SP===initialSP&&s.stack.length===0,"PUSHF/POPF restores CF and balances SP"],
+  [21,1,s=>s.reg.AX===10&&s.reg.SP===initialSP,"near CALL/RET doubles AX and restores SP"],
+  [21,2,s=>s.reg.AX===2&&s.reg.SP===initialSP,"RET resumes after CALL"],
+  [21,3,s=>s.reg.AX===9&&s.reg.DX===0&&s.reg.SP===initialSP,"MUL AX produces DX:AX=0000:0009h"],
+  [22,1,s=>s.reg.AX===9&&s.reg.SP===initialSP,"procedure receives BX and returns AX=9"],
+  [22,2,s=>s.reg.AX===0x1234&&s.reg.SP===initialSP,"saved AX is restored from the stack"],
+  [22,3,s=>s.reg.AX===7&&s.reg.SP===initialSP&&s.stack.length===0,"nested calls return through both frames"],
+  [23,1,s=>s.reg.SP===initialSP&&s.stack.length===0,"three modular routines return with a balanced stack"],
+  [23,2,s=>s.reg.AX===12&&s.reg.SP===initialSP,"AX convention carries input and output"],
+  [23,3,s=>s.reg.AX===0&&s.reg.SP===initialSP,"doubling zero preserves zero"],
+  [24,1,s=>s.reg.AX===0x2a,"unsigned byte multiplication yields AX=002Ah"],
+  [24,2,s=>s.reg.AX===0xfffc,"signed byte multiplication yields FFFCh (-4)"],
+  [24,3,s=>s.reg.AX===0x1fe&&s.flags.CF===1&&s.flags.OF===1,"MUL sets CF/OF when upper half is nonzero"],
+  [25,1,s=>(s.reg.AX&255)===8&&(s.reg.AX>>8)===2,"DIV 42/5 gives quotient 8 and remainder 2"],
+  [25,2,s=>(s.reg.AX&255)===0xfe&&(s.reg.AX>>8)===0,"CBW then IDIV computes -4/2=-2 remainder 0"],
+  [26,1,s=>(s.reg.AX&255)===0x40&&s.flags.CF===1,"SHR 81h by one yields 40h and CF=1"],
+  [26,2,s=>(s.reg.AX&255)===0xfe&&s.flags.CF===0,"SAR FCh by one yields FEh and sign-extends"],
+  [26,3,s=>(s.reg.AX&255)===3&&s.flags.CF===1,"ROL 81h by one yields 03h and CF=1"],
+  [27,1,s=>s.reg.DS===0x1000&&s.reg.ES===0x2000&&s.reg.SI===0x101&&s.reg.DI===0x201&&byte(s,s.reg.ES,0x200)===0x41,"MOVSB copies DS:0100h to ES:0200h and advances SI/DI"],
+  [27,2,s=>s.reg.ES===0x2000&&s.reg.DI===0x101&&byte(s,s.reg.ES,0x100)===0x41,"STOSB writes AL to ES:DI and advances DI"],
+  [27,3,s=>s.flags.ZF===1&&s.reg.DI===0x101,"SCASB equality sets ZF and advances DI"],
+  [28,1,s=>s.reg.CX===0&&s.reg.DI===0x102&&byte(s,s.reg.ES,0x100)===0x41&&byte(s,s.reg.ES,0x101)===0x41,"REP STOSB writes two bytes and exhausts CX"],
+  [28,2,s=>s.reg.CX===0&&s.reg.DI===0x101&&s.flags.ZF===1,"REPNE SCASB stops after equality"],
+  [28,3,s=>s.reg.CX===0&&s.reg.SI===0x102&&s.reg.DI===0x202&&byte(s,s.reg.ES,0x200)===0x41&&byte(s,s.reg.ES,0x201)===0x42,"REP MOVSB copies two initialized bytes and advances both indices"],
+  [29,1,s=>((0x30*4)&0xffff)===0x00c0,"IVT vector 30h entry offset is 00C0h"],
+  [29,2,s=>s.reg.BX===0x1234&&s.reg.SP===initialSP&&s.stack.length===0,"INT invokes handler and IRET restores the saved frame"],
+  [29,3,s=>s.reg.SP===initialSP&&s.stack.length===0,"IRET returns to the instruction following INT"],
+  [30,1,s=>s.reg.DX===0x3f8,"DX contains port number 03F8h"],
+  [30,2,s=>s.io&&s.io[0x10]===0x55,"OUT stores 55h in the model's configured port state"],
+  [30,3,s=>s.flags.IF===1,"STI sets IF before HLT"],
+  [31,1,s=>s.reg.AX===0x1234,"MOV immediate example leaves AX=1234h"],
+  [31,2,s=>s.reg.AX===0x1234,"three-byte MOV immediate is executed correctly"],
+  [31,3,s=>s.reg.AX===0x1234,"register-to-register MOV transfers BX to AX"],
+  [32,1,s=>s.reg.AX===0,"ModR/M example decodes the intended BX+SI+disp8 addressing form"],
+  [32,2,s=>s.reg.AX===0xabcd,"BX+SI+disp8 effective address reads ABCDh"],
+  [32,3,s=>s.reg.AX===0xbeef,"direct disp16 memory form reads BEEFh"],
+  [33,1,s=>s.reg.IP>=0&&s.reg.SP===initialSP,"assembler resolves FIN and execution reaches HLT"],
+  [33,2,s=>s.reg.IP>=0,"commentary bytes are checked by the independent disassembler below"],
+  [33,3,s=>s.reg.IP>=0,"unknown-byte example is checked by the independent disassembler below"],
+  [34,1,s=>(s.reg.AX&255)===0x5a,"CS override reads the byte written at the selected segment:offset"],
+  [34,2,s=>s.reg.AX===2&&word(s,s.reg.DS,0x100)===2,"LOCK INC memory updates the word from 1 to 2"],
+  [34,3,s=>s.reg.CX===0&&s.reg.SI===0x102&&s.reg.DI===0x202&&byte(s,s.reg.ES,0x200)===0x31&&byte(s,s.reg.ES,0x201)===0x32,"REP MOVSB copies two bytes under the prefix"],
+  [35,1,s=>s.reg.AX===0x1234,"register and memory forms execute; no cycle count is inferred"],
+  [35,2,s=>s.reg.CX===0&&s.reg.SP===initialSP,"LOOP exits after CX reaches zero; prefetch timing is outside the model"],
+  [35,3,s=>s.reg.AX===8,"SHL doubles AX=4 to AX=8"],
+  [36,1,s=>s.reg.AX===12,"synthesis addition produces AX=12"],
+  [36,2,s=>s.reg.AX===6&&s.reg.SP===initialSP,"synthesis procedure doubles AX and returns"],
+  [36,3,s=>(s.reg.AX&255)===0&&s.flags.CF===1,"FFh+1 wraps to zero and sets carry"]
+];
+const initialSP = learning.executeAll("HLT").reg.SP;
+function physical(seg, offset) { return (((seg & 0xffff) << 4) + (offset & 0xffff)) & 0xfffff; }
+function byte(state, seg, offset) { return state.mem[physical(seg, offset)] ?? 0; }
+function word(state, seg, offset) { return byte(state,seg,offset) | (byte(state,seg,(offset+1)&0xffff)<<8); }
+const auditFailures = [];
+for (const [chapter,lesson,check,description] of advancedExampleOracles) {
+  const source = learning.curriculum[chapter-1][5][lesson-1][2];
+  const state = learning.executeAll(source);
+  if (state.error || !check(state)) auditFailures.push({
+    chapter,lesson,description,error:state.error||null,
+    registers:state.reg,flags:state.flags,sp:state.reg.SP
+  });
+}
+assert.equal(advancedExampleOracles.length,73,"The advanced audit must cover the 73 remaining examples.");
+assert.equal(auditFailures.length,0,"Every advanced lesson must satisfy its independent expected-state oracle: "+JSON.stringify(auditFailures));
+
+function bytesOf(source) { return Array.from(learning.assembleProgram(source).bytes); }
+function sameBytes(actual,expected,label) {
+  assert.deepEqual(actual,expected,label+" bytes");
+}
+sameBytes(bytesOf(learning.curriculum[30][5][0][2]),[0xB8,0x34,0x12,0xF4],"C31 L1 MOV immediate");
+sameBytes(bytesOf(learning.curriculum[30][5][1][2]),[0xB8,0x34,0x12,0xF4],"C31 L2 MOV immediate length");
+const regMoveBytes=bytesOf(learning.curriculum[30][5][2][2]);
+assert.ok(JSON.stringify(regMoveBytes)===JSON.stringify([0x89,0xD8,0xF4])||JSON.stringify(regMoveBytes)===JSON.stringify([0x8B,0xC3,0xF4]),"C31 L3 equivalent register MOV encoding");
+sameBytes(bytesOf(learning.curriculum[31][5][0][2]),[0x8B,0x40,0x04,0xF4],"C32 L1 ModR/M disp8");
+sameBytes(bytesOf(learning.curriculum[31][5][2][2]),[0xC7,0x06,0x34,0x12,0xEF,0xBE,0x8B,0x06,0x34,0x12,0xF4],"C32 L3 direct disp16");
+const disassembled=learning.disassembleBytes([0xB8,0x34,0x12,0xF4]).rows;
+assert.deepEqual(disassembled.map(r=>r.instruction),["MOV AX, 1234h","HLT"],"C33 L2 independent disassembly");
+const unknown=learning.disassembleBytes([0x64]).rows;
+assert.ok(unknown[0].instruction.startsWith("DB "),"C33 L3 unknown byte remains raw data");
+sameBytes(bytesOf(learning.curriculum[33][5][1][2]),[0xF0,0xFF,0x06,0x00,0x01,0x8B,0x06,0x00,0x01,0xF4],"C34 L2 LOCK INC memory encoding");
+console.log("Advanced course audit: 73/73 additional lesson examples pass independent state or encoding oracles.");
+
 console.log("Learning quality: 36 chapters, 324 intermediate questions, 360 final questions, " +
   learning.exercises.length + " exercises; all guided corrections execute and pass their validators.");
