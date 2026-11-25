@@ -82,7 +82,7 @@ jobs:
         run: node tests/call-ret-8086.cjs
       - name: Run exhaustive near and far indirect CALL tests
         run: node tests/call-indirect-8086.cjs
-      - name: Cross-check CALL/RET/JMP FAR encodings with GNU as
+      - name: Cross-check CALL/RET/JMP near and far encodings with GNU as
         run: node tests/call-ret-gnu-crosscheck.cjs
       - name: Run relative branch and displacement tests
         run: node tests/relative-branches.cjs
