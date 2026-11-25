@@ -1,0 +1,118 @@
+const fs = require("node:fs");
+const os = require("node:os");
+const path = require("node:path");
+const vm = require("node:vm");
+const { execFileSync } = require("node:child_process");
+const assert = require("node:assert/strict");
+
+const regs8 = ["AL", "CL", "DL", "BL", "AH", "CH", "DH", "BH"];
+const regs16 = ["AX", "CX", "DX", "BX", "SP", "BP", "SI", "DI"];
+const appLines = [];
+const gasLines = [];
+
+// All ordered register/register combinations, including the compact AX encodings.
+for (const regs of [regs8, regs16]) {
+  for (const left of regs) {
+    for (const right of regs) {
+      appLines.push("XCHG " + left + ", " + right);
+      gasLines.push("XCHG " + left + ", " + right);
+    }
+  }
+}
+
+// All eight 8086 effective-address forms, both operand widths and both source orders.
+const ea = ["[BX+SI]", "[BX+DI]", "[BP+SI]", "[BP+DI]", "[SI]", "[DI]", "[BP]", "[BX]"];
+for (const address of ea) {
+  appLines.push("XCHG AL, BYTE PTR " + address);
+  gasLines.push("XCHG AL, BYTE PTR " + address);
+  appLines.push("XCHG BYTE PTR " + address + ", AL");
+  gasLines.push("XCHG BYTE PTR " + address + ", AL");
+  appLines.push("XCHG AX, WORD PTR " + address);
+  gasLines.push("XCHG AX, WORD PTR " + address);
+  appLines.push("XCHG WORD PTR " + address + ", AX");
+  gasLines.push("XCHG WORD PTR " + address + ", AX");
+}
+
+// Direct disp16, signed disp8 endpoints, and signed disp16 endpoints.
+const boundary = [
+  "XCHG AL, BYTE PTR [4660]",
+  "XCHG AX, WORD PTR [BX+SI+127]",
+  "XCHG AX, WORD PTR [BX+SI-128]",
+  "XCHG AX, WORD PTR [BP+DI+32767]",
+  "XCHG AX, WORD PTR [BP+DI-32768]"
+];
+appLines.push(...boundary);
+gasLines.push(...boundary);
+
+// Segment overrides and LOCK prefix: GAS writes legacy prefixes before the mnemonic.
+for (const segment of ["ES", "CS", "SS", "DS"]) {
+  appLines.push("XCHG AX, WORD PTR " + segment + ":[BX]");
+  gasLines.push(segment + " XCHG AX, WORD PTR [BX]");
+}
+appLines.push("LOCK XCHG WORD PTR [BX], AX");
+gasLines.push("LOCK XCHG WORD PTR [BX], AX");
+
+const appProgram = appLines.join("\n");
+const gasProgram = [
+  ".intel_syntax noprefix", ".code16", ".text", ".global _start", "_start:",
+  gasLines.join("\n"), ""
+].join("\n");
+
+const dir = fs.mkdtempSync(path.join(os.tmpdir(), "8086-xchg-gnu-"));
+try {
+  const sourcePath = path.join(dir, "xchg.s");
+  const objectPath = path.join(dir, "xchg.o");
+  const binaryPath = path.join(dir, "xchg.bin");
+  fs.writeFileSync(sourcePath, gasProgram);
+  execFileSync("as", ["--32", "-o", objectPath, sourcePath], { stdio: "pipe" });
+  execFileSync("objcopy", ["-O", "binary", "-j", ".text", objectPath, binaryPath], { stdio: "pipe" });
+  const gnuBytes = Array.from(fs.readFileSync(binaryPath));
+
+  const html = fs.readFileSync("index.html", "utf8");
+  const match = html.match(/<script>([\s\S]*?)<\/script>/);
+  assert.ok(match, "Application inline script must exist");
+  const elements = new Map();
+  function element(id) {
+    if (!elements.has(id)) elements.set(id, {
+      id, value: "", textContent: "", innerHTML: "", className: "",
+      dataset: {}, onclick: null, oninput: null, onchange: null
+    });
+    return elements.get(id);
+  }
+  const context = {
+    document: { getElementById: element, querySelectorAll: () => [] },
+    localStorage: { getItem: () => null, setItem: () => {}, removeItem: () => {} },
+    console
+  };
+  vm.createContext(context);
+  const injection = "\nglobalThis.__8086XchgGnuApi = {" +
+    "\n assemble: source => assembleProgram(source)" +
+    "\n};\n})();\n";
+  const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injection);
+  assert.notEqual(instrumented, match[1], "Application API injection point must exist");
+  vm.runInContext(instrumented, context, { timeout: 30000 });
+  const appBytes = Array.from(context.__8086XchgGnuApi.assemble(appProgram).bytes);
+
+  assert.deepEqual(appBytes, gnuBytes,
+    "Project XCHG encoder must match GNU as byte-for-byte across register, memory, displacement, segment and LOCK vectors");
+
+  // Pin representative architectural bytes independently of both assembler outputs.
+  const fixed = [
+    0x86, 0xC1, // XCHG AL,CL
+    0x91,       // XCHG AX,CX
+    0x87, 0xD3, // XCHG BX,DX
+    0x86, 0x07, // XCHG AL,[BX]
+    0x87, 0x07  // XCHG AX,[BX]
+  ];
+  assert.deepEqual(gnuBytes.slice(0, fixed.length), fixed,
+    "Known 8086 XCHG encodings must match fixed opcode/ModR/M vectors");
+
+  const version = execFileSync("as", ["--version"], { encoding: "utf8" }).split("\n")[0];
+  console.log("Independent XCHG encoding cross-check: PASS");
+  console.log(version + " with .code16");
+  console.log("Compared " + appLines.length + " XCHG instructions byte-for-byte.");
+  console.log("Scope: 64 byte-register pairs, 64 word-register pairs, all eight EA forms in both operand orders and widths, displacement boundaries, four segment overrides and LOCK memory form.");
+  console.log("Binary length: " + gnuBytes.length + " bytes.");
+} finally {
+  fs.rmSync(dir, { recursive: true, force: true });
+}
