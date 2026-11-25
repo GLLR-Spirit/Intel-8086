@@ -297,7 +297,7 @@ test("RET avec ajustement impair est exécuté en source et en binaire", () => {
   const decoded = api.disassemble([0xc2, 0x01, 0x00]);
   assert.equal(decoded.rows[0].instruction, "RET 0001h");
   const sourceState = runSource(source);
-  const binaryState = runBinary(source);
+  const { state: binaryState } = runBinary(source);
   assert.equal(sourceState.reg.SP, 0xffff);
   assert.equal(binaryState.reg.SP, 0xffff);
   assert.equal(sourceState.stack.length, 0);
