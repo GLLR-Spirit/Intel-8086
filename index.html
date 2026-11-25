@@ -1769,12 +1769,14 @@ var auditedL4to6FinalB=[
 ];
 for(var auditedChapter=0;auditedChapter<19;auditedChapter++){
  var auditedTarget=chapterLearning[auditedChapter+17];
+ var auditedLessonBank=auditedChapter<10?auditedL4to6Lessons[auditedChapter]:auditedL4to6LessonsB[auditedChapter-10];
+ var auditedFinalBank=auditedChapter<10?auditedL4to6Final[auditedChapter]:auditedL4to6FinalB[auditedChapter-10];
  auditedTarget.lessons.forEach(function(lesson,lessonIndex){
-  lesson.quiz=auditedL4to6Lessons[auditedChapter][lessonIndex].map(function(question,questionIndex){
+  lesson.quiz=auditedLessonBank[lessonIndex].map(function(question,questionIndex){
    return rotateQuiz(question,auditedChapter+lessonIndex+questionIndex);
   });
  });
- auditedTarget.quiz=auditedL4to6Final[auditedChapter].map(function(question,questionIndex){
+ auditedTarget.quiz=auditedFinalBank.map(function(question,questionIndex){
   return rotateQuiz(question,auditedChapter+questionIndex);
  });
 }
