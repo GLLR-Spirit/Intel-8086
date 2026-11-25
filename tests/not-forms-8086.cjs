@@ -59,7 +59,7 @@ function expr(mod,rm){
 function assemble(s){return Array.from(api.assemble(s).bytes);}
 function decode(bytes,mnemonic,label){
   const d=api.disassemble(bytes);
-  check(d.rows.length===1,label+" one instruction");
+  check(d.rows.length===1,label+" one instruction: "+JSON.stringify(d.rows));
   same(Array.from(d.rows[0].bytes),bytes,label+" exact byte length");
   check(d.rows[0].instruction.startsWith(mnemonic+" ") ||
     d.rows[0].instruction.startsWith("LOCK "+mnemonic+" "),label+" mnemonic");
