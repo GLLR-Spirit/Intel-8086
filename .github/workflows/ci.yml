@@ -26,6 +26,8 @@ jobs:
         run: node tests/learning-quality.cjs
       - name: Run independent instruction vectors
         run: node tests/instruction-vectors.cjs
+      - name: Cross-check encodings with GNU as in 16-bit mode
+        run: node tests/gnu-as-crosscheck.cjs
       - name: Run exhaustive ModR/M matrix
         run: node tests/modrm-matrix.cjs
       - name: Run all-opcode and ModR/M structural sweeps
