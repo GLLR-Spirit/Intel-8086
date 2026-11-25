@@ -194,7 +194,7 @@ Les cas suivants sont des propositions de tests, pas l'annonce de tests exécut�
 | MOV registre-registre | 8B C3 → MOV AX,BX | Tailles incompatibles refusées |
 | MOV mémoire-registre | 89 1E 00 20 → MOV [2000h],BX | Mémoire-mémoire refusée |
 | MOV mémoire immédiat | C7 06 00 20 34 12 → MOV WORD PTR [2000h],1234h | Extension ModR/M autre que /0 rejetée |
-| MOV segment | 8E D8 → MOV DS,AX | 8E C8 → MOV CS,AX accepté sur 8086/8088 |
+| MOV segment | 8E D8 → MOV DS,AX | 8E C8 (`MOV CS,AX`) est rejeté comme destination non autorisée selon la référence Intel ASM86 |
 | ADD | 03 C3 → ADD AX,BX | Mémoire-mémoire refusée |
 | ADD immédiat étendu | 83 C0 FF → ADD AX,-1 | Vérifier l'extension signée |
 | ADC | 11 D8 → ADC AX,BX | Tester CF entrant égal à 0 puis à 1 |
