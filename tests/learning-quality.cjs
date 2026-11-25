@@ -38,6 +38,15 @@ assert.ok(learning.chapterLearning.every(c => c.lessons.every(l => l.title && l.
   "Every lesson must include detailed content, an example and exactly three comprehension questions");
 assert.ok(learning.chapterLearning.every(c => c.quiz.every(q => q[1].length === 3 && q[2] >= 0 && q[2] < 3 && q[3])),
   "Every final question must have three choices, a valid answer and an explanation");
+assert.ok(learning.chapterLearning.every(c => c.quiz.every(q =>
+  q[1].every(choice => typeof choice === "string" && choice.trim().length > 0) &&
+  new Set(q[1].map(choice => choice.trim().toLocaleLowerCase())).size === 3 &&
+  typeof q[3] === "string" && q[3].trim().length >= 12)),
+  "Final questions must have three distinct non-empty choices and a substantive explanation.");
+assert.ok(learning.chapterLearning.every(c => c.lessons.every(l => l.quiz.every(q =>
+  q[1].length === 3 && new Set(q[1].map(choice => String(choice).trim().toLocaleLowerCase())).size === 3 &&
+  typeof q[3] === "string" && q[3].trim().length >= 12))),
+  "Lesson questions must have distinct choices and a substantive explanation.");
 assert.ok(learning.chapterLearning.every(c => {
   const categories = c.quiz.map(q => q[4]);
   return ["Définition","Compréhension","Syntaxe","Restrictions","Prédiction","Calcul / prédiction","Analyse de programme","Analyse de résultat","Débogage","Raisonnement"].every(x => categories.includes(x));
