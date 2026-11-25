@@ -19,18 +19,30 @@ function element(id) {
 const document = { getElementById: element, querySelectorAll: () => [] };
 const localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
 const context = { document, localStorage, console, confirm: () => true };
-const instrumented = match[1].replace(/\}\)\(\);\s*$/, "globalThis.__learningData = { lessons, chapterLearning, exercises, chapterExerciseMap, executeAll };\n})();");
+const instrumented = match[1].replace(/\}\)\(\);\s*$/, "globalThis.__learningData = { lessons, chapterLearning, curriculum, exercises, chapterExerciseMap, executeAll };\n})();");
 assert.notEqual(instrumented, match[1], "Application closure must be instrumented for learning checks");
 vm.runInNewContext(instrumented, context, { timeout: 5000 });
 const learning = context.__learningData;
 assert.ok(learning, "Learning data must be exposed to the isolated test harness");
 
-assert.equal(learning.lessons.length, 17, "All 17 learning chapters must exist");
-assert.equal(learning.chapterLearning.length, 17, "Every chapter must have a learning module");
-assert.ok(learning.chapterLearning.every(c => c.goal && c.theory && c.walk && c.quiz.length >= 2),
-  "Every chapter must include objectives, theory, a guided example and comprehension questions");
-assert.equal(learning.chapterLearning.reduce((n, c) => n + c.quiz.length, 0), 34,
-  "The chapter path must contain 34 comprehension questions");
+assert.equal(learning.lessons.length, 36, "All 36 learning chapters must exist");
+assert.equal(learning.curriculum.length, 36, "The canonical curriculum must contain 36 chapters");
+assert.equal(learning.chapterLearning.length, 36, "Every chapter must have a learning module");
+assert.ok(learning.chapterLearning.every(c => c.goal && c.theory && c.walk && c.prereq && c.lessons.length === 3 && c.quiz.length === 10),
+  "Every chapter must include prerequisites, objectives, three detailed lessons and ten final questions");
+assert.ok(learning.chapterLearning.every(c => c.lessons.every(l => l.title && l.theory && l.example && l.expected && l.quiz.length === 3)),
+  "Every lesson must include detailed content, an example and exactly three comprehension questions");
+assert.ok(learning.chapterLearning.every(c => c.quiz.every(q => q[1].length === 3 && q[2] >= 0 && q[2] < 3 && q[3])),
+  "Every final question must have three choices, a valid answer and an explanation");
+assert.equal(learning.chapterLearning.reduce((n, c) => n + c.lessons.reduce((m, l) => m + l.quiz.length, 0), 0), 324,
+  "The 36 chapters must contain 324 intermediate questions (3 × 3 × 36)");
+assert.equal(learning.chapterLearning.reduce((n, c) => n + c.quiz.length, 0), 360,
+  "The 36 chapters must contain 360 final assessment questions (10 × 36)");
+const expectedLevels = [5, 6, 12, 18, 24, 31];
+assert.deepEqual(expectedLevels.map(n => learning.curriculum[n - 1][0]), [
+  "Introduction au microprocesseur Intel 8086", "Premiers programmes assembleur", "Sauts inconditionnels",
+  "Organisation de la mémoire", "Multiplication", "Encodage des instructions"
+], "The curriculum must preserve the requested chapter order and level boundaries");
 
 assert.equal(learning.chapterExerciseMap.length, learning.lessons.length,
   "Every chapter must link to exactly one practical exercise");
@@ -53,5 +65,5 @@ assert.ok(renderer.includes("Indice et correction expliquée"), "Exercise UI mus
 assert.ok(renderer.includes("guide.steps"), "Exercise UI must render step-by-step solutions");
 assert.ok(renderer.includes("data-solution"), "Exercise UI must let the learner load the complete correction");
 
-console.log("Learning quality: 17 chapters, 34 comprehension questions, " +
+console.log("Learning quality: 36 chapters, 324 intermediate questions, 360 final questions, " +
   learning.exercises.length + " exercises; all guided corrections execute and pass their validators.");
