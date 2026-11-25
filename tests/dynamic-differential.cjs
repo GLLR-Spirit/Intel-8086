@@ -730,6 +730,148 @@ test("Préfixe segment + REP — CS: REP MOVSB", () => {
   assert.deepEqual(Array.from(row.bytes.slice(0,3)),[0x2e,0xf3,0xa4]);
   assert.equal(binaryState.mem[0x200],0x42);
 });
+function runStringBinary(source, seed) {
+  const assembled = api.assemble(source);
+  const state = api.executeBinary(Array.from(assembled.bytes), 0, 0, seed);
+  assert.ok(!state.error, state.error || "string instruction binary execution failed");
+  return state;
+}
+function physical(segment, offset) { return ((segment << 4) + (offset & 0xffff)) & 0xfffff; }
+function putByte(mem, segment, offset, value) { mem[physical(segment, offset)] = value & 255; }
+function putWord(mem, segment, offset, value) {
+  putByte(mem, segment, offset, value);
+  putByte(mem, segment, offset + 1, value >> 8);
+}
+
+test("Chaînes MOVSB/MOVSW — DS:SI vers ES:DI, CX et index", () => {
+  for (const item of [
+    { source: "REP MOVSB\nHLT", width: 1, values: [0x12, 0x34] },
+    { source: "REP MOVSW\nHLT", width: 2, values: [0x1234, 0xabcd] }
+  ]) {
+    const mem = {};
+    item.values.forEach((value, i) => item.width === 1
+      ? putByte(mem, 0x1000, 0x10 + i, value)
+      : putWord(mem, 0x1000, 0x10 + i * 2, value));
+    const state = runStringBinary(item.source, {
+      reg: { DS: 0x1000, ES: 0x2000, SI: 0x10, DI: 0x20, CX: 2 },
+      mem
+    });
+    const read = item.width === 1
+      ? [state.mem[physical(0x2000,0x20)], state.mem[physical(0x2000,0x21)]]
+      : [state.mem[physical(0x2000,0x20)] | (state.mem[physical(0x2000,0x21)] << 8),
+         state.mem[physical(0x2000,0x22)] | (state.mem[physical(0x2000,0x23)] << 8)];
+    assert.deepEqual(read, item.values);
+    assert.equal(state.reg.SI, 0x10 + 2 * item.width);
+    assert.equal(state.reg.DI, 0x20 + 2 * item.width);
+    assert.equal(state.reg.CX, 0);
+  }
+});
+categories.memory++;
+
+test("Chaînes LODSB/LODSW et STOSB/STOSW — variantes octet/mot", () => {
+  for (const item of [
+    { op: "LODSB", width: 1, values: [0x12,0x34], ax: 0xaa34 },
+    { op: "LODSW", width: 2, values: [0x1234,0xabcd], ax: 0xabcd }
+  ]) {
+    const mem = {};
+    item.values.forEach((value,i) => item.width === 1
+      ? putByte(mem,0x1000,0x10+i,value)
+      : putWord(mem,0x1000,0x10+i*2,value));
+    const state = runStringBinary("REP "+item.op+"\nHLT", {
+      reg:{DS:0x1000,SI:0x10,CX:2,AX:0xaaaa},mem
+    });
+    assert.equal(state.reg.AX,item.ax,item.op+" accumulator");
+    assert.equal(state.reg.SI,0x10+2*item.width);
+    assert.equal(state.reg.CX,0);
+  }
+  for (const item of [
+    { op:"STOSB", width:1, ax:0x5a, expected:[0x5a,0x5a] },
+    { op:"STOSW", width:2, ax:0xbeef, expected:[0xbeef,0xbeef] }
+  ]) {
+    const state=runStringBinary("REP "+item.op+"\nHLT",{
+      reg:{ES:0x2000,DI:0x20,CX:2,AX:item.ax}
+    });
+    const actual=item.width===1
+      ? [state.mem[physical(0x2000,0x20)],state.mem[physical(0x2000,0x21)]]
+      : [state.mem[physical(0x2000,0x20)]|(state.mem[physical(0x2000,0x21)]<<8),
+         state.mem[physical(0x2000,0x22)]|(state.mem[physical(0x2000,0x23)]<<8)];
+    assert.deepEqual(actual,item.expected,item.op+" destination");
+    assert.equal(state.reg.DI,0x20+2*item.width);
+    assert.equal(state.reg.CX,0);
+  }
+});
+categories.memory++;
+
+test("Chaînes REPE CMPSB/CMPSW et REPNE SCASB/SCASW — arrêt sur ZF", () => {
+  for (const item of [
+    { op:"CMPSB", width:1, left:[0x11,0x22,0x33], right:[0x11,0x99,0x33] },
+    { op:"CMPSW", width:2, left:[0x1122,0x3344,0x5566], right:[0x1122,0x9999,0x5566] }
+  ]) {
+    const mem={};
+    item.left.forEach((v,i)=>item.width===1?putByte(mem,0x1000,0x10+i,v):putWord(mem,0x1000,0x10+i*2,v));
+    item.right.forEach((v,i)=>item.width===1?putByte(mem,0x2000,0x20+i,v):putWord(mem,0x2000,0x20+i*2,v));
+    const state=runStringBinary("REPE "+item.op+"\nHLT",{
+      reg:{DS:0x1000,ES:0x2000,SI:0x10,DI:0x20,CX:3},mem
+    });
+    assert.equal(state.reg.CX,1,item.op+" remaining count");
+    assert.equal(state.reg.SI,0x10+2*item.width);
+    assert.equal(state.reg.DI,0x20+2*item.width);
+    assert.equal(state.flags.ZF,0,item.op+" mismatch clears ZF");
+  }
+  for (const item of [
+    { op:"SCASB", width:1, values:[0x10,0x42,0x30], accumulator:0x42 },
+    { op:"SCASW", width:2, values:[0x1010,0x4242,0x3030], accumulator:0x4242 }
+  ]) {
+    const mem={};
+    item.values.forEach((v,i)=>item.width===1?putByte(mem,0x2000,0x20+i,v):putWord(mem,0x2000,0x20+i*2,v));
+    const state=runStringBinary("REPNE "+item.op+"\nHLT",{
+      reg:{ES:0x2000,DI:0x20,CX:3,AX:item.accumulator},mem
+    });
+    assert.equal(state.reg.CX,1,item.op+" remaining count");
+    assert.equal(state.reg.DI,0x20+2*item.width);
+    assert.equal(state.flags.ZF,1,item.op+" match sets ZF");
+  }
+});
+categories.memory++;
+
+test("Préfixe REP avec CX=0 et CX=1 — aucune itération ou une seule", () => {
+  const untouched={};
+  putByte(untouched,0x1000,0x10,0x77);
+  const zero=runStringBinary("REP MOVSB\nHLT",{
+    reg:{DS:0x1000,ES:0x2000,SI:0x10,DI:0x20,CX:0},mem:untouched
+  });
+  assert.equal(zero.mem[physical(0x2000,0x20)],undefined);
+  assert.equal(zero.reg.SI,0x10);
+  assert.equal(zero.reg.DI,0x20);
+  assert.equal(zero.reg.CX,0);
+  const one=runStringBinary("REP MOVSB\nHLT",{
+    reg:{DS:0x1000,ES:0x2000,SI:0x10,DI:0x20,CX:1},
+    mem:{[physical(0x1000,0x10)]:0x77}
+  });
+  assert.equal(one.mem[physical(0x2000,0x20)],0x77);
+  assert.equal(one.reg.SI,0x11);
+  assert.equal(one.reg.DI,0x21);
+  assert.equal(one.reg.CX,0);
+});
+categories.memory++;
+
+test("DF=1 et override CS: REP MOVSB décrémente SI/DI et garde ES en destination", () => {
+  const mem={};
+  putByte(mem,0x3000,0x11,0xa1);
+  putByte(mem,0x3000,0x10,0xb2);
+  const state=runStringBinary("CS: REP MOVSB\nHLT",{
+    reg:{CS:0x3000,DS:0x1000,ES:0x2000,SI:0x11,DI:0x21,CX:2},
+    flags:{DF:1},mem
+  });
+  assert.equal(state.mem[physical(0x2000,0x21)],0xa1);
+  assert.equal(state.mem[physical(0x2000,0x20)],0xb2);
+  assert.equal(state.reg.SI,0x0f);
+  assert.equal(state.reg.DI,0x1f);
+  assert.equal(state.reg.CX,0);
+  assert.equal(state.flags.DF,1);
+});
+categories.memory++;
+
 test("INTO — vecteur 4, gestionnaire IVT et retour IRET en binaire", () => {
   const source="MOV AX, 7FFFh\nADD AX, 1\nINTO\nHLT\nHANDLER: MOV BX, 1\nIRET";
   const assembled=api.assemble(source),handler=assembled.symbols.HANDLER;
