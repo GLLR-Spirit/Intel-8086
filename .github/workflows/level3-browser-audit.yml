@@ -5,6 +5,7 @@ on:
     paths:
       - "index.html"
       - "tests/level3-browser-audit.cjs"
+      - "tests/xlat-interactive-8086.cjs"
       - ".github/workflows/level3-browser-audit.yml"
   push:
     branches: [audit/niveau-3-chapitres-12-17]
@@ -32,3 +33,5 @@ jobs:
           echo $! > /tmp/8086-server.pid
       - name: Exécuter les auto-tests, 18 exemples et 16 conditions Jcc
         run: node tests/level3-browser-audit.cjs
+      - name: Vérifier XLAT via le vrai bouton Pas à pas
+        run: node tests/xlat-interactive-8086.cjs
