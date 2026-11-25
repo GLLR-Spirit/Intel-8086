@@ -363,89 +363,89 @@ Cet index relie chaque entrée de la matrice générale à son registre de forme
 | XLAT | §9 | AL reçoit DS:[BX+AL] ; override source contrôlé |
 | PUSH | §14 | 50–57 registres ; 06/0E/16/1E segments ; FF /6 MEM16 uniquement ; pas d'immédiat 8086 |
 | POP | §14 | 58–5F registres ; 07/17/1F segments ; 8F /0 r/m16 ; POP CS invalide |
-| PUSHF | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| POPF | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| LAHF | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| SAHF | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| MOVSB | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| MOVSW | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| CMPSB | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| CMPSW | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| SCASB | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| SCASW | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| LODSB | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| LODSW | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| STOSB | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| STOSW | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| ADD | §3 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| ADC | §3 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| SUB | §3 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| SBB | §3 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| INC | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| DEC | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| NEG | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| CMP | §3 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| MUL | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| IMUL | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| DIV | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| IDIV | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| AAA | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| AAS | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| AAM | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| AAD | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| DAA | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| DAS | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| CBW | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| CWD | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| AND | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| OR | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| XOR | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| NOT | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| TEST | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| ROL | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| ROR | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| RCL | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| RCR | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| SHL | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| SHR | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| SAR | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| PUSHF | §14 | `9Ch` — aucun opérande ; empile FLAGS via SS:SP ; pas de préfixe REP/LOCK. |
+| POPF | §14 | `9Dh` — aucun opérande ; dépile FLAGS via SS:SP ; vérifier les bits réservés et les bits modifiables. |
+| LAHF | §14 | `9Fh` — aucun opérande ; copie SF/ZF/AF/PF/CF dans AH, avec bits fixes 1 et 0. |
+| SAHF | §14 | `9Eh` — aucun opérande ; restaure SF/ZF/AF/PF/CF depuis AH ; les autres FLAGS sont préservés. |
+| MOVSB | §10 | `A4h` — `ES:[DI] ← DS:[SI]`, octet ; SI/DI avancent ou reculent selon DF ; override de segment sur la source uniquement ; REP F3. |
+| MOVSW | §10 | `A5h` — `ES:[DI] ← DS:[SI]`, mot ; SI/DI avancent ou reculent de 2 selon DF ; override de segment sur la source uniquement ; REP F3. |
+| CMPSB | §10 | `A6h` — compare `DS:[SI]` à `ES:[DI]`, octet ; met à jour FLAGS ; REPE/REPNE (F3/F2) selon ZF ; override source uniquement. |
+| CMPSW | §10 | `A7h` — compare `DS:[SI]` à `ES:[DI]`, mot ; met à jour FLAGS ; REPE/REPNE (F3/F2) selon ZF ; override source uniquement. |
+| SCASB | §10 | `AEh` — compare AL à `ES:[DI]`, octet ; REPE/REPNE (F3/F2) selon ZF ; destination ES fixe. |
+| SCASW | §10 | `AFh` — compare AX à `ES:[DI]`, mot ; REPE/REPNE (F3/F2) selon ZF ; destination ES fixe. |
+| LODSB | §10 | `ACh` — `AL ← DS:[SI]`, octet ; SI suit DF ; override source possible ; REP F3. |
+| LODSW | §10 | `ADh` — `AX ← DS:[SI]`, mot ; SI suit DF par pas de 2 ; override source possible ; REP F3. |
+| STOSB | §10 | `AAh` — `ES:[DI] ← AL`, octet ; DI suit DF ; destination ES fixe ; REP F3. |
+| STOSW | §10 | `ABh` — `ES:[DI] ← AX`, mot ; DI suit DF par pas de 2 ; destination ES fixe ; REP F3. |
+| ADD | §3 | `00–03h` r/m↔reg ; `04/05h` AL/AX,imm ; `80/81/83 /0` r/m,imm ; LOCK F0 seulement si destination mémoire. |
+| ADC | §3 | `10–13h` r/m↔reg ; `14/15h` AL/AX,imm ; `80/81/83 /2` r/m,imm ; LOCK F0 seulement si destination mémoire. |
+| SUB | §3 | `28–2Bh` r/m↔reg ; `2C/2Dh` AL/AX,imm ; `80/81/83 /5` r/m,imm ; LOCK F0 seulement si destination mémoire. |
+| SBB | §3 | `18–1Bh` r/m↔reg ; `1C/1Dh` AL/AX,imm ; `80/81/83 /3` r/m,imm ; LOCK F0 seulement si destination mémoire. |
+| INC | §12 | `40–47h` r16 ; `FE /0` r/m8 ; `FF /0` r/m16 (registre ou mémoire) ; CF préservé ; LOCK possible sur mémoire. |
+| DEC | §12 | `48–4Fh` r16 ; `FE /1` r/m8 ; `FF /1` r/m16 (registre ou mémoire) ; CF préservé ; LOCK possible sur mémoire. |
+| NEG | §12 | `F6 /3` r/m8 ; `F7 /3` r/m16 ; CF/OF selon résultat ; LOCK possible sur mémoire. |
+| CMP | §3 | `38–3Bh` r/m↔reg ; `3C/3Dh` AL/AX,imm ; `80/81/83 /7` r/m,imm ; FLAGS modifiés, destination non écrite, pas de LOCK. |
+| MUL | §12 | `F6 /4` r/m8 ; `F7 /4` r/m16 ; multiplicande implicite AL/AX ; résultat AX ou DX:AX ; FLAGS CF/OF définis, autres indéfinis. |
+| IMUL | §12 | `F6 /5` r/m8 ; `F7 /5` r/m16 ; multiplicande implicite AL/AX ; résultat AX ou DX:AX ; FLAGS CF/OF définis, autres indéfinis. |
+| DIV | §12 | `F6 /6` r/m8 ; `F7 /6` r/m16 ; dividende implicite AX ou DX:AX ; quotient hors plage ou diviseur nul → INT 0. |
+| IDIV | §12 | `F6 /7` r/m8 ; `F7 /7` r/m16 ; dividende signé AX ou DX:AX ; quotient signé `−128..127` ou `−32768..32767` ; dépassement/diviseur nul → INT 0. |
+| AAA | §12 | `37h` — aucun opérande ; ajustement ASCII après ADD sur chiffres non signés ; FLAGS non définis hors CF/AF selon l'architecture. |
+| AAS | §12 | `3Fh` — aucun opérande ; ajustement ASCII après SUB ; contrôler AL/AH et CF/AF. |
+| AAM | §12 | `D4 ib` — base immédiate, valeur 0Ah par défaut (`D4 0A`) ; division de AL par la base vers AH:AL. |
+| AAD | §12 | `D5 ib` — base immédiate, valeur 0Ah par défaut (`D5 0A`) ; combine AH:AL avant DIV. |
+| DAA | §12 | `27h` — aucun opérande ; ajustement décimal après ADD packed BCD ; contrôler CF/AF et résultat. |
+| DAS | §12 | `2Fh` — aucun opérande ; ajustement décimal après SUB packed BCD ; contrôler CF/AF et résultat. |
+| CBW | §12 | `98h` — aucun opérande ; extension de signe AL vers AX. |
+| CWD | §12 | `99h` — aucun opérande ; extension de signe AX vers DX:AX. |
+| AND | §12 | `20–23h` r/m↔reg ; `24/25h` AL/AX,imm ; `80/81/83 /4` r/m,imm ; LOCK F0 seulement si destination mémoire. |
+| OR | §12 | `08–0Bh` r/m↔reg ; `0C/0Dh` AL/AX,imm ; `80/81/83 /1` r/m,imm ; LOCK F0 seulement si destination mémoire. |
+| XOR | §12 | `30–33h` r/m↔reg ; `34/35h` AL/AX,imm ; `80/81/83 /6` r/m,imm ; LOCK F0 seulement si destination mémoire. |
+| NOT | §12 | `F6 /2` r/m8 ; `F7 /2` r/m16 ; FLAGS préservés ; LOCK possible sur mémoire. |
+| TEST | §12 | `84/85h` r/m,reg ; `A8/A9h` AL/AX,imm ; `F6/F7 /0` r/m,imm ; FLAGS modifiés, opérande non écrit, pas de LOCK. |
+| ROL | §12 | `D0/D1 /0` count=1 ; `D2/D3 /0` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire. |
+| ROR | §12 | `D0/D1 /1` count=1 ; `D2/D3 /1` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire. |
+| RCL | §12 | `D0/D1 /2` count=1 ; `D2/D3 /2` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire. |
+| RCR | §12 | `D0/D1 /3` count=1 ; `D2/D3 /3` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire. |
+| SHL | §12 | `D0/D1 /4` count=1 ; `D2/D3 /4` count=CL ; alias SAL ; r/m8 ou r/m16 ; LOCK possible sur mémoire ; pas de C0/C1 sur 8086. |
+| SHR | §12 | `D0/D1 /5` count=1 ; `D2/D3 /5` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire ; pas de C0/C1 sur 8086. |
+| SAR | §12 | `D0/D1 /7` count=1 ; `D2/D3 /7` count=CL ; r/m8 ou r/m16 ; LOCK possible sur mémoire ; /6 non utilisé. |
 | JMP | §8–9 | EB short ; E9 near ; EA far direct ; FF /4 near r/m16 ; FF /5 far MEM16 uniquement |
 | CALL | §8–9 | E8 near direct ; 9A far direct ; FF /2 near r/m16 ; FF /3 far MEM16 uniquement |
 | RET | §8–9 | C3/C2 near ; CB/CA far |
-| INT | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| INTO | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| IRET | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| JCXZ | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| LOOP | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| LOOPE | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| LOOPNE | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| JO | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| JNO | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| JB | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| JAE | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| JE | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| JNE | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| JBE | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| JA | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| JS | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| JNS | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| JP | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| JNP | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| JL | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| JGE | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| JLE | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| JG | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| CLC | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| STC | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| CMC | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| CLD | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| STD | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| CLI | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| STI | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| INT | §14 | `CCh` INT3 sans immédiat ; `CD ib` INT avec vecteur imm8 ; vecteur 00h pour division ; cadre FLAGS:CS:IP. |
+| INTO | §14 | `CEh` — aucun opérande ; déclenche INT 4 si OF=1, sinon continue. |
+| IRET | §14 | `CFh` — aucun opérande ; dépile IP, CS, FLAGS ; vérification SS:SP et métadonnées de pile. |
+| JCXZ | §8–9 | `E3 cb` — branchement relatif signé 8 bits si CX=0 ; CX n'est pas modifié. |
+| LOOP | §8–9 | `E2 cb` — décrémente CX puis branche si CX≠0 ; déplacement signé 8 bits. |
+| LOOPE | §8–9 | `E1 cb` — décrémente CX puis branche si CX≠0 et ZF=1 ; déplacement signé 8 bits. |
+| LOOPNE | §8–9 | `E0 cb` — décrémente CX puis branche si CX≠0 et ZF=0 ; déplacement signé 8 bits. |
+| JO | §8–9 | `70 cb` — rel8 si OF=1. |
+| JNO | §8–9 | `71 cb` — rel8 si OF=0. |
+| JB | §8–9 | `72 cb` — rel8 si CF=1 (alias JC/JNAE). |
+| JAE | §8–9 | `73 cb` — rel8 si CF=0 (alias JNB/JNC). |
+| JE | §8–9 | `74 cb` — rel8 si ZF=1 (alias JZ). |
+| JNE | §8–9 | `75 cb` — rel8 si ZF=0 (alias JNZ). |
+| JBE | §8–9 | `76 cb` — rel8 si CF=1 ou ZF=1 (alias JNA). |
+| JA | §8–9 | `77 cb` — rel8 si CF=0 et ZF=0 (alias JNBE). |
+| JS | §8–9 | `78 cb` — rel8 si SF=1. |
+| JNS | §8–9 | `79 cb` — rel8 si SF=0. |
+| JP | §8–9 | `7A cb` — rel8 si PF=1 (alias JPE). |
+| JNP | §8–9 | `7B cb` — rel8 si PF=0 (alias JPO). |
+| JL | §8–9 | `7C cb` — rel8 si SF≠OF (alias JNGE). |
+| JGE | §8–9 | `7D cb` — rel8 si SF=OF (alias JNL). |
+| JLE | §8–9 | `7E cb` — rel8 si ZF=1 ou SF≠OF (alias JNG). |
+| JG | §8–9 | `7F cb` — rel8 si ZF=0 et SF=OF (alias JNLE). |
+| CLC | §14 | `F8h` — aucun opérande ; CF←0. |
+| STC | §14 | `F9h` — aucun opérande ; CF←1. |
+| CMC | §14 | `F5h` — aucun opérande ; CF←¬CF. |
+| CLD | §14 | `FCh` — aucun opérande ; DF←0. |
+| STD | §14 | `FDh` — aucun opérande ; DF←1. |
+| CLI | §14 | `FAh` — aucun opérande ; IF←0. |
+| STI | §14 | `FBh` — aucun opérande ; IF←1. |
 | IN | §14 | AL/AX depuis port imm8 ou DX |
 | OUT | §14 | AL/AX vers port imm8 ou DX |
-| NOP | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
-| HLT | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| NOP | §14 | `90h` — aucun opérande ; alias XCHG AX,AX ; aucun état architectural modifié. |
+| HLT | §14 | `F4h` — aucun opérande ; arrêt pédagogique ; reprise/interruptions matérielles hors périmètre si non simulées. |
 | WAIT | §14 | dépend du signal TEST ; pas de coprocesseur matériel simulé |
 | ESC | §14 | D8–DF + ModR/M ; pas d'émulation 8087 |
 
