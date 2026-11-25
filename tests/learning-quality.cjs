@@ -105,6 +105,23 @@ for (let chapterIndex = 0; chapterIndex < learning.curriculum.length; chapterInd
 console.log("Course example execution audit: " +
   (108 - exampleAudit.length) + "/108 execute without simulator errors.");
 if (exampleAudit.length) console.log(JSON.stringify(exampleAudit, null, 2));
+assert.equal(exampleAudit.length, 0, "All 108 course examples must execute without simulator errors.");
+
+// Detect exact duplicate final-question stems inside a chapter and collisions
+// between a lesson check and its chapter assessment.
+for (let chapterIndex = 0; chapterIndex < learning.chapterLearning.length; chapterIndex++) {
+  const chapter = learning.chapterLearning[chapterIndex];
+  const finalStems = chapter.quiz.map(q => String(q[0]).trim().toLocaleLowerCase());
+  assert.equal(new Set(finalStems).size, finalStems.length,
+    "Chapter " + (chapterIndex + 1) + " contains duplicate final-question stems.");
+  const finalSet = new Set(finalStems);
+  for (let lessonIndex = 0; lessonIndex < chapter.lessons.length; lessonIndex++) {
+    for (const question of chapter.lessons[lessonIndex].quiz) {
+      assert.ok(!finalSet.has(String(question[0]).trim().toLocaleLowerCase()),
+        "Chapter " + (chapterIndex + 1) + " repeats a lesson question in its final assessment.");
+    }
+  }
+}
 
 console.log("Learning quality: 36 chapters, 324 intermediate questions, 360 final questions, " +
   learning.exercises.length + " exercises; all guided corrections execute and pass their validators.");
