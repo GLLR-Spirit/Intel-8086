@@ -68,7 +68,7 @@ test("CALL r/m16 register forms encode FF /2 for all eight word registers",()=>{
  regs.forEach((r,i)=>{const a=api.assemble("CALL "+r);assert.deepEqual(Array.from(a.bytes),[0xFF,0xD0+i]);const d=api.disassemble(Array.from(a.bytes));assert.equal(d.rows[0].instruction,"CALL "+r);});
 });
 test("CALL FAR register operand is rejected by the assembler",()=>{
- assert.throws(()=>api.assemble("CALL FAR PTR AX"),/Étiquette inconnue/);
+ assert.throws(()=>api.assemble("CALL FAR PTR AX"),/CALL FAR indirect exige un pointeur mémoire 16:16/);
 });
 test("CALL r/m16 register forms execute near calls in source and binary for all eight registers",()=>{
  const regs=["AX","CX","DX","BX","SP","BP","SI","DI"];
