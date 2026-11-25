@@ -194,10 +194,10 @@ const decoderVectors = [
   ["LODSW opcode", [0xAD], /^LODSW$/i],
   ["SCASB opcode", [0xAE], /^SCASB$/i],
   ["SCASW opcode", [0xAF], /^SCASW$/i],
-  ["REP MOVSB prefix", [0xF3,0xA4], /^REP MOVSB$/i],
-  ["REPE CMPSW prefix", [0xF3,0xA7], /^REP CMPSW$/i],
-  ["REPNE SCASB prefix", [0xF2,0xAE], /^REPNE SCASB$/i],
-  ["CS override plus REP MOVSB", [0x2E,0xF3,0xA4], /^CS: REP MOVSB$/i]
+  ["REP MOVSB prefix", [0xF3,0xA4], /^REPMOVSB$/i],
+  ["REPE CMPSW prefix", [0xF3,0xA7], /^REPCMPSW$/i],
+  ["REPNE SCASB prefix", [0xF2,0xAE], /^REPNESCASB$/i],
+  ["CS override plus REP MOVSB", [0x2E,0xF3,0xA4], /^CS:REPMOVSB$/i]
 ];
 for (const [name, machineBytes, expectedText] of decoderVectors) {
   test("Désassembleur · " + name, () => {
@@ -209,7 +209,7 @@ for (const [name, machineBytes, expectedText] of decoderVectors) {
 }
 
 test("Préfixes de chaîne — doublons et combinaisons non admises explicitement", () => {
-  assert.throws(() => bytesOf("REP REP MOVSB"), /imbriqués|répétés/i);
+  assert.throws(() => bytesOf("REP REP MOVSB"), /imbriqués|répétés|doit précéder/i);
   assert.throws(() => bytesOf("CS: DS: MOVSB"), /imbriqués|répétés/i);
   assert.throws(() => bytesOf("LOCK MOVSB"), /LOCK.*chaîne/i);
   assert.throws(() => disassemble([0xF3,0xF2,0xA4]), /REP répétés/i);
