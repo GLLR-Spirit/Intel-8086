@@ -27,7 +27,7 @@ assert.equal(one([0x9C]),"PUSHF");assert.equal(one([0x9D]),"POPF");
 for(let mod=0;mod<4;mod++)for(let ext=0;ext<8;ext++)for(let rm=0;rm<8;rm++){
  const d=mod===0&&rm===6?[0x34,0x12]:mod===1?[0xFC]:mod===2?[0x00,0x80]:[];
  const code=[0xFF,(mod<<6)|(ext<<3)|rm,...d];let decoded;try{decoded=api.disassemble(code).rows[0].instruction;}catch(error){throw new Error("FF /"+ext+" mod="+mod+" rm="+rm+" bytes="+code.map(x=>x.toString(16)).join(" ")+": "+error.message);}
- if(ext===7||(mod===3&&[0,1,3,5,6].includes(ext)))assert.ok(decoded.startsWith("DB "),"FF /"+ext+" invalid for mod="+mod+": "+decoded);
+ if(ext===7||(mod===3&&[3,5,6].includes(ext)))assert.ok(decoded.startsWith("DB "),"FF /"+ext+" invalid for mod="+mod+": "+decoded);
  else assert.ok(!decoded.startsWith("DB "),"FF /"+ext+" must decode for mod="+mod+" rm="+rm+": "+decoded);
 }
 assert.deepEqual(bytes("PUSH WORD PTR [BX]"),[0xFF,0x37]);
