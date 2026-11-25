@@ -573,3 +573,17 @@ Les tests historiques classaient à tort les quotients exactement égaux aux min
 - `tests/mul-div-memory-8086.cjs` : les cas de dépassement vérifient les deux modes ; les programmes binaires sont chargés à CS=1000h afin de ne pas écraser l'IVT à l'adresse physique 00000h.
 
 **Validation CI :** ces corrections sont incluses dans le commit `a1a0aad7fef3ae2f485ec0e94404a243c8322980`, dont le workflow principal a réussi avec 49 étapes sur 49.
+
+### 16.6 WAIT et ESC — vecteurs indépendants et limites du modèle
+
+La suite `tests/wait-esc-8086.cjs` ajoute un contrôle indépendant des deux familles liées au coprocesseur :
+
+- `WAIT` : opcode fixe `9Bh`, désassemblage et rejet des formes avec opérandes.
+- `ESC` : les 64 codes d'échappement (`D8h–DFh` et champ `reg`) sont assemblés et désassemblés pour un opérande registre 16 bits et un opérande mémoire.
+- Décodage des **2 048 combinaisons** opcode ESC × octet ModR/M ; les déplacements requis par les modes mémoire sont fournis, et la longueur consommée est contrôlée.
+- Rejet des codes ESC hors plage, des opérandes immédiats, des arités invalides et des flux ESC tronqués.
+- Comparaison de l'état des registres, segments, neuf FLAGS modélisés et d'une sentinelle mémoire avant/après WAIT et ESC, en exécution source et binaire.
+
+**Résultat CI :** [workflow principal réussi](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45707818689), commit `46c4e2e389c23a18d02f71c04593ddb1172e2875`. La suite WAIT/ESC termine avec **6 7 1 0 assertions réussies** (6 710).
+
+**Limite architecturale explicite :** le laboratoire traite WAIT et ESC comme des no-op pédagogiques. Il ne simule ni le signal TEST, ni un 8087, ni le transfert de commandes/données vers un coprocesseur. Ces vecteurs valident donc le codage, le décodage, les contraintes de syntaxe et la préservation de l'état dans le modèle logiciel ; ils ne certifient pas l'exécution d'un coprocesseur matériel.
