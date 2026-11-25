@@ -388,7 +388,7 @@ Cet index relie chaque entrée de la matrice générale à son registre de forme
 | MUL | §12 | `F6 /4` r/m8 ; `F7 /4` r/m16 ; multiplicande implicite AL/AX ; résultat AX ou DX:AX ; FLAGS CF/OF définis, autres indéfinis. | `bcd-multiply-divide-8086.cjs`, `mul-div-memory-8086.cjs`, `instruction-vectors.cjs` |
 | IMUL | §12 | `F6 /5` r/m8 ; `F7 /5` r/m16 ; multiplicande implicite AL/AX ; résultat AX ou DX:AX ; FLAGS CF/OF définis, autres indéfinis. | `bcd-multiply-divide-8086.cjs`, `mul-div-memory-8086.cjs`, `instruction-vectors.cjs` |
 | DIV | §12 | `F6 /6` r/m8 ; `F7 /6` r/m16 ; dividende implicite AX ou DX:AX ; quotient hors plage ou diviseur nul → INT 0. | `bcd-multiply-divide-8086.cjs`, `mul-div-memory-8086.cjs`, `divide-error-interrupt-8086.cjs` |
-| IDIV | §12 | `F6 /7` r/m8 ; `F7 /7` r/m16 ; dividende signé AX ou DX:AX ; quotient signé `−128..127` ou `−32768..32767` ; dépassement/diviseur nul → INT 0. | `bcd-multiply-divide-8086.cjs`, `mul-div-memory-8086.cjs`, `divide-error-interrupt-8086.cjs` |
+| IDIV | §12 | `F6 /7` r/m8 ; `F7 /7` r/m16 ; dividende signé AX ou DX:AX ; quotient signé `−127..+127` (8086 original) ou `−32767..+32767` (8086 original) ; dépassement/diviseur nul → INT 0. | `bcd-multiply-divide-8086.cjs`, `mul-div-memory-8086.cjs`, `divide-error-interrupt-8086.cjs` |
 | AAA | §12 | `37h` — aucun opérande ; ajustement ASCII après ADD sur chiffres non signés ; FLAGS non définis hors CF/AF selon l'architecture. | `bcd-multiply-divide-8086.cjs`, `instruction-vectors.cjs` |
 | AAS | §12 | `3Fh` — aucun opérande ; ajustement ASCII après SUB ; contrôler AL/AH et CF/AF. | `bcd-multiply-divide-8086.cjs`, `instruction-vectors.cjs` |
 | AAM | §12 | `D4 ib` — base immédiate, valeur 0Ah par défaut (`D4 0A`) ; division de AL par la base vers AH:AL. | `bcd-multiply-divide-8086.cjs`, `instruction-vectors.cjs` |
@@ -543,36 +543,34 @@ Cette extension est une validation exhaustive des combinaisons de champs pour ce
 - `tests/push-pop-forms-8086.cjs` vérifie que sur 8086 PUSH SP empile la valeur après décrémentation de SP. Ce comportement est distinct de celui des générations ultérieures et est documenté dans le cours.
 
 
-### 16.4 IDIV — bornes inférieures du quotient signé
+### 16.4 IDIV — limites signées propres au 8086 original
 
-La réconciliation des contraintes de quotient a révélé une erreur dans le contrôle de plage de `executeMultiplyDivide` : les bornes minimales étaient `-127` et `-32767`, au lieu des minima représentables sur 8 et 16 bits.
+Le manuel Intel 8086 Family User's Manual d'octobre 1979, section IDIV, page 2-37, définit les limites de quotient suivantes :
 
-**Correction appliquée dans `index.html` :**
-- quotient signé octet : `-128..+127` ;
-- quotient signé mot : `-32768..+32767`.
+- r/m8 : `−127..+127` ;
+- r/m16 : `−32767..+32767`.
 
-**Vecteurs de frontière ajoutés à `tests/mul-div-memory-8086.cjs` :**
+Les valeurs `−128` et `−32768` ne sont donc pas des quotients valides sur le 8086 original : elles déclenchent l'interruption de division de type 0. Cette règle historique diffère des limites adoptées par des générations x86 ultérieures.
 
-| Cas | Dividende | Diviseur | Quotient attendu |
-|---|---:|---:|---:|
-| IDIV r/m8, borne minimale | AX = 4000h (+16384) | BL = 80h (-128) | AL = 80h (-128), AH = 00h |
-| IDIV r/m16, borne minimale | DX:AX = 4000:0000h (+1073741824) | BX = 8000h (-32768) | AX = 8000h (-32768), DX = 0000h |
-| IDIV r/m8, sous la borne | AX = 4080h (+16512) | BL = 80h (-128) | quotient -129 : interruption division par erreur |
-| IDIV r/m16, sous la borne | DX:AX = 4000:8000h (+1073774592) | BX = 8000h (-32768) | quotient -32769 : interruption division par erreur |
+Les tests de frontière dans `tests/mul-div-memory-8086.cjs` couvrent désormais :
 
-Chaque cas vérifie les chemins source et binaire. Les FLAGS ne sont pas comparés après IDIV, car leur état est indéfini architecturalement. **Validation confirmée :** le workflow CI principal du commit `a1a0aad7fef3ae2f485ec0e94404a243c8322980` a terminé avec succès (49 étapes, aucune étape en échec). Les tests de frontière source/binaire, les vecteurs différentiels BCD/MUL/DIV et les tests d'interruption de division ont tous été exécutés dans ce workflow.
+| Cas | Dividende | Diviseur | Attendu 8086 |
+|---|---:|---:|---|
+| IDIV byte, limite valide | AX = FF81h (−127) | BL = 1 | AL = 81h, AH = 00h |
+| IDIV word, limite valide | DX:AX = FFFF:8001h (−32767) | BX = 1 | AX = 8001h, DX = 0000h |
+| IDIV byte, limite invalide | AX = FF80h (−128) | BL = 1 | interruption 0 |
+| IDIV word, limite invalide | DX:AX = FFFF:8000h (−32768) | BX = 1 | interruption 0 |
 
+Les FLAGS ne sont pas comparés après IDIV, car AF, CF, OF, PF, SF et ZF sont indéfinis selon le manuel Intel.
 
-### 16.5 Réconciliation des vecteurs IDIV et isolation des modes d'exécution
+### 16.5 Réconciliation des vecteurs IDIV et interruption de division
 
-Les tests historiques classaient à tort les quotients exactement égaux aux minima signés comme des dépassements. Les cas `-128` et `-32768` sont désormais des résultats valides ; les vrais dépassements négatifs sont représentés par `-129` et `-32769`.
+- `index.html` : la plage de quotient signé de `executeMultiplyDivide` est limitée à `−127..+127` pour byte et `−32767..+32767` pour word.
+- `tests/bcd-multiply-divide-8086.cjs` : les vecteurs différentiels utilisent les limites 8086 originales ; les quotients `−128` et `−32768` sont classés comme erreurs, pas comme résultats valides.
+- `tests/mul-div-memory-8086.cjs` : les cas mémoire de division par zéro et de dépassement vérifient source et binaire, y compris la non-écriture du quotient/résidu et le retour IRET.
+- `tests/divide-error-interrupt-8086.cjs` : les huit cas source et huit cas binaires vérifient le vecteur 00h, le cadre FLAGS/CS/IP, IF/TF, SP et la reprise après l'instruction fautive.
 
-- `index.html` : `executeAll` force le chemin source à sortir du mode binaire dynamique pendant son exécution, puis restaure l'état global précédent. Cela évite qu'un appel binaire précédent modifie le comportement d'un appel source ultérieur.
-- `tests/bcd-multiply-divide-8086.cjs` : plage signée correcte et valeurs juste sous la borne ajoutées aux vecteurs.
-- `tests/divide-error-interrupt-8086.cjs` : les vecteurs de dépassement négatif utilisent désormais -129 et -32769, et non les minima valides.
-- `tests/mul-div-memory-8086.cjs` : les cas de dépassement vérifient les deux modes ; les programmes binaires sont chargés à CS=1000h afin de ne pas écraser l'IVT à l'adresse physique 00000h.
-
-**Validation CI :** ces corrections sont incluses dans le commit `a1a0aad7fef3ae2f485ec0e94404a243c8322980`, dont le workflow principal a réussi avec 49 étapes sur 49.
+**Validation CI :** le commit `531f1a7ba7c51fcf62fa2ba20e53b9dc864b83a6` passe le workflow principal complet (55 étapes sur 55) et le workflow navigateur associé. Les suites BCD/MUL/DIV totalisent 6 812 réussites ; la suite mémoire MUL/IMUL/DIV/IDIV totalise 1 091 réussites.
 
 ### 16.6 WAIT et ESC — vecteurs indépendants et limites du modèle
 
@@ -656,3 +654,44 @@ La suite `tests/unary-arithmetic-prefix-8086.cjs` ajoute une matrice dédiée au
 Le premier passage a révélé une erreur dans le test lui-même : il comparait une valeur mot à un seul octet de mémoire. La vérification a été corrigée pour contrôler séparément l'octet bas et l'octet haut.
 
 **État :** les étapes dédiées INC/DEC/NEG, ALU, logique et NOT passent dans la CI du commit `19ccaab8e9315265e1fba1e699c70e7b6c9f4b83`. Le workflow global était encore en cours au moment de cette mise à jour ; ne pas interpréter le seul succès de l'étape comme une CI complète.
+
+### 16.12 MUL, IMUL, DIV et IDIV — matrice des formes et préfixes (26 novembre 2026)
+
+**Périmètre :** quatre instructions à un opérande du 8086 original, deux tailles (byte/word), formes registre et mémoire, contraintes ModR/M, préfixes, interruption de division et exécution source/binaire.
+
+**Formes d'encodage :**
+
+| Instruction | Byte | Word |
+|---|---|---|
+| MUL | F6 /4 | F7 /4 |
+| IMUL | F6 /5 | F7 /5 |
+| DIV | F6 /6 | F7 /6 |
+| IDIV | F6 /7 | F7 /7 |
+
+**Couverture des formes :**
+- Huit registres byte et huit registres word pour chacune des quatre instructions ; encodage et désassemblage ModR/M contrôlés.
+- Huit formes d'adressage effectif, adresse directe, disp8, disp16 et limites de déplacement ; exécutions mémoire en source et binaire.
+- Qualificateurs BYTE PTR/WORD PTR requis pour les opérandes mémoire ; immédiats, formes multi-opérandes, tailles incohérentes et extension F6/F7 /1 réservée rejetés.
+- Les résultats implicites sont vérifiés : AX pour les produits byte, DX:AX pour les produits word ; AL/AH ou AX/DX pour quotient et reste.
+- CF/OF sont comparés pour MUL/IMUL ; les autres FLAGS indéfinis ne sont pas artificiellement vérifiés. Tous les FLAGS arithmétiques indéfinis après DIV/IDIV sont exclus des comparaisons.
+
+**Préfixes :**
+- ES, CS, SS et DS : 32 combinaisons d'override mémoire (4 instructions × 2 tailles × 4 segments), avec encodage et exécution source/binaire.
+- REP, REPE, REPNE et REPZ sont rejetés devant ces instructions non-chaîne.
+- Les overrides de segment sur formes registre seules sont rejetés par la syntaxe source car aucune référence mémoire n'existe.
+- LOCK est conservé comme préfixe 8086 devant MUL/IMUL/DIV/IDIV, y compris sur source mémoire en lecture seule. Le manuel 8086 indique que LOCK active le signal de bus pendant l'instruction suivante en mode maximum ; le moteur pédagogique n'émule ni le signal physique ni l'arbitrage.
+
+**Résultats mesurés :**
+
+| Suite | Résultat |
+|---|---:|
+| `bcd-multiply-divide-8086.cjs` | 6 812 réussis, 0 échec |
+| `mul-div-memory-8086.cjs` | 1 091 réussis, 0 échec |
+| Encodages/désassemblages mémoire | 392 |
+| Exécutions mémoire source/binaire | 384 |
+| Erreurs de division mémoire source/binaire | 16 |
+| Overrides de segment | 32 |
+| Vecteurs MUL/IMUL | 1 300 |
+| Vecteurs DIV/IDIV | 380 |
+
+**Statut de réconciliation :** les quatre lignes correspondantes de `docs/coverage-audit-8086.md` sont marquées Tests = Oui. Cette validation est limitée à ces quatre instructions et à leurs formes documentées ; elle ne certifie pas la matrice complète des 93 entrées ni l'équivalence matérielle du simulateur avec un 8086 physique.
