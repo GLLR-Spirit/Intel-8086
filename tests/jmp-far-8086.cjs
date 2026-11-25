@@ -3,11 +3,12 @@ const html=fs.readFileSync("index.html","utf8"),match=html.match(/<script>([\s\S
 const elements=new Map();function element(id){if(!elements.has(id))elements.set(id,{id,value:"",textContent:"",innerHTML:"",className:"",dataset:{},onclick:null,oninput:null,onchange:null});return elements.get(id);}
 const context={document:{getElementById:element,querySelectorAll:()=>[]},localStorage:{getItem:()=>null,setItem:()=>{},removeItem:()=>{}},console};
 vm.createContext(context);
-const injection="\nglobalThis.api={assemble:s=>assembleProgram(s),disassemble:b=>disassembleBytes(b),execute:s=>executeAll(s),binary:(b,c,i,s)=>executeBinary(b,c,i,s)};\n})();\n";
+const injection="\nglobalThis.api={assemble:s=>assembleProgram(s),disassemble:b=>disassembleBytes(b),parse:s=>parseProgram(s),execute:s=>executeAll(s),binary:(b,c,i,s)=>executeBinary(b,c,i,s)};\n})();\n";
 const instrumented=match[1].replace(/\n\}\)\(\);\s*$/,injection);assert.notEqual(instrumented,match[1]);
 vm.runInContext(instrumented,context,{timeout:30000});
 const api=context.api;
 const direct="JMP FAR 1234h:0003h\nMOV AX, 1\nMOV AX, 2\nHLT";
+console.log("JMP_FAR_PARSE_DEBUG",JSON.stringify(api.parse(direct).ops));
 const encoded=Array.from(api.assemble(direct).bytes);
 assert.deepEqual(encoded.slice(0,5),[0xEA,0x03,0x00,0x34,0x12],"EA far JMP offset then segment little-endian");
 assert.equal(api.disassemble(encoded).rows[0].instruction,"JMP FAR 1234h:0003h");
