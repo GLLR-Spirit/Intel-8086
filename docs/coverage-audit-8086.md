@@ -1,8 +1,9 @@
 # Audit de couverture du jeu d'instructions Intel 8086
 
 **Dépôt audité :** `GLLR-Spirit/Intel-8086`  
-**Branche :** `main`  
-**Date de l'audit statique :** 24 novembre 2026  
+**Branche de travail actualisée :** `audit/niveau-3-chapitres-12-17`  
+**Date de l'audit statique initial :** 24 novembre 2026  
+**Dernière actualisation ciblée :** 26 novembre 2026  
 **Périmètre :** Intel 8086 original uniquement ; aucune instruction 80186 ou ultérieure n'est comptée.  
 **Nature :** audit statique du code, de la documentation et des tests existants. Ce document ne prétend pas certifier le comportement électrique ou matériel du processeur.
 
@@ -58,10 +59,10 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | DEC | Oui | Oui | Oui | Oui | Partiel |
 | NEG | Oui | Oui | Oui | Oui | Partiel |
 | CMP | Oui | Oui | Partiel | Partiel | Partiel |
-| MUL | Oui | Oui | Oui | Oui | Partiel |
-| IMUL | Oui | Oui | Oui | Oui | Partiel |
-| DIV | Oui | Oui | Oui | Oui | Partiel |
-| IDIV | Oui | Oui | Oui | Oui | Partiel |
+| MUL | Oui | Oui | Oui | Oui | Oui |
+| IMUL | Oui | Oui | Oui | Oui | Oui |
+| DIV | Oui | Oui | Oui | Oui | Oui |
+| IDIV | Oui | Oui | Oui | Oui | Oui |
 | AAA | Oui | Non | Non | Non | À faire |
 | AAS | Oui | Non | Non | Non | À faire |
 | AAM | Oui | Non | Non | Non | À faire |
@@ -689,3 +690,35 @@ La matrice de 93 entrées et les synthèses chiffrées de ce document sont un **
 Depuis cet instantané, la branche d'audit contient notamment des suites dédiées et des contrôles CI pour les instructions de chaîne, les E/S, les ajustements BCD, les rotations/décalages, les transferts indirects, XCHG, LEA, LDS/LES, XLAT et les matrices ModR/M. Certaines cellules « Non » ou « À faire » de la table historique sont donc obsolètes. À l'inverse, la réussite d'une suite dédiée ne suffit pas à passer automatiquement une entrée à « Oui » : il faut vérifier toutes ses formes, ses contraintes, ses effets architecturaux et les chemins assembleur/désassembleur/exécution concernés.
 
 **Aucun nouveau pourcentage global sur 93 entrées n'est publié dans cette mise à jour.** Il faut d'abord reconstruire la matrice à partir d'un registre de formes canonique et de résultats actuels, sans réutiliser les statuts historiques comme s'ils étaient encore valables. Les limites du modèle logiciel (BIU, bus, temporisations physiques, signaux externes et événements matériels) doivent rester séparées de la couverture fonctionnelle du simulateur.
+
+## 8. Actualisation ciblée — MUL, IMUL, DIV et IDIV (26 novembre 2026)
+
+Les quatre entrées ont désormais une validation détaillée des formes 8086 à un opérande :
+
+- F6 /4 et F7 /4 : MUL r/m8 et r/m16.
+- F6 /5 et F7 /5 : IMUL r/m8 et r/m16.
+- F6 /6 et F7 /6 : DIV r/m8 et r/m16.
+- F6 /7 et F7 /7 : IDIV r/m8 et r/m16.
+- F6/F7 /1 reste réservé ; il est conservé comme forme invalide et ne doit pas être interprété comme une instruction.
+
+**Résultats dédiés du commit 531f1a7ba7c51fcf62fa2ba20e53b9dc864b83a6 :**
+
+| Contrôle | Résultat |
+|---|---:|
+| Suite BCD + MUL/DIV | 6 812 réussis, 0 échec |
+| Suite mémoire MUL/IMUL/DIV/IDIV | 1 091 réussis, 0 échec |
+| Encodages/désassemblages mémoire | 392 |
+| Overrides de segment | 32 |
+| Exécutions mémoire source/binaires | 384 |
+| Erreurs de division mémoire source/binaires | 16 |
+| Extensions F6/F7 contrôlées | 16 |
+| Vecteurs MUL/IMUL | 1 300 |
+| Vecteurs DIV/IDIV | 380 |
+
+La suite mémoire couvre les huit formes d'adressage effectif, les déplacements disp8/disp16, l'adressage direct, les registres byte/word, les contraintes d'opérandes, les quatre overrides de segment et les chemins source/binaire. Les tests de division vérifient le vecteur 0, le non-engagement du quotient en cas d'erreur et le retour par IRET lorsque le vecteur est initialisé.
+
+**Règle IDIV spécifique au 8086 original :** le manuel Intel d'octobre 1979, section IDIV, p. 2-37, fixe les quotients à -127..+127 pour r/m8 et -32767..+32767 pour r/m16. Les valeurs -128 et -32768 déclenchent donc l'interruption de division sur ce modèle historique. Ne pas remplacer ces limites par celles de générations x86 ultérieures. [Manuel Intel 8086 Family User's Manual (1979)](https://www.inf.pucrs.br/~calazans/undergrad/orgcomp_EC/mat_microproc/intel-8086_family_Users_Manual.pdf).
+
+**Préfixes :** les quatre overrides de segment ont été exercés avec les quatre instructions et les deux tailles mémoire, en source et en binaire. Les formes registre seules ne prennent pas d'override de segment dans la syntaxe de l'assembleur. REP/REPE/REPNE/REPZ sont rejetés pour ces opérations. Le préfixe LOCK, en revanche, est encodé et conservé : le manuel 8086 décrit LOCK comme un préfixe qui active le signal de bus pendant l'instruction suivante en mode maximum, sans restriction ISA moderne par destination mémoire. Le simulateur ne reproduit pas le signal physique ni l'arbitrage du bus.
+
+**Portée de la réconciliation :** les quatre lignes de la matrice sont passées à Tests = Oui selon la définition de cette colonne (formes encodées/décodées et contrôles indépendants source/binaire). Cela ne certifie ni les 93 entrées globalement, ni le modèle matériel complet du 8086. Les limites BIU, bus, cycles, signaux externes et tous les états FLAGS indéfinis restent hors de cette validation.
