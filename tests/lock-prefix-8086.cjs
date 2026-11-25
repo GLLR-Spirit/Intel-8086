@@ -8,6 +8,7 @@ const instrumented=match[1].replace(/\n\}\)\(\);\s*$/,injection);assert.notEqual
 vm.runInContext(instrumented,context,{timeout:30000});
 const api=context.api;assert.ok(api);
 const allFlags=["CF","PF","AF","ZF","SF","TF","IF","DF","OF"];
+const initialSP=api.execute("HLT").reg.SP;
 function checkFlags(state,expected){for(const flag of allFlags)assert.equal(state.flags[flag],expected[flag],flag+" preserved");}
 function checkMemory(state,segment,offset,value){const physical=(((segment&65535)<<4)+(offset&65535))&0xfffff;assert.equal(state.mem[physical],value,"memory "+segment.toString(16)+":"+offset.toString(16));}
 const source=[
@@ -28,7 +29,7 @@ for(const [mode,state] of [["source",api.execute(source)],["binary",api.binary(b
  assert.equal(state.reg.DI,0x202,mode+" DI advanced");
  checkMemory(state,0x2000,0x200,0x41);checkMemory(state,0x2000,0x201,0x42);
  checkFlags(state,{CF:1,PF:1,AF:1,ZF:1,SF:1,TF:1,IF:1,DF:0,OF:1});
- assert.equal(state.reg.SP,0xFFFE,"PUSHF/POPF stack balanced");
+ assert.equal(state.reg.SP,initialSP,"PUSHF/POPF stack balanced");
 }
 const regSource="MOV AX, 1\nLOCK INC AX\nHLT";
 const regBytes=Array.from(api.assemble(regSource).bytes);
