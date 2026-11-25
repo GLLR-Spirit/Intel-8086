@@ -583,18 +583,21 @@ Cette section remplace les statuts de l'ancienne matrice au niveau des 93 mnémo
 | WAIT | Partiel | Oui | Oui | À faire |
 | ESC | Partiel | Oui | Oui | Partiel |
 
-## Décomptes descriptifs — sans pourcentage global
+## État du décompte — non consolidé
 
-| Domaine | Oui | Partiel | Non / à faire |
-|---|---:|---:|---:|
-| Simulateur | 85 | 8 | 0 |
-| Assembleur | 79 | 14 | 0 |
-| Désassembleur | 79 | 14 | 0 |
-| Tests indépendants | 0 | 87 | 6 |
+Les 93 mnémoniques canoniques sont conservés comme inventaire de départ, mais les statuts de la matrice n'ont pas encore été réconciliés forme par forme sur la branche courante. Les anciens décomptes statiques sont historiques et ne doivent pas être repris comme chiffres actuels.
 
-Ces nombres décrivent les statuts des 93 lignes canoniques de cette matrice de travail. **Ils ne constituent pas un taux de conformité ni un pourcentage global.** Les statuts ne distinguent pas encore toutes les formes d'opérandes, tailles, extensions ModR/M, préfixes et limites pour chaque instruction. Une ligne « Oui » indique une prise en charge déclarée au niveau du mnémonique, pas la validation de toutes ses formes.
+**Aucun décompte consolidé et aucun pourcentage global ne sont publiés à ce stade.** Pour chaque instruction, il faut encore distinguer :
+- présence du chemin source ;
+- formes d'opérandes et tailles acceptées ;
+- émission assembleur ;
+- désassemblage et consommation exacte des octets ;
+- exécution binaire ;
+- tests ciblés ;
+- oracle indépendant ;
+- restrictions architecturales et préfixes.
 
-Aucun score global n'est publié à ce stade. Le calcul sera effectué seulement après réconciliation du registre forme-par-forme et des preuves indépendantes par domaine, avec pondération explicite et reproductible.
+La matrice actuelle reste un registre de travail, pas un résultat chiffré. Le registre forme-par-forme est le support de la prochaine consolidation.
 
 ## Éléments de preuve dans le CI
 
