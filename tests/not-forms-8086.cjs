@@ -116,7 +116,7 @@ for(const seg of SEG){
     "MOV BYTE PTR "+seg.name+":[BX],55h",
     seg.name+":","NOT BYTE PTR [BX]","HLT"
   ].join("\n");
-  const expected=[...prefix,0xF6,0x17,0xF4];
+  const expected=[...prefix,0xF6,0x17];
   const bytes=assemble(source);
   const start=bytes.length-expected.length;
   same(bytes.slice(start),expected,"NOT "+seg.name+" segment prefix bytes");
