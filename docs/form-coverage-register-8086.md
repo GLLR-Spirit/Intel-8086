@@ -349,3 +349,129 @@ Les formes registre de `INC`, `DEC` et `PUSH` utilisent respectivement les opcod
 - tests intégrés du désassembleur pour les trois encodages registre invalides.
 
 Cette restriction est contrôlée indépendamment de la présence des mnémoniques `INC`, `DEC` et `PUSH` dans le simulateur.
+## 15. Index de rapprochement des 93 mnémoniques canoniques
+
+Cet index relie chaque entrée de la matrice générale à son registre de formes. Il ne transforme pas un statut d'implémentation en validation exhaustive. Les contraintes ci-dessous sont les contraintes architecturales structurantes à vérifier dans chaque chemin concerné ; les tableaux précédents détaillent les formes recensées et les tests associés.
+
+| Mnémonique canonique | Registre de formes | Forme / contrainte structurante |
+|---|---|---|
+| MOV | §2 | 14 formes répertoriées ; restrictions Sreg, C6/C7 /0 et moffs |
+| XCHG | §9 | 86/87 ModR/M ; 90–97 avec AX ; pas mémoire-mémoire |
+| LEA | §9 | r16, adresse effective mémoire ; ne lit pas la donnée |
+| LES | §9 | r16, m16:16 ; pointeur far en mémoire |
+| LDS | §9 | r16, m16:16 ; pointeur far en mémoire |
+| XLAT | §9 | AL reçoit DS:[BX+AL] ; override source contrôlé |
+| PUSH | §14 | 50–57 registres ; 06/0E/16/1E segments ; FF /6 MEM16 uniquement ; pas d'immédiat 8086 |
+| POP | §14 | 58–5F registres ; 07/17/1F segments ; 8F /0 r/m16 ; POP CS invalide |
+| PUSHF | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| POPF | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| LAHF | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| SAHF | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| MOVSB | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| MOVSW | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| CMPSB | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| CMPSW | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| SCASB | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| SCASW | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| LODSB | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| LODSW | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| STOSB | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| STOSW | §10 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| ADD | §3 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| ADC | §3 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| SUB | §3 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| SBB | §3 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| INC | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| DEC | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| NEG | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| CMP | §3 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| MUL | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| IMUL | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| DIV | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| IDIV | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| AAA | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| AAS | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| AAM | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| AAD | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| DAA | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| DAS | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| CBW | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| CWD | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| AND | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| OR | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| XOR | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| NOT | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| TEST | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| ROL | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| ROR | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| RCL | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| RCR | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| SHL | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| SHR | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| SAR | §12 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| JMP | §8–9 | EB short ; E9 near ; EA far direct ; FF /4 near r/m16 ; FF /5 far MEM16 uniquement |
+| CALL | §8–9 | E8 near direct ; 9A far direct ; FF /2 near r/m16 ; FF /3 far MEM16 uniquement |
+| RET | §8–9 | C3/C2 near ; CB/CA far |
+| INT | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| INTO | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| IRET | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| JCXZ | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| LOOP | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| LOOPE | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| LOOPNE | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| JO | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| JNO | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| JB | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| JAE | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| JE | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| JNE | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| JBE | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| JA | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| JS | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| JNS | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| JP | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| JNP | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| JL | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| JGE | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| JLE | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| JG | §8–9 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| CLC | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| STC | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| CMC | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| CLD | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| STD | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| CLI | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| STI | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| IN | §14 | AL/AX depuis port imm8 ou DX |
+| OUT | §14 | AL/AX vers port imm8 ou DX |
+| NOP | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| HLT | §14 | Voir le registre de famille ; formes et préfixes à valider par opcode. |
+| WAIT | §14 | dépend du signal TEST ; pas de coprocesseur matériel simulé |
+| ESC | §14 | D8–DF + ModR/M ; pas d'émulation 8087 |
+
+## 16. État de réconciliation par famille au 25 novembre 2026
+
+| Famille | Formes principales couvertes par les tests présents | État de validation |
+|---|---|---|
+| MOV | 14 formes recensées ; ModR/M, moffs, immédiats, segments, mémoire et déplacements | Ciblé ; pas encore toutes les combinaisons opérandes × préfixes |
+| ADD/ADC/SUB/SBB/CMP | 9 formes par instruction, extensions 80/81/83 | Vecteurs indépendants ciblés ; couverture exhaustive des directions octet/mot à terminer |
+| INC/DEC | FE /0,/1 r/m8 ; FF /0,/1 MEM16 ; registres via opcodes compacts | Restrictions FF registre-direct corrigées et testées |
+| PUSH/POP | registres compacts, segments valides, FF /6 MEM16, 8F /0 r/m16 | Tests source/binaire et contraintes ; FF /6 mémoire uniquement |
+| CALL | E8, 9A, FF /2 r/m16, FF /3 MEM16 | Indirect near/far, huit modes mémoire, segment overrides, CS:IP, pile et neuf FLAGS testés |
+| JMP | EB, E9, EA, FF /4 r/m16, FF /5 MEM16 | Near/far indirect, huit modes mémoire, source/binaire et neuf FLAGS testés |
+| RET | C2/C3/CA/CB, nettoyage immédiat pair/impair | Pile, SP, limites et GNU as ciblés ; pas de modèle processeur physique |
+| Jcc et boucles | 16 Jcc courts, LOOP/LOOPE/LOOPNE/JCXZ | Vecteurs de conditions et déplacements ; pas de relâchement vers rel16 pour Jcc sur 8086 |
+| Arithmétique et logique | ALU, groupes F6/F7, NEG, MUL/IMUL/DIV/IDIV, BCD, rotations/décalages | Plusieurs oracles indépendants exhaustifs sur domaines numériques bornés ; chaque forme mémoire et préfixe reste à rapprocher |
+| Chaînes | MOVS/CMPS/SCAS/LODS/STOS octet/mot, REP/REPNE, DF, DS:SI et ES:DI | Couverture fonctionnelle ciblée ; matrice complète des interruptions, préfixes et FLAGS encore à compléter |
+| Interruptions | INT/INT3/INTO/IRET, cadre FLAGS/CS/IP | Chemins logiciels et erreurs de division ciblés ; pas d'interruptions matérielles asynchrones |
+| E/S | IN/OUT immédiat et DX | État de ports simulé ; aucun périphérique électrique |
+| WAIT/ESC | WAIT, D8–DF | Décodage et formes ciblés ; aucun signal TEST ni coprocesseur 8087 simulé |
+| FLAGS | CLC/STC/CMC, CLD/STD, CLI/STI, LAHF/SAHF, PUSHF/POPF | Différentiels et oracles ciblés ; les bits indéfinis/non modélisés sont hors garantie |
+
+### Restrictions FF réconciliées avec Intel
+
+Le groupe FF est désormais traité ainsi : /0 INC MEM16, /1 DEC MEM16, /2 CALL near REG16/MEM16, /3 CALL far MEM16, /4 JMP near REG16/MEM16, /5 JMP far MEM16, /6 PUSH MEM16, /7 non utilisé. Les formes Mod=11 sont invalides pour /0, /1, /3, /5 et /6. Les tests group-opcodes, modrm-matrix, addressing-displacement et push-pop-forms doivent rester synchronisés sur cette règle.
+
+### Décision de calcul
+
+Aucun score par mnémonique ni score global n'est publié. La pondération ne sera définie qu'après que chaque ligne aura un inventaire de formes, les contraintes d'opérandes, les préfixes applicables, une preuve de génération/décodage/exécution et un oracle indépendant. Un opcode présent dans le code ne vaut pas une forme validée.
