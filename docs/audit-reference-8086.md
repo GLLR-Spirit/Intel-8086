@@ -79,3 +79,19 @@ La CI inclut désormais un balayage structurel des 256 valeurs d'opcode primaire
 Le même lot corrige le désassembleur pour que son traitement de LOCK reste cohérent avec le sous-ensemble verrouillable accepté par l'analyseur du laboratoire : destination mémoire obligatoire pour les opérations prises en charge, avec traitement distinct de XCHG mémoire. Cela ne constitue pas une simulation de la sortie LOCK, du bus ou de l'arbitrage.
 
 Validation CI : run 45512297498, commit `f0573072cf57ad741a0b6e33165f0ffa61d9cd75` — success, toutes les étapes exécutées.
+
+## Recoupement indépendant par assembleur externe — 25 novembre 2026
+
+Un contrôle différentiel a été ajouté dans `tests/gnu-as-crosscheck.cjs` et intégré au workflow CI. Il assemble le même programme avec l'assembleur du laboratoire et GNU `as` en mode `.code16`, extrait le segment `.text` avec `objcopy`, puis compare les flux octet par octet.
+
+Le vecteur couvre explicitement :
+
+- MOV immédiat vers AX et BX ;
+- CMP registre-registre et accumulateur-immédiat ;
+- JMP direct court, JMP direct near hors portée rel8 et JMP indirect par BX ;
+- les 16 opcodes Jcc de `70h` à `7Fh` ;
+- LOOPNE, LOOPE, LOOP et JCXZ (`E0h` à `E3h`).
+
+Les 209 octets du programme sont comparés intégralement entre les deux assembleurs. En outre, 59 octets clés sont épinglés à des valeurs fixes indépendantes afin d'éviter qu'une même erreur de génération ne passe simplement par égalité entre deux sorties. Le contrôle local a été exécuté avec GNU Binutils 2.44 ; le workflow CI sur le commit `56dd1e4d40220856fd72f940fa688f430f31242b` a réussi, y compris cette nouvelle étape.
+
+**Portée et limites :** ce recoupement confirme uniquement les formes et les cas présents dans ce vecteur. GNU `as` constitue une implémentation d'assemblage indépendante, pas un oracle matériel Intel ni une preuve d'exhaustivité. Il ne valide pas l'exécution réelle, les effets FLAGS, les indicateurs indéfinis, les cycles, les signaux de bus ou toutes les combinaisons ModR/M. Ces contrôles restent ouverts et doivent être étendus instruction par instruction.
