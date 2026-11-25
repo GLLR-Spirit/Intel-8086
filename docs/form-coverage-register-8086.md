@@ -151,7 +151,7 @@ Cette tranche s'appuie sur les tests ciblés dédiés aux appels, retours, branc
 | JMP near | relatif rel16 | E9 cw | Implémenté | Implémenté | Testé | Déplacement rel16 |
 | JMP near indirect | r/m16 | FF /4 | Implémenté | Implémenté | Test ciblé | Registre et mémoire |
 | JMP far direct | ptr16:16 | EA cd | Implémenté | Implémenté | Testé source et binaire | `jmp-far-8086`, GNU as ; CS:IP, SP et FLAGS |
-| JMP far indirect | m16:16 | FF /5 | Implémenté | Implémenté | Testé source et binaire, huit modes | `jmp-far-indirect-8086` ; CS:IP, SP et neuf FLAGS |
+| JMP far indirect | m16:16 | FF /5 | Implémenté | Implémenté | Testé source et binaire, huit modes | `jmp-far-indirect-8086` ; CS:IP, SP et neuf FLAGS ; GNU as pour [BX] et [BX+SI] |
 | RET near | sans immédiat / imm16 | C3 / C2 iw | Implémenté | Implémenté | Testé | Pile, SP et nettoyage impair |
 | RETF | sans immédiat / imm16 | CB / CA iw | Implémenté | Implémenté | Testé | CS:IP, SP et nettoyage impair |
 | Jcc | rel8, 16 conditions | 70–7F cb | Implémenté | Implémenté | Testé | Conditions et limites |
