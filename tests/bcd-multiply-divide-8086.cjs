@@ -259,7 +259,7 @@ for (const bits of [8, 16]) {
           : (op === "IDIV" ? (raw | 0) : raw >>> 0);
         const quotient = Math.trunc(dividend / divisor);
         const remainder = dividend - quotient * divisor;
-        const min = op === "IDIV" ? -(2 ** (bits - 1)) : 0;
+        const min = op === "IDIV" ? -(2 ** (bits - 1)) + 1 : 0;
         const max = op === "IDIV" ? (bits === 8 ? 127 : 32767) : (bits === 8 ? 255 : 65535);
         if (quotient >= min && quotient <= max) {
           expectDivision(op, bits, raw, divisorRaw, quotient, remainder);
