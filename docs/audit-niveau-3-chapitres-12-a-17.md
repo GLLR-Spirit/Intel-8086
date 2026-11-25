@@ -91,3 +91,73 @@ L'implémentation de XLAT dans `index.html` n'a pas été modifiée : aucune ano
 Les contrôles ciblés demandés pour cette intervention sont réussis : conservation architecturale dans les chemins source et binaire, exécution interactive réelle, et comparaison indépendante des octets émis. XLAT peut être considérée comme validée pour ce périmètre logiciel testé.
 
 Cette conclusion ne prouve pas une équivalence matérielle complète avec un processeur Intel 8086 physique. Elle ne remplace pas non plus une validation sur silicium ou une campagne exhaustive de toutes les conditions externes.
+
+
+## 6. Audit approfondi de XCHG (86h, 87h, 90h–97h)
+
+Date : 25 novembre 2026  
+Commit validé pour les tests XCHG : `2a264cc551e0c65a94baba58f005ef56f88d5916`
+
+### Périmètre et résultats
+
+La suite XCHG initiale affichait 471 tests. Elle a été étendue et comporte maintenant **483 assertions réussies, 0 échec**.
+
+| Domaine | Résultat |
+|---|---:|
+| Paires de registres 8 bits | 64 |
+| Paires de registres 16 bits | 64 |
+| Formes mémoire | 26 |
+| Préfixes de segment | 12 |
+| Vérifications de préservation des FLAGS | 311 |
+| Formes interdites | 9 |
+| Cas particuliers | 12 |
+| Exécutions binaires | 157 |
+| Total de la suite XCHG | **483/483** |
+
+Les contrôles couvrent les huit registres 8 bits, les huit registres 16 bits, les échanges registre-registre, les échanges registre-mémoire, les huit formes d'adressage effectif, les deux largeurs, les deux ordres d'opérandes, les préfixes ES/CS/SS/DS, les déplacements signés limites, la préservation des neuf FLAGS suivis par le simulateur, les formes invalides et les formes LOCK.
+
+### Vérification indépendante des encodages
+
+Le nouveau fichier `tests/xchg-gnu-crosscheck.cjs` compare **170 instructions XCHG** avec GNU Assembler (GNU Binutils 2.46), en mode `.code16`.
+
+Le corpus comprend :
+- 64 paires de registres 8 bits et 64 paires de registres 16 bits ;
+- les huit modes d'adressage mémoire, en byte et word, avec les deux ordres d'opérandes ;
+- les déplacements disp8 aux limites -128/+127 et disp16 aux limites -32768/+32767 ;
+- les préfixes de segment ES, CS, SS et DS ;
+- la forme LOCK sur opérande mémoire.
+
+Résultat : les octets émis par l'assembleur du projet correspondent exactement à ceux de GNU as. Des vecteurs fixes supplémentaires contrôlent les octets représentatifs des familles 86h, 87h et 90h–97h.
+
+### Exécution interactive
+
+Le fichier `tests/xchg-interactive-8086.cjs` utilise Chromium et le véritable bouton « Pas à pas ».
+
+Il exécute :
+- un échange mémoire-mot avec lecture de contrôle de la mémoire après l'échange ;
+- un échange mémoire-octet avec lecture de contrôle de la mémoire après l'échange ;
+- des vérifications avant/après des registres et des neuf FLAGS suivis par le simulateur.
+
+Résultat : **test interactif réussi** dans le workflow Playwright.
+
+### Corrections documentaires démontrées
+
+L'audit a identifié deux erreurs dans la fiche XCHG de `index.html`, corrigées sans modifier le moteur d'exécution :
+
+1. **Temporisations 8086 :** les formes registre-registre 86h/87h sont données à 4 cycles ; la forme compacte AX 90h–97h est à 3 cycles ; la forme mémoire est donnée à 17 cycles + EA. La fiche précédente attribuait 3 cycles à toutes les formes registre-registre.
+2. **LOCK et 8086 :** la fiche précédente affirmait qu'un échange mémoire verrouillait implicitement le bus. Le manuel Intel 8086 de 1979 indique au contraire qu'il faut le préfixe LOCK pour empêcher un autre maître de bus d'intervenir entre les deux cycles d'un échange mémoire. La fiche précise désormais le rôle du préfixe, le mode maximum du 8086 et les limites du simulateur.
+
+Le moteur d'échange XCHG n'a pas nécessité de correction fonctionnelle démontrée pendant cette intervention. La modification de `index.html` porte sur la documentation technique.
+
+### Workflows GitHub Actions
+
+- CI principal : run **45605620164**, succès, commit `2a264cc551e0c65a94baba58f005ef56f88d5916`.
+- Audit navigateur Playwright : run **45605620273**, succès, même commit.
+- Auto-tests intégrés : **376/376**.
+- Audit XCHG : **483/483**.
+- Comparaison GNU as : **170 instructions, octets identiques**.
+- Test interactif XCHG : **réussi**.
+
+### Limites de validation
+
+La comparaison GNU as valide l'encodage, pas le comportement électrique du bus. Le simulateur ne reproduit pas les signaux physiques LOCK, l'arbitrage entre maîtres de bus ni les deux cycles de transfert au niveau matériel. Les tests valident les effets architecturaux simulés, les octets, la mémoire, les registres et les FLAGS ; ils ne constituent pas une certification sur processeur Intel 8086 physique.
