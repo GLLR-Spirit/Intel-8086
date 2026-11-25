@@ -507,3 +507,23 @@ Cette extension est une validation exhaustive des combinaisons de champs pour ce
 
 - `tests/into-8086.cjs` vérifie l'opcode CE, le cas OF=0 sans interruption, le cas OF=1 via le vecteur 4, l'IVT physique en exécution binaire et la restauration de CS:IP, FLAGS et SP par IRET.
 - `tests/push-pop-forms-8086.cjs` vérifie que sur 8086 PUSH SP empile la valeur après décrémentation de SP. Ce comportement est distinct de celui des générations ultérieures et est documenté dans le cours.
+
+
+### 16.4 IDIV — bornes inférieures du quotient signé
+
+La réconciliation des contraintes de quotient a révélé une erreur dans le contrôle de plage de `executeMultiplyDivide` : les bornes minimales étaient `-127` et `-32767`, au lieu des minima représentables sur 8 et 16 bits.
+
+**Correction appliquée dans `index.html` :**
+- quotient signé octet : `-128..+127` ;
+- quotient signé mot : `-32768..+32767`.
+
+**Vecteurs de frontière ajoutés à `tests/mul-div-memory-8086.cjs` :**
+
+| Cas | Dividende | Diviseur | Quotient attendu |
+|---|---:|---:|---:|
+| IDIV r/m8, borne minimale | AX = 4000h (+16384) | BL = 80h (-128) | AL = 80h (-128), AH = 00h |
+| IDIV r/m16, borne minimale | DX:AX = 4000:0000h (+1073741824) | BX = 8000h (-32768) | AX = 8000h (-32768), DX = 0000h |
+| IDIV r/m8, sous la borne | AX = 4080h (+16512) | BL = 80h (-128) | quotient -129 : interruption division par erreur |
+| IDIV r/m16, sous la borne | DX:AX = 4000:8000h (+1073774592) | BX = 8000h (-32768) | quotient -32769 : interruption division par erreur |
+
+Chaque cas vérifie les chemins source et binaire. Les FLAGS ne sont pas comparés après IDIV, car leur état est indéfini architecturalement. La suite doit être confirmée par le workflow CI du commit qui contient ces changements avant de marquer cette correction comme validée.
