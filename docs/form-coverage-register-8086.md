@@ -149,7 +149,7 @@ Cette tranche s'appuie sur les tests ciblés dédiés aux appels, retours, branc
 | CALL far indirect | m16:16 | FF /3 | Implémenté | Implémenté | Testé | Mémoire seule, huit modes d'adressage, préfixes |
 | JMP short | relatif rel8 | EB cb | Implémenté | Implémenté | Testé | Bornes rel8 |
 | JMP near | relatif rel16 | E9 cw | Implémenté | Implémenté | Testé | Déplacement rel16 |
-| JMP near indirect | r/m16 | FF /4 | Implémenté | Implémenté | Test ciblé | Registre et mémoire |
+| JMP near indirect | r/m16 | FF /4 | Implémenté | Implémenté | Testé source et binaire | Huit registres et huit modes mémoire ; CS:IP, SP, FLAGS ; GNU as [AX]/[BX]/[BX+SI] |
 | JMP far direct | ptr16:16 | EA cd | Implémenté | Implémenté | Testé source et binaire | `jmp-far-8086`, GNU as ; CS:IP, SP et FLAGS |
 | JMP far indirect | m16:16 | FF /5 | Implémenté | Implémenté | Testé source et binaire, huit modes | `jmp-far-indirect-8086` ; CS:IP, SP et neuf FLAGS ; GNU as pour [BX] et [BX+SI] |
 | RET near | sans immédiat / imm16 | C3 / C2 iw | Implémenté | Implémenté | Testé | Pile, SP et nettoyage impair |
@@ -309,3 +309,10 @@ Pour chaque forme, le test vérifie :
 - la préservation des neuf FLAGS modélisés.
 
 Preuve : `tests/jmp-far-indirect-8086.cjs`. Le run CI 45688178373 a réussi les tests directs et indirects, la suite différentielle et la comparaison GNU as du transfert far direct.
+
+
+### 14.3 JMP near indirect — registres et mémoire validés
+
+La forme `JMP r/m16` (`FF /4`) est maintenant testée sur les huit registres 16 bits et les huit modes d'adressage mémoire. Chaque cas vérifie les octets, le désassemblage, l'exécution source et binaire, la cible IP, CS, SP et les neuf FLAGS modélisés. Les formes registre et mémoire [BX]/[BX+SI] sont également comparées à GNU as.
+
+Preuve : `tests/jmp-near-indirect-8086.cjs` et `tests/call-ret-gnu-crosscheck.cjs`.
