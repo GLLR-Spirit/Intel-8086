@@ -373,7 +373,7 @@ sameBytes(bytesOf("MOV WORD PTR [BX+SI+4], ABCDh"),[0xC7,0x40,0x04,0xCD,0xAB],"C
 sameBytes(bytesOf("JMP FIN\nNOP\nFIN:\nHLT"),[0xEB,0x01,0x90,0xF4],"C33 symbolic short branch resolution");
 
 const disassembled=learning.disassembleBytes([0xB8,0x34,0x12,0xF4]).rows;
-assert.deepEqual(disassembled.map(r=>r.instruction),["MOV AX, 1234h","HLT"],"C33 L2 independent disassembly");
+assert.equal(JSON.stringify(disassembled.map(r=>r.instruction)),JSON.stringify(["MOV AX, 1234h","HLT"]),"C33 L2 independent disassembly");
 const unknown=learning.disassembleBytes([0x64]).rows;
 assert.ok(unknown[0].instruction.startsWith("DB "),"C33 L3 unknown byte remains raw data");
 sameBytes(bytesOf(learning.curriculum[33][5][1][2]),[0xF0,0xFF,0x06,0x00,0x01,0x8B,0x06,0x00,0x01,0xF4],"C34 L2 LOCK INC memory encoding");
