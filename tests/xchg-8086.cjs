@@ -281,6 +281,7 @@ for (const item of segmentVectors) {
     "MOV AX, 3000h", "MOV SS, AX",
     "MOV CX, 1234h",
     ...initSourceRegs(),
+    "MOV CX, 1234h",
     "MOV WORD PTR " + item.name + ":" + expr + ", 0ABCDh",
     "XCHG CX, WORD PTR " + item.name + ":" + expr,
     "HLT"
