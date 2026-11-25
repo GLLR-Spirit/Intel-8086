@@ -84,5 +84,27 @@ assert.ok(renderer.includes("Indice et correction expliquée"), "Exercise UI mus
 assert.ok(renderer.includes("guide.steps"), "Exercise UI must render step-by-step solutions");
 assert.ok(renderer.includes("data-solution"), "Exercise UI must let the learner load the complete correction");
 
+// First-pass executable audit of every course example. This reports discrepancies
+// without claiming that successful execution proves architectural correctness.
+const exampleAudit = [];
+for (let chapterIndex = 0; chapterIndex < learning.curriculum.length; chapterIndex++) {
+  const chapter = learning.curriculum[chapterIndex];
+  for (let lessonIndex = 0; lessonIndex < chapter[5].length; lessonIndex++) {
+    const lesson = chapter[5][lessonIndex];
+    const state = learning.executeAll(lesson[2]);
+    if (state.error) {
+      exampleAudit.push({
+        chapter: chapterIndex + 1,
+        lesson: lessonIndex + 1,
+        title: lesson[0],
+        error: state.error
+      });
+    }
+  }
+}
+console.log("Course example execution audit: " +
+  (108 - exampleAudit.length) + "/108 execute without simulator errors.");
+if (exampleAudit.length) console.log(JSON.stringify(exampleAudit, null, 2));
+
 console.log("Learning quality: 36 chapters, 324 intermediate questions, 360 final questions, " +
   learning.exercises.length + " exercises; all guided corrections execute and pass their validators.");
