@@ -78,6 +78,8 @@ jobs:
         run: node tests/control-stack.cjs
       - name: Run CALL/RET stack boundary and odd cleanup tests
         run: node tests/call-ret-stack-boundaries.cjs
+      - name: Run CALL/RET direct far architectural tests
+        run: node tests/call-ret-8086.cjs
       - name: Run relative branch and displacement tests
         run: node tests/relative-branches.cjs
       - name: Run byte-offset execution tests
