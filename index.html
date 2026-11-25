@@ -141,30 +141,30 @@ var curriculum=[["Introduction au microprocesseur Intel 8086","Débutant","Aucun
 var chapterScores=JSON.parse(localStorage.getItem("i86-chapter-scores-v2")||"{}");
 var lessonScores=JSON.parse(localStorage.getItem("i86-lesson-scores-v2")||"{}");
 var chapterExerciseMap=curriculum.map(function(c,i){return Math.min(exercises.length-1,Math.floor(i*exercises.length/curriculum.length));});
-lessons=curriculum.map(function(c,i){return [c[0],"Niveau "+(c[1])+" · "+(["Fondations","Instructions","Algorithmique","Mémoire et structuration","Systèmes avancés","Architecture interne"][i<5?0:i<11?1:i<17?2:i<23?3:i<30?4:5]),"<p>"+c[3]+"</p><p><b>Prérequis :</b> "+c[2]+"</p>",c[4][0][2]];});
+lessons=curriculum.map(function(c,i){return [c[0],"Niveau "+(c[1])+" · "+(["Fondations","Instructions","Algorithmique","Mémoire et structuration","Systèmes avancés","Architecture interne"][i<5?0:i<11?1:i<17?2:i<23?3:i<30?4:5]),"<p>"+c[3]+"</p><p><b>Prérequis :</b> "+c[2]+"</p>",c[5][0][2]];});
 function rotateQuiz(q,seed){var shift=seed%q[1].length;return [q[0],q[1].slice(shift).concat(q[1].slice(0,shift)),(q[2]-shift+q[1].length)%q[1].length,q[3],q[4]||""];}
 chapterLearning=curriculum.map(function(c,ci){
- var lq=c[4].map(function(l,li){
+ var lq=c[5].map(function(l,li){
   var choices=[l[4],"Un détail sans rapport avec le fonctionnement étudié","Une opération effectuée uniquement par le système d'exploitation"];
   return {title:l[0],theory:l[1],example:l[2],expected:l[3],concept:l[4],quiz:[
    ["Quelle notion est au centre de cette leçon ?",choices,0,"La notion centrale est : "+l[4]+"."],
    ["Pourquoi cette notion est-elle importante ?",[c[3],"Pour remplacer toutes les instructions du processeur","Pour éviter de connaître l'état des registres"],0,c[3]],
    ["Que faut-il vérifier dans l'exemple guidé ?",[l[3],"Uniquement le nom du fichier source","Le nombre de commentaires"],0,"Le résultat attendu est : "+l[3]+"."]].map(function(q,qi){q[4]=["Compréhension","Application","Vérification"][qi];return rotateQuiz(q,ci+li+qi);})};
  });
- var a=c[4][0],b=c[4][1],d=c[4][2];
+ var a=c[5][0],b=c[5][1],d=c[5][2];
  var exam=[
  ["Quelle est la finalité essentielle de ce chapitre ?",[c[3],"Optimiser exclusivement l'affichage du navigateur","Remplacer le système d'exploitation"],0,c[3],"Définition"],
  ["Quel principe est introduit dans la première leçon ?",[a[4],b[4],d[4]],0,"La première leçon établit le concept : "+a[4]+".","Compréhension"],
  ["Quelle séquence assembleur illustre la deuxième leçon ?",[b[2],a[2],d[2]],0,"Cette séquence met en pratique "+b[0]+".","Syntaxe"],
- ["Quelle restriction ou précaution doit impérativement être respectée ?",[c[5],"Ignorer les tailles et les registres implicites","Supposer que toutes les formes d'instruction sont interchangeables"],0,c[5],"Restrictions"],
+ ["Quelle restriction ou précaution doit impérativement être respectée ?",[c[4],"Ignorer les tailles et les registres implicites","Supposer que toutes les formes d'instruction sont interchangeables"],0,c[4],"Restrictions"],
  ["Quel résultat faut-il prévoir pour le premier exemple ?",[a[3],b[3],d[3]],0,"Le premier exemple doit produire : "+a[3]+".","Prédiction"],
  ["Quel résultat est attendu après la troisième leçon ?",[d[3],a[3],b[3]],0,"La troisième leçon aboutit à : "+d[3]+".","Calcul / prédiction"],
  ["Que démontre le programme de la deuxième leçon ?",[b[1],"Les instructions n'ont aucun effet sur l'état machine","Le processeur ignore les opérandes"],0,b[1],"Analyse de programme"],
  ["Quelle observation correspond à l'exécution de la troisième leçon ?",[d[3],a[3],b[3]],0,"L'état attendu est : "+d[3]+".","Analyse de résultat"],
- ["Quel défaut faut-il rechercher en priorité lors du débogage ?",[c[5],"Supprimer les tests de validation","Confondre le code source avec les octets affichés"],0,c[5],"Débogage"],
+ ["Quel défaut faut-il rechercher en priorité lors du débogage ?",[c[4],"Supprimer les tests de validation","Confondre le code source avec les octets affichés"],0,c[4],"Débogage"],
  ["Quelle démarche permet de résoudre rigoureusement un problème de ce chapitre ?",["Identifier les prérequis, appliquer la règle, tracer l'état et vérifier le résultat","Modifier plusieurs registres au hasard jusqu'à obtenir une valeur","Ignorer les cas limites et ne tester que le cas nominal"],0,"Une démarche rigoureuse relie la spécification, les règles architecturales, la trace et les tests.","Raisonnement"]
  ].map(function(q,qi){return rotateQuiz(q,ci+qi);});
- return {goal:c[3],theory:c[4].map(function(l){return l[1];}).join(" "),walk:c[4].map(function(l){return l[2]+" Résultat attendu : "+l[3];}).join(" "),lessons:lq,quiz:exam,prereq:c[2],pitfall:c[5]};
+ return {goal:c[3],theory:c[5].map(function(l){return l[1];}).join(" "),walk:c[5].map(function(l){return l[2]+" Résultat attendu : "+l[3];}).join(" "),lessons:lq,quiz:exam,prereq:c[2],pitfall:c[4]};
 });
 function renderLessons(){
  var groups=["Niveau 1 — Découverte et fondations","Niveau 2 — Premières instructions assembleur","Niveau 3 — Algorithmique en assembleur","Niveau 4 — Mémoire et programmation structurée","Niveau 5 — Instructions avancées et systèmes","Niveau 6 — Architecture interne et maîtrise professionnelle"],bounds=[0,5,11,17,23,30,36];
