@@ -19,7 +19,7 @@ const {chromium}=require("playwright"),assert=require("node:assert/strict");
    stack:document.querySelector("#stackView").textContent
   }));
   assert.equal(state.cs,"0000h");assert.equal(state.ip,"000Fh");assert.equal(state.sp,"FFFCh");
-  assert.match(state.stack,/RET → 000Eh/);
+  assert.match(state.stack,/000Eh/);assert.match(state.stack,/SP = FFFCh/);
   await page.locator("#step").click();
   state=await page.evaluate(()=>({ip:document.querySelector("#segments .reg:nth-child(5) b").textContent.trim(),sp:document.querySelector("#regs .reg:nth-child(8) b").textContent.trim(),stack:document.querySelector("#stackView").textContent}));
   assert.equal(state.ip,"000Eh");assert.equal(state.sp,"FFFEh");assert.match(state.stack,/Pile vide/);
@@ -37,7 +37,7 @@ const {chromium}=require("playwright"),assert=require("node:assert/strict");
    stack:document.querySelector("#stackView").textContent
   }));
   assert.equal(state.cs,"1234h");assert.equal(state.ip,"0014h");assert.equal(state.sp,"FFFAh");
-  assert.match(state.stack,/RET → 0013h/);assert.match(state.stack,/0000h/);
+  assert.match(state.stack,/0013h/);assert.match(state.stack,/0000h/);assert.match(state.stack,/SP = FFFAh/);
   await page.locator("#step").click();
   state=await page.evaluate(()=>({
    cs:document.querySelector("#segments .reg:nth-child(1) b").textContent.trim(),
