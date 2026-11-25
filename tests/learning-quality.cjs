@@ -198,5 +198,45 @@ for (let chapterIndex = 0; chapterIndex < learning.chapterLearning.length; chapt
   }
 }
 
+
+// Level 2 audit: 18 independently checked course examples (chapters 6–11).
+const level2Oracles = [
+  [6,1, state => state.reg.AX === 0x5678 && state.reg.BX === 0x1234, "XCHG swaps AX and BX"],
+  [6,2, state => state.reg.SI === 0x0104, "LEA computes BX+4 without reading memory"],
+  [6,3, state => state.reg.SI === 0 && state.reg.DS === 0, "LDS reads a zero-initialized far pointer in the current example"],
+  [7,1, state => (state.reg.AX & 0xff) === 0 && state.flags.CF === 1 && (state.reg.BX & 0xff) === 2 && state.flags.CF === 0, "ADD/ADC propagation"],
+  [7,2, state => (state.reg.AX & 0xff) === 0xff && state.flags.CF === 1 && (state.reg.BX & 0xff) === 4, "SUB/SBB borrow propagation"],
+  [7,3, state => (state.reg.AX & 0xff) === 0x80 && state.flags.OF === 1 && state.flags.CF === 1, "NEG 80h signed overflow"],
+  [8,1, state => (state.reg.AX & 0xff) === 0x0c, "AND masks to low nibble"],
+  [8,2, state => (state.reg.AX & 0xff) === 0x0f, "XOR complements F0h with FFh"],
+  [8,3, state => state.flags.ZF === 1 && (state.reg.AX & 0xff) === 0x08, "TEST preserves AL and sets ZF"],
+  [9,1, state => (state.reg.AX & 0xff) === 0 && state.flags.CF === 1 && state.flags.ZF === 1, "arithmetic FLAGS after FFh+1"],
+  [9,2, state => state.flags.DF === 0, "CLD/STD/CLD leaves DF cleared"],
+  [9,3, state => state.flags.CF === 1, "POPF restores CF saved by PUSHF"],
+  [10,1, state => state.reg.AX === 5, "trace example reaches AX=5"],
+  [10,2, state => state.reg.AX === 7, "diagnostic example reaches AX=7"],
+  [10,3, state => (state.reg.AX & 0xff) === 0, "INC wraps FFh to 00h while preserving CF"]
+];
+for (const [chapter, lesson, check, expected] of level2Oracles) {
+  const source = learning.curriculum[chapter - 1][5][lesson - 1][2];
+  const state = learning.executeAll(source);
+  assert.ok(!state.error && check(state),
+    "Level 2 C" + chapter + "L" + lesson + " expected " + expected +
+    "; actual registers=" + JSON.stringify(state.reg) + "; flags=" + JSON.stringify(state.flags));
+}
+for (let ci = 5; ci < 11; ci++) {
+  const chapter = learning.chapterLearning[ci];
+  assert.equal(chapter.quiz.length, 10, "Level 2 chapter must have ten final questions.");
+  assert.deepEqual(chapter.quiz.map(q => q[4]), [
+    "Définition","Compréhension","Syntaxe","Restrictions","Prédiction",
+    "Calcul / prédiction","Analyse de programme","Analyse de résultat","Débogage","Raisonnement"
+  ], "Level 2 final questions must cover the ten assessment dimensions in order.");
+  assert.ok(chapter.lessons.every(lesson => lesson.quiz.length === 3),
+    "Every Level 2 lesson must contain three questions.");
+  assert.ok(chapter.lessons.every(lesson => lesson.theory.length >= 300),
+    "Every Level 2 lesson must contain a substantive technical explanation.");
+  assert.ok(chapter.quiz.every(q => q[1].length === 3 && new Set(q[1]).size === 3 && q[3].length >= 20),
+    "Level 2 final questions must have distinct options and substantive explanations.");
+}
 console.log("Learning quality: 36 chapters, 324 intermediate questions, 360 final questions, " +
   learning.exercises.length + " exercises; all guided corrections execute and pass their validators.");
