@@ -253,7 +253,7 @@ for (const op of ["OR","AND","XOR","TEST"]) {
     totals.immediateEncodings++;
 
     const ext = op === "TEST" ? 0 : immediateExt[op];
-    const group8 = [op === "TEST" ? 0xF6 : 0x80, (3 << 3) | ext | 7, immValue & 255];
+    const group8 = [op === "TEST" ? 0xF6 : 0x80, (ext << 3) | 7, immValue & 255];
     const group8Source = op + " BYTE PTR [BX], " + byte(immValue);
     test(op + " group immediate byte", () => {
       assert.deepEqual(Array.from(api.assemble(group8Source).bytes), group8, group8Source);
