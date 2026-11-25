@@ -3,7 +3,7 @@ const html=fs.readFileSync("index.html","utf8"),match=html.match(/<script>([\s\S
 const elements=new Map();function element(id){if(!elements.has(id))elements.set(id,{id,value:"",textContent:"",innerHTML:"",className:"",dataset:{},onclick:null,oninput:null,onchange:null});return elements.get(id);}
 const context={document:{getElementById:element,querySelectorAll:()=>[]},localStorage:{getItem:()=>null,setItem:()=>{},removeItem:()=>{}},console};
 vm.createContext(context);
-const injection="\nglobalThis.api={assemble:s=>assembleProgram(s),disassemble:b=>disassembleBytes(b),execute:s=>executeAll(s),binary:(b,c,i,s)=>executeBinary(b,c,i,s)};\n})();\n";
+const injection="\nglobalThis.api={assemble:s=>assembleProgram(s),disassemble:(b,maxRows)=>disassembleBytes(b,maxRows),execute:s=>executeAll(s),binary:(b,c,i,s)=>executeBinary(b,c,i,s)};\n})();\n";
 const instrumented=match[1].replace(/\n\}\)\(\);\s*$/,injection);assert.notEqual(instrumented,match[1]);
 vm.runInContext(instrumented,context,{timeout:30000});
 const api=context.api;
@@ -35,7 +35,7 @@ assert.deepEqual(bytes("PUSH WORD PTR [BP+SI+4]"),[0xFF,0x72,0x04]);
 assert.deepEqual(bytes("POP WORD PTR [BX]"),[0x8F,0x07]);
 assert.deepEqual(bytes("POP WORD PTR [BP+SI+4]"),[0x8F,0x42,0x04]);
 for(const source of ["PUSH 1234h","PUSH BYTE PTR [BX]","POP CS","POP BYTE PTR [BX]"])assert.throws(()=>api.assemble(source),source+" must be rejected");
-for(const code of [[0x68,0x34,0x12],[0x6A,0x01]])assert.ok(api.disassemble(code).rows[0].instruction.startsWith("DB "),"Immediate PUSH is not 8086");
+for(const code of [[0x68,0x34,0x12],[0x6A,0x01]])assert.ok(api.disassemble(code,1).rows[0].instruction.startsWith("DB "),"Immediate PUSH is not 8086");
 function executeBoth(source,initial){const b=bytes(source),a=api.execute(source),d=api.binary(b,0,0,initial||{});assert.equal(a.error,undefined,"source "+a.error);assert.equal(d.error,undefined,"binary "+d.error);return [["source",a],["binary",d]];}
 for(const [mode,state] of executeBoth("MOV SP, 2000h\nPUSH SP\nHLT")){
  assert.equal(state.reg.SP,0x1FFE,mode+" PUSH SP decrements SP");
