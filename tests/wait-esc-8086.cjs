@@ -77,7 +77,12 @@ for (let code = 0; code < 64; code++) {
 let decodedMatrix = 0;
 for (let opcode = 0xD8; opcode <= 0xDF; opcode++) {
   for (let modrm = 0; modrm < 256; modrm++) {
-    const bytes = [opcode, modrm];
+    const mod = modrm >> 6;
+    const rm = modrm & 7;
+    const displacement = mod === 0 && rm === 6 ? [0x34, 0x12]
+      : mod === 1 ? [0x7F]
+      : mod === 2 ? [0x34, 0x12] : [];
+    const bytes = [opcode, modrm, ...displacement];
     const result = api.disassemble(bytes);
     check(result.rows.length === 1, "ESC ModR/M row " + opcode.toString(16) + "/" + modrm.toString(16));
     same(Array.from(result.rows[0].bytes), bytes, "ESC ModR/M byte preservation");
