@@ -85,19 +85,19 @@ const assert = require("node:assert/strict");
     }
     const loopOpcodes=[["LOOPNE",0xE0],["LOOPE",0xE1],["LOOP",0xE2],["JCXZ",0xE3]];
     for (const [op,opcode] of loopOpcodes) {
-      const bytes=api.assembleProgram(op+" CIBLE\\nNOP\\nCIBLE:\\nHLT").bytes;
+      const bytes=api.assembleProgram(op+" CIBLE\nNOP\nCIBLE:\nHLT").bytes;
       if(bytes[0]!==opcode||bytes[1]!==1) failures.push(op+" opcode rel8 incorrect");
     }
-    const loopFlag=api.executeBinary(api.assembleProgram("MOV CX,1\\nMOV AX,1\\nCMP AX,2\\nLOOP FIN\\nFIN:\\nHLT").bytes,0,0,{});
+    const loopFlag=api.executeBinary(api.assembleProgram("MOV CX,1\nMOV AX,1\nCMP AX,2\nLOOP FIN\nFIN:\nHLT").bytes,0,0,{});
     if(loopFlag.error||loopFlag.flags.CF!==1||loopFlag.flags.ZF!==0) failures.push("LOOP doit préserver les FLAGS");
-    const zeroCounter=api.executeBinary(api.assembleProgram("MOV CX,0\\nLOOP FIN\\nMOV BX,1\\nFIN:\\nHLT").bytes,0,0,{});
+    const zeroCounter=api.executeBinary(api.assembleProgram("MOV CX,0\nLOOP FIN\nMOV BX,1\nFIN:\nHLT").bytes,0,0,{});
     if(zeroCounter.error||zeroCounter.reg.CX!==0xFFFF||zeroCounter.reg.BX!==0) failures.push("LOOP avec CX=0 doit décrémenter à FFFFh puis brancher");
     const loopSemantics=[
-      ["LOOPE","MOV AX,1\\nCMP AX,1",true],["LOOPE","MOV AX,1\\nCMP AX,2",false],
-      ["LOOPNE","MOV AX,1\\nCMP AX,2",true],["LOOPNE","MOV AX,1\\nCMP AX,1",false]
+      ["LOOPE","MOV AX,1\nCMP AX,1",true],["LOOPE","MOV AX,1\nCMP AX,2",false],
+      ["LOOPNE","MOV AX,1\nCMP AX,2",true],["LOOPNE","MOV AX,1\nCMP AX,1",false]
     ];
     for(const [op,prep,take] of loopSemantics){
-      const src="MOV CX,2\\n"+prep+"\\n"+op+" PRISE\\nMOV BX,0\\nJMP FIN\\nPRISE:\\nMOV BX,1\\nFIN:\\nHLT";
+      const src="MOV CX,2\n"+prep+"\n"+op+" PRISE\nMOV BX,0\nJMP FIN\nPRISE:\nMOV BX,1\nFIN:\nHLT";
       const state=api.executeBinary(api.assembleProgram(src).bytes,0,0,{});
       if(state.error||state.reg.BX!==(take?1:0)||state.reg.CX!==1) failures.push(op+" condition ZF/CX incorrect");
     }
