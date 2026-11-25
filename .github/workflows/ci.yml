@@ -80,6 +80,8 @@ jobs:
         run: node tests/call-ret-stack-boundaries.cjs
       - name: Run CALL/RET direct far architectural tests
         run: node tests/call-ret-8086.cjs
+      - name: Cross-check CALL/RET encodings with GNU as
+        run: node tests/call-ret-gnu-crosscheck.cjs
       - name: Run relative branch and displacement tests
         run: node tests/relative-branches.cjs
       - name: Run byte-offset execution tests
