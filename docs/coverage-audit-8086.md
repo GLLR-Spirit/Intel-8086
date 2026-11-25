@@ -681,3 +681,11 @@ Corrections et preuves nouvelles :
 - CALL indirect et JMP indirect sont suivis séparément : FF /2 et FF /4 near r/m16 ; FF /3 et FF /5 far MEM16 ; les huit formes d'adressage, les overrides de segment et les neuf FLAGS modélisés sont vérifiés par les suites dédiées.
 
 **Décision :** aucun pourcentage global n'est calculé. Le calcul pondéré attend la clôture des registres de formes pour les 93 entrées, y compris les interactions de préfixes et les chemins source/binaire.
+
+## Avertissement de fraîcheur — matrice de référence historique (25 novembre 2026)
+
+La matrice de 93 entrées et les synthèses chiffrées de ce document sont un **instantané historique de l'audit statique du 24 novembre sur `main`**. Elles ne doivent pas être utilisées comme état courant de la branche `audit/niveau-3-chapitres-12-17`.
+
+Depuis cet instantané, la branche d'audit contient notamment des suites dédiées et des contrôles CI pour les instructions de chaîne, les E/S, les ajustements BCD, les rotations/décalages, les transferts indirects, XCHG, LEA, LDS/LES, XLAT et les matrices ModR/M. Certaines cellules « Non » ou « À faire » de la table historique sont donc obsolètes. À l'inverse, la réussite d'une suite dédiée ne suffit pas à passer automatiquement une entrée à « Oui » : il faut vérifier toutes ses formes, ses contraintes, ses effets architecturaux et les chemins assembleur/désassembleur/exécution concernés.
+
+**Aucun nouveau pourcentage global sur 93 entrées n'est publié dans cette mise à jour.** Il faut d'abord reconstruire la matrice à partir d'un registre de formes canonique et de résultats actuels, sans réutiliser les statuts historiques comme s'ils étaient encore valables. Les limites du modèle logiciel (BIU, bus, temporisations physiques, signaux externes et événements matériels) doivent rester séparées de la couverture fonctionnelle du simulateur.
