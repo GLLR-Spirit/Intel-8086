@@ -547,7 +547,7 @@ Cette section conserve les 93 mnémoniques comme inventaire de travail. Les stat
 | CALL | Partiel | Partiel | Partiel | Partiel |
 | RET | Partiel | Partiel | Partiel | Partiel |
 | INT | Partiel | Oui | Oui | Partiel |
-| INTO | Oui | Oui | Oui | À faire |
+| INTO | Oui | Oui | Oui | Partiel |
 | IRET | Partiel | Oui | Oui | Partiel |
 | JCXZ | Oui | Oui | Oui | Partiel |
 | LOOP | Oui | Oui | Oui | Partiel |
@@ -576,8 +576,8 @@ Cette section conserve les 93 mnémoniques comme inventaire de travail. Les stat
 | STD | Oui | Oui | Oui | Partiel |
 | CLI | Oui | Oui | Oui | Partiel |
 | STI | Oui | Oui | Oui | Partiel |
-| IN | Oui | Oui | Oui | À faire |
-| OUT | Oui | Oui | Oui | À faire |
+| IN | Oui | Oui | Oui | Partiel |
+| OUT | Oui | Oui | Oui | Partiel |
 | NOP | Oui | Oui | Oui | À faire |
 | HLT | Partiel | Oui | Oui | À faire |
 | WAIT | Partiel | Oui | Oui | À faire |
