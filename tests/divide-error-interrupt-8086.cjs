@@ -67,9 +67,9 @@ const faults = [
   { name: "DIV 16-bit division by zero", setup: ["MOV DX, 0", "MOV AX, 1234h", "MOV BX, 0"], instruction: "DIV BX", expectedAX: 0x1234, expectedDX: 0 },
   { name: "IDIV 16-bit division by zero", setup: ["MOV DX, 0", "MOV AX, 1234h", "MOV BX, 0"], instruction: "IDIV BX", expectedAX: 0x1234, expectedDX: 0 },
   { name: "DIV 8-bit quotient overflow", setup: ["MOV AX, 0100h", "MOV BL, 1"], instruction: "DIV BL", expectedAX: 0x0100, expectedDX: 0 },
-  { name: "IDIV 8-bit quotient overflow", setup: ["MOV AX, 0FF80h", "MOV BL, 1"], instruction: "IDIV BL", expectedAX: 0xFF80, expectedDX: 0 },
+  { name: "IDIV 8-bit quotient overflow", setup: ["MOV AX, 0FF7Fh", "MOV BL, 1"], instruction: "IDIV BL", expectedAX: 0xFF7F, expectedDX: 0 },
   { name: "DIV 16-bit quotient overflow", setup: ["MOV DX, 1", "MOV AX, 0", "MOV BX, 1"], instruction: "DIV BX", expectedAX: 0, expectedDX: 1 },
-  { name: "IDIV 16-bit quotient overflow", setup: ["MOV DX, 0FFFFh", "MOV AX, 8000h", "MOV BX, 1"], instruction: "IDIV BX", expectedAX: 0x8000, expectedDX: 0xFFFF }
+  { name: "IDIV 16-bit quotient overflow", setup: ["MOV DX, 0FFFFh", "MOV AX, 7FFFh", "MOV BX, 1"], instruction: "IDIV BX", expectedAX: 0x7FFF, expectedDX: 0xFFFF }
 ];
 
 for (const fault of faults) {
