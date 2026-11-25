@@ -37,8 +37,8 @@ assert.match(html, /id="view-exercises"/, "Exercices must remain a separate page
 assert.match(html, /id="view-editor"/, "Atelier must remain a separate page");
 for (const id of ["exerciseSearch","exerciseChapter","exerciseDifficulty","exerciseType","exerciseList"])
   assert.match(html, new RegExp('id="' + id + '"'), "Exercise workflow must expose " + id);
-assert.match(match[1], /@media\\(prefers-reduced-motion:reduce\\)/, "Architecture animation must respect reduced-motion preferences");
-assert.match(match[1], /@keyframes busPacket/, "Architecture animation must have an explicit keyframe definition");
+assert.ok(html.includes("@media(prefers-reduced-motion:reduce)"), "Architecture animation must respect reduced-motion preferences");
+assert.ok(html.includes("@keyframes busPacket"), "Architecture animation must have an explicit keyframe definition");
 
 
 assert.equal(learning.lessons.length, 36, "All 36 learning chapters must exist");
