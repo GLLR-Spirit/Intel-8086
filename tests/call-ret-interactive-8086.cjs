@@ -8,7 +8,7 @@ const {chromium}=require("playwright"),assert=require("node:assert/strict");
   await page.locator("#step").click();
   const afterCall=await page.evaluate(()=>({cs:document.querySelector("#segments .reg:nth-child(1) b").textContent.trim(),sp:document.querySelector("#regs .reg:nth-child(8) b").textContent.trim(),stack:document.querySelector("#stackView").textContent}));
   assert.equal(afterCall.cs,"1234h");assert.equal(afterCall.sp,"FFFAh");
-  assert.match(afterCall.stack,/TOP[\s\S]*0005h/);assert.match(afterCall.stack,/SS:FFFC[hH][\\s\\S]*0000h/i);
+  assert.match(afterCall.stack,/TOP[\s\S]*0005h/);assert.match(afterCall.stack,/SS:FFFC[hH][\s\S]*0000h/i);
   await page.locator("#step").click();
   const afterReturn=await page.evaluate(()=>({cs:document.querySelector("#segments .reg:nth-child(1) b").textContent.trim(),sp:document.querySelector("#regs .reg:nth-child(8) b").textContent.trim(),stack:document.querySelector("#stackView").textContent}));
   assert.equal(afterReturn.cs,"0000h");assert.equal(afterReturn.sp,"FFFEh");assert.match(afterReturn.stack,/Pile vide/);
