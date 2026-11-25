@@ -368,6 +368,10 @@ const regMoveBytes=bytesOf(learning.curriculum[30][5][2][2]);
 assert.ok(JSON.stringify(regMoveBytes)===JSON.stringify([0xBB,0x34,0x12,0x89,0xD8,0xF4])||JSON.stringify(regMoveBytes)===JSON.stringify([0xBB,0x34,0x12,0x8B,0xC3,0xF4]),"C31 L3 equivalent register MOV encoding after initializing BX");
 sameBytes(bytesOf("MOV AX, WORD PTR [BX+SI+4]"),[0x8B,0x40,0x04],"C32 L1 ModR/M disp8 form");
 sameBytes(bytesOf(learning.curriculum[31][5][2][2]),[0xC7,0x06,0x34,0x12,0xEF,0xBE,0x8B,0x06,0x34,0x12,0xF4],"C32 L3 direct disp16");
+
+sameBytes(bytesOf("MOV WORD PTR [BX+SI+4], ABCDh"),[0xC7,0x40,0x04,0xCD,0xAB],"C32 memory immediate ModR/M disp8");
+sameBytes(bytesOf("JMP FIN\nNOP\nFIN:\nHLT"),[0xEB,0x01,0x90,0xF4],"C33 symbolic short branch resolution");
+
 const disassembled=learning.disassembleBytes([0xB8,0x34,0x12,0xF4]).rows;
 assert.deepEqual(disassembled.map(r=>r.instruction),["MOV AX, 1234h","HLT"],"C33 L2 independent disassembly");
 const unknown=learning.disassembleBytes([0x64]).rows;
