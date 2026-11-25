@@ -168,7 +168,7 @@ for (const opcode of [0xFE, 0xFF]) {
     const mod = 3; // register-direct mode: far CALL /3 and far JMP /5 require memory.
     const bytes = [opcode, modRM(mod, ext, 0)];
     test("Validité · " + opcode.toString(16).toUpperCase() + " /" + ext, () => {
-      const invalid = opcode === 0xFE ? ext > 1 : (ext === 7 || ((ext === 3 || ext === 5) && mod === 3));
+      const invalid = opcode === 0xFE ? ext > 1 : (ext === 7 || (mod === 3 && [0, 1, 3, 5, 6].includes(ext)));
       assert.equal(isDB(bytes), invalid,
         opcode.toString(16).toUpperCase() + " /" + ext + " : " + hex(bytes));
     });
