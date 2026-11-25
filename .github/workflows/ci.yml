@@ -52,6 +52,8 @@ jobs:
         run: node tests/lahf-sahf-8086.cjs
       - name: Run independent 8086 XLAT instruction audit
         run: node tests/xlat-8086.cjs
+      - name: Run independent 8086 XCHG instruction audit
+        run: node tests/xchg-8086.cjs
       - name: Run operand constraint tests
         run: node tests/operand-constraints.cjs
       - name: Run original 8086 segment selector vectors
