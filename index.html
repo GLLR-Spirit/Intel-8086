@@ -572,7 +572,7 @@ function executeMultiplyDivide(op,args){if(args.length!==1)throw Error(op+" atte
 if(op==="MUL"||op==="IMUL"){var left=bits===8?(cpu.reg.AX&255):cpu.reg.AX,product=signed?signedValue(left,bits)*signedValue(value,bits):left*value;if(bits===8){cpu.reg.AX=product&65535;var fits=signed?product>=-128&&product<=127:product<=255;cpu.flags.CF=cpu.flags.OF=fits?0:1;}else{var low=product&65535,high=Math.floor(product/65536)&65535;cpu.reg.AX=low;cpu.reg.DX=high;var fits16=signed?product>=-32768&&product<=32767:high===0;cpu.flags.CF=cpu.flags.OF=fits16?0:1;}return null;}
 var divisor=signed?signedValue(value,bits):value;if(divisor===0)throw Error(op+" : division par zéro.");
 var dividend=bits===8?(signed?signedValue(cpu.reg.AX,16):cpu.reg.AX):(signed?((cpu.reg.DX<<16)|cpu.reg.AX):cpu.reg.DX*65536+cpu.reg.AX);
-var quotient=Math.trunc(dividend/divisor),remainder=dividend-quotient*divisor,min=signed?(bits===8?-128:-32768):0,max=signed?(bits===8?127:32767):(bits===8?255:65535);
+var quotient=Math.trunc(dividend/divisor),remainder=dividend-quotient*divisor,min=signed?(bits===8?-127:-32767):0,max=signed?(bits===8?127:32767):(bits===8?255:65535);
 if(quotient<min||quotient>max)throw Error(op+" : dépassement de quotient (résultat hors plage).");
 if(bits===8){cpu.reg.AX=((remainder&255)<<8)|(quotient&255);}else{cpu.reg.AX=quotient&65535;cpu.reg.DX=remainder&65535;}return null;}
 function packFlags(f){return 0xF002|(f.CF&1)|((f.PF&1)<<2)|((f.AF&1)<<4)|((f.ZF&1)<<6)|((f.SF&1)<<7)|((f.TF&1)<<8)|((f.IF&1)<<9)|((f.DF&1)<<10)|((f.OF&1)<<11);}
