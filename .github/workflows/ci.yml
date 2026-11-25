@@ -90,5 +90,7 @@ jobs:
         run: node tests/byte-offset-execution.cjs
       - name: Run 8086 LOCK prefix and repeated string tests
         run: node tests/lock-prefix-8086.cjs
+      - name: Run direct far JMP tests
+        run: node tests/jmp-far-8086.cjs
       - name: Run dynamic differential audit
         run: node tests/dynamic-differential.cjs
