@@ -87,8 +87,8 @@ for (const item of segments) {
 }
 test("XLAT suivi de HLT conserve les frontières d'instruction", () => {
   const decoded = api.disassemble([0xD7, 0xF4]);
-  assert.deepEqual(decoded.rows.map(row => row.instruction), ["XLAT", "HLT"]);
-  assert.deepEqual(decoded.rows.map(row => row.bytes), [[0xD7], [0xF4]]);
+  assert.deepEqual(Array.from(decoded.rows, row => row.instruction), ["XLAT", "HLT"]);
+  assert.deepEqual(Array.from(decoded.rows, row => Array.from(row.bytes)), [[0xD7], [0xF4]]);
   totals.encodings++;
 });
 
@@ -141,7 +141,7 @@ for (const item of segments) {
       [physical(0x1000, offset)]: 0x31,
       [physical(0x2000, offset)]: 0x52,
       [physical(0x3000, offset)]: 0x73,
-      [physical(0x4000, offset)]: 0x94
+      [physical(cs, offset)]: 0x94
     }
   };
   const code = item.opcodePrefix.concat([0xD7, 0xF4]);
