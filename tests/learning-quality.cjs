@@ -418,6 +418,6 @@ assert.equal(courseExampleOracleKeys.size,108,
 console.log("Course example audit: 108/108 unique lesson examples have independent expected-result oracles.");
 
 
-for (let ci = 0; ci < learning.curriculum.length; ci++) { const c=learning.curriculum[ci]; console.log("COURSE_LESSON_DUMP_C"+(ci+1)+":"+JSON.stringify(c[5].map((l,li)=>({title:l[0],theory:l[1],source:l[2],expected:l[3]})))); }
+for (let ci = 0; ci < learning.chapterLearning.length; ci++) { const c=learning.chapterLearning[ci]; console.log("COURSE_MODULE_DUMP_C"+(ci+1)+":"+JSON.stringify({goal:c.goal,prereq:c.prereq,theory:c.theory,walk:c.walk,lessons:c.lessons.map(l=>({title:l.title,theory:l.theory,example:l.example,expected:l.expected}))})); }
 console.log("Learning quality: 36 chapters, 324 intermediate questions, 360 final questions, " +
   learning.exercises.length + " exercises; all guided corrections execute and pass their validators.");
