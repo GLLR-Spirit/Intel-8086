@@ -3,7 +3,7 @@ const vm = require("node:vm");
 const assert = require("node:assert/strict");
 
 const html = fs.readFileSync("index.html", "utf8");
-const match = html.match(/<script>([\\s\\S]*?)<\\/script>/);
+const match = html.match(/<script>([\s\S]*?)<\/script>/);
 assert.ok(match, "Inline application script must exist");
 
 const elements = new Map();
@@ -20,13 +20,13 @@ const context = {
   console
 };
 vm.createContext(context);
-const injection = "\\nglobalThis.__8086LahfSahfApi = {" +
-  "\\n assemble: source => assembleProgram(source)," +
-  "\\n execute: source => executeAll(source)," +
-  "\\n executeBinary: (bytes, cs, ip, initialState) => executeBinary(bytes, cs, ip, initialState)," +
-  "\\n disassemble: bytes => disassembleBytes(bytes)" +
-  "\\n};\\n})();\\n";
-const instrumented = match[1].replace(/\\n\\}\\)\\(\\);\\s*$/, injection);
+const injection = "\nglobalThis.__8086LahfSahfApi = {" +
+  "\n assemble: source => assembleProgram(source)," +
+  "\n execute: source => executeAll(source)," +
+  "\n executeBinary: (bytes, cs, ip, initialState) => executeBinary(bytes, cs, ip, initialState)," +
+  "\n disassemble: bytes => disassembleBytes(bytes)" +
+  "\n};\n})();\n";
+const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injection);
 assert.notEqual(instrumented, match[1], "Test API injection point must exist");
 vm.runInContext(instrumented, context, { timeout: 30000 });
 const api = context.__8086LahfSahfApi;
@@ -86,7 +86,7 @@ for (let combination = 0; combination < 32; combination++) {
     "POPF",
     "LAHF",
     "HLT"
-  ].join("\\n");
+  ].join("\n");
   const label = "LAHF flag combination " + combination.toString(2).padStart(5, "0");
   test(label, () => {
     const { sourceState, binaryState } = runBoth(source);
@@ -127,7 +127,7 @@ for (let ah = 0; ah < 256; ah++) {
     "MOV AH, " + byte(ah),
     "SAHF",
     "HLT"
-  ].join("\\n");
+  ].join("\n");
   const label = "SAHF AH=" + ah.toString(16).toUpperCase().padStart(2, "0") + "h";
   test(label, () => {
     const { sourceState, binaryState } = runBoth(source);
