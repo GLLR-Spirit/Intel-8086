@@ -29,7 +29,7 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | Instruction | Documentation | Simulateur | Assembleur | Désassembleur | Tests |
 |---|---|---|---|---|---|
 | MOV | Oui | Oui | Partiel | Partiel | Partiel |
-| XCHG | Oui | Oui | Oui | Oui | À faire |
+| XCHG | Oui | Oui | Oui | Oui | Partiel |
 | LEA | Oui | Oui | Oui | Oui | À faire |
 | LES | Oui | Oui | Oui | Oui | À faire |
 | LDS | Oui | Oui | Oui | Oui | À faire |
@@ -443,3 +443,25 @@ La suite vérifie notamment que `BX+AL` est ramené sur 16 bits avant la formati
 Les compteurs par dimension se recouvrent : les contrôles FLAGS et adresses sont inclus dans les cas d'exécution source/binaire et ne doivent pas être additionnés comme des tests distincts.\n\nRésultat : [workflow CI 45593318116](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45593318116), commit `50b982ca58e9b0cd4ae2d7e31c130876eb1f17ab` — **24 réussis, 0 échec** pour la suite XLAT ; workflow global **success**.
 
 La matrice passe à « Oui » pour la présence dans le simulateur, l'assembleur et le désassembleur. Le statut des tests reste **Partiel** : les scénarios indépendants listés sont vérifiés, mais aucune comparaison complète avec un 8086 physique ou un émulateur matériel indépendant n'a été effectuée.
+
+
+## Audit indépendant XCHG — 25 novembre 2026
+
+La suite indépendante `tests/xchg-8086.cjs` est intégrée au workflow CI. Elle vérifie séparément les encodages, le désassemblage, les exécutions source et binaires, les FLAGS et les contraintes syntaxiques. Les contrôles ne constituent pas une preuve de fidélité électrique ou de comportement sur un processeur physique.
+
+- **Paires registre-registre : 128 contrôles source** — les 8 registres 8 bits et les 8 registres 16 bits, avec les 64 paires ordonnées dans chaque largeur.
+- **Encodages registres :** les formes ModR/M `86h` et `87h`, et la famille compacte `90h–97h` ; la génération des octets et le désassemblage sont contrôlés.
+- **Mémoire : 18 contrôles de forme** — les huit modes effectifs 8086 en byte et word, le cas spécial `[BP]` encodé avec déplacement nul, ainsi que l'adressage direct `disp16`.
+- **Préfixes de segment : 12 contrôles** — DS, ES, SS et CS dans les chemins source, assembleur/désassembleur et binaire. Les cas DS/SS par défaut sont également exercés dans la matrice des adresses effectives.
+- **Exécution binaire : 152 contrôles** — les 64 paires 8 bits, les 64 paires 16 bits, les formes mémoire, les sélecteurs de segment et les cas spéciaux.
+- **FLAGS : 302 vérifications imbriquées** — CF, PF, AF, ZF, SF, TF, IF, DF et OF sont contrôlés inchangés ; ce compteur recoupe les cas source et binaire.
+- **Contraintes : 8 rejets** — mémoire-mémoire, immédiat, registres de segment et incompatibilités de taille.
+- **Cas spéciaux :** `XCHG AX,AX` est assemblé en `90h`, dont le désassemblage canonique est `NOP` ; `XCHG AX,registre` utilise la famille compacte `90h–97h`.
+
+Le 8086 active implicitement le verrouillage du bus pour un `XCHG` dont l'un des opérandes est en mémoire. Le laboratoire valide l'échange de données et l'encodage, mais ne simule ni le signal LOCK, ni l'arbitrage du bus, ni l'atomicité face à un autre maître de bus. L'acceptation syntaxique du préfixe explicite `LOCK` ne constitue pas une validation de ces propriétés matérielles.
+
+Les compteurs par dimension se recouvrent : les contrôles FLAGS sont inclus dans les exécutions, et les contrôles d'encodage sont inclus dans les formes testées. Ils ne doivent pas être additionnés pour produire un nombre global de cas distincts.
+
+Résultat : [workflow CI 45597601029](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45597601029), commit `4f78a8417aa1b10002a8a702f77cf933bd38f614` — **471 réussis, 0 échec** pour la suite XCHG ; workflow global **success**.
+
+Le statut des tests passe à **Partiel** : les formes et chemins explicitement énumérés sont testés indépendamment, mais les séquences d'opcodes ne sont pas comparées à un processeur physique ni à un émulateur matériel indépendant. Le verrouillage implicite du bus reste hors du modèle logiciel.
