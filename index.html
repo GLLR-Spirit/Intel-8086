@@ -1171,7 +1171,7 @@ function runSelfTests(){var cases=[
 ["MOV préfixe ES explicite","MOV ES:[BX], AL",function(s){return JSON.stringify(encodingBytes(parseProgram("MOV ES:[BX], AL").ops[0]))===JSON.stringify([38,136,7]);}],
 ["MOV préfixe SS explicite","MOV SS:[BX], AL",function(s){return JSON.stringify(encodingBytes(parseProgram("MOV SS:[BX], AL").ops[0]))===JSON.stringify([54,136,7]);}],
 ["MOV préfixe DS pour adresse BP","MOV DS:[BP], AL",function(s){return JSON.stringify(encodingBytes(parseProgram("MOV DS:[BP], AL").ops[0]))===JSON.stringify([62,136,70,0]);}],
-["MOV préfixe SS par défaut sans octet","MOV SS:[BP], AL",function(s){return JSON.stringify(encodingBytes(parseProgram("MOV SS:[BP], AL").ops[0]))===JSON.stringify([136,70,0]);}],
+["MOV préfixe SS explicite conservé même par défaut","MOV SS:[BP], AL",function(s){return JSON.stringify(encodingBytes(parseProgram("MOV SS:[BP], AL").ops[0]))===JSON.stringify([54,136,70,0]);}],
 ["ADD registre-registre encode ModRM","ADD AX, BX",function(s){return JSON.stringify(encodingBytes(parseProgram("ADD AX, BX").ops[0]))===JSON.stringify([1,216]);}],
 ["SUB registre vers mémoire","SUB BYTE PTR [BX], AL",function(s){return JSON.stringify(encodingBytes(parseProgram("SUB BYTE PTR [BX], AL").ops[0]))===JSON.stringify([40,7]);}],
 ["XOR mémoire vers registre","XOR AL, BYTE PTR [SI]",function(s){return JSON.stringify(encodingBytes(parseProgram("XOR AL, BYTE PTR [SI]").ops[0]))===JSON.stringify([50,4]);}],
