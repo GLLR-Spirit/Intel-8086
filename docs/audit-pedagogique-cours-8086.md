@@ -304,3 +304,47 @@ Le contrôle de la progression rédactionnelle, la qualité de chaque explicatio
 - **C32 L1–L3** : correction d'une erreur conceptuelle du prérequis : R/M=100 désigne [SI], il n'est pas réservé. R/M=110 avec Mod=00 encode le direct disp16 ; avec Mod=01/10, il désigne BP avec déplacement. Le texte distingue maintenant les trois valeurs de Mod et le rôle des champs Mod, Reg et R/M.
 - **C14 L3** : rappel explicite que les 16 Jcc du 8086 utilisent exclusivement un déplacement relatif court rel8, calculé depuis l'instruction suivante.
 - **C26 L3** : précision de compatibilité : sur 8086, le compte de décalage/rotation est 1 ou CL ; les formes à immédiat 8 bits sont postérieures.
+### 7.11 Revue individuelle des 36 chapitres
+
+Le contrôle ci-dessous relie chaque chapitre à ses prérequis déclarés et consigne le point technique/pédagogique vérifié. Il ne remplace pas une future relecture éditoriale par un enseignant, mais permet de suivre les 36 chapitres sans confondre leur présence dans l'interface avec leur validation.
+
+| Chapitre | Intitulé | Niveau | Prérequis déclarés | Revue de progression et exactitude |
+|---:|---|---|---|---|
+| 1 | Introduction au microprocesseur Intel 8086 | Débutant | Aucun | Fondations du modèle 8086 ; largeur des registres, bus et capacité d'adressage distingués. |
+| 2 | Architecture interne du 8086 | Débutant | Chapitre 1 | EU/BIU/ALU et file de prélecture correctement séparées ; la prélecture n'est pas du superscalaire. |
+| 3 | Systèmes de numération | Débutant | Chapitre 1 | Numération et conversions ; exemples cohérents avec les tailles d'opérandes. |
+| 4 | Représentation des données | Débutant | Chapitre 3 | Représentation signée/non signée et little-endian ; retenue et débordement différenciés. |
+| 5 | Registres du 8086 | Débutant | Chapitres 2 et 4 | Registres généraux, sous-registres, segments, index et IP ; distinction registre/mémoire correcte. |
+| 6 | Premiers programmes assembleur | Débutant | Chapitres 1 à 5 | Syntaxe Intel, labels et commentaires ; étiquette distinguée d'une instruction. |
+| 7 | Transfert de données | Débutant | Chapitre 6 | Transferts cohérents ; LDS/LES utilisent l'adressage mémoire avant sa formalisation complète, signalé comme aperçu. |
+| 8 | Arithmétique fondamentale | Débutant | Chapitres 4, 5 et 7 | ADD/ADC/SUB/SBB/INC/DEC/NEG ; CF et OF distingués ; exemple ADC corrigé. |
+| 9 | Opérations logiques | Débutant | Chapitres 5 et 8 | AND/OR/XOR/NOT/TEST ; TEST ne stocke pas son résultat. |
+| 10 | Registre FLAGS | Débutant | Chapitres 8 et 9 | Neuf FLAGS modélisés ; TF, IF et DF correctement différenciés. |
+| 11 | Débogage et traçage | Débutant | Chapitres 5 à 10 | Débogage et trace ; visualisation interactive pré-calculée, explicitement étiquetée. |
+| 12 | Comparaison des données | Intermédiaire | Chapitres 8 à 10 | CMP et TEST ; calculs de flags, comparaisons signées/non signées. |
+| 13 | Sauts inconditionnels | Intermédiaire | Chapitre 12 | JMP short/near/indirect ; cible relative calculée depuis l'instruction suivante. |
+| 14 | Sauts conditionnels | Intermédiaire | Chapitre 12 | 16 conditions Jcc ; précision ajoutée : rel8 uniquement sur 8086. |
+| 15 | Comparaisons signées et non signées | Intermédiaire | Chapitres 4, 10, 12 et 14 | Choix JA/JB contre JG/JL ; exemples signés/non signés cohérents. |
+| 16 | Boucles et répétitions | Intermédiaire | Chapitres 12 à 14 | LOOP/LOOPE/LOOPNE/JCXZ ; wrap CX=0000h vers FFFFh expliqué. |
+| 17 | Algorithmes pratiques | Intermédiaire | Chapitres 12 à 16 | Algorithmes de tableau ; `[SI]` est présenté comme aperçu avant la formalisation des segments et modes. |
+| 18 | Organisation de la mémoire | Intermédiaire / avancé | Chapitres 4, 5 et 7 | Segmentation, adresse physique 20 bits et recouvrement ; modèle de wrap explicitement indiqué. |
+| 19 | Modes d'adressage | Intermédiaire / avancé | Chapitres 6 et 18 | Huit modes mémoire ; valeurs effectives et segment par défaut BP/SS contrôlés. |
+| 20 | Pile du 8086 | Intermédiaire / avancé | Chapitres 5 et 18 | Pile LIFO, SS:SP, PUSH/POP et FLAGS ; nuance 8086 PUSH SP ajoutée. |
+| 21 | Procédures | Intermédiaire / avancé | Chapitre 20 | CALL/RET near ; adresse de retour et équilibre de pile. |
+| 22 | Appels imbriqués et paramètres | Intermédiaire / avancé | Chapitres 20 et 21 | Paramètres, sauvegarde des registres et appels imbriqués ; conventions explicitement requises. |
+| 23 | Programmation modulaire | Intermédiaire / avancé | Chapitres 20 à 22 | Modularité et interfaces ; effets de bord et registres modifiés documentés. |
+| 24 | Multiplication | Avancé | Chapitres 4, 8 et 9 | MUL/IMUL ; accumulateur implicite et indicateurs CF/OF expliqués. |
+| 25 | Division | Avancé | Chapitres 4, 8 et 24 | DIV/IDIV, CBW/CWD et erreurs ; dividende et quotient implicites. |
+| 26 | Décalages et rotations | Avancé | Chapitres 8, 9 et 10 | Décalages/rotations ; ajout de la contrainte 8086 count=1 ou CL. |
+| 27 | Instructions de chaîne | Avancé | Chapitres 5, 18 et 19 | Les dix instructions de chaîne ; DS:SI, ES:DI, DF et segments implicites clarifiés. |
+| 28 | Préfixes de répétition | Avancé | Chapitres 16 et 27 | REP/REPE/REPNE et CX/ZF ; arrêt des répétitions expliqué. |
+| 29 | Interruptions | Avancé | Chapitres 5, 18, 20 et 21 | IVT, INT/IRET et cadre FLAGS/CS/IP ; abstraction VECTOR et limites matérielles explicites. |
+| 30 | Entrées-sorties et contrôle | Avancé | Chapitres 5, 10 et 29 | IN/OUT, port imm8/DX, AL/AX ; carte logicielle séparée des périphériques matériels. |
+| 31 | Encodage des instructions | Expert | Chapitres 6 à 19 | Opcode, ModR/M, déplacement, immédiat et préfixes ; longueur liée à la forme. |
+| 32 | ModR/M et calcul des adresses | Expert | Chapitres 19 et 31 | ModR/M et huit formes ; erreur R/M=100 corrigée : [SI], R/M=110 spécial selon Mod. |
+| 33 | Assembleur et désassembleur | Expert | Chapitres 31 et 32 | Deux passes, symboles et désassemblage ; flux incomplet/inconnu signalé. |
+| 34 | Préfixes et compatibilité | Expert | Chapitres 27, 28, 31 et 32 | Préfixes de segment, LOCK et répétition ; limites du signal matériel explicites. |
+| 35 | Optimisation et architecture matérielle | Expert | Chapitres 2, 31 à 34 | BIU, prélecture et cycles ; absence de mesure matérielle réelle annoncée. |
+| 36 | Projets de synthèse | Expert | Chapitres 1 à 35 | Projet final ; tests, limites, documentation et validation requis. |
+
+**Bilan de progression :** la progression générale est cohérente. Les deux aperçus anticipés (LDS/LES au C7 et accès `[SI]` au C17) sont explicitement annoncés comme prévisualisations ; leur formalisation complète arrive ensuite aux chapitres 18–19. Les corrections identifiées dans C14, C20, C26 et C32 sont enregistrées dans le code et les tests. Les limites du modèle matériel sont explicites aux chapitres 2, 29, 30, 34 et 35.
