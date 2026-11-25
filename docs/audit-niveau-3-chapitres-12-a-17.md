@@ -297,3 +297,39 @@ Résultat : octets identiques pour l'ensemble des vecteurs comparés.
 LDS et LES sont validées pour le périmètre logiciel audité : lecture du pointeur 16:16, ordre offset/segment, adressage, destination, préfixes, FLAGS, assemblage, désassemblage, exécution source et binaire, interaction navigateur et comparaison indépendante des encodages.
 
 Cette conclusion ne constitue pas une certification sur processeur physique. Le simulateur ne reproduit pas tous les détails électriques, temporels et de bus d'un 8086 réel. Les interruptions matérielles et les comportements externes au modèle mémoire pédagogique restent hors de ce périmètre.
+
+
+## 9. Audit CALL et RET — première phase de correction
+
+### Corrections apportées
+
+- Ajout de l'encodage \`CALL FAR ptr16:16\` (\`9Ah\`) avec l'ordre exact des champs : offset 16 bits little-endian, puis segment 16 bits little-endian.
+- Ajout du décodage de \`9Ah\` sous la forme \`CALL FAR segment:offset\`.
+- Ajout de l'exécution source et binaire de l'appel far direct. L'appel empile l'ancien CS puis l'IP de retour ; le sommet de pile contient donc l'IP. \`RETF\` dépile IP puis CS.
+- Suppression du rejet artificiel des ajustements impairs de \`RET imm16\` et \`RETF imm16\`. L'ajustement est appliqué en octets après le dépilement de l'adresse de retour, avec bouclage 16 bits de SP.
+- Pour préserver la cohérence du suivi typé de pile après un ajustement impair, les métadonnées typées existantes sont abandonnées ; les octets mémoire et SP restent les données architecturales conservées.
+
+### Tests ciblés
+
+- \`tests/call-ret-stack-boundaries.cjs\` : 6/6 tests. \`RET 0\`, \`RET 1\`, \`RET 3\`, et PUSH/POP avec SP initial à \`0000h\`, \`0001h\` et \`FFFEh\`. Chemins source et binaire comparés lorsque disponibles.
+- \`tests/call-ret-8086.cjs\` : 4/4 tests. Encodage \`9Ah\`, désassemblage, appel far direct source, appel far direct binaire vers un autre segment avec retour vers le segment appelant, et rejet d'un pointeur far tronqué.
+- \`tests/control-stack.cjs\` : tests existants mis à jour pour accepter les ajustements impairs near et far.
+- \`tests/dynamic-differential.cjs\` : contrôle de \`RET 1\` dans les chemins source et binaire.
+
+### Comparaison indépendante
+
+\`tests/call-ret-gnu-crosscheck.cjs\` compare à GNU as 2.46 en \`.code16\` les formes near directes, near indirectes par registre, far directes, \`RET imm16\` et \`RETF imm16\`. Les octets comparés sont identiques.
+
+### Test interactif
+
+\`tests/call-ret-interactive-8086.cjs\` utilise Chromium/Playwright et le véritable bouton « Pas à pas ». Il contrôle le transfert far de CS, la valeur IP de retour au sommet de pile, l'ancien CS au mot suivant, puis la restauration de CS et SP par RETF.
+
+### Limites restantes de cette première phase
+
+Cette phase ne constitue pas encore une validation exhaustive de CALL/RET. Il reste à étendre les vecteurs sur toutes les formes near/far indirectes, les huit modes d'adressage, les limites de déplacement et de segment, les combinaisons de préfixes, les frontières de pile et les neuf FLAGS. Les interactions far source multi-segment sont encore abstraites dans le moteur source ; le test binaire vérifie le transfert inter-segment en mémoire.
+
+Les tests ciblés et le cross-check GNU as ont réussi dans le workflow CI run 814 sur le commit \`020a6f4408a9a17c5a95a4ccaf6290c129040c04\`. Le workflow navigateur run 284 a également réussi sur ce commit. Les exécutions de confirmation sur la tête courante de branche restent à vérifier.
+
+### Conclusion provisoire
+
+\`CALL FAR ptr16:16\` est désormais assemblé, désassemblé et exécuté dans le périmètre testé. Les ajustements impairs de RET/RETF sont acceptés et appliqués en octets. La famille CALL/RET reste en audit ; aucune validation exhaustive n'est déclarée à ce stade.
