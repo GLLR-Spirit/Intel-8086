@@ -10,6 +10,7 @@ on:
       - "tests/lea-interactive-8086.cjs"
       - "tests/lds-les-interactive-8086.cjs"
       - "tests/call-ret-interactive-8086.cjs"
+      - "tests/call-indirect-interactive-8086.cjs"
       - ".github/workflows/level3-browser-audit.yml"
   push:
     branches: [audit/niveau-3-chapitres-12-17]
@@ -47,3 +48,5 @@ jobs:
         run: node tests/lds-les-interactive-8086.cjs
       - name: Vérifier CALL FAR et RETF via le vrai bouton Pas à pas
         run: node tests/call-ret-interactive-8086.cjs
+      - name: Vérifier CALL indirect near/far via Pas à pas et exécution binaire
+        run: node tests/call-indirect-interactive-8086.cjs
