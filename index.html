@@ -1393,7 +1393,7 @@ var level3FinalQuestions=[
  ["LOOPE exige…",["CX≠0 et ZF=1","CX≠0 et ZF=0","CX=0"],0,"LOOPE combine CX et ZF."],
  ["LOOPNE exige…",["CX≠0 et ZF=0","CX≠0 et ZF=1","CX=0"],0,"LOOPNE poursuit lorsque le résultat précédent n'est pas égal."],
  ["Quelle instruction teste CX=0 sans le modifier ?",["JCXZ","LOOP","DEC CX"],0,"JCXZ teste le compteur sans le décrémenter."],
- ["Si CX=0 avant LOOP, quelle valeur obtient-on après décrémentation ?",["FFFFh","0000h","0001h"],0,"Le compteur 16 bits déborde modulo 65536."],
+ ["Quelle plage de déplacement utilise LOOP ?",["−128 à +127 octets","−32768 à +32767 octets","0 à 255 octets"],0,"LOOP utilise un déplacement relatif signé sur 8 bits, comme les autres branchements courts."],
  ["LOOP modifie-t-elle ZF ?",["Non","Oui, elle le met à zéro","Oui, elle le copie depuis CX"],0,"LOOP ne modifie pas les FLAGS."],
  ["D'où provient le ZF lu par LOOPE ?",["De l'instruction précédente qui l'a défini","D'une comparaison implicite de CX","De l'instruction LOOP elle-même"],0,"LOOPE teste le ZF déjà présent."],
  ["JCXZ utilise quel type de déplacement ?",["Relatif short signé 8 bits","Relatif near 16 bits","Indirect mémoire"],0,"JCXZ est un saut court."],
