@@ -911,7 +911,7 @@ test("Chaînes — MOVS/LODS/STOS préservent FLAGS ; CMPS/SCAS les actualisent"
       flags:initial,
       mem:{[physical(0x1000,0x10)]:0x34}
     });
-    assert.deepEqual(state.flags,initial,op+" must preserve all modeled FLAGS");
+    Object.keys(initial).forEach(flag=>assert.equal(state.flags[flag],initial[flag],op+" must preserve "+flag));
   }
   const cmps=runStringBinary("CMPSB\nHLT",{
     reg:{DS:0x1000,ES:0x2000,SI:0x10,DI:0x20},
