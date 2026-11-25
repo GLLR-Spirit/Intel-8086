@@ -386,7 +386,7 @@ test("XCHG r/m16,r16 et XCHG r/m8,r8 décodent leurs deux sens", () => {
 test("LOCK XCHG registre reste un préfixe 8086 valide sans protéger une donnée mémoire", () => {
   const encoded=bytes("LOCK XCHG AX, BX");
   assert.equal(encoded[0],0xF0);
-  const state=api.execute("MOV AX, 1111h\\nMOV BX, 2222h\\nLOCK XCHG AX, BX\\nHLT");
+  const state=api.execute("MOV AX, 1111h\nMOV BX, 2222h\nLOCK XCHG AX, BX\nHLT");
   assert.equal(state.error,undefined);
   assert.equal(state.reg.AX,0x2222);
   assert.equal(state.reg.BX,0x1111);
