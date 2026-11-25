@@ -1615,7 +1615,7 @@ var auditedL4to6Final=[
 ,
 [
  auditedQ("Quelles adresses utilise MOVSB par défaut ?",["DS:SI source et ES:DI destination","SS:SP source et CS:IP destination","ES:DI source et DS:SI destination"],0,"MOVSB lit la source dans DS:SI et écrit la destination dans ES:DI.","Définition"),
- auditedQ("Quel registre contrôle le sens de progression des index ?",["DF","CF","IF"],0,"DF détermine l'incrémentation ou la décrmentation de SI et DI.","Compréhension"),
+ auditedQ("Quel registre contrôle le sens de progression des index ?",["DF","CF","IF"],0,"DF détermine l'incrémentation ou la décrémentation de SI et DI.","Compréhension"),
  auditedQ("Quelle instruction copie un octet de DS:SI vers ES:DI ?",["MOVSB","STOSB","SCASB"],0,"MOVSB transfère l'octet source vers la destination de chaîne.","Syntaxe"),
  auditedQ("Quel segment reste imposé comme destination pour MOVSB même avec un override source ?",["ES","SS","CS"],0,"La destination des instructions MOVS utilise ES:DI.","Restrictions"),
  auditedQ("Avec SI=0100h, DI=0200h et DF=0, quels index suivent MOVSB ?",["SI=0101h, DI=0201h","SI=00FFh, DI=01FFh","SI=0100h, DI=0200h"],0,"Un octet est transféré et les deux index sont incrémentés.","Prédiction"),
