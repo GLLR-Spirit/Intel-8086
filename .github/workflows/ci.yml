@@ -52,6 +52,10 @@ jobs:
         run: node tests/lahf-sahf-8086.cjs
       - name: Run independent 8086 XLAT instruction audit
         run: node tests/xlat-8086.cjs
+      - name: Verify XLAT complete register and FLAGS preservation
+        run: node tests/xlat-state-8086.cjs
+      - name: Cross-check XLAT encodings with GNU as
+        run: node tests/xlat-gnu-crosscheck.cjs
       - name: Run independent 8086 XCHG instruction audit
         run: node tests/xchg-8086.cjs
       - name: Run operand constraint tests
