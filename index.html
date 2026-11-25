@@ -151,17 +151,17 @@ chapterLearning=curriculum.map(function(c,ci){
    ["Pourquoi cette notion est-elle importante ?",[c[3],"Pour remplacer toutes les instructions du processeur","Pour éviter de connaître l'état des registres"],0,c[3]],
    ["Que faut-il vérifier dans l'exemple guidé ?",[l[3],"Uniquement le nom du fichier source","Le nombre de commentaires"],0,"Le résultat attendu est : "+l[3]+"."]].map(function(q,qi){q[4]=["Compréhension","Application","Vérification"][qi];return rotateQuiz(q,ci+li+qi);})};
  });
- var a=c[5][0],b=c[5][1],d=c[5][2];
+ var a=c[5][0],b=c[5][1],d=c[5][2],previous=curriculum[Math.max(0,ci-1)],next=curriculum[Math.min(curriculum.length-1,ci+1)];
  var exam=[
- ["Quelle est la finalité essentielle de ce chapitre ?",[c[3],"Optimiser exclusivement l'affichage du navigateur","Remplacer le système d'exploitation"],0,c[3],"Définition"],
+ ["Quelle est la finalité essentielle de ce chapitre ?",[c[3],previous[3],next[3]],0,c[3],"Définition"],
  ["Quel principe est introduit dans la première leçon ?",[a[4],b[4],d[4]],0,"La première leçon établit le concept : "+a[4]+".","Compréhension"],
  ["Quelle séquence assembleur illustre la deuxième leçon ?",[b[2],a[2],d[2]],0,"Cette séquence met en pratique "+b[0]+".","Syntaxe"],
- ["Quelle restriction ou précaution doit impérativement être respectée ?",[c[4],"Ignorer les tailles et les registres implicites","Supposer que toutes les formes d'instruction sont interchangeables"],0,c[4],"Restrictions"],
+ ["Quelle restriction ou précaution doit impérativement être respectée ?",[c[4],previous[4],next[4]],0,c[4],"Restrictions"],
  ["Quel résultat faut-il prévoir pour le premier exemple ?",[a[3],b[3],d[3]],0,"Le premier exemple doit produire : "+a[3]+".","Prédiction"],
  ["Quel résultat est attendu après la troisième leçon ?",[d[3],a[3],b[3]],0,"La troisième leçon aboutit à : "+d[3]+".","Calcul / prédiction"],
- ["Que démontre le programme de la deuxième leçon ?",[b[1],"Les instructions n'ont aucun effet sur l'état machine","Le processeur ignore les opérandes"],0,b[1],"Analyse de programme"],
+ ["Que démontre le programme de la deuxième leçon ?",[b[1],a[1],d[1]],0,b[1],"Analyse de programme"],
  ["Quelle observation correspond à l'exécution de la troisième leçon ?",[d[3],a[3],b[3]],0,"L'état attendu est : "+d[3]+".","Analyse de résultat"],
- ["Quel défaut faut-il rechercher en priorité lors du débogage ?",[c[4],"Supprimer les tests de validation","Confondre le code source avec les octets affichés"],0,c[4],"Débogage"],
+ ["Quel défaut faut-il rechercher en priorité lors du débogage ?",[c[4],previous[4],next[4]],0,c[4],"Débogage"],
  ["Quelle démarche permet de résoudre rigoureusement un problème de ce chapitre ?",["Identifier les prérequis, appliquer la règle, tracer l'état et vérifier le résultat","Modifier plusieurs registres au hasard jusqu'à obtenir une valeur","Ignorer les cas limites et ne tester que le cas nominal"],0,"Une démarche rigoureuse relie la spécification, les règles architecturales, la trace et les tests.","Raisonnement"]
  ].map(function(q,qi){return rotateQuiz(q,ci+qi);});
  return {goal:c[3],theory:c[5].map(function(l){return l[1];}).join(" "),walk:c[5].map(function(l){return l[2]+" Résultat attendu : "+l[3];}).join(" "),lessons:lq,quiz:exam,prereq:c[2],pitfall:c[4]};
