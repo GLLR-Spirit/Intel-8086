@@ -356,17 +356,17 @@ const advancedExampleOracles = [
   [28,1,s=>s.reg.CX===0&&s.reg.DI===0x102&&byte(s,s.reg.ES,0x100)===0x41&&byte(s,s.reg.ES,0x101)===0x41,"REP STOSB writes two bytes and exhausts CX"],
   [28,2,s=>s.reg.CX===0&&s.reg.DI===0x101&&s.flags.ZF===1,"REPNE SCASB stops after equality"],
   [28,3,s=>s.reg.CX===0&&s.reg.SI===0x102&&s.reg.DI===0x202&&byte(s,s.reg.ES,0x200)===0x41&&byte(s,s.reg.ES,0x201)===0x42,"REP MOVSB copies two initialized bytes and advances both indices"],
-  [29,1,s=>((0x30*4)&0xffff)===0x00c0,"IVT vector 30h entry offset is 00C0h"],
+  [29,1,s=>s.reg.AX===0x00c0&&s.reg.DX===0,"30h multiplied by four computes the IVT entry offset 00C0h"],
   [29,2,s=>s.reg.BX===0x1234&&s.reg.SP===initialSP&&s.stack.length===0,"INT invokes handler and IRET restores the saved frame"],
   [29,3,s=>s.reg.SP===initialSP&&s.stack.length===0,"IRET returns to the instruction following INT"],
   [30,1,s=>s.reg.DX===0x3f8,"DX contains port number 03F8h"],
   [30,2,s=>s.io&&s.io[0x10]===0x55,"OUT stores 55h in the model's configured port state"],
   [30,3,s=>s.flags.IF===1,"STI sets IF before HLT"],
   [31,1,s=>s.reg.AX===0x1234,"MOV immediate example leaves AX=1234h"],
-  [31,2,s=>s.reg.AX===0x1234,"three-byte MOV immediate is executed correctly"],
+  [31,2,s=>s.reg.CX===0x5678,"three-byte MOV CX immediate is executed correctly"],
   [31,3,s=>s.reg.AX===0x1234,"register-to-register MOV transfers BX to AX"],
   [32,1,s=>s.reg.AX===0xabcd,"ModR/M example writes and reloads ABCDh through BX+SI+disp8"],
-  [32,2,s=>s.reg.AX===0xabcd,"BX+SI+disp8 effective address reads ABCDh"],
+  [32,2,s=>s.reg.AX===0x8888&&s.reg.DS===0x1000&&s.reg.SS===0x2000&&word(s,s.reg.DS,0x0102)===0x1111&&word(s,s.reg.DS,0x0104)===0x2222&&word(s,s.reg.SS,0x0108)===0x3333&&word(s,s.reg.SS,0x010a)===0x4444&&word(s,s.reg.DS,0x0002)===0x5555&&word(s,s.reg.DS,0x0004)===0x6666&&word(s,s.reg.SS,0x0006)===0x7777&&word(s,s.reg.DS,0x0100)===0x8888,"All eight 8086 memory addressing forms write and read the expected words with DS/SS defaults"],
   [32,3,s=>s.reg.AX===0xbeef,"direct disp16 memory form reads BEEFh"],
   [33,1,s=>s.reg.IP>=0&&s.reg.SP===initialSP,"assembler resolves FIN and execution reaches HLT"],
   [33,2,s=>s.reg.AX===0x1234,"MOV AX,1234h executes; its bytes are checked by the independent disassembler below"],
@@ -402,10 +402,14 @@ function sameBytes(actual,expected,label) {
   assert.deepEqual(actual,expected,label+" bytes");
 }
 sameBytes(bytesOf(learning.curriculum[30][5][0][2]),[0xB8,0x34,0x12,0xF4],"C31 L1 MOV immediate");
-sameBytes(bytesOf(learning.curriculum[30][5][1][2]),[0xB8,0x34,0x12,0xF4],"C31 L2 MOV immediate length");
+sameBytes(bytesOf(learning.curriculum[30][5][1][2]),[0xB9,0x78,0x56,0xF4],"C31 L2 MOV CX immediate length");
 const regMoveBytes=bytesOf(learning.curriculum[30][5][2][2]);
 assert.ok(JSON.stringify(regMoveBytes)===JSON.stringify([0xBB,0x34,0x12,0x89,0xD8,0xF4])||JSON.stringify(regMoveBytes)===JSON.stringify([0xBB,0x34,0x12,0x8B,0xC3,0xF4]),"C31 L3 equivalent register MOV encoding after initializing BX");
 sameBytes(bytesOf(learning.curriculum[31][5][0][2]),[0xBB,0x00,0x01,0xBE,0x02,0x00,0xC7,0x40,0x04,0xCD,0xAB,0x8B,0x40,0x04,0xF4],"C32 L1 complete initialized ModR/M disp8 example");
+const c32l2=learning.executeAll(learning.curriculum[31][5][1][2]);
+assert.equal(c32l2.error,null,"C32 L2 all eight memory forms execute");
+assert.equal(c32l2.reg.AX,0x8888,"C32 L2 final AX");
+for(const [seg,off,val] of [[0x1000,0x0102,0x1111],[0x1000,0x0104,0x2222],[0x2000,0x0108,0x3333],[0x2000,0x010a,0x4444],[0x1000,0x0002,0x5555],[0x1000,0x0004,0x6666],[0x2000,0x0006,0x7777],[0x1000,0x0100,0x8888]]) assert.equal(word(c32l2,seg,off),val,`C32 L2 ${seg.toString(16)}:${off.toString(16)}`);
 sameBytes(bytesOf(learning.curriculum[31][5][2][2]),[0xC7,0x06,0x34,0x12,0xEF,0xBE,0x8B,0x06,0x34,0x12,0xF4],"C32 L3 direct disp16");
 sameBytes(bytesOf(learning.curriculum[32][5][1][2]),[0xB8,0x34,0x12,0xF4],"C33 L2 assembled stream for sequential disassembly");
 
