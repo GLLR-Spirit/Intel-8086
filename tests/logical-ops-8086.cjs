@@ -65,10 +65,10 @@ function flagsWord() {
   return 2 | (1 << 9) | (1 << 10) | (1 << 11) | (1 << 7) |
     (1 << 6) | (1 << 4) | (1 << 2) | 1;
 }
-function checkLogicalFlags(state, result, label) {
+function checkLogicalFlags(state, result, label, bits) {
   assert.equal(state.flags.CF, 0, label + " CF must clear");
   assert.equal(state.flags.OF, 0, label + " OF must clear");
-  assert.equal(state.flags.SF, (result & 0x8000) ? 1 : 0, label + " SF");
+  assert.equal(state.flags.SF, (result & (bits === 8 ? 0x80 : 0x8000)) ? 1 : 0, label + " SF");
   assert.equal(state.flags.ZF, result === 0 ? 1 : 0, label + " ZF");
   assert.equal(state.flags.PF, parity8(result & 255), label + " PF");
   assert.equal(state.flags.DF, 1, label + " DF must be preserved");
@@ -120,7 +120,7 @@ for (const op of ["AND", "OR", "XOR", "TEST"]) {
     test(op + " FLAGS result=" + byte(target), () => {
       const state = run(source);
       assert.equal(state.reg.AX & 255, op === "TEST" ? a : expected, op + " destination");
-      checkLogicalFlags(state, expected, op + " " + byte(a) + "," + byte(b));
+      checkLogicalFlags(state, expected, op + " " + byte(a) + "," + byte(b), 8);
     });
     totals.flagVectors++;
   }
@@ -139,7 +139,7 @@ for (const op of ["AND", "OR", "XOR", "TEST"]) {
     test(op + " 16-bit boundary " + word(a) + "/" + word(b), () => {
       const state = run(source);
       assert.equal(state.reg.AX, op === "TEST" ? a : expected, op + " AX");
-      checkLogicalFlags(state, expected, op + " " + word(a) + "," + word(b));
+      checkLogicalFlags(state, expected, op + " " + word(a) + "," + word(b), 16);
     });
     totals.wordBoundaries++;
   }
@@ -155,7 +155,8 @@ for (const op of ["OR", "AND", "XOR"]) {
     for (let reg = 0; reg < 8; reg++) for (let rm = 0; rm < 8; rm++) {
       const modrm = 0xC0 | (reg << 3) | rm;
       const toRM = [baseOpcode[op] + (bits === 8 ? 0 : 1), modrm];
-      const toReg = [baseOpcode[op] + (bits === 8 ? 2 : 3), modrm];
+      const toReg = [baseOpcode[op] + (bits === 8 ? 0 : 1), 0xC0 | (rm << 3) | reg];
+      const fixedReverse = [baseOpcode[op] + (bits === 8 ? 2 : 3), modrm];
       const sourceRM = op + " " + regs[rm] + ", " + regs[reg];
       const sourceReg = op + " " + regs[reg] + ", " + regs[rm];
       test(op + " register encoding r/m←reg " + bits + " " + reg + "/" + rm, () => {
@@ -165,7 +166,7 @@ for (const op of ["OR", "AND", "XOR"]) {
       });
       test(op + " register encoding reg←r/m " + bits + " " + reg + "/" + rm, () => {
         assert.deepEqual(Array.from(api.assemble(sourceReg).bytes), toReg, sourceReg);
-        const decoded = api.disassemble(toReg).rows[0].instruction;
+        const decoded = api.disassemble(fixedReverse).rows[0].instruction;
         assert.ok(decoded.startsWith(op + " "), decoded);
       });
       totals.registerEncodings += 2;
@@ -330,7 +331,7 @@ for (const source of [
   totals.invalidInputs++;
 }
 for (const code of [
-  [0x20], [0x20,0x00], [0x21,0x40], [0x22], [0x23,0x80,0x01],
+  [0x20], [0x21,0x40], [0x22], [0x23,0x80,0x01],
   [0x08], [0x09,0x06], [0x30], [0x31,0x80,0x01],
   [0x84], [0x85,0x06], [0x80], [0x81,0x06], [0x83,0x06],
   [0xF6], [0xF7], [0xF7,0x06]
