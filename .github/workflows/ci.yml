@@ -40,6 +40,8 @@ jobs:
         run: node tests/shift-rotate-8086.cjs
       - name: Run 8086 BCD and multiply/divide architectural vectors
         run: node tests/bcd-multiply-divide-8086.cjs
+      - name: Run independent 8086 logical instruction audit
+        run: node tests/logical-ops-8086.cjs
       - name: Run 8086 divide-error interrupt tests
         run: node tests/divide-error-interrupt-8086.cjs
       - name: Run 8086 memory MUL IMUL DIV IDIV audit
