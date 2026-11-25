@@ -64,7 +64,7 @@ L'inspection de `encodingBytes` et de `disassembleBytes` confirme des chemins Mo
 | Famille | Opcodes/formes repérés | Particularité à auditer |
 |---|---|---|
 | MOV général | `88`–`8B` | Deux directions, tailles 8/16 bits |
-| MOV segment | `8C`, `8E` | Champ `REG=0SR` selon Intel table 4-13 : `/0` ES, `/1` CS, `/2` SS, `/3` DS ; `/4` à `/7` non utilisés. `8E /1` (MOV CS) est accepté sur le 8086 original |
+| MOV segment | `8C`, `8E` | Champ `REG=0SR` : `/0` ES, `/1` CS, `/2` SS, `/3` DS ; `/4` à `/7` non utilisés. `8C /1` (lecture de CS) est valide ; `8E /1` (destination CS) est interdit par la référence Intel ASM86 |
 | MOV immédiat | `C6`, `C7` | Extension `/0` seulement |
 | Arithmétique/logique | `00`–`03`, `08`–`0B`, `10`–`13`, `18`–`1B`, `20`–`23`, `28`–`2B`, `30`–`33`, `38`–`3B` | `reg` est un registre général ; sens déterminé par D |
 | Groupes immédiats | `80`, `81`, `83` | `reg` est une extension d'opération |
