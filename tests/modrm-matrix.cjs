@@ -165,9 +165,10 @@ for (const opcode of [0xC6, 0xC7]) {
 
 for (const opcode of [0xFE, 0xFF]) {
   for (let ext = 0; ext < 8; ext++) {
-    const bytes = [opcode, modRM(3, ext, 0)];
+    const mod = 3; // register-direct mode: far CALL /3 and far JMP /5 require memory.
+    const bytes = [opcode, modRM(mod, ext, 0)];
     test("Validité · " + opcode.toString(16).toUpperCase() + " /" + ext, () => {
-      const invalid = opcode === 0xFE ? ext > 1 : (ext === 7 || ((ext === 3 || ext === 5) && 3 === 3));
+      const invalid = opcode === 0xFE ? ext > 1 : (ext === 7 || ((ext === 3 || ext === 5) && mod === 3));
       assert.equal(isDB(bytes), invalid,
         opcode.toString(16).toUpperCase() + " /" + ext + " : " + hex(bytes));
     });
