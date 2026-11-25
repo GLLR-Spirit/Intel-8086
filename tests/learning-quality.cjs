@@ -75,10 +75,10 @@ assert.equal(learning.chapterLearning.reduce((n, c) => n + c.quiz.length, 0), 36
 const requiredFinalCategories = ["Définition","Compréhension","Syntaxe","Restrictions","Prédiction","Calcul / prédiction","Analyse de programme","Analyse de résultat","Débogage","Raisonnement"];
 for (let chapterIndex = 0; chapterIndex < learning.chapterLearning.length; chapterIndex++) {
   const chapter = learning.chapterLearning[chapterIndex];
-  assert.deepEqual(chapter.quiz.map(q => q[4]), requiredFinalCategories,
+  assert.equal(JSON.stringify(chapter.quiz.map(q => q[4])), JSON.stringify(requiredFinalCategories),
     "Chapter " + (chapterIndex + 1) + " final questions must follow the ten technical categories in order.");
   for (let lessonIndex = 0; lessonIndex < chapter.lessons.length; lessonIndex++) {
-    assert.deepEqual(chapter.lessons[lessonIndex].quiz.map(q => q[4]), ["Compréhension","Application","Vérification"],
+    assert.equal(JSON.stringify(chapter.lessons[lessonIndex].quiz.map(q => q[4])), JSON.stringify(["Compréhension","Application","Vérification"]),
       "Chapter " + (chapterIndex + 1) + ", lesson " + (lessonIndex + 1) + " must have three distinct learning checks.");
   }
 }
