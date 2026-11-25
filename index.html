@@ -1497,6 +1497,11 @@ var auditedL4to6Lessons=[
  [auditedQ("Quelle propriété distingue SAR de SHR ?",["SAR conserve le bit de signe","SAR insère toujours zéro","SAR inverse tous les bits"],0,"SAR recopie le bit de poids fort pour préserver le signe en décalant à droite.","Compréhension"),auditedQ("Que donne SAR AL,1 avec AL=FCh ?",["FEh","7Eh","F8h"],0,"FCh représente -4 ; le décalage arithmétique donne FEh (-2).","Application"),auditedQ("Pourquoi SAR convient-il à certains entiers signés ?",["Il propage le bit de signe","Il traite les valeurs comme des adresses","Il efface CF à chaque étape"],0,"La propagation du bit de signe conserve une interprétation en complément à deux.","Vérification")],
  [auditedQ("Que fait ROL ?",["Fait tourner les bits vers la gauche","Décale à droite avec zéro","Échange AX et BX"],0,"ROL réinjecte le bit sortant de poids fort en bit de poids faible.","Compréhension"),auditedQ("Que donne ROL AL,1 avec AL=81h ?",["03h avec CF=1","02h avec CF=0","C0h avec CF=1"],0,"Le bit 7 sort dans CF et revient en bit 0 ; 81h devient 03h.","Application"),auditedQ("Quelle différence sépare rotation et décalage ?",["La rotation réinjecte le bit sortant dans l'opérande","Le décalage conserve toujours tous les bits","La rotation ne modifie jamais CF"],0,"Une rotation fait circuler les bits au lieu de les perdre comme un décalage.","Vérification")]
 ]
+,
+[
+ [auditedQ("Quelle paire de registres définit la source et la destination de MOVSB ?",["DS:SI et ES:DI","SS:SP et CS:IP","ES:DI et DS:SI"],0,"MOVSB lit à DS:SI et écrit à ES:DI par défaut.","Compréhension"),auditedQ("Avec SI=0100h, DI=0200h et DF=0, que deviennent les index après MOVSB ?",["SI=0101h et DI=0201h","SI=00FFh et DI=01FFh","Ils restent inchangés"],0,"Un transfert octet avec DF effacé incrémente SI et DI d'une unité.","Application"),auditedQ("Quel segment est imposé pour la destination des instructions MOVS ?",["ES","DS","SS"],0,"La destination des instructions de chaîne MOVS est ES:DI.","Vérification")],
+ [auditedQ("Quel registre fournit l'octet stocké par STOSB ?",["AL","AH","BL"],0,"STOSB écrit l'accumulateur octet AL à ES:DI.","Compréhension"),auditedQ("Avec AL=41h et DI=0100h, où STOSB écrit-il ?",["ES:0100h","DS:0100h","SS:0041h"],0,"STOSB utilise ES:DI comme destination implicite.","Application"),auditedQ("Quel index avance après STOSB avec DF=0 ?",["DI","SI","BP"],0,"STOSB utilise DI et le fait progresser selon DF.","Vérification")],
+ [auditedQ("Que compare SCASB ?",["AL avec l'octet à ES:DI","AX avec DS:SI","BL avec SS:SP"],0,"SCASB compare AL à la destination ES:DI.","Compréhension"),auditedQ("Que signifie ZF=1 après SCASB ?",["AL égale l'octet comparé","AL est supérieur","DI vaut zéro"],0,"La comparaison soustrait les valeurs ; l'égalité positionne ZF.","Application"),auditedQ("Quel registre d'index est modifié par SCASB ?",["DI","SI","BX"],0,"SCASB fait progresser ou reculer DI selon DF.","Vérification")]
 ];
 var auditedL4to6Final=[
 [
@@ -1607,6 +1612,18 @@ var auditedL4to6Final=[
  auditedQ("Comment corriger SAR AL,1 si le programme doit préserver un signe négatif ?",["Utiliser SAR plutôt que SHR","Utiliser ROL","Remplacer AL par CS"],0,"SAR propage le bit de signe alors que SHR insère zéro.","Débogage"),
  auditedQ("Quel contrôle est nécessaire pour les rotations ?",["Vérifier résultat, CF et OF selon le compte","Vérifier uniquement la valeur initiale","Supposer OF défini pour tout compte"],0,"Les règles FLAGS dépendent du type et du nombre de bits tournés.","Raisonnement")
 ]
+,
+[
+ auditedQ("Quelles adresses utilise MOVSB par défaut ?",["DS:SI source et ES:DI destination","SS:SP source et CS:IP destination","ES:DI source et DS:SI destination"],0,"MOVSB lit la source dans DS:SI et écrit la destination dans ES:DI.","Définition"),
+ auditedQ("Quel registre contrôle le sens de progression des index ?",["DF","CF","IF"],0,"DF détermine l'incrémentation ou la décrmentation de SI et DI.","Compréhension"),
+ auditedQ("Quelle instruction copie un octet de DS:SI vers ES:DI ?",["MOVSB","STOSB","SCASB"],0,"MOVSB transfère l'octet source vers la destination de chaîne.","Syntaxe"),
+ auditedQ("Quel segment reste imposé comme destination pour MOVSB même avec un override source ?",["ES","SS","CS"],0,"La destination des instructions MOVS utilise ES:DI.","Restrictions"),
+ auditedQ("Avec SI=0100h, DI=0200h et DF=0, quels index suivent MOVSB ?",["SI=0101h, DI=0201h","SI=00FFh, DI=01FFh","SI=0100h, DI=0200h"],0,"Un octet est transféré et les deux index sont incrémentés.","Prédiction"),
+ auditedQ("Quelle donnée AL=41h stocke STOSB à DI=0100h ?",["41h à ES:0100h","41h à DS:0100h","0100h dans AL"],0,"STOSB écrit AL à l'adresse destination ES:DI.","Calcul / prédiction"),
+ auditedQ("Que fait SCASB avec AL=41h et ES:DI contenant 41h ?",["Compare les octets et positionne ZF=1","Copie AL vers ES:DI","Charge ES:DI dans AX"],0,"SCASB effectue une comparaison entre AL et la mémoire destination.","Analyse de programme"),
+ auditedQ("Quel état est attendu après MOVSB avec DF=0 ?",["La donnée est copiée et SI/DI avancent d'un octet","La donnée est copiée et SI/DI diminuent","CX est automatiquement mis à zéro"],0,"MOVSB modifie la mémoire et avance les index selon DF.","Analyse de résultat"),
+ auditedQ("Comment corriger une copie MOVSB qui lit la mauvaise source ?",["Vérifier DS, SI et tout override de segment source","Modifier uniquement AX","Remplacer DI par SP"],0,"La source dépend de DS:SI ou du segment explicitement surchargé.","Débogage"),
+ auditedQ("Quelle validation couvre les instructions de chaîne ?",["Données source/destination, index, DF, segments et FLAGS pertinents","Seulement le résultat dans AL","Uniquement l'opcode"],0,"Les instructions de chaîne ont des opérandes implicites et des effets d'index à contrôler.","Raisonnement")
 ];
 
 
