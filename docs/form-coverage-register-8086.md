@@ -197,3 +197,46 @@ Le préfixe LOCK est accepté devant l'instruction suivante, y compris `LOCK REP
 6. Ne calculer le score pondéré qu'une fois ces unités recensées et les règles de pondération publiées.
 
 Aucun pourcentage global n'est calculé dans cette tranche.
+
+
+---
+
+## 12. Troisième tranche — familles arithmétiques, logiques et décalages
+
+Les formes ci-dessous sont les formes architecturales de référence à suivre. La colonne « preuves » nomme des suites existantes ; elle ne signifie pas que chaque combinaison d'opérandes a déjà un oracle indépendant.
+
+| Famille | Formes / opcodes 8086 à inventorier | Preuves présentes | Validation restante |
+|---|---|---|---|
+| AND | r/m8,r8 ; r/m16,r16 ; r8/r16,r/m ; AL/AX,imm ; r/m8/16,imm (80/81/83) | `logical-ops-8086`, vecteurs indépendants | Matrice directionnelle octet/mot, tous modes mémoire et extensions |
+| OR | mêmes formes directionnelles et immédiates ; groupe 80/81/83 /1 | `logical-ops-8086`, balayage de groupes | Toutes combinaisons source/destination et immédiats |
+| XOR | mêmes formes directionnelles et immédiates ; groupe 80/81/83 /6 | `logical-ops-8086`, vecteurs FLAGS | Toutes combinaisons et AF indéfini |
+| TEST | r/m8,r8 (84 /r), r/m16,r16 (85 /r), AL/AX,imm (A8/A9), r/m8/16,imm (F6/F7 /0) | `logical-ops-8086`, `group-opcodes` | Toutes formes mémoire, immédiats et contraintes |
+| NOT | r/m8 (F6 /2), r/m16 (F7 /2) | `group-opcodes`, balayage ModR/M | FLAGS préservés et matrices complètes |
+| INC / DEC | r16 (40–4F), r/m8 (FE /0,/1), r/m16 (FF /0,/1) | `instruction-vectors`, `group-opcodes`, FLAGS différentiels | Chaque registre, mémoire, SP et limites |
+| NEG | r/m8 (F6 /3), r/m16 (F7 /3) | `neg-8086`, `group-opcodes` | Toutes formes mémoire, limites 80h/8000h, FLAGS |
+| MUL / IMUL | r/m8 (F6 /4,/5), r/m16 (F7 /4,/5) ; accumulateurs implicites AL/AX et résultats AX/DX:AX | `bcd-multiply-divide`, `mul-div-memory` | Toutes formes registre/mémoire, produits limites et flags indéfinis |
+| DIV / IDIV | r/m8 (F6 /6,/7), r/m16 (F7 /6,/7) ; dividendes implicites AX ou DX:AX | `divide-error-interrupt`, `mul-div-memory` | Toutes formes, quotient maximal, signe, division par zéro et retour d'interruption |
+| ROL / ROR / RCL / RCR | r/m8/16, compte 1 ou CL ; groupes D0–D3 | `shift-rotate-8086`, vecteurs FLAGS | Tous groupes, registres/mémoire, CF initial et counts CL |
+| SHL / SAL / SHR / SAR | r/m8/16, compte 1 ou CL ; groupes D0–D3 | `shift-rotate-8086`, contraintes d'opérandes | Toutes formes et cas CL=0, CL>1 ; pas de C0/C1 sur 8086 |
+| AAA / AAS / AAM / AAD / DAA / DAS | opcodes implicites sans ModR/M | `bcd-multiply-divide`, oracles arithmétiques | Cas limites et FLAGS non définis par instruction |
+| CBW / CWD | opcodes implicites 98 / 99 | `bcd-multiply-divide` | Vérifier la préservation des autres registres et flags sur les deux chemins |
+
+### Règles de validation à ne pas confondre
+
+- Le balayage des 256 valeurs d'opcode et des octets ModR/M valide la robustesse du décodeur ; il ne remplace pas l'oracle sémantique de chaque instruction.
+- Pour les groupes F6/F7, le champ `Reg` est une extension d'opcode : les sélecteurs /0 à /7 doivent être classés par instruction et par taille.
+- Les formes de décalage à immédiat 8 bits C0/C1 ne font pas partie du 8086 original ; le compteur est 1 implicite ou CL. Les rejets de C0/C1 doivent être conservés.
+- Pour MUL/IMUL/DIV/IDIV, la taille de l'opérande explicite détermine le registre implicite, la largeur du résultat et les destinations quotient/reste.
+- Les FLAGS indéfinis ne doivent pas être comparés à une valeur fixe dans les oracles indépendants.
+
+## 13. Familles restantes à décomposer
+
+Les groupes suivants sont recensés, mais leur décompte forme-par-forme reste à faire avant tout score :
+
+- Transferts et pile : PUSH/POP, PUSHF/POPF, MOV segment, LEA, LDS/LES, XCHG, XLAT, LAHF/SAHF.
+- Chaînes : MOVS, CMPS, STOS, LODS, SCAS en octet/mot, DF et combinaisons REP/REPE/REPNE.
+- Entrées/sorties : IN/OUT avec port immédiat ou DX, octet ou mot.
+- Interruptions et contrôle : INT imm8, INT3, INTO, IRET, HLT, WAIT, ESC, NOP, CLI/STI et instructions CLC/STC/CMC/CLD/STD.
+- Préfixes : F0, F2, F3 et overrides 26/2E/36/3E, seuls et combinés, y compris ordre, répétitions et flux tronqués.
+
+La phase 2 demeure ouverte : aucune somme de mnémoniques ou de suites exécutées n'est convertie en pourcentage global tant que ces familles ne sont pas décomposées en formes vérifiables.
