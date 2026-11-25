@@ -22,7 +22,7 @@ const context = {
 vm.createContext(context);
 const injection = "\nglobalThis.__8086OperandApi = {" +
   "\n assemble: function (source) { return assembleProgram(source); }," +
-  "\n disassemble: function (bytes) { return disassembleBytes(bytes); }," +
+  "\n disassemble: function (bytes, maxRows) { return disassembleBytes(bytes, maxRows); }," +
   "\n execute: function (source) { return executeAll(source); }" +
   "\n};\n})();\n";
 const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injection);
@@ -113,7 +113,7 @@ for (let s = 0; s < 4; s++) {
     if (s === 1) {
       test("MOV CS destination interdit · " + regs[r], () => {
         assert.throws(() => bytes("MOV CS, " + regs[r]), /MOV CS comme destination/);
-        const rows = api.disassemble(toSegment).rows;
+        const rows = api.disassemble(toSegment, 1).rows;
         assert.ok(rows[0].instruction.startsWith("DB "));
         assert.deepEqual(Array.from(rows[0].bytes), [0x8E]);
       });
@@ -168,7 +168,7 @@ for (let ext = 0; ext < 4; ext++) {
   test("MOV vers segment 8086 · /" + ext, () => {
     const code = [0x8E, modrm(3, ext, 0)];
     if (ext === 1) {
-      const rows = api.disassemble(code).rows;
+      const rows = api.disassemble(code, 1).rows;
       assert.ok(rows[0].instruction.startsWith("DB "), rows[0].instruction);
       assert.deepEqual(Array.from(rows[0].bytes), [0x8E]);
     } else {
