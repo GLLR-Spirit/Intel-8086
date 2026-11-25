@@ -230,10 +230,10 @@ for (const [chapter, lesson, check, expected] of level2Oracles) {
 for (let ci = 5; ci < 11; ci++) {
   const chapter = learning.chapterLearning[ci];
   assert.equal(chapter.quiz.length, 10, "Level 2 chapter must have ten final questions.");
-  assert.deepEqual(chapter.quiz.map(q => q[4]), [
+  assert.equal(JSON.stringify(chapter.quiz.map(q => q[4])), JSON.stringify([
     "Définition","Compréhension","Syntaxe","Restrictions","Prédiction",
     "Calcul / prédiction","Analyse de programme","Analyse de résultat","Débogage","Raisonnement"
-  ], "Level 2 final questions must cover the ten assessment dimensions in order.");
+  ]), "Level 2 final questions must cover the ten assessment dimensions in order.");
   assert.ok(chapter.lessons.every(lesson => lesson.quiz.length === 3),
     "Every Level 2 lesson must contain three questions.");
   assert.ok(chapter.lessons.every(lesson => lesson.theory.length >= 300),
