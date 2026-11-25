@@ -95,3 +95,19 @@ Le vecteur couvre explicitement :
 Les 209 octets du programme sont comparés intégralement entre les deux assembleurs. En outre, 59 octets clés sont épinglés à des valeurs fixes indépendantes afin d'éviter qu'une même erreur de génération ne passe simplement par égalité entre deux sorties. Le contrôle local a été exécuté avec GNU Binutils 2.44 ; le workflow CI sur le commit `56dd1e4d40220856fd72f940fa688f430f31242b` a réussi, y compris cette nouvelle étape.
 
 **Portée et limites :** ce recoupement confirme uniquement les formes et les cas présents dans ce vecteur. GNU `as` constitue une implémentation d'assemblage indépendante, pas un oracle matériel Intel ni une preuve d'exhaustivité. Il ne valide pas l'exécution réelle, les effets FLAGS, les indicateurs indéfinis, les cycles, les signaux de bus ou toutes les combinaisons ModR/M. Ces contrôles restent ouverts et doivent être étendus instruction par instruction.
+
+## Décalages, rotations et FLAGS — contrôle architectural ciblé — 25 novembre 2026
+
+La table Intel du *8086 Family User's Manual*, section « Shifts » et « Rotates » (p. 2-39), précise que le compteur peut être fourni par `CL` et atteindre 255 sur le 8086. Contrairement aux générations suivantes, le 8086 ne réduit pas le compteur aux cinq bits de poids faible. La même section précise notamment :
+
+- décalages : `AF` indéfini ; `PF/SF/ZF` mis à jour ; `CF` reçoit le dernier bit sorti ; `OF` indéfini pour un compte multibit et défini pour un décalage d'un bit ;
+- rotations : seuls `CF` et `OF` sont affectés ; `CF` reçoit le dernier bit tourné ; `OF` est indéfini pour un compte multibit ;
+- un compte nul ne modifie ni l'opérande ni les FLAGS.
+
+Le fichier `tests/shift-rotate-8086.cjs` compare le simulateur à un modèle de référence indépendant pour `SHL`, `SAL`, `SHR`, `SAR`, `ROL`, `ROR`, `RCL` et `RCR`, en 8 et 16 bits. Il couvre six motifs initiaux par taille, les deux états initiaux de CF et treize comptes (`0, 1, 2, 7, 8, 9, 15, 16, 17, 31, 32, 33, 255`). Il vérifie aussi huit encodages group-2 et le rejet des comptes immédiats autres que 1 sur le 8086.
+
+Résultat : **2 505 assertions réussies** dans le workflow CI du commit `03bff143da3561216842ee7bc1a10025d6805d2b` ([exécution CI](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45579293315)). Les indicateurs architecturaux indéfinis ne sont jamais comparés à une valeur arbitraire : `AF` des décalages et `OF` des opérations multibit sont exclus des assertions.
+
+La fiche d'instructions a été clarifiée pour énoncer explicitement les cas `OF` indéfini et le cas du compte nul. Le modèle logiciel peut produire une valeur concrète pour un indicateur indéfini ; cette valeur ne doit pas être présentée comme une garantie architecturale.
+
+**Limites :** ce lot valide les sémantiques testées du simulateur par rapport au modèle dérivé du manuel Intel. Il ne constitue pas une mesure sur silicium, ne vérifie pas les timings matériels et ne clôt pas l'audit des autres familles d'instructions ou de tous les cas de bord.
