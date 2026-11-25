@@ -64,7 +64,7 @@ function binaryRun(bytes, cs, ip, initialState) {
 }
 const flagPattern = { CF: 1, PF: 0, AF: 1, ZF: 0, SF: 1, OF: 1, TF: 1, IF: 1, DF: 1 };
 const segments = [
-  { name: "DS", prefix: null, opcodePrefix: [], segment: 0x1000, value: 0x31 },
+  { name: "DS", prefix: "DS: ", opcodePrefix: [0x3E], segment: 0x1000, value: 0x31 },
   { name: "ES", prefix: "ES: ", opcodePrefix: [0x26], segment: 0x2000, value: 0x52 },
   { name: "SS", prefix: "SS: ", opcodePrefix: [0x36], segment: 0x3000, value: 0x73 },
   { name: "CS", prefix: "CS: ", opcodePrefix: [0x2E], segment: 0x0000, value: 0x94 }
