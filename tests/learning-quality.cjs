@@ -379,5 +379,6 @@ assert.ok(unknown[0].instruction.startsWith("DB "),"C33 L3 unknown byte remains 
 sameBytes(bytesOf(learning.curriculum[33][5][1][2]),[0xC7,0x06,0x00,0x01,0x01,0x00,0xF0,0xFF,0x06,0x00,0x01,0x8B,0x06,0x00,0x01,0xF4],"C34 L2 complete initialized LOCK INC memory example");
 console.log("Advanced course audit: 73/73 additional lesson examples pass independent state or encoding oracles.");
 
+for (let qi = 0; qi < learning.chapterLearning.length; qi++) { const qc=learning.chapterLearning[qi]; console.log("QUESTION_AUDIT_DUMP_C"+(qi+1)+":"+JSON.stringify({lessons:qc.lessons.map(l=>l.quiz),final:qc.quiz})); }
 console.log("Learning quality: 36 chapters, 324 intermediate questions, 360 final questions, " +
   learning.exercises.length + " exercises; all guided corrections execute and pass their validators.");
