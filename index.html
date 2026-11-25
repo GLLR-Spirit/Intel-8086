@@ -175,6 +175,47 @@ function renderLessons(){
  document.querySelectorAll("[data-lesson]").forEach(function(b){b.onclick=function(){showLesson(+b.dataset.lesson,0);};});
  if(mode==="guided"&&!completed.size)showLesson(0,0);
 }
+function escapeCourseHtml(value){return String(value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function annotateAssembly(source){
+ return source.split("\n").map(function(raw){
+  var line=raw.trim(),code=line.split(";")[0].trim(),op=(code.split(/\s+/)[0]||"").toUpperCase(),note="";
+  if(!code)return raw;
+  if(/:$/.test(code))note="Étiquette : adresse cible d'un saut ou d'une procédure.";
+  else if(op==="MOV")note="Copie la source vers la destination ; MOV ne modifie pas FLAGS.";
+  else if(op==="XCHG")note="Échange les deux opérandes.";
+  else if(op==="LEA")note="Calcule un offset effectif sans lire le contenu mémoire.";
+  else if(op==="LDS"||op==="LES")note="Charge un pointeur 16:16 depuis la mémoire.";
+  else if(op==="ADD"||op==="ADC")note=op==="ADC"?"Additionne en incluant la retenue CF.":"Additionne la source à la destination.";
+  else if(op==="SUB"||op==="SBB")note=op==="SBB"?"Soustrait aussi l'emprunt CF.":"Soustrait la source de la destination.";
+  else if(op==="CMP")note="Compare par soustraction logique et actualise FLAGS sans stocker le résultat.";
+  else if(op==="TEST")note="Effectue un ET logique pour actualiser FLAGS sans conserver le résultat.";
+  else if(op==="INC"||op==="DEC")note=op==="INC"?"Ajoute 1 ; CF est conservé.":"Soustrait 1 ; CF est conservé.";
+  else if(op==="NEG")note="Calcule zéro moins l'opérande en complément à deux.";
+  else if(op==="JMP")note="Transfère le contrôle sans tester de condition.";
+  else if(/^J[A-Z]{1,2}$/.test(op))note="Branche si la condition associée aux FLAGS est vraie.";
+  else if(op==="LOOP")note="Décrémente CX puis branche si CX n'est pas nul.";
+  else if(op==="LOOPE"||op==="LOOPNE")note="Décrémente CX et combine le test de CX avec ZF.";
+  else if(op==="JCXZ")note="Branche si CX vaut zéro sans modifier CX.";
+  else if(op==="PUSH"||op==="PUSHF")note="Empile un mot ; SP est décrémenté de deux octets.";
+  else if(op==="POP"||op==="POPF")note="Dépile un mot ; SP est incrémenté de deux octets.";
+  else if(op==="CALL")note="Empile l'adresse de retour puis transfère le contrôle à la procédure.";
+  else if(op==="RET")note="Restaure l'adresse de retour depuis la pile.";
+  else if(op==="INT")note="Empile FLAGS, CS et IP puis entre dans le gestionnaire.";
+  else if(op==="IRET")note="Restaure IP, CS et FLAGS depuis le cadre d'interruption.";
+  else if(op==="MUL"||op==="IMUL")note="Multiplie avec des registres implicites ; consulter AX ou DX:AX.";
+  else if(op==="DIV"||op==="IDIV")note="Divise le dividende implicite ; vérifier quotient, reste et plage.";
+  else if(/^(SHL|SAL|SHR|SAR|ROL|ROR|RCL|RCR)$/.test(op))note="Décale ou fait tourner les bits ; observer CF et les indicateurs définis.";
+  else if(/^(MOVSB|MOVSW|LODSB|LODSW|STOSB|STOSW|CMPSB|CMPSW|SCASB|SCASW)$/.test(op))note="Instruction de chaîne : registres implicites SI/DI et segments DS/ES.";
+  else if(op==="REP"||op==="REPE"||op==="REPZ"||op==="REPNE"||op==="REPNZ")note="Préfixe de répétition : CX et, selon la forme, ZF contrôlent l'arrêt.";
+  else if(op==="CLD"||op==="STD")note=op==="CLD"?"DF=0 : les index de chaîne avancent.":"DF=1 : les index de chaîne reculent.";
+  else if(op==="VECTOR")note="Directive pédagogique qui associe un vecteur à une étiquette de gestionnaire.";
+  else if(op==="IN"||op==="OUT")note="Transfert avec l'espace de ports d'entrée-sortie.";
+  else if(op==="HLT")note="Arrête l'exécution du programme.";
+  else if(op==="NOP")note="Ne réalise aucune opération architecturale utile.";
+  else note="Observe les opérandes, le registre concerné et l'état après cette instruction.";
+  return raw+"    ; "+note;
+ }).join("\n");
+}
 function courseVisual(i){
  var visuals={
  1:"<section class='course-visual'><b>Architecture fonctionnelle</b><div class='visual-flow'><span>BIU<br><small>Bus · segments<br>prélecture</small></span><i>octets</i><span>EU<br><small>Décodage<br>contrôle</small></span><i>données</i><span>ALU<br><small>Calculs<br>logiques</small></span></div><p class='muted'>La BIU alimente l'EU en octets et réalise les transferts externes ; l'EU exécute les opérations.</p></section>",
@@ -202,7 +243,7 @@ function evaluateQuiz(questions,prefix,scoreNode,storage,key){
 function showLesson(i,lessonIndex){
  var l=lessons[i],c=chapterLearning[i],saved=chapterScores[i],lesson=c.lessons[Math.min(c.lessons.length-1,lessonIndex||0)],lessonKey=i+"-"+(lessonIndex||0),lessonSaved=lessonScores[lessonKey];
  var lessonTabs=c.lessons.map(function(x,n){return '<button class="btn '+(n===(lessonIndex||0)?"primary":"")+'" data-sublesson="'+n+'">'+(n+1)+'. '+x.title+'</button>';}).join("");
- $("lessonDetail").innerHTML='<div class="eyebrow">'+l[1]+' · Chapitre '+(i+1)+'/36</div><h3>'+l[0]+'</h3><div class="course-meta"><span><b>Prérequis :</b> '+c.prereq+'</span><span><b>Objectif :</b> '+c.goal+'</span></div>'+courseVisual(i)+'<div class="course-tabs">'+lessonTabs+'</div><section class="lesson-deep"><h4>Leçon '+((lessonIndex||0)+1)+' — '+lesson.title+'</h4><p>'+lesson.theory+'</p><h4>Exemple assembleur commenté</h4><pre class="course-code">'+lesson.example+'</pre><p><b>Résultat attendu :</b> '+lesson.expected+'</p><p class="muted">Suis l’exemple instruction par instruction dans l’atelier pour observer les registres, la mémoire et les FLAGS.</p><button class="btn" id="lessonExample">Charger l’exemple dans l’atelier</button></section><section class="lesson-quiz"><h4>Vérification immédiate — 3 questions</h4><p class="muted">Ces questions portent uniquement sur la leçon affichée.</p>'+buildQuizHtml(lesson.quiz,"micro")+'<div class="toolbar"><button class="btn primary" id="checkMicro">Vérifier les 3 réponses</button><span class="status" id="micro-score">'+(lessonSaved!==undefined?"Meilleur score : "+lessonSaved+"/3":"Aucune évaluation")+'</span></div></section><section class="lesson-final"><h4>Évaluation finale du chapitre — 10 questions</h4><p class="muted">Questions distinctes des vérifications intermédiaires : compréhension, règles, prédiction, analyse et raisonnement.</p>'+buildQuizHtml(c.quiz,"final")+'<div class="toolbar"><button class="btn primary" id="checkFinal">Évaluer le chapitre</button><span class="status" id="final-score">'+(saved!==undefined?"Meilleur score : "+saved+"/10":"Aucune évaluation")+'</span></div></section><section class="lesson-exercise-link"><p class="muted">Les exercices pratiques sont regroupés dans la page <strong>Exercices</strong>, séparément du cours.</p><button class="btn" id="goExercises">Consulter les exercices</button></section><div class="toolbar"><button class="btn" id="markLesson">'+(completed.has(i)?"Chapitre consulté ✓":"Marquer le chapitre comme consulté")+'</button></div>';
+ $("lessonDetail").innerHTML='<div class="eyebrow">'+l[1]+' · Chapitre '+(i+1)+'/36</div><h3>'+l[0]+'</h3><div class="course-meta"><span><b>Prérequis :</b> '+c.prereq+'</span><span><b>Objectif :</b> '+c.goal+'</span></div>'+courseVisual(i)+'<div class="course-tabs">'+lessonTabs+'</div><section class="lesson-deep"><h4>Leçon '+((lessonIndex||0)+1)+' — '+lesson.title+'</h4><p>'+lesson.theory+'</p><h4>Exemple assembleur commenté</h4><pre class="course-code">'+escapeCourseHtml(annotateAssembly(lesson.example))+'</pre><p><b>Résultat attendu :</b> '+lesson.expected+'</p><p class="muted">Chaque ligne est annotée. Pour observer les valeurs exactes des registres, de la mémoire et des FLAGS, charge le programme dans l’atelier et utilise le mode pas à pas.</p><button class="btn" id="lessonExample">Charger l’exemple dans l’atelier (pas à pas)</button></section><section class="lesson-quiz"><h4>Vérification immédiate — 3 questions</h4><p class="muted">Ces questions portent uniquement sur la leçon affichée.</p>'+buildQuizHtml(lesson.quiz,"micro")+'<div class="toolbar"><button class="btn primary" id="checkMicro">Vérifier les 3 réponses</button><span class="status" id="micro-score">'+(lessonSaved!==undefined?"Meilleur score : "+lessonSaved+"/3":"Aucune évaluation")+'</span></div></section><section class="lesson-final"><h4>Évaluation finale du chapitre — 10 questions</h4><p class="muted">Questions distinctes des vérifications intermédiaires : compréhension, règles, prédiction, analyse et raisonnement.</p>'+buildQuizHtml(c.quiz,"final")+'<div class="toolbar"><button class="btn primary" id="checkFinal">Évaluer le chapitre</button><span class="status" id="final-score">'+(saved!==undefined?"Meilleur score : "+saved+"/10":"Aucune évaluation")+'</span></div></section><section class="lesson-exercise-link"><p class="muted">Les exercices pratiques sont regroupés dans la page <strong>Exercices</strong>, séparément du cours.</p><button class="btn" id="goExercises">Consulter les exercices</button></section><div class="toolbar"><button class="btn" id="markLesson">'+(completed.has(i)?"Chapitre consulté ✓":"Marquer le chapitre comme consulté")+'</button></div>';
  document.querySelectorAll("[data-sublesson]").forEach(function(b){b.onclick=function(){showLesson(i,+b.dataset.sublesson);};});
  $("lessonExample").onclick=function(){$("code").value=lesson.example;navigate("editor");resetCPU();};
  $("goExercises").onclick=function(){navigate("exercises");};
