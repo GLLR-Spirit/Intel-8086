@@ -178,7 +178,7 @@ for (const bits of [8, 16]) {
     const code = [opcode, modrm(mod, 0, rm), ...tail];
     const value = bits === 8 ? 0x5A : 0xA55A;
     const source = [
-      setSourceFlags(), ...initSourceRegs(),
+      setSourceFlags(), "MOV AX, 1000h", "MOV DS, AX", "MOV AX, 3000h", "MOV SS, AX", ...initSourceRegs(),
       "MOV " + (bits === 8 ? "AL" : "AX") + ", " + (bits === 8 ? "0C3h" : "0C33h"),
       "MOV " + size + " PTR " + expr + ", " + (bits === 8 ? "5Ah" : "A55Ah"),
       "XCHG " + (bits === 8 ? "AL" : "AX") + ", " + size + " PTR " + expr,
@@ -259,8 +259,8 @@ for (const item of segmentVectors) {
     };
     const state = runBinary(code, 0x5000, 0x0100, initial);
     assert.equal(state.reg.CX, 0xABCD);
-    assert.equal(state.mem[physical(sourceSegment, offset)], 0x34);
-    assert.equal(state.mem[physical(sourceSegment, (offset + 1) & 0xFFFF)], 0x12);
+    assert.equal(state.mem[physical(item.seg, offset)], 0x34);
+    assert.equal(state.mem[physical(item.seg, (offset + 1) & 0xFFFF)], 0x12);
     assertFlags(state, "préfixe " + item.name);
     totals.segment++;
     totals.binary++;
@@ -280,6 +280,7 @@ for (const item of segmentVectors) {
     "MOV AX, 2000h", "MOV ES, AX",
     "MOV AX, 3000h", "MOV SS, AX",
     "MOV CX, 1234h",
+    ...initSourceRegs(),
     "MOV WORD PTR " + item.name + ":" + expr + ", 0ABCDh",
     "XCHG CX, WORD PTR " + item.name + ":" + expr,
     "HLT"
@@ -287,8 +288,8 @@ for (const item of segmentVectors) {
   test("Source préfixe segment " + item.name, () => {
     const state = runSource(source);
     assert.equal(state.reg.CX, 0xABCD);
-    assert.equal(state.mem[physical(item.seg, offset)], 0x34);
-    assert.equal(state.mem[physical(item.seg, (offset + 1) & 0xFFFF)], 0x12);
+    assert.equal(state.mem[physical(sourceSegment, offset)], 0x34);
+    assert.equal(state.mem[physical(sourceSegment, (offset + 1) & 0xFFFF)], 0x12);
     assertFlags(state, "source override " + item.name);
     totals.segment++;
     totals.flags++;
