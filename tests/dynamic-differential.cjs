@@ -361,6 +361,35 @@ test("INT binaire consulte l’IVT, empile FLAGS/CS/IP et revient par IRET", () 
 });
 categories.iret++;
 
+test("INT binaire — ordre exact du cadre en SS:SP et FLAGS observés dans le gestionnaire", () => {
+  const source="INT 20h\nHLT\nHANDLER: PUSHF\nPOP AX\nMOV WORD PTR [0100h], AX\nIRET";
+  const assembled=api.assemble(source);
+  const handler=assembled.symbols.HANDLER;
+  const mem={
+    128:handler&255,129:(handler>>8)&255,130:0x00,131:0x01
+  };
+  const state=api.executeBinary(Array.from(assembled.bytes),0x0100,0,{
+    reg:{DS:0x1000,SS:0x2000,SP:0xfffe},
+    flags:{CF:1,IF:1,TF:1,DF:1},
+    mem
+  });
+  assert.ok(!state.error,state.error||"INT frame order test failed");
+  const stackBase=(0x2000<<4);
+  const readWord=offset=>state.mem[stackBase+offset]|(state.mem[stackBase+((offset+1)&0xffff)]<<8);
+  assert.equal(readWord(0xfff8),2,"return IP is the topmost word");
+  assert.equal(readWord(0xfffa),0x0100,"saved CS follows saved IP");
+  assert.equal(readWord(0xfffc),0xf703,"saved FLAGS are pushed first");
+  const handlerFlags=state.mem[physical(0x1000,0x100)]|(state.mem[physical(0x1000,0x101)]<<8);
+  assert.equal(handlerFlags,0xf403,"IF and TF are cleared while handler executes");
+  assert.equal(state.reg.SP,0xfffe);
+  assert.equal(state.stack.length,0);
+  assert.equal(state.flags.IF,1);
+  assert.equal(state.flags.TF,1);
+  assert.equal(state.flags.DF,1);
+  assert.equal(state.flags.CF,1);
+});
+categories.iret++;
+
 test("INT binaire refuse une entrée IVT absente ou tronquée", () => {
   for(const mem of [{},{128:0x10,129:0x00,130:0x00}]){
     const state=api.executeBinary([0xcd,0x20,0xf4],0,0,{mem});
