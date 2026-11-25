@@ -8,7 +8,10 @@ const assert = require("node:assert/strict");
   page.on("pageerror", e => errors.push(e.message));
   await page.goto("http://127.0.0.1:4173/?audit=1", { waitUntil: "networkidle" });
 
-  await page.evaluate(() => {\n    if (!window.__8086Audit) throw new Error("API de test absente : charger la page avec ?audit=1");\n    window.__8086Audit.runSelfTests();\n  });
+  await page.evaluate(() => {
+    if (!window.__8086Audit) throw new Error("API de test absente : charger la page avec ?audit=1");
+    window.__8086Audit.runSelfTests();
+  });
   const summary = (await page.locator("#testSummary").textContent()).trim();
   const match = summary.match(/(\d+)\/(\d+) tests réussis/);
   assert.ok(match, "Résumé des auto-tests absent ou illisible : " + summary);
