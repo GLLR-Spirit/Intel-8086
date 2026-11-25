@@ -526,4 +526,16 @@ La réconciliation des contraintes de quotient a révélé une erreur dans le co
 | IDIV r/m8, sous la borne | AX = 4080h (+16512) | BL = 80h (-128) | quotient -129 : interruption division par erreur |
 | IDIV r/m16, sous la borne | DX:AX = 4000:8000h (+1073774592) | BX = 8000h (-32768) | quotient -32769 : interruption division par erreur |
 
-Chaque cas vérifie les chemins source et binaire. Les FLAGS ne sont pas comparés après IDIV, car leur état est indéfini architecturalement. La suite doit être confirmée par le workflow CI du commit qui contient ces changements avant de marquer cette correction comme validée.
+Chaque cas vérifie les chemins source et binaire. Les FLAGS ne sont pas comparés après IDIV, car leur état est indéfini architecturalement. **Validation confirmée :** le workflow CI principal du commit `a1a0aad7fef3ae2f485ec0e94404a243c8322980` a terminé avec succès (49 étapes, aucune étape en échec). Les tests de frontière source/binaire, les vecteurs différentiels BCD/MUL/DIV et les tests d'interruption de division ont tous été exécutés dans ce workflow.
+
+
+### 16.5 Réconciliation des vecteurs IDIV et isolation des modes d'exécution
+
+Les tests historiques classaient à tort les quotients exactement égaux aux minima signés comme des dépassements. Les cas `-128` et `-32768` sont désormais des résultats valides ; les vrais dépassements négatifs sont représentés par `-129` et `-32769`.
+
+- `index.html` : `executeAll` force le chemin source à sortir du mode binaire dynamique pendant son exécution, puis restaure l'état global précédent. Cela évite qu'un appel binaire précédent modifie le comportement d'un appel source ultérieur.
+- `tests/bcd-multiply-divide-8086.cjs` : plage signée correcte et valeurs juste sous la borne ajoutées aux vecteurs.
+- `tests/divide-error-interrupt-8086.cjs` : les vecteurs de dépassement négatif utilisent désormais -129 et -32769, et non les minima valides.
+- `tests/mul-div-memory-8086.cjs` : les cas de dépassement vérifient les deux modes ; les programmes binaires sont chargés à CS=1000h afin de ne pas écraser l'IVT à l'adresse physique 00000h.
+
+**Validation CI :** ces corrections sont incluses dans le commit `a1a0aad7fef3ae2f485ec0e94404a243c8322980`, dont le workflow principal a réussi avec 49 étapes sur 49.
