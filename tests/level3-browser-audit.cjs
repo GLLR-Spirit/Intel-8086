@@ -115,6 +115,25 @@ const assert = require("node:assert/strict");
 
   // Interactive course demonstrations: AX split, FLAGS, segment:offset,
   // effective address, LIFO stack, and ModR/M field decoding.
+  await page.locator('[data-lesson="10"]').click();
+  assert.equal((await page.locator("#traceIP").textContent()).trim(),"0000h");
+  await page.locator("#traceNext").click();
+  assert.equal((await page.locator("#traceAX").textContent()).trim(),"0002h");
+  assert.equal((await page.locator("#traceIP").textContent()).trim(),"0003h");
+  await page.locator("#traceNext").click();
+  assert.equal((await page.locator("#traceBX").textContent()).trim(),"0003h");
+  assert.equal((await page.locator("#traceIP").textContent()).trim(),"0006h");
+  await page.locator("#traceNext").click();
+  assert.equal((await page.locator("#traceAX").textContent()).trim(),"0005h");
+  assert.match((await page.locator("#traceFLAGS").textContent()),/PF=1/);
+  await page.locator("#traceNext").click();
+  assert.equal((await page.locator("#traceIP").textContent()).trim(),"0009h");
+  assert.match((await page.locator("#traceStatus").textContent()),/programme terminé/);
+  await page.locator("#tracePrev").click();
+  assert.equal((await page.locator("#traceIP").textContent()).trim(),"0008h");
+  await page.locator("#traceReset").click();
+  assert.equal((await page.locator("#traceIP").textContent()).trim(),"0000h");
+
   await page.locator('[data-lesson="4"]').click();
   await page.locator("#axDemoValue").fill("ABCD");
   await page.locator("#axShowHigh").click();
