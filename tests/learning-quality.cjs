@@ -121,6 +121,26 @@ console.log("Course example execution audit: " +
 if (exampleAudit.length) console.log(JSON.stringify(exampleAudit, null, 2));
 assert.equal(exampleAudit.length, 0, "All 108 course examples must execute without simulator errors.");
 
+// Architectural-result spot checks: successful execution alone is not enough.
+const exampleOracles = [
+  { chapter: 1, lesson: 1, check: state => state.reg.AX === 0x1234, expected: "AX=1234h" },
+  { chapter: 2, lesson: 1, check: state => state.reg.AX === 7, expected: "AX=0007h after EU arithmetic example" },
+  { chapter: 5, lesson: 1, check: state => state.reg.AX === 0x1256, expected: "AX=1256h after writing AL" },
+  { chapter: 8, lesson: 1, check: state => (state.reg.AX & 0xff) === 0 && state.flags.CF === 1 && (state.reg.BX & 0xff) === 2,
+    expected: "ADD/ADC carry propagation: AL=00h, CF=1, BL=02h" },
+  { chapter: 13, lesson: 3, check: state => state.reg.AX === 9 && state.reg.BX === 8,
+    expected: "indirect near jump reaches offset 0008h and leaves AX=0009h" },
+  { chapter: 25, lesson: 3, check: state => state.reg.AX === 0x00ff,
+    expected: "DIV 00FFh by 1 gives quotient AL=FFh and remainder AH=00h" }
+];
+for (const oracle of exampleOracles) {
+  const source = learning.curriculum[oracle.chapter - 1][5][oracle.lesson - 1][2];
+  const state = learning.executeAll(source);
+  assert.ok(!state.error && oracle.check(state),
+    "Chapter " + oracle.chapter + ", lesson " + oracle.lesson + " must produce " + oracle.expected +
+    "; actual=" + JSON.stringify(state.reg) + "; flags=" + JSON.stringify(state.flags));
+}
+
 // Detect exact duplicate final-question stems inside a chapter and collisions
 // between a lesson check and its chapter assessment.
 for (let chapterIndex = 0; chapterIndex < learning.chapterLearning.length; chapterIndex++) {
