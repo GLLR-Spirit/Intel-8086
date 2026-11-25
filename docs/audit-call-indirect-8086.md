@@ -87,3 +87,16 @@ Le workflow navigateur inclut un scénario Playwright distinct pour CALL near in
 - Les résultats ne valident pas toutes les instructions FF ni toutes les combinaisons possibles de préfixes.
 
 **Conclusion :** les formes CALL indirectes couvertes par la matrice ci-dessus disposent maintenant d'une suite de validation dédiée. La validation finale de cette phase attend encore le succès du workflow Playwright mis à jour. Le statut général CALL reste partiel tant que JMP indirect, toutes les variantes CALL et les limites de modèle ne sont pas auditées dans la matrice générale.
+
+## Mise à jour — validation sur le commit de la PR (25 novembre 2026)
+
+La phrase de la conclusion précédente indiquant que la validation finale attend encore le workflow Playwright est désormais dépassée.
+
+Sur le commit `21b6c66fb35bf8057e0e81c73fa168a099a83b89` :
+
+- Workflow CI principal **1209** : succès.
+- Workflow navigateur **678** : succès.
+- `tests/call-indirect-8086.cjs` : **177/177 assertions** réussies dans le workflow principal.
+- Le workflow navigateur a exécuté `tests/call-indirect-interactive-8086.cjs` et terminé avec succès ; il vérifie le parcours interactif et le chemin binaire.
+
+Cette mise à jour clôt le point « attente du workflow Playwright » pour le périmètre effectivement testé. Elle ne transforme pas ce périmètre en validation exhaustive de toutes les variantes de CALL/RET, de tous les préfixes ni de l'ensemble de la matrice ModR/M. La conclusion globale reste limitée aux formes décrites dans ce rapport et dans les tests dédiés.
