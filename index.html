@@ -1502,7 +1502,7 @@ var auditedL4to6Lessons=[
  [auditedQ("Quelle paire de registres définit la source et la destination de MOVSB ?",["DS:SI et ES:DI","SS:SP et CS:IP","ES:DI et DS:SI"],0,"MOVSB lit à DS:SI et écrit à ES:DI par défaut.","Compréhension"),auditedQ("Avec SI=0100h, DI=0200h et DF=0, que deviennent les index après MOVSB ?",["SI=0101h et DI=0201h","SI=00FFh et DI=01FFh","Ils restent inchangés"],0,"Un transfert octet avec DF effacé incrémente SI et DI d'une unité.","Application"),auditedQ("Quel segment est imposé pour la destination des instructions MOVS ?",["ES","DS","SS"],0,"La destination des instructions de chaîne MOVS est ES:DI.","Vérification")],
  [auditedQ("Quel registre fournit l'octet stocké par STOSB ?",["AL","AH","BL"],0,"STOSB écrit l'accumulateur octet AL à ES:DI.","Compréhension"),auditedQ("Avec AL=41h et DI=0100h, où STOSB écrit-il ?",["ES:0100h","DS:0100h","SS:0041h"],0,"STOSB utilise ES:DI comme destination implicite.","Application"),auditedQ("Quel index avance après STOSB avec DF=0 ?",["DI","SI","BP"],0,"STOSB utilise DI et le fait progresser selon DF.","Vérification")],
  [auditedQ("Que compare SCASB ?",["AL avec l'octet à ES:DI","AX avec DS:SI","BL avec SS:SP"],0,"SCASB compare AL à la destination ES:DI.","Compréhension"),auditedQ("Que signifie ZF=1 après SCASB ?",["AL égale l'octet comparé","AL est supérieur","DI vaut zéro"],0,"La comparaison soustrait les valeurs ; l'égalité positionne ZF.","Application"),auditedQ("Quel registre d'index est modifié par SCASB ?",["DI","SI","BX"],0,"SCASB fait progresser ou reculer DI selon DF.","Vérification")]
-];
+]];
 var auditedL4to6Final=[
 [
  auditedQ("Qu'est-ce qu'une adresse logique sur 8086 ?",["Un couple segment:offset","Une adresse physique 32 bits","Un numéro d'interruption"],0,"Une adresse logique associe un registre de segment à un offset.","Définition"),
@@ -1624,7 +1624,7 @@ var auditedL4to6Final=[
  auditedQ("Quel état est attendu après MOVSB avec DF=0 ?",["La donnée est copiée et SI/DI avancent d'un octet","La donnée est copiée et SI/DI diminuent","CX est automatiquement mis à zéro"],0,"MOVSB modifie la mémoire et avance les index selon DF.","Analyse de résultat"),
  auditedQ("Comment corriger une copie MOVSB qui lit la mauvaise source ?",["Vérifier DS, SI et tout override de segment source","Modifier uniquement AX","Remplacer DI par SP"],0,"La source dépend de DS:SI ou du segment explicitement surchargé.","Débogage"),
  auditedQ("Quelle validation couvre les instructions de chaîne ?",["Données source/destination, index, DF, segments et FLAGS pertinents","Seulement le résultat dans AL","Uniquement l'opcode"],0,"Les instructions de chaîne ont des opérandes implicites et des effets d'index à contrôler.","Raisonnement")
-];
+]];
 
 
 var auditedL4to6LessonsB=[
