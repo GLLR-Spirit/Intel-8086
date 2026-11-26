@@ -181,8 +181,8 @@ assert.equal(learning.chapterExerciseMap.length, learning.lessons.length,
   "Every chapter must link to exactly one practical exercise");
 assert.ok(learning.chapterExerciseMap.every(i => Number.isInteger(i) && i >= 0 && i < learning.exercises.length),
   "Every chapter exercise link must resolve to an existing exercise");
-assert.equal(learning.exercises.length, 40, "The exercise bank must contain 40 guided exercises.");
-assert.equal(learning.exerciseChapterAssignments.length, 40, "Every exercise must have an explicit chapter mapping.");
+assert.equal(learning.exercises.length, 42, "The exercise bank must contain 42 guided exercises.");
+assert.equal(learning.exerciseChapterAssignments.length, 42, "Every exercise must have an explicit chapter mapping.");
 const exerciseMetadataRows=learning.exercises.map((exercise,index)=>learning.exerciseMetadata(exercise,index));
 const exerciseChapters=new Set();
 const allowedExerciseTypes=new Set(["application","raisonnement","completion","debug","probleme","challenge"]);
@@ -196,6 +196,10 @@ exerciseMetadataRows.forEach((metadata,index)=>{
   metadata.chapters.forEach(chapter=>exerciseChapters.add(chapter));
 });
 assert.equal(exerciseChapters.size,36,"Every one of the 36 chapters must have at least one relevant practical exercise.");
+assert.equal(exerciseMetadataRows[40].type,"probleme","The first integration exercise must be classified as a complete problem.");
+assert.equal(exerciseMetadataRows[40].difficulty,"Avancé","The first integration exercise must retain its advanced difficulty.");
+assert.equal(exerciseMetadataRows[41].type,"challenge","The second integration exercise must be classified as an expert challenge.");
+assert.equal(exerciseMetadataRows[41].difficulty,"Expert","The second integration exercise must retain its expert difficulty.");
 
 for (let i = 0; i < learning.exercises.length; i++) {
   const exercise = learning.exercises[i];
