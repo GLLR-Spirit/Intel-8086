@@ -281,8 +281,8 @@ const assert = require("node:assert/strict");
   await page.evaluate(() => {
     localStorage.setItem("i86-lessons-v2", "[1,2]");
     localStorage.setItem("i86-exercises", "[0]");
-    localStorage.setItem("i86-chapter-scores-v2", "{\\"0\\":10}");
-    localStorage.setItem("i86-lesson-scores-v2", "{\\"0-0\\":3}");
+    localStorage.setItem("i86-chapter-scores-v2", JSON.stringify({0:10}));
+    localStorage.setItem("i86-lesson-scores-v2", JSON.stringify({"0-0":3}));
   });
   page.once("dialog", dialog => dialog.accept());
   await page.locator("#clearProgress").click();
