@@ -116,6 +116,49 @@ for(const [mode,state] of executeBoth("MOV AX, 3000h\nPUSH AX\nPOP ES\nHLT"))ass
 for(const [mode,state] of executeBoth("PUSH CS\nPOP DS\nHLT"))assert.equal(state.reg.DS,0,mode+" PUSH CS / POP DS");
 for(const [mode,state] of executeBoth("PUSH SS\nPOP ES\nHLT"))assert.equal(state.reg.ES,0,mode+" PUSH SS / POP ES");
 for(const [mode,state] of executeBoth("PUSH DS\nPOP ES\nHLT"))assert.equal(state.reg.ES,0,mode+" PUSH DS / POP ES");
+// Complete segment-register PUSH execution, including ES.
+for(const [mode,state] of executeBoth("MOV AX,2000h\nMOV ES,AX\nMOV AX,0\nPUSH ES\nMOV ES,AX\nPOP ES\nHLT")){
+ assert.equal(state.reg.ES,0x2000,mode+" PUSH ES / POP ES");
+ assert.equal(state.reg.SP,0xFFFE,mode+" PUSH ES / POP ES stack balance");
+}
+
+// Explicit segment overrides for memory PUSH and POP, across all four segments.
+const segmentOverrides=[["ES",0x2000],["CS",0x0000],["SS",0x3000],["DS",0x1000]];
+for(const [segment,segValue] of segmentOverrides){
+ const setup=[
+  "MOV AX,1000h","MOV DS,AX","MOV AX,2000h","MOV ES,AX",
+  "MOV AX,3000h","MOV SS,AX",
+  "MOV WORD PTR DS:[0400h],0BEEFh",
+  "MOV WORD PTR ES:[0400h],0BEEFh",
+  "MOV WORD PTR SS:[0400h],0BEEFh",
+  "MOV WORD PTR CS:[0400h],0BEEFh",
+  "MOV BX,0400h","MOV SP,2000h"
+ ];
+ const pushSource=[...setup,"PUSH WORD PTR "+segment+":[BX]","POP DX","HLT"].join("\n");
+ for(const [mode,state] of executeBoth(pushSource)){
+  assert.equal(state.reg.DX,0xBEEF,mode+" PUSH "+segment+" override");
+  assert.equal(state.reg.SP,0x2000,mode+" PUSH "+segment+" stack balance");
+  const selected=physical(segValue,0x0400);
+  assert.equal(state.mem[selected],0xEF,mode+" PUSH "+segment+" source low unchanged");
+  assert.equal(state.mem[selected+1],0xBE,mode+" PUSH "+segment+" source high unchanged");
+ }
+ const popSetup=[
+  "MOV AX,1000h","MOV DS,AX","MOV AX,2000h","MOV ES,AX",
+  "MOV AX,3000h","MOV SS,AX",
+  "MOV WORD PTR DS:[0400h],01234h",
+  "MOV WORD PTR ES:[0400h],01234h",
+  "MOV WORD PTR SS:[0400h],01234h",
+  "MOV WORD PTR CS:[0400h],01234h",
+  "MOV AX,0CAFEh","MOV SP,2000h","PUSH AX","MOV BX,0400h",
+  "POP WORD PTR "+segment+":[BX]","HLT"
+ ];
+ for(const [mode,state] of executeBoth(popSetup.join("\n"))){
+  assert.equal(state.reg.SP,0x2000,mode+" POP "+segment+" stack balance");
+  const selected=physical(segValue,0x0400);
+  assert.equal(state.mem[selected],0xFE,mode+" POP "+segment+" destination low");
+  assert.equal(state.mem[selected+1],0xCA,mode+" POP "+segment+" destination high");
+ }
+}
 const flagsSource="MOV AX, 0BD5h\nPUSH AX\nPOPF\nPUSHF\nPOP BX\nHLT";
 for(const [mode,state] of executeBoth(flagsSource)){
  assert.equal(state.reg.BX&0x0FD5,0x0BD5,mode+" PUSHF returns all nine modeled flag bits");
