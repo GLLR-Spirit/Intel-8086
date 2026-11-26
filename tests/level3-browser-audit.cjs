@@ -185,6 +185,30 @@ const assert = require("node:assert/strict");
   await page.locator('[data-lesson="31"]').click();
   await page.locator("#decodeModRM").click();
   assert.match(await page.locator("#modrmDemoResult").textContent(), /MOD=1 · REG=AX · R\/M=\[BX\+SI\]/);
+  await page.locator("#modrmDemoValue").fill("4G");
+  await page.locator("#decodeModRM").click();
+  assert.match(await page.locator("#modrmDemoResult").textContent(),/octet hexadécimal/i);
+
+  await page.locator('[data-lesson="4"]').click();
+  await page.locator("#axDemoValue").fill("ABG1");
+  await page.locator("#axShowHigh").click();
+  assert.match(await page.locator("#axDemoResult").textContent(),/valeur hexadécimale/i);
+
+  await page.locator('[data-lesson="11"]').click();
+  await page.locator("#cmpDemoA").fill("000Z");
+  await page.locator("#calcCmpFlags").click();
+  assert.match(await page.locator("#cmpDemoResult").textContent(),/mots hexadécimaux/i);
+
+  await page.locator('[data-lesson="17"]').click();
+  await page.locator("#segDemoValue").fill("10G0");
+  await page.locator("#calcSegmentAddress").click();
+  assert.match(await page.locator("#segmentDemoResult").textContent(),/mots hexadécimaux/i);
+
+  await page.locator('[data-lesson="19"]').click();
+  await page.locator("#eaBX").fill("01G0");
+  await page.locator("#calcEffectiveAddress").click();
+  assert.match(await page.locator("#eaDemoResult").textContent(),/mots hexadécimaux/i);
+  console.log("Course hex calculators reject invalid characters rather than truncating input PASS.");
 
   await page.locator('[data-lesson="1"]').click();
   const animationName = await page.locator(".architecture-flow").evaluate(el => getComputedStyle(el, "::after").animationName);
