@@ -129,9 +129,15 @@ const assert = require("node:assert/strict");
   });
 
   // Every chapter must expose its own visual explanation, not only the eleven original chapters.
+  assert.equal(await page.locator("[data-lesson]").count(),36,"Course navigation must expose exactly 36 chapters.");
   for (let chapter=0; chapter<36; chapter++) {
-    await page.locator('[data-lesson="' + chapter + '"]').click();
+    const chapterButton=page.locator('[data-lesson="' + chapter + '"]');
+    await chapterButton.click();
     assert.equal(await page.locator("#lessonDetail .course-visual").count(),1,"Chapter "+(chapter+1)+" must have exactly one visual explanation.");
+    assert.equal(await chapterButton.getAttribute("aria-current"),"step","Selected chapter "+(chapter+1)+" must be exposed as the current step.");
+    assert.equal(await chapterButton.getAttribute("aria-pressed"),"true","Selected chapter "+(chapter+1)+" must expose its selected state.");
+    assert.match(await page.locator("#lessonDetail .eyebrow").textContent(),new RegExp("Chapitre "+(chapter+1)+"\\/36"),"Lesson detail must match selected chapter "+(chapter+1)+".");
+    if(chapter>0)assert.equal(await page.locator('[data-lesson="' + (chapter-1) + '"]').getAttribute("aria-current"),null,"Previous chapter must no longer be current.");
   }
   console.log("Course visual coverage: 36/36 chapters have a diagram or visual model.");
 
