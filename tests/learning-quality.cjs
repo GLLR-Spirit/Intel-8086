@@ -304,7 +304,6 @@ const allQuestionStems = learning.chapterLearning.flatMap(chapter =>
 );
 assert.equal(new Set(allQuestionStems).size, allQuestionStems.length,
   "The 684-question bank must not repeat an exact question stem across chapters.");
-}
 
 
 // Level 2 audit: 18 independently checked course examples (chapters 6–11).
