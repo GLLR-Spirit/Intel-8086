@@ -4702,14 +4702,14 @@
       "kind": "final",
       "lesson": null,
       "number": 1,
-      "stem": "Quelle est la plage non signée d'un octet ?",
+      "stem": "Combien de motifs binaires distincts peut-on représenter sur 8 bits ?",
       "choices": [
-        "0 à 255",
-        "−128 à 127",
-        "−255 à 255"
+        "128",
+        "256",
+        "512"
       ],
-      "correctAnswer": "0 à 255",
-      "explanation": "Un octet non signé représente 256 valeurs de 0 à 255.",
+      "correctAnswer": "256",
+      "explanation": "Huit bits offrent 2^8 combinaisons distinctes ; l’interprétation signée ou non signée change les valeurs associées, pas le nombre de motifs.",
       "category": null
     },
     {
@@ -9886,14 +9886,14 @@
       "kind": "final",
       "lesson": null,
       "number": 1,
-      "stem": "Quel est le rôle de l'assembleur ?",
+      "stem": "Que désigne l’offset d’une instruction dans un segment ?",
       "choices": [
-        "Traduire les mnémoniques en octets et résoudre les symboles",
-        "Exécuter le programme sur le processeur",
-        "Créer automatiquement les variables"
+        "Sa position relative au début du segment",
+        "Son adresse physique sur 20 bits",
+        "Le nombre de ses opérandes"
       ],
-      "correctAnswer": "Traduire les mnémoniques en octets et résoudre les symboles",
-      "explanation": "L'assembleur produit le code machine et résout les références.",
+      "correctAnswer": "Sa position relative au début du segment",
+      "explanation": "L’offset repère une instruction à l’intérieur du segment ; l’adresse physique dépend aussi de la base du segment.",
       "category": "Définition"
     },
     {
