@@ -243,5 +243,5 @@ console.log("FLAGS arithmétiques : " + arithmeticCases + " vecteurs.");
 console.log("FLAGS INC/DEC : " + incDecCases + " vecteurs.");
 console.log("FLAGS logiques : " + logicalCases + " vecteurs.");
 console.log("FLAGS MUL/IMUL : " + multiplyCases + " vecteurs.");
-console.log("Résultat FLAGS : " + passed + " réussis, " + failed + " échecs.");\nconsole.log("Vecteurs arithmétiques ADD/ADC/SUB/SBB/CMP : source/binaire.");
+console.log("Résultat FLAGS : " + passed + " réussis, " + failed + " échecs.");
 if (failed) process.exit(1);
