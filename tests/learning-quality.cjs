@@ -19,7 +19,7 @@ function element(id) {
 const document = { getElementById: element, querySelectorAll: () => [] };
 const localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
 const context = { document, localStorage, console, confirm: () => true };
-const instrumented = match[1].replace(/\}\)\(\);\s*$/, "globalThis.__learningData = { lessons, chapterLearning, curriculum, exercises, exerciseChapterAssignments, exerciseMetadata, executeAll, executeBinary, assembleProgram, disassembleBytes, courseVisual };\n})();");
+const instrumented = match[1].replace(/\}\)\(\);\s*$/, "globalThis.__learningData = { lessons, chapterLearning, curriculum, exercises, exerciseChapterAssignments, exerciseMetadata, instructions, instructionMeta, executeAll, executeBinary, assembleProgram, disassembleBytes, courseVisual };\n})();");
 assert.notEqual(instrumented, match[1], "Application closure must be instrumented for learning checks");
 vm.runInNewContext(instrumented, context, { timeout: 5000 });
 const learning = context.__learningData;
@@ -200,6 +200,11 @@ assert.equal(exerciseMetadataRows[40].type,"probleme","The first integration exe
 assert.equal(exerciseMetadataRows[40].difficulty,"Avancé","The first integration exercise must retain its advanced difficulty.");
 assert.equal(exerciseMetadataRows[41].type,"challenge","The second integration exercise must be classified as an expert challenge.");
 assert.equal(exerciseMetadataRows[41].difficulty,"Expert","The second integration exercise must retain its expert difficulty.");
+assert.ok(learning.instructions.some(entry=>entry[0]==="PORT"),"The PORT directive must appear in the instruction reference.");
+assert.equal(learning.instructionMeta.PORT.category,"Directive","PORT must be classified as a pedagogical directive.");
+assert.match(learning.instructionMeta.PORT.operation,/IN et OUT/,"PORT documentation must describe its IN/OUT purpose.");
+assert.equal(learning.instructionMeta.VECTOR.category,"Directive","VECTOR must remain explicitly classified as a pedagogical directive.");
+
 
 for (let i = 0; i < learning.exercises.length; i++) {
   const exercise = learning.exercises[i];
