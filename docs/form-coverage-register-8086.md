@@ -854,3 +854,16 @@ CI [45733836180](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45733836
 - HLT : F4h, désassemblage, arrêt avant l'instruction suivante.
 - Les quatre instructions rejettent les opérandes explicites.
 
+
+
+### 16.25 ADD / ADC / SUB / SBB — chemins source/binaire
+
+CI [45734054877](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45734054877) : **59/59 étapes réussies**.
+
+- 5 120 formes directionnelles indépendantes ;
+- 480 formes immédiates (80h/81h/83h) ;
+- dix variantes accumulateur immédiat ;
+- 40 interactions de préfixes : cinq opérations × quatre segments × deux directions mémoire ;
+- 2 016 vecteurs arithmétiques comparés source/binaire ; suite FLAGS totale : 3 412 réussites.
+
+Les six FLAGS arithmétiques définis sont comparés ; TF, IF et DF sont contrôlés comme préservés. Les FLAGS indéfinis ne sont pas utilisés comme oracle.

@@ -31,10 +31,10 @@ Cet inventaire est indépendant des 58 cartes de l'interface. Il contient un reg
 
 | Mnémotechnique | Famille / remarque | Alias ou graphies associées | Contrôle |
 |---|---|---|---|
-| ADD | Addition | — | À auditer |
-| ADC | Addition avec retenue | — | À auditer |
-| SUB | Soustraction | — | À auditer |
-| SBB | Soustraction avec emprunt | — | À auditer |
+| ADD | Addition | — | 5 120 formes directionnelles, 480 immédiates ; 2 016 vecteurs source/binaire et FLAGS |
+| ADC | Addition avec retenue | — | 5 120 formes directionnelles, 480 immédiates ; 2 016 vecteurs source/binaire et FLAGS |
+| SUB | Soustraction | — | 5 120 formes directionnelles, 480 immédiates ; 2 016 vecteurs source/binaire et FLAGS |
+| SBB | Soustraction avec emprunt | — | 5 120 formes directionnelles, 480 immédiates ; 2 016 vecteurs source/binaire et FLAGS |
 | INC | Incrémentation | — | INC/DEC/NEG : 1976 assertions préfixes et EA, source/binaire |
 | DEC | Décrémentation | — | INC/DEC/NEG : 1976 assertions préfixes et EA, source/binaire ; 48 vecteurs FLAGS source/binaire |
 | NEG | Négation arithmétique | — | 651 tests ; byte exhaustif et word frontières source/binaire, registres et mémoire |

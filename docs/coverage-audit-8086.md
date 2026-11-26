@@ -51,10 +51,10 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | LODSW | Oui | Oui | Oui | Oui | Oui |
 | STOSB | Oui | Oui | Oui | Oui | Oui |
 | STOSW | Oui | Oui | Oui | Oui | Oui |
-| ADD | Oui | Oui | Partiel | Partiel | Partiel |
-| ADC | Oui | Oui | Partiel | Partiel | Partiel |
-| SUB | Oui | Oui | Partiel | Partiel | Partiel |
-| SBB | Oui | Oui | Partiel | Partiel | Partiel |
+| ADD | Oui | Oui | Partiel | Oui | Oui |
+| ADC | Oui | Oui | Partiel | Oui | Oui |
+| SUB | Oui | Oui | Partiel | Oui | Oui |
+| SBB | Oui | Oui | Partiel | Oui | Oui |
 | INC | Oui | Oui | Oui | Oui | Oui |
 | DEC | Oui | Oui | Oui | Oui | Oui |
 | NEG | Oui | Oui | Oui | Oui | Oui |
@@ -140,6 +140,7 @@ Les familles suivantes disposent maintenant de contrôles ciblés source et/ou b
 - SHL/SAL, SHR, SAR, ROL, ROR, RCL et RCR : vecteurs source/binaire, compteurs CL non masqués, FLAGS définis, formes ModR/M byte/word et désassemblage testés.
 - INC, DEC et NEG : formes registre/mémoire byte/word, huit registres, huit EA, sélection DS/SS, overrides, FLAGS et chemins source/binaire vérifiés.
 - PUSH, POP, PUSHF et POPF : registres, segments, mémoire sur les huit EA, quatre overrides, pile, FLAGS et chemins source/binaire vérifiés.
+- ADD/ADC/SUB/SBB : matrices directionnelles, groupes immédiats 80/81/83, ModR/M, overrides, FLAGS et 2 016 vecteurs source/binaire vérifiés.
 - XCHG : paires de registres, formes mémoire, overrides, LOCK, FLAGS et chemins source/binaire vérifiés.
 - LEA/LDS/LES : EA, pointeurs 16:16, segments, déplacements, FLAGS et chemins source/binaire vérifiés.
 - AAA/AAS/AAM/AAD/DAA/DAS : vecteurs BCD, octets d'encodage, désassemblage et FLAGS définis vérifiés.
@@ -892,3 +893,15 @@ Preuve CI : [45733836180](https://github.com/GLLR-Spirit/Intel-8086/actions/runs
 - Opérandes explicites rejetés pour les quatre instructions.
 
 CBW, CWD, NOP et HLT passent à Oui sur le périmètre vérifié.
+
+
+## 22. Réconciliation ciblée — ADD / ADC / SUB / SBB
+
+Preuve CI : [45734054877](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45734054877), commit `682caf9d6fede14232d14f7e4c553c9a1bf771a2`, **59/59 étapes réussies**.
+
+- `tests/alu-forms-8086.cjs` : 5 120 formes directionnelles, 480 formes immédiates des groupes 80h/81h/83h et dix variantes immédiates accumulateur ; octets attendus indépendamment et désassemblage vérifié.
+- `tests/modrm-matrix.cjs` : balayage ModR/M indépendant des familles ALU et vérification des extensions réservées.
+- `tests/alu-prefix-interactions-8086.cjs` : 40 exécutions source/binaire couvrant cinq opérations, quatre overrides de segment et les deux directions mémoire.
+- `tests/flags-differential.cjs` : les 2 016 vecteurs ADD/ADC/SUB/SBB/CMP sont maintenant comparés en source et en binaire sur les six FLAGS arithmétiques définis et la préservation TF/IF/DF ; la suite complète rapporte 3 412 réussites.
+
+Les quatre lignes ADD, ADC, SUB et SBB passent à Oui pour le désassembleur et les tests. Les FLAGS non définis restent exclus des comparaisons.
