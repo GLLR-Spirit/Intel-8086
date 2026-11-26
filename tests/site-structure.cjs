@@ -10,6 +10,9 @@ assert.match(markup, /name=["']viewport["']/i, "Responsive viewport metadata is 
 assert.match(markup, /<main\b/i, "A main landmark is required");
 assert.match(markup, /<nav\b[^>]*aria-label=/i, "Primary navigation must have an accessible name");
 assert.match(markup, /<footer\b/i, "Footer landmark is required");
+assert.match(markup, /class=["']skip-link["'] href=["']#main-content["']/, "Keyboard skip navigation is required");
+assert.match(markup, /<main[^>]*id=["']main-content["'][^>]*tabindex=["']-1["']/, "Skip navigation target must be programmatically focusable");
+assert.match(markup, /:focus-visible/, "Keyboard focus indicators are required");
 
 const ids = [...markup.matchAll(/\bid=["']([^"']+)["']/g)].map(match => match[1]);
 const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
