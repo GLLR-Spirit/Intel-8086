@@ -35,10 +35,10 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | LES | Oui | Oui | Oui | Oui | À faire |
 | LDS | Oui | Oui | Oui | Oui | À faire |
 | XLAT | Oui | Oui | Oui | Oui | Oui |
-| PUSH | Oui | Oui | Oui | Oui | Partiel |
-| POP | Oui | Oui | Partiel | Partiel | Partiel |
-| PUSHF | Oui | Oui | Oui | Oui | Partiel |
-| POPF | Oui | Oui | Oui | Oui | Partiel |
+| PUSH | Oui | Oui | Oui | Oui | Oui |
+| POP | Oui | Oui | Oui | Oui | Oui |
+| PUSHF | Oui | Oui | Oui | Oui | Oui |
+| POPF | Oui | Oui | Oui | Oui | Oui |
 | LAHF | Oui | Oui | Oui | Oui | Oui |
 | SAHF | Oui | Oui | Oui | Oui | Oui |
 | MOVSB | Oui | Oui | Oui | Oui | Oui |
@@ -139,6 +139,7 @@ Les familles suivantes disposent maintenant de contrôles ciblés source et/ou b
 - MUL, IMUL, DIV et IDIV : formes mémoire, segments et interactions de préfixes testés.
 - SHL/SAL, SHR, SAR, ROL, ROR, RCL et RCR : vecteurs source/binaire, compteurs CL non masqués, FLAGS définis, formes ModR/M byte/word et désassemblage testés.
 - INC, DEC et NEG : formes registre/mémoire byte/word, huit registres, huit EA, sélection DS/SS, overrides, FLAGS et chemins source/binaire vérifiés.
+- PUSH, POP, PUSHF et POPF : registres, segments, mémoire sur les huit EA, quatre overrides, pile, FLAGS et chemins source/binaire vérifiés.
 
 CLC, STC, CMC, CLD, STD, CLI et STI ont des tests source/binaire avec octets exacts et préservation des autres FLAGS. CMC est encodé F5h ; F1h reste réservé sur 8086. IN/OUT utilisent une carte de ports logicielle, pas les ports matériels réels. INTO utilise le vecteur logiciel 4 ; WAIT et ESC sont des opérations sans effet dans le modèle logiciel, sans synchronisation FPU ni coprocesseur 8087 réel. INT/IRET sont maintenant vérifiés pour les interruptions logicielles via VECTOR en source et l'IVT physique en binaire. Les événements matériels restent hors périmètre : le laboratoire ne modélise pas l'acquittement INTR/NMI ni les signaux physiques du processeur.
 
@@ -846,3 +847,18 @@ Preuve CI : [45732748986](https://github.com/GLLR-Spirit/Intel-8086/actions/runs
 - Les formes invalides `INT 100h`, `INT -1`, `INT AX` et `INT` sans opérande sont rejetées.
 
 Cette validation concerne les interruptions logicielles. INTR, NMI, l'acquittement bus, la priorité matérielle et l'arbitrage restent hors du modèle.
+
+
+## 19. Réconciliation ciblée — PUSH / POP / PUSHF / POPF
+
+Les quatre instructions passent à **Oui** pour le simulateur, l'assembleur, le désassembleur et les tests sur le périmètre vérifié.
+
+Preuve CI : [45733189875](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45733189875), commit `264c4c29c286ad4b0693324731052a66d0aad96e`, **58/58 étapes réussies** ; l'étape PUSH/POP a réussi.
+
+- Les huit registres 16 bits sont testés pour PUSH et POP, y compris PUSH SP et POP SP avec leur sémantique 8086 spécifique.
+- Les quatre registres de segment sont couverts pour PUSH ; POP ES/SS/DS est testé et POP CS rejeté.
+- PUSH/POP mémoire sont exécutés en source et en binaire sur les huit formes EA, avec sélection DS/SS et overrides ES/CS/SS/DS.
+- La mémoire source est vérifiée après PUSH ; la destination et les autres segments sont vérifiés après POP.
+- PUSHF/POPF vérifient les neuf FLAGS modélisés et l'équilibre de pile.
+- Les formes immédiates PUSH 68h/6Ah, non disponibles sur 8086, sont rejetées.
+

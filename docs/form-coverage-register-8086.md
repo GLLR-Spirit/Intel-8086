@@ -801,3 +801,18 @@ CI : [45731571537](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/457315
 - opérandes invalides et vecteur hors plage rejetés.
 
 Le périmètre ne couvre pas les interruptions matérielles INTR/NMI ni leur arbitrage.
+
+
+### 16.21 PUSH / POP / PUSHF / POPF
+
+CI [45733189875](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45733189875) : **58/58 étapes réussies**.
+
+`tests/push-pop-forms-8086.cjs` vérifie :
+- les huit registres 16 bits en PUSH/POP, avec cas dédiés PUSH SP et POP SP ;
+- PUSH ES/CS/SS/DS et POP ES/SS/DS, POP CS invalide ;
+- PUSH/POP mémoire sur les huit EA en source et binaire ;
+- les overrides ES/CS/SS/DS, la sélection DS/SS par défaut et la conservation de la mémoire non ciblée ;
+- PUSHF/POPF, les neuf FLAGS modélisés et l'équilibre SP ;
+- les formes immédiates 68h/6Ah rejetées comme non-8086.
+
+`tests/control-stack.cjs` complète avec les matrices ModR/M et les extensions FF /6 et 8F /0 ; les tests de limites pile couvrent SP=0000h, 0001h et FFFEh.

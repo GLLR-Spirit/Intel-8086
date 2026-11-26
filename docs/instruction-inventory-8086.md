@@ -129,10 +129,10 @@ Chaque graphie ci-dessous est conservée comme entrée autonome. Les synonymes n
 
 | Mnémotechnique | Famille / remarque | Alias ou graphies associées | Contrôle |
 |---|---|---|---|
-| PUSH | Empilement d'un opérande mot | — | À auditer |
-| POP | Dépilement d'un opérande mot | — | À auditer |
-| PUSHF | Empilement de FLAGS | — | À auditer |
-| POPF | Restauration de FLAGS | — | À auditer |
+| PUSH | Empilement d'un opérande mot | — | Registres 16 bits, segments, 8 EA mémoire, 4 overrides, source/binaire |
+| POP | Dépilement d'un opérande mot | — | Registres 16 bits, ES/SS/DS, 8 EA mémoire, 4 overrides, source/binaire ; POP CS rejeté |
+| PUSHF | Empilement de FLAGS | — | 9 FLAGS modélisés, source/binaire, pile équilibrée |
+| POPF | Restauration de FLAGS | — | 9 FLAGS modélisés, source/binaire, pile équilibrée |
 | LAHF | Copie de la partie basse de FLAGS vers AH | — | 298 tests ; 32 combinaisons de FLAGS source/binaire et octets fixes |
 | SAHF | Copie de AH vers les indicateurs modifiables | — | 298 tests ; 256 valeurs AH source/binaire et octets fixes |
 | CLC | Effacement de CF | — | 29/29 tests source/binaire ; opcode exact, désassemblage, FLAGS préservés et opérandes rejetés |
