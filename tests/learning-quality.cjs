@@ -204,7 +204,7 @@ assert.ok(learning.instructions.some(entry=>entry[0]==="PORT"),"The PORT directi
 assert.equal(learning.instructionMeta.PORT.category,"Directive","PORT must be classified as a pedagogical directive.");
 assert.match(learning.instructionMeta.PORT.operation,/IN et OUT/,"PORT documentation must describe its IN/OUT purpose.");
 assert.equal(learning.instructionMeta.VECTOR.category,"Directive","VECTOR must remain explicitly classified as a pedagogical directive.");
-assert.equal(learning.instructions.length,43,"The reference must expose 43 instruction families and pedagogical directives.");
+assert.equal(learning.instructions.length,64,"The reference must expose 64 instruction families and pedagogical directives.");
 const referenceNames=learning.instructions.map(entry=>entry[0]);
 assert.equal(new Set(referenceNames).size,referenceNames.length,"The instruction reference must not contain duplicate entries.");
 referenceNames.forEach(name=>{
