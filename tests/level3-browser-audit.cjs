@@ -128,6 +128,25 @@ const assert = require("node:assert/strict");
     return {failures,examples:programs.length,jccConditions:conditions.length,jccTruthCases:conditions.length*2,intermediateCount,finalCount};
   });
 
+  // Every chapter must expose its own visual explanation, not only the eleven original chapters.
+  for (let chapter=0; chapter<36; chapter++) {
+    await page.locator('[data-lesson="' + chapter + '"]').click();
+    assert.equal(await page.locator("#lessonDetail .course-visual").count(),1,"Chapter "+(chapter+1)+" must have exactly one visual explanation.");
+  }
+  console.log("Course visual coverage: 36/36 chapters have a diagram or visual model.");
+
+  // Keyboard and assistive-technology navigation semantics.
+  await page.keyboard.press("Tab");
+  assert.ok(await page.evaluate(() => document.activeElement.classList.contains("skip-link")),"The first keyboard stop must be the skip link.");
+  assert.equal(await page.locator(".skip-link").evaluate(el => getComputedStyle(el).top),"12px","Skip link must become visible on focus.");
+  await page.locator('[data-view="editor"]').click();
+  assert.equal(await page.locator('[data-view="editor"]').getAttribute("aria-current"),"page");
+  await page.locator('[data-mode="guided"]').click();
+  assert.equal(await page.locator('[data-mode="guided"]').getAttribute("aria-pressed"),"true");
+  assert.equal(await page.locator('[data-mode="free"]').getAttribute("aria-pressed"),"false");
+  await page.locator('[data-view="learn"]').click();
+  console.log("Keyboard skip navigation, visible focus, aria-current and aria-pressed PASS.");
+
   // Interactive course demonstrations: AX split, FLAGS, segment:offset,
   // effective address, LIFO stack, and ModR/M field decoding.
   await page.locator('[data-lesson="10"]').click();
