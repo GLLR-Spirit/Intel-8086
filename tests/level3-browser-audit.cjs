@@ -382,6 +382,21 @@ const assert = require("node:assert/strict");
     assert.match(await card.locator("p.muted").nth(1).textContent(),/1\. Introduction au microprocesseur Intel 8086/,
       "Every filtered exercise must be genuinely associated with the selected chapter.");
   }
+  const firstExerciseStarter=await page.evaluate(()=>window.__8086Audit.exercises[5][2]);
+  const firstExerciseSolution=await page.evaluate(()=>window.__8086Audit.exercises[5][4].solution||window.__8086Audit.exercises[5][2]);
+  const firstExerciseAX=await page.evaluate(src=>window.__8086Audit.executeAll(src).reg.AX,firstExerciseSolution);
+  assert.equal(filteredCount,1,"The explicit chapter mapping should leave one beginner application for chapter 1.");
+  await page.locator("#exerciseList [data-load]").first().click();
+  assert.equal(await page.locator("#code").inputValue(),firstExerciseStarter,
+    "Loading an exercise statement must copy its starter source into the editor.");
+  await page.locator('[data-view="exercises"]').click();
+  await page.locator("#exerciseList details.exercise-guide summary").first().click();
+  await page.locator("#exerciseList [data-solution]").first().click();
+  assert.equal(await page.locator("#code").inputValue(),firstExerciseSolution,
+    "Loading the correction must copy the complete guided solution into the editor.");
+  await page.locator("#run").click();
+  assert.ok((await page.locator("#regs").textContent()).includes(firstExerciseAX.toString(16).toUpperCase().padStart(4,"0")+"h"),
+    "The loaded exercise solution must execute to its expected register result.");
   await page.locator("#resetExerciseFilters").click();
   assert.equal((await page.locator("#exerciseCount").textContent()).trim(),allExerciseText,"Reset must restore the full exercise list.");
   await page.locator('[data-view="editor"]').click();
