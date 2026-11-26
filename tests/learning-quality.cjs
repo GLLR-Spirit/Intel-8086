@@ -62,6 +62,8 @@ assert.ok(learning.chapterLearning.every(c => c.goal && c.theory && c.walk && c.
   "Every chapter must include prerequisites, objectives, three detailed lessons and ten final questions");
 assert.ok(learning.chapterLearning.every(c => c.lessons.every(l => l.title && l.theory && l.example && l.expected && l.quiz.length === 3)),
   "Every lesson must include detailed content, an example and exactly three comprehension questions");
+assert.ok(learning.chapterLearning.every(c => c.lessons.every(l => l.theory.trim().length >= 300)),
+  "All 108 visible lessons must contain at least 300 characters of technical explanation after curriculum overrides.");
 assert.ok(learning.chapterLearning.every(c => c.quiz.every(q => q[1].length === 3 && q[2] >= 0 && q[2] < 3 && q[3])),
   "Every final question must have three choices, a valid answer and an explanation");
 const weakFinalQuestions = [];
