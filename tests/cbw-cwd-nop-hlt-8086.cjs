@@ -73,8 +73,13 @@ test("CBW/CWD/NOP/HLT exact opcodes and disassembly",()=>{
  const assembled=api.assemble("CBW\nCWD\nNOP\nHLT");
  assert.deepEqual(Array.from(assembled.bytes),[0x98,0x99,0x90,0xF4]);
  const decoded=api.disassemble([0x98,0x99,0x90,0xF4]);
- assert.deepEqual(decoded.rows.map(r=>r.instruction),["CBW","CWD","NOP","HLT"]);
- assert.deepEqual(decoded.rows.map(r=>Array.from(r.bytes)),[[0x98],[0x99],[0x90],[0xF4]]);
+ const expectedNames=["CBW","CWD","NOP","HLT"];
+ const expectedBytes=[[0x98],[0x99],[0x90],[0xF4]];
+ assert.equal(decoded.rows.length,4);
+ for(let i=0;i<4;i++){
+  assert.equal(decoded.rows[i].instruction,expectedNames[i]);
+  assert.equal(Array.from(decoded.rows[i].bytes).join(","),expectedBytes[i].join(","));
+ }
 });
 test("NOP preserves registers and FLAGS before continuing",()=>{
  const source="MOV SP,0100h\nMOV CX,0FD7h\nPUSH CX\nPOPF\nMOV AX,1234h\nNOP\nMOV BX,5678h\nHLT";
