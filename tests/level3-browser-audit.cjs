@@ -285,7 +285,15 @@ const assert = require("node:assert/strict");
   await page.locator("#exerciseType").selectOption("application");
   const filteredText=(await page.locator("#exerciseCount").textContent()).trim();
   assert.match(filteredText,/exercice\(s\) affiché\(s\) sur/);
-  assert.equal(await page.locator("#exerciseList .exercise").count(),Number(filteredText.match(/^(\d+)/)[1]));
+  const filteredCount=Number(filteredText.match(/^(\d+)/)[1]);
+  assert.ok(filteredCount>0,"The first chapter must have at least one correctly mapped beginner application.");
+  assert.equal(await page.locator("#exerciseList .exercise").count(),filteredCount);
+  for(const card of await page.locator("#exerciseList .exercise").all()){
+    assert.equal((await card.locator(".eyebrow").textContent()).trim(),"Débutant · Application directe",
+      "Every filtered exercise must match the selected difficulty and type.");
+    assert.match(await card.locator("p.muted").nth(1).textContent(),/1\. Introduction au microprocesseur Intel 8086/,
+      "Every filtered exercise must be genuinely associated with the selected chapter.");
+  }
   await page.locator("#resetExerciseFilters").click();
   assert.equal((await page.locator("#exerciseCount").textContent()).trim(),allExerciseText,"Reset must restore the full exercise list.");
   await page.locator('[data-view="editor"]').click();
