@@ -765,3 +765,12 @@ Résultats vérifiés dans le CI [45731571537](https://github.com/GLLR-Spirit/In
 - `tests/wait-esc-8086.cjs` : **6 719 assertions** ; WAIT, 64 numéros ESC, formes registre/mémoire et 2 048 combinaisons opcode/ModR/M désassemblées.
 
 Limites de modèle : IN/OUT utilisent une carte logicielle ; INTO vérifie l'interruption logicielle conditionnelle, pas les interruptions matérielles ; WAIT/ESC n'émulent ni synchronisation FPU ni coprocesseur 8087.
+
+
+### 16.18 XLAT — actualisation du 26 novembre 2026
+
+- `tests/xlat-8086.cjs` : **24/24** ; encodage/désassemblage, segments, exécution source/binaire, FLAGS, débordements 16 bits/20 bits, lecture non initialisée et syntaxes invalides.
+- `tests/xlat-state-8086.cjs` : **2/2** ; préservation de tous les registres généraux/segments et des neuf FLAGS en source et en binaire.
+- Cross-check GNU de l'encodage : réussi.
+
+CI : [45731571537](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45731571537).

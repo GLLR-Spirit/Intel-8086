@@ -25,7 +25,7 @@ Cet inventaire est indépendant des 58 cartes de l'interface. Il contient un reg
 | LEA | Chargement de l'adresse effective | — | À auditer |
 | LES | Chargement d'un pointeur far vers ES:registre | — | À auditer |
 | LDS | Chargement d'un pointeur far vers DS:registre | — | À auditer |
-| XLAT | Traduction par table | XLATB (synonyme rencontré dans des assembleurs/documentations postérieurs ; statut canonique à confirmer) | Présente ; validation indépendante partielle (24 tests CI) |
+| XLAT | Traduction par table | XLATB (synonyme rencontré dans des assembleurs/documentations postérieurs ; statut canonique à confirmer) | 24/24 tests + 2/2 états source/binaire + cross-check GNU ; débordements et segments vérifiés |
 
 ## 2. Arithmétique, ajustement et comparaison
 

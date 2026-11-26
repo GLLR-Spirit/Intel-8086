@@ -34,7 +34,7 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | LEA | Oui | Oui | Oui | Oui | À faire |
 | LES | Oui | Oui | Oui | Oui | À faire |
 | LDS | Oui | Oui | Oui | Oui | À faire |
-| XLAT | Oui | Oui | Oui | Oui | Partiel |
+| XLAT | Oui | Oui | Oui | Oui | Oui |
 | PUSH | Oui | Oui | Oui | Oui | Partiel |
 | POP | Oui | Oui | Partiel | Partiel | Partiel |
 | PUSHF | Oui | Oui | Oui | Oui | Partiel |
@@ -808,4 +808,14 @@ L'actualisation du 26 novembre 2026 repose sur le CI [45731571537](https://githu
 - **LAHF/SAHF** : 298 tests ; 32 combinaisons des cinq FLAGS copiés par LAHF et les 256 valeurs possibles de AH pour SAHF, avec comparaison source/binaire, encodages et syntaxes invalides.
 - **WAIT/ESC** : 6 719 assertions ; WAIT 9Bh, 64 numéros ESC, formes registre/mémoire et 2 048 combinaisons opcode/ModR/M désassemblées ; sémantique logicielle sans effet vérifiée en source et en binaire.
 
-IN et OUT passent à Oui sur le modèle de ports logiciels ; INTO, LAHF et SAHF passent à Oui dans leur périmètre testé. WAIT et ESC gardent le simulateur à Partiel : l'attente du coprocesseur et l'exécution 8087 ne sont pas modélisées. INT et IRET restent partiels ; XLAT conserve son statut partiel tant que les autres vecteurs et interactions de préfixes ne sont pas entièrement réconciliés.
+IN et OUT passent à Oui sur le modèle de ports logiciels ; INTO, LAHF et SAHF passent à Oui dans leur périmètre testé. WAIT et ESC gardent le simulateur à Partiel : l'attente du coprocesseur et l'exécution 8087 ne sont pas modélisées. INT et IRET restent partiels ; XLAT passe à Oui pour les formes testées : 24/24 scénarios, 2/2 contrôles de préservation d'état et cross-check GNU.
+
+
+## 16. Réconciliation ciblée — XLAT
+
+`XLAT` passe à **Oui** dans la colonne Tests. La suite [45731571537](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45731571537) confirme :
+- 24/24 tests : encodage/désassemblage, segments ES/CS/SS/DS, DS par défaut, lecture source/binaire, FLAGS, débordements 16 bits et physiques, mémoire non initialisée et syntaxe invalide ;
+- 2/2 tests supplémentaires : préservation de tous les registres généraux/segments et des neuf FLAGS dans les chemins source et binaire ;
+- cross-check d'encodage GNU : réussi.
+
+Le statut concerne l'instruction XLAT et son modèle de table logicielle ; l'alias XLATB n'est pas compté comme instruction canonique distincte.
