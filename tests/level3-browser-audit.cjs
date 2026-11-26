@@ -370,14 +370,14 @@ const assert = require("node:assert/strict");
   assert.ok(firstChapterValue,"A chapter filter option must be populated.");
   await page.locator("#exerciseChapter").selectOption(firstChapterValue);
   await page.locator("#exerciseDifficulty").selectOption("Débutant");
-  await page.locator("#exerciseType").selectOption("application");
+  await page.locator("#exerciseType").selectOption("completion");
   const filteredText=(await page.locator("#exerciseCount").textContent()).trim();
   assert.match(filteredText,/exercice\(s\) affiché\(s\) sur/);
   const filteredCount=Number(filteredText.match(/^(\d+)/)[1]);
-  assert.ok(filteredCount>0,"The first chapter must have at least one correctly mapped beginner application.");
+  assert.ok(filteredCount>0,"The first chapter must have a correctly mapped beginner completion exercise.");
   assert.equal(await page.locator("#exerciseList .exercise").count(),filteredCount);
   for(const card of await page.locator("#exerciseList .exercise").all()){
-    assert.equal((await card.locator(".eyebrow").textContent()).trim(),"Débutant · Application directe",
+    assert.equal((await card.locator(".eyebrow").textContent()).trim(),"Débutant · Programme à compléter",
       "Every filtered exercise must match the selected difficulty and type.");
     assert.match(await card.locator("p.muted").nth(1).textContent(),/1\. Introduction au microprocesseur Intel 8086/,
       "Every filtered exercise must be genuinely associated with the selected chapter.");
@@ -385,7 +385,7 @@ const assert = require("node:assert/strict");
   const firstExerciseStarter=await page.evaluate(()=>window.__8086Audit.exercises[5][2]);
   const firstExerciseSolution=await page.evaluate(()=>window.__8086Audit.exercises[5][4].solution||window.__8086Audit.exercises[5][2]);
   const firstExerciseAX=await page.evaluate(src=>window.__8086Audit.executeAll(src).reg.AX,firstExerciseSolution);
-  assert.equal(filteredCount,1,"The explicit chapter mapping should leave one beginner application for chapter 1.");
+  assert.equal(filteredCount,1,"The explicit chapter mapping should leave one beginner completion exercise for chapter 1.");
   await page.locator("#exerciseList [data-load]").first().click();
   assert.equal(await page.locator("#code").inputValue(),firstExerciseStarter,
     "Loading an exercise statement must copy its starter source into the editor.");
