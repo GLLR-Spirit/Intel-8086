@@ -32,6 +32,8 @@ jobs:
           node-version: 22
       - name: Run simulator smoke tests
         run: node tests/smoke.cjs
+      - name: Validate site structure and accessibility baseline
+        run: node tests/site-structure.cjs
       - name: Validate learning path and guided exercises
         run: node tests/learning-quality.cjs
       - name: Run independent instruction vectors
