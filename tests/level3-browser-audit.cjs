@@ -225,6 +225,11 @@ const assert = require("node:assert/strict");
   assert.ok((await page.locator("#regs").textContent()).includes("0055h"),
     "A byte-identical source program may provide its PORT directive metadata to binary execution.");
 
+  await page.locator("#code").fill("MOV AX, 4321h\\nHLT");
+  await page.locator("#step").click();
+  assert.ok((await page.locator("#regs").textContent()).includes("4321h"),
+    "Stepping after a binary run must reset the binary display state and execute the current source, not stale CPU state.");
+
   await page.locator('[data-view="learn"]').click();
 
   // Interactive course demonstrations: AX split, FLAGS, segment:offset,
