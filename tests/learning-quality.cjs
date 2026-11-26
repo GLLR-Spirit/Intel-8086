@@ -51,6 +51,13 @@ assert.ok(html.includes("@keyframes busPacket"), "Architecture animation must ha
 assert.equal(learning.lessons.length, 36, "All 36 learning chapters must exist");
 assert.equal(learning.curriculum.length, 36, "The canonical curriculum must contain 36 chapters");
 assert.equal(learning.chapterLearning.length, 36, "Every chapter must have a learning module");
+assert.match(match[1], /function updateChapterNavigation\\(/, "Chapter navigation must synchronize its selected state.");
+assert.match(match[1], /aria-current="step"/, "The selected chapter must be exposed to assistive technology.");
+assert.match(match[1], /aria-pressed=/, "Chapter buttons must expose their selected state.");
+assert.match(match[1], /aria-controls="lessonDetail"/, "Chapter buttons must identify the controlled lesson panel.");
+assert.match(match[1], /if\\(!Number\\.isInteger\\(i\\)\\|\\|i<0\\|\\|i>=lessons\\.length\\)return;/, "Invalid chapter indexes must not crash lesson rendering.");
+assert.match(match[1], /currentChapterIndex=0,currentSublessonIndex=0/, "The current chapter and sublesson must have explicit state.");
+
 assert.ok(learning.chapterLearning.every(c => c.goal && c.theory && c.walk && c.prereq && c.lessons.length === 3 && c.quiz.length === 10),
   "Every chapter must include prerequisites, objectives, three detailed lessons and ten final questions");
 assert.ok(learning.chapterLearning.every(c => c.lessons.every(l => l.title && l.theory && l.example && l.expected && l.quiz.length === 3)),
