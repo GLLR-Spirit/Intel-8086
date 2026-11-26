@@ -397,6 +397,7 @@ const assert = require("node:assert/strict");
   await page.locator("#run").click();
   assert.ok((await page.locator("#regs").textContent()).includes(firstExerciseAX.toString(16).toUpperCase().padStart(4,"0")+"h"),
     "The loaded exercise solution must execute to its expected register result.");
+  await page.locator('[data-view="exercises"]').click();
   await page.locator("#resetExerciseFilters").click();
   assert.equal((await page.locator("#exerciseCount").textContent()).trim(),allExerciseText,"Reset must restore the full exercise list.");
   await page.locator('[data-view="editor"]').click();
