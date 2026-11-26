@@ -97,6 +97,13 @@ for (const item of controls) {
     });
   }
 }
+test("F1h is not CMC on the original 8086", () => {
+  const decoded = api.disassemble([0xF1]);
+  assert.equal(decoded.rows.length, 1);
+  assert.ok(!decoded.rows[0].instruction.startsWith("CMC"), decoded.rows[0].instruction);
+  const execution = api.executeBinary([0xF1,0xF4], 0, 0, {});
+  assert.ok(execution.error, "F1h must not execute as CMC on the 8086");
+});
 console.log("8086 flag-control audit: " + passed + " passed, " + failed + " failed.");
-console.log("Seven opcodes F5h, F8h, F9h, FAh, FBh, FCh, FDh; exact source/binary FLAGS preservation.");
+console.log("Seven opcodes F5h, F8h, F9h, FAh, FBh, FCh, FDh; F1h reserved; exact source/binary FLAGS preservation.");
 if (failed) process.exit(1);

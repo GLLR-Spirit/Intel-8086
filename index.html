@@ -713,7 +713,7 @@ if(id.bits===16&&d==="AX")return [144+rq];if(id.bits===16&&q==="AX")return [144+
 return [id.bits===8?134:135,192|(rq<<3)|rd];
 }
 }
-if(a.length===0){var strings={MOVSB:[164],MOVSW:[165],CMPSB:[166],CMPSW:[167],STOSB:[170],STOSW:[171],LODSB:[172],LODSW:[173],SCASB:[174],SCASW:[175]};if(strings[base])return strings[base];var fixed={NOP:[144],HLT:[244],CLC:[248],STC:[249],CMC:[241],CLI:[250],STI:[251],CLD:[252],STD:[253],PUSHF:[156],POPF:[157],RET:[195],RETF:[203],IRET:[207],AAA:[55],AAS:[63],DAA:[39],DAS:[47],CBW:[152],CWD:[153],INTO:[206],XLAT:[215],LAHF:[159],SAHF:[158],WAIT:[155],AAM:[212,10],AAD:[213,10]};if(fixed[base])return fixed[base];}
+if(a.length===0){var strings={MOVSB:[164],MOVSW:[165],CMPSB:[166],CMPSW:[167],STOSB:[170],STOSW:[171],LODSB:[172],LODSW:[173],SCASB:[174],SCASW:[175]};if(strings[base])return strings[base];var fixed={NOP:[144],HLT:[244],CLC:[248],STC:[249],CMC:[245],CLI:[250],STI:[251],CLD:[252],STD:[253],PUSHF:[156],POPF:[157],RET:[195],RETF:[203],IRET:[207],AAA:[55],AAS:[63],DAA:[39],DAS:[47],CBW:[152],CWD:[153],INTO:[206],XLAT:[215],LAHF:[159],SAHF:[158],WAIT:[155],AAM:[212,10],AAD:[213,10]};if(fixed[base])return fixed[base];}
 return null;
 }
 function relativeBranchOpcode(op){
@@ -840,7 +840,7 @@ else if(op===55)ins="AAA";else if(op===63)ins="AAS";else if(op===39)ins="DAA";el
 else if(op===244)ins="HLT";
 else if(op===248)ins="CLC";
 else if(op===249)ins="STC";
-else if(op===241)ins="CMC";
+else if(op===245)ins="CMC";
 else if(op===250)ins="CLI";
 else if(op===251)ins="STI";
 else if(op===252)ins="CLD";
