@@ -5,7 +5,7 @@
 **Date de l'audit statique initial :** 24 novembre 2026  
 **Dernière actualisation ciblée :** 26 novembre 2026  
 **Périmètre :** Intel 8086 original uniquement ; aucune instruction 80186 ou ultérieure n'est comptée.  
-**Nature :** audit statique du code, de la documentation et des tests existants. Ce document ne prétend pas certifier le comportement électrique ou matériel du processeur.
+**Nature :** registre cumulatif de l'audit statique et des validations CI. Les observations initiales peuvent être historiques ; les sections 18 à 25 et la matrice courante les supersèdent en cas de divergence. Ce document ne prétend pas certifier le comportement électrique ou matériel du processeur.
 
 ## 1. Méthode et règle de comptage
 

@@ -1,8 +1,10 @@
 # Rapport d'audit pédagogique — niveau 3, chapitres 12 à 17
 
-Date : 25 novembre 2026  
-Branche : `audit/niveau-3-chapitres-12-17`  
+Date : 26 novembre 2026  
+Branche de référence : `main`  
 Périmètre : chapitres 12 à 17, 18 leçons, 54 questions intermédiaires et 60 questions finales.
+
+**Note de lecture :** les sections 1 à 12 conservent les constats historiques successifs. Leur statut ouvert est supersédé par la consolidation de la section 13. La PR #1 a été fusionnée dans `main` le 26 novembre 2026 ; aucune branche d'audit parallèle n'est désormais utilisée.
 
 ## 1. Corrections apportées
 
@@ -385,7 +387,7 @@ La suite des branchements compare maintenant les 16 conditions Jcc sur huit coup
 
 Pour CALL/RET, les tests couvrent les appels near/far, les formes indirectes, l'ordre CS:IP sur pile, les limites SP et les ajustements impairs de RET/RETF. Pour les chaînes, les dix formes byte/word sont testées avec les chemins source et binaire, les segments, REP, DF et les frontières d'offset.
 
-**État global :** ces résultats ferment des sous-périmètres ciblés, pas l'audit exhaustif des chapitres 12 à 17. Les formes restantes, les interactions de préfixes non couvertes, les autres familles d'instructions et la réconciliation des 93 entrées restent ouvertes.
+**État à cette étape historique :** les résultats fermaient alors des sous-périmètres ciblés. Les compléments des sections suivantes ont depuis étendu les tests source/binaire, actualisé le registre et réconcilié les 93 entrées ; consulter la section 13 pour le statut courant.
 
 
 ## 12. Clôture des contrôles pédagogiques et CMP/TEST — 26 novembre 2026
@@ -404,10 +406,10 @@ Sur le commit `bf994802a22425d1bddf7991e1d8a55d1f6ac522`, le workflow CI [457302
 
 La suite logique rapporte **68 611 réussites, 0 échec** et dix équivalences source/binaire. Six vecteurs TEST supplémentaires vérifient les formes byte/word, registre/mémoire, immédiat et override ES. CMP dispose de nouveaux contrôles source/binaire sur les formes byte registre et word mémoire, complétés par les huit couples d'opérandes de la matrice Jcc.
 
-**Conclusion de cette étape :** les contrôles pédagogiques des chapitres 12 à 17 et les compléments CMP/TEST sont maintenant documentés avec leurs résultats. L'audit ne sera déclaré globalement clos qu'après vérification des formes restantes, réconciliation du registre et actualisation prudente de la matrice des 93 instructions.
+**Conclusion de cette étape historique :** les contrôles pédagogiques et les compléments CMP/TEST étaient documentés ; la réconciliation complète du registre et de la matrice a été poursuivie dans les sections suivantes.
 
 
-## 12. État consolidé de la matrice — 26 novembre 2026
+## 13. État consolidé de la matrice — 26 novembre 2026
 
 La matrice canonique comporte **93 instructions**. À la réconciliation actuelle :
 
@@ -419,3 +421,24 @@ La matrice canonique comporte **93 instructions**. À la réconciliation actuell
 Les cinq statuts partiels ne doivent pas être masqués par le fait que des tests existent. WAIT/ESC n'émulent pas le coprocesseur 8087 ni sa synchronisation. Les variantes JMP/CALL/RET — directes et indirectes near/far, huit EA, préfixes, pile, frontières SP et ajustements impairs — disposent maintenant de tests source/binaire ; leur statut simulateur reste Partiel uniquement parce que le chemin source n'exécute pas du code arbitraire chargé dans un second segment CS. Le moteur binaire dynamique vérifie les transferts intersegments en mémoire physique. La matrice ne publie donc aucun pourcentage de conformité matérielle.
 
 Les preuves et limites par famille sont inscrites dans `docs/form-coverage-register-8086.md` et `docs/coverage-audit-8086.md`. La clôture pédagogique des chapitres 12 à 17 reste distincte de la prétention à une émulation matérielle exhaustive.
+
+
+### 13.1 Contrôles pédagogiques — état courant
+
+Le CI principal sur `main` [45734760943](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45734760943), commit `7c176da8b0db1ecfd06c151ab2deed1eb6a4ecfd`, a réussi **60/60 étapes**. Il exécute `tests/learning-quality.cjs`, qui vérifie :
+
+- les 36 chapitres et les 108 leçons ;
+- 324 questions intermédiaires et 360 questions finales ;
+- les 684 questions contre la clé sémantique indépendante ;
+- les dix catégories finales dans l'ordre attendu et les trois contrôles par leçon ;
+- un oracle indépendant de résultat pour chacune des 108 leçons.
+
+Pour les chapitres 12 à 17, cela représente 18 leçons, 54 questions intermédiaires et 60 questions finales. Le contrôle navigateur précédent [45725877536](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45725877536) a réussi sur le commit de PR `4644b2c2302c1bfcf6bcd94fd84cc780af37d5ae` : 18 exemples source/binaire, 16 conditions Jcc et démonstrations interactives. **Ce workflow navigateur n'a pas été relancé sur le dernier commit de `main`** ; il reste une preuve pré-fusion, distincte du CI principal actuel.
+
+### 13.2 Portée exacte des statuts partiels
+
+Les 93 entrées ont toutes une couverture de test exécutée ; assembleur et désassembleur sont à Oui sur les 93. Les cinq statuts simulateur Partiel ne sont pas des tests manquants :
+- `WAIT` et `ESC` : pas de modèle 8087 ni de synchronisation coprocesseur ;
+- `JMP`, `CALL`, `RET` : le moteur binaire couvre les transferts intersegments en mémoire physique ; le chemin source reste limité à un seul segment de code assemblé et ne charge pas de code externe arbitraire.
+
+Aucun pourcentage global de conformité matérielle n'est donc publié. La clôture des tests logiciels ne vaut pas certification électrique, cycle par cycle ou exhaustive de chaque révision du silicium 8086.

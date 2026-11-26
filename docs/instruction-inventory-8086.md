@@ -1,6 +1,7 @@
 # Inventaire canonique — jeu d'instructions Intel 8086
 
-**Statut :** inventaire de travail, à confronter aux tables des manuels Intel avant de déclarer l'exhaustivité certifiée.  
+**Dernière actualisation :** 26 novembre 2026, branche `main`.  
+**Statut :** inventaire de travail à confronter aux tables des manuels Intel avant de déclarer l'exhaustivité certifiée. Les statuts de couverture courants sont tenus dans `docs/coverage-audit-8086.md`.  
 **Périmètre :** instructions du processeur Intel 8086 d'origine (pas 80186/80286+), avec séparation entre mnémotechniques principales, synonymes documentés et préfixes.  
 **Règle de comptage :** une ligne = une graphie mnémotechnique ; les alias restent des entrées propres afin de pouvoir les auditer individuellement.
 

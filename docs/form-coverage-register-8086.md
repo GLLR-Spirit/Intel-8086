@@ -1,9 +1,10 @@
-# Registre des formes d'encodage — première tranche
+# Registre cumulatif des formes d'encodage — Intel 8086
 
-**Date :** 24 novembre 2026  
+**Branche de référence :** `main`  
+**Dernière mise à jour :** 26 novembre 2026  
 **Périmètre vérifié dans cette tranche :** `MOV`, `ADD`, `ADC`, `SUB`, `SBB`, `CMP`.  
 **Référence de base :** Intel, *8086 Family User's Manual*, octobre 1979, chapitre 4 (formats d'instructions et codage), descriptions des instructions et table 2-21 pour les formes et temps indiqués. Le manuel d'assemblage MCS-86 de septembre 1979 sert à contrôler la syntaxe et les opérandes.  
-**Statut :** registre de travail détaillé, pas une certification de toutes les formes du processeur.
+**Statut :** registre cumulatif de travail. Les sections 16.20 à 16.28 actualisent les premières tranches ; il ne constitue pas une certification matérielle exhaustive.
 
 Sources :
 - [Intel 8086 Family User's Manual (octobre 1979)](https://www.inf.pucrs.br/~calazans/undergrad/orgcomp_EC/mat_microproc/intel-8086_family_Users_Manual.pdf)
