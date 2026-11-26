@@ -341,6 +341,7 @@ function verifyTestBoth(label, source, expectedFlags, memoryChecks) {
   });
   totals.binaryParity++;
 }
+function physical(seg, off) { return ((((seg & 0xFFFF) << 4) + (off & 0xFFFF)) & 0xFFFFF); }
 const testFlags = (sf,zf,pf) => ({CF:0,OF:0,SF:sf,ZF:zf,PF:pf,TF:1,IF:1,DF:0});
 verifyTestBoth("word register", [
   "MOV AX, 0BD5h","PUSH AX","POPF","MOV AX, 8001h","MOV BX, 8000h",

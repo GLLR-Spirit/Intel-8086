@@ -190,6 +190,40 @@ for (const vector of semanticCases) {
     same(state.mem[address], vector.result, vector.op + " " + mode + " memory result");
   }
 }
+// F. CMP semantic oracles across byte-register and word-memory forms.
+// CMP must preserve both explicit operands and memory while updating only FLAGS.
+function verifyCmpCase(label, source, expectedRegisters, expectedFlags, memoryCheck) {
+  const assembled = api.assemble(source);
+  const sourceState = api.execute(source);
+  const binaryState = api.binary(Array.from(assembled.bytes), 0, 0, {});
+  for (const [mode, state] of [["source", sourceState], ["binary", binaryState]]) {
+    check(state.error === undefined, label + " " + mode + " execution");
+    for (const [reg, value] of Object.entries(expectedRegisters))
+      check(state.reg[reg] === value, label + " " + mode + " preserves " + reg);
+    for (const [flag, value] of Object.entries(expectedFlags))
+      check(state.flags[flag] === value, label + " " + mode + " " + flag);
+    if (memoryCheck) {
+      const address = (((state.reg.DS & 0xFFFF) << 4) + memoryCheck.offset) & 0xFFFFF;
+      check(state.mem[address] === memoryCheck.low, label + " " + mode + " memory low unchanged");
+      check(state.mem[(address + 1) & 0xFFFFF] === memoryCheck.high,
+        label + " " + mode + " memory high unchanged");
+    }
+  }
+}
+verifyCmpCase("CMP byte register 7Fh-80h", [
+  "MOV AX, 0BD5h","PUSH AX","POPF","MOV AL, 7Fh","MOV BL, 80h",
+  "CMP AL, BL","HLT"
+].join("\n"), {AX:0x0B7F,BX:0x0080}, {
+  CF:1,PF:1,AF:0,ZF:0,SF:1,OF:1,TF:1,IF:1,DF:0
+});
+verifyCmpCase("CMP word memory 8000h-0001h", [
+  "MOV AX, 0BD5h","PUSH AX","POPF","MOV AX, 2000h","MOV DS, AX",
+  "MOV BX, 0100h","MOV WORD PTR [BX], 8000h","MOV DX, 0001h",
+  "CMP WORD PTR [BX], DX","HLT"
+].join("\n"), {AX:0x2000,BX:0x0100,DX:0x0001}, {
+  CF:0,PF:1,AF:1,ZF:0,SF:0,OF:1,TF:1,IF:1,DF:0
+}, {offset:0x0100,low:0x00,high:0x80});
+
 console.log("ALU independent forms: " + directionalCases + " directional assembler cases; " +
   immediateCases + " immediate-group assembler cases; 10 accumulator encodings; " +
   "invalid operand constraints; source/binary semantic boundaries.");
