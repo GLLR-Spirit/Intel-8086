@@ -60,6 +60,8 @@ jobs:
         run: node tests/into-8086.cjs
       - name: Run 8086 memory MUL IMUL DIV IDIV audit
         run: node tests/mul-div-memory-8086.cjs
+      - name: Run MUL IMUL DIV IDIV segment-selection and prefix audit
+        run: node tests/mul-div-segment-selection-8086.cjs
       - name: Run independent 8086 NEG instruction audit
         run: node tests/neg-8086.cjs
       - name: Run independent 8086 LAHF and SAHF audit
