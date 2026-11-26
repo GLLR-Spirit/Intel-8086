@@ -147,7 +147,7 @@ function compareArchitecturalState(source,binary,label){
   const source=run(main,{segments}),binary=binaryFor(main,{},segments);
   compareArchitecturalState(source,binary,"multi-segment far JMP DS:[ "+mode+" ]");
   assert.equal(source.reg.AX,0x1357,"far JMP result "+mode);
-  assert.equal(source.reg.BX,0,"far JMP skips caller continuation "+mode);
+  assert.equal(source.reg.BX,0x0100,"far JMP skips caller continuation without changing BX "+mode);
  }
 }
 {
