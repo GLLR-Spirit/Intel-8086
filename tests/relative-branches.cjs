@@ -12,7 +12,7 @@ function element(id) {
 }
 const context = {document:{getElementById:element,querySelectorAll:()=>[]},localStorage:{getItem:()=>null,setItem:()=>{},removeItem:()=>{}},console};
 vm.createContext(context);
-const injection = "\nglobalThis.__8086RelativeApi = { assemble: s => assembleProgram(s), disassemble: b => disassembleBytes(b), execute: s => executeAll(s) };\n})();\n";
+const injection = "\nglobalThis.__8086RelativeApi = { assemble: s => assembleProgram(s), disassemble: b => disassembleBytes(b), execute: s => executeAll(s), executeBinary: (b,cs,ip,state) => executeBinary(b,cs,ip,state) };\n})();\n";
 const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injection);
 assert.notEqual(instrumented, match[1], "API injection point");
 vm.runInContext(instrumented, context, {timeout:20000});
@@ -26,7 +26,7 @@ function run(source){const r=api.execute(source);assert.ok(!r.error,r.error||"ex
 function nops(n){return Array(n).fill("NOP").join("\n");}
 function signed16(x){return ((x+32768)&65535)-32768;}
 function parity8(x){x&=255;let p=0;for(let i=0;i<8;i++)p^=(x>>i)&1;return p===0?1:0;}
-function flagsSub(a,b){const r=(a-b)&65535;return {CF:a<b?1:0,ZF:r===0?1:0,SF:(r>>15)&1,OF:(((a^b)&(a^r)&0x8000)!==0)?1:0,PF:parity8(r)};}
+function flagsSub(a,b){const r=(a-b)&65535;return {CF:a<b?1:0,PF:parity8(r),AF:((a^b^r)&0x10)?1:0,ZF:r===0?1:0,SF:(r>>15)&1,OF:(((a^b)&(a^r)&0x8000)!==0)?1:0};}
 const conditions=[
  ["JO",0x70,f=>f.OF===1],["JNO",0x71,f=>f.OF===0],
  ["JB",0x72,f=>f.CF===1],["JAE",0x73,f=>f.CF===0],
@@ -88,32 +88,73 @@ const pairs=[[0,0],[0,1],[1,0],[0x7FFF,0xFFFF],[0x8000,1],[0xFFFF,1],[0x1234,0x4
 for(const [a,b] of pairs){
  const f=flagsSub(a,b);
  for(const [mnemonic,,predicate] of conditions){
-  test(mnemonic+" branch truth table for CMP "+a.toString(16)+","+b.toString(16),()=>{
+  test(mnemonic+" source/binary truth table for CMP "+a.toString(16)+","+b.toString(16),()=>{
    const source="MOV AX, "+a+"\nMOV DX, "+b+"\nCMP AX, DX\n"+mnemonic+" TAKEN\nMOV BX, 0\nJMP END\nTAKEN: MOV BX, 1\nEND: HLT";
-   const state=run(source);assert.equal(state.reg.BX,predicate(f)?1:0);
+   const bytes=assemble(source);
+   const states=[["source",run(source)],["binary",api.executeBinary(bytes,0,0,{})]];
+   for(const [mode,state] of states){
+    assert.ok(!state.error,mode+" "+mnemonic+" "+(state.error||""));
+    assert.equal(state.reg.BX,predicate(f)?1:0,mode+" branch outcome");
+    for(const flag of ["CF","PF","AF","ZF","SF","OF"])assert.equal(state.flags[flag],f[flag],mode+" "+flag);
+   }
   });
   counts.conditions++;
  }
 }
 
-// LOOP is E2 rel8; it decrements CX, branches iff the result is nonzero, and leaves FLAGS unchanged.
-test("LOOP assembles and disassembles E2 rel8",()=>{
- assert.deepEqual(assemble("LOOP TARGET\nTARGET: HLT").slice(0,2),[0xE2,0x00]);
- assert.equal(decode([0xE2,0xFE]),"LOOP 0000h");
-});counts.loop++;
-test("LOOP runs exactly CX iterations and preserves FLAGS",()=>{
- const state=run("MOV CX, 3\nMOV AX, 0\nCLC\nAGAIN: INC AX\nLOOP AGAIN\nHLT");
- assert.equal(state.reg.AX,3);assert.equal(state.reg.CX,0);assert.equal(state.flags.CF,0);
-});counts.loop++;
-test("LOOP with CX=0 wraps to FFFF and continues",()=>{
- const state=run("MOV CX, 0\nLOOP DONE\nMOV AX, 1\nDONE: HLT");
- assert.equal(state.reg.CX,0xFFFF);assert.equal(state.reg.AX,0);
-});counts.loop++;
+// LOOP family: all four opcodes, both source and binary execution paths.
+const loopForms=[["LOOPNE",0xE0],["LOOPE",0xE1],["LOOP",0xE2],["JCXZ",0xE3]];
+for(const [mnemonic,opcode] of loopForms){
+ test(mnemonic+" assembles to its canonical rel8 opcode",()=>{
+  assert.deepEqual(assemble(mnemonic+" TARGET\nTARGET: HLT").slice(0,2),[opcode,0]);
+ });
+ test(mnemonic+" disassembles rel8 target",()=>{
+  assert.equal(decode([opcode,0xFE]),mnemonic+" 0000h");
+ });
+ counts.loop+=2;
+}
+const seededLoopFlags={CF:1,PF:1,AF:1,ZF:1,SF:1,TF:1,IF:1,DF:0,OF:1};
+const equalCompareFlags={CF:0,PF:1,AF:0,ZF:1,SF:0,TF:1,IF:1,DF:0,OF:0};
+const unequalCompareFlags={CF:1,PF:1,AF:1,ZF:0,SF:1,TF:1,IF:1,DF:0,OF:0};
+function verifyLoopCase(mnemonic,cx,zf,taken,expectedCX,label){
+ const lines=["MOV AX, 0BD5h","PUSH AX","POPF","MOV AX, 1","MOV DX, 2","MOV CX, "+cx];
+ if(zf!==null)lines.push(zf?"CMP AX, AX":"CMP AX, DX");
+ lines.push(mnemonic+" TAKEN","MOV BX, 0","JMP END","TAKEN: MOV BX, 1","END: HLT");
+ const source=lines.join("\n"),bytes=assemble(source);
+ const expectedFlags=zf===null?seededLoopFlags:(zf?equalCompareFlags:unequalCompareFlags);
+ const states=[["source",run(source)],["binary",api.executeBinary(bytes,0,0,{})]];
+ for(const [mode,state] of states){
+  assert.ok(!state.error,mode+" "+label+" "+(state.error||""));
+  assert.equal(state.reg.BX,taken?1:0,mode+" "+label+" branch");
+  assert.equal(state.reg.CX,expectedCX,mode+" "+label+" CX");
+  for(const flag of ["CF","PF","AF","ZF","SF","TF","IF","DF","OF"])
+   assert.equal(state.flags[flag],expectedFlags[flag],mode+" "+label+" "+flag);
+ }
+}
+for(const [cx,taken,expectedCX] of [[2,true,1],[1,false,0],[0,true,0xFFFF]]){
+ test("LOOP source/binary CX="+cx,()=>verifyLoopCase("LOOP",cx,null,taken,expectedCX,"LOOP CX="+cx));
+ counts.loop++;
+}
+for(const [mnemonic,zf,taken] of [
+ ["LOOPE",true,true],["LOOPE",false,false],["LOOPE",true,false,1],
+ ["LOOPNE",false,true],["LOOPNE",true,false],["LOOPNE",false,false,1]
+]){
+ const cx=arguments.length===4?1:2;
+ const expectedCX=(cx-1)&0xFFFF;
+ test(mnemonic+" source/binary ZF="+(zf?1:0)+" CX="+cx,()=>{
+  verifyLoopCase(mnemonic,cx,zf,taken,expectedCX,mnemonic+" ZF="+(zf?1:0)+" CX="+cx);
+ });
+ counts.loop++;
+}
+for(const [cx,taken] of [[0,true],[1,false]]){
+ test("JCXZ source/binary CX="+cx,()=>verifyLoopCase("JCXZ",cx,null,taken,cx,"JCXZ CX="+cx));
+ counts.loop++;
+}
 
 // Independent byte-offset calculations for signed displacements and wraparound.
 for(const [code,target] of [
  [[0xEB,0x7F],0x81],[[0xEB,0x80],0xFF82],
- [[0xE2,0xFE],0],[[0xE8,0xFF,0x7F],0x8002],
+ [[0xE0,0xFE],0],[[0xE1,0xFE],0],[[0xE2,0xFE],0],[[0xE3,0xFE],0],[[0xE8,0xFF,0x7F],0x8002],
  [[0xE9,0x00,0x80],0x8003],[[0x74,0xFE],0]
 ]){
  test("relative target offset "+code.map(x=>x.toString(16)).join(" "),()=>{
@@ -121,7 +162,7 @@ for(const [code,target] of [
  });
  counts.decode++;
 }
-for(const code of [[0xEB],[0xE2],[0x70],[0x7F],[0xE8],[0xE8,0],[0xE9],[0xE9,0],[0x74]]){
+for(const code of [[0xEB],[0xE0],[0xE1],[0xE2],[0xE3],[0x70],[0x7F],[0xE8],[0xE8,0],[0xE9],[0xE9,0],[0x74]]){
  test("truncated relative instruction "+code.map(x=>x.toString(16)).join(" "),()=>assert.throws(()=>api.disassemble(code),/tronqué/i));
  counts.truncated++;
 }
