@@ -19,7 +19,7 @@ function element(id) {
 const document = { getElementById: element, querySelectorAll: () => [] };
 const localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
 const context = { document, localStorage, console, confirm: () => true };
-const instrumented = match[1].replace(/\}\)\(\);\s*$/, "globalThis.__learningData = { lessons, chapterLearning, curriculum, exercises, chapterExerciseMap, executeAll, executeBinary, assembleProgram, disassembleBytes, courseVisual };\n})();");
+const instrumented = match[1].replace(/\}\)\(\);\s*$/, "globalThis.__learningData = { lessons, chapterLearning, curriculum, exercises, exerciseChapterAssignments, exerciseMetadata, executeAll, executeBinary, assembleProgram, disassembleBytes, courseVisual };\n})();");
 assert.notEqual(instrumented, match[1], "Application closure must be instrumented for learning checks");
 vm.runInNewContext(instrumented, context, { timeout: 5000 });
 const learning = context.__learningData;
@@ -181,7 +181,21 @@ assert.equal(learning.chapterExerciseMap.length, learning.lessons.length,
   "Every chapter must link to exactly one practical exercise");
 assert.ok(learning.chapterExerciseMap.every(i => Number.isInteger(i) && i >= 0 && i < learning.exercises.length),
   "Every chapter exercise link must resolve to an existing exercise");
-assert.ok(learning.exercises.length >= 25, "The exercise bank must contain at least 19 exercises");
+assert.equal(learning.exercises.length, 40, "The exercise bank must contain 40 guided exercises.");
+assert.equal(learning.exerciseChapterAssignments.length, 40, "Every exercise must have an explicit chapter mapping.");
+const exerciseMetadataRows=learning.exercises.map((exercise,index)=>learning.exerciseMetadata(exercise,index));
+const exerciseChapters=new Set();
+const allowedExerciseTypes=new Set(["application","raisonnement","completion","debug","probleme","challenge"]);
+const allowedExerciseDifficulties=new Set(["Débutant","Facile","Intermédiaire","Avancé","Expert"]);
+exerciseMetadataRows.forEach((metadata,index)=>{
+  assert.ok(metadata.chapters.length>0,"Exercise "+(index+1)+" must map to at least one relevant chapter.");
+  assert.ok(metadata.chapters.every(chapter=>Number.isInteger(chapter)&&chapter>=0&&chapter<36),
+    "Exercise "+(index+1)+" has an invalid chapter mapping.");
+  assert.ok(allowedExerciseTypes.has(metadata.type),"Exercise "+(index+1)+" has an unsupported type.");
+  assert.ok(allowedExerciseDifficulties.has(metadata.difficulty),"Exercise "+(index+1)+" has an unsupported difficulty.");
+  metadata.chapters.forEach(chapter=>exerciseChapters.add(chapter));
+});
+assert.equal(exerciseChapters.size,36,"Every one of the 36 chapters must have at least one relevant practical exercise.");
 
 for (let i = 0; i < learning.exercises.length; i++) {
   const exercise = learning.exercises[i];
