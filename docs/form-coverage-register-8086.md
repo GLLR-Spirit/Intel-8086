@@ -881,3 +881,19 @@ CI [45734323686](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45734323
 - /1 réservé, opérandes invalides, quatre overrides, LOCK, rejet REP ;
 - préservation de CF/PF/AF/ZF/SF/TF/IF/DF/OF.
 
+
+
+### 16.27 MOV — matrice complète des formes documentées
+
+CI [45734760943](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45734760943) : **60/60 étapes réussies**.
+
+`tests/mov-forms-8086.cjs` : **137/137**.
+- 16 formes B0-BF ;
+- 8 EA × byte/word × deux directions pour 88-8B ;
+- 8 EA × byte/word pour C6-C7 ;
+- A0-A3 sur DS/ES/CS/SS ;
+- 8C/8E avec les huit registres généraux ;
+- source/binaire, octets exacts, désassemblage, FLAGS et sélection DS/SS ;
+- MOV CS,reg rejeté.
+
+Les suites `modrm-matrix`, `group-opcodes` et `operand-constraints` complètent cette validation pour les champs ModR/M et les formes réservées.

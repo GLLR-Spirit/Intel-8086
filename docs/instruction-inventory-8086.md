@@ -10,7 +10,7 @@ Cet inventaire est indépendant des 58 cartes de l'interface. Il contient un reg
 
 | Mnémotechnique | Famille / remarque | Alias ou graphies associées | Contrôle |
 |---|---|---|---|
-| MOV | Transfert de données | — | À auditer |
+| MOV | Transfert de données | — | 137/137 ; B0-BF, 88-8B, C6-C7, A0-A3, 8C/8E ; EA, moffs, segments, source/binaire |
 | MOVSB | Chaîne, octet | — | 29/29 tests de chaîne ; source/binaire, mémoire et FLAGS |
 | MOVSW | Chaîne, mot | — | 29/29 tests de chaîne ; source/binaire, mémoire et FLAGS |
 | CMPSB | Comparaison de chaîne, octet | — | 29/29 tests de chaîne ; source/binaire, FLAGS et index |

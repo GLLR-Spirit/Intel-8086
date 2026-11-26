@@ -29,7 +29,7 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 
 | Instruction | Documentation | Simulateur | Assembleur | Désassembleur | Tests |
 |---|---|---|---|---|---|
-| MOV | Oui | Oui | Partiel | Partiel | Partiel |
+| MOV | Oui | Oui | Oui | Oui | Oui |
 | XCHG | Oui | Oui | Oui | Oui | Oui |
 | LEA | Oui | Oui | Oui | Oui | Oui |
 | LES | Oui | Oui | Oui | Oui | Oui |
@@ -144,6 +144,7 @@ Les familles suivantes disposent maintenant de contrôles ciblés source et/ou b
 - XCHG : paires de registres, formes mémoire, overrides, LOCK, FLAGS et chemins source/binaire vérifiés.
 - LEA/LDS/LES : EA, pointeurs 16:16, segments, déplacements, FLAGS et chemins source/binaire vérifiés.
 - AAA/AAS/AAM/AAD/DAA/DAS : vecteurs BCD, octets d'encodage, désassemblage et FLAGS définis vérifiés.
+- MOV : B0-BF, 88-8B, C6-C7, A0-A3 et 8C/8E ; 137 scénarios source/binaire, EA, moffs, segments et FLAGS.
 - NOT : 16 registres et 16 formes mémoire effectives exécutés source/binaire, 48 encodages mémoire, quatre overrides, LOCK, FLAGS préservés.
 - CBW/CWD : extension de signe source/binaire, 256 valeurs AL et frontières AX, FLAGS préservés.
 - NOP/HLT : opcodes, désassemblage, préservation de l'état et arrêt effectif testés.
@@ -921,3 +922,20 @@ Preuve CI : [45734323686](https://github.com/GLLR-Spirit/Intel-8086/actions/runs
 - préservation des neuf FLAGS modélisés.
 
 La ligne NOT passe à Oui pour les tests. Les FLAGS sont comparés comme préservés, car NOT ne modifie aucun indicateur.
+
+
+## 24. Réconciliation ciblée — MOV
+
+Preuve CI : [45734760943](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45734760943), commit `7c176da8b0db1ecfd06c151ab2deed1eb6a4ecfd`, **60/60 étapes réussies** ; `tests/mov-forms-8086.cjs` rapporte **137/137**.
+
+La suite exécute et vérifie en source/binaire :
+
+- B0h–BFh : les 16 formes immédiat-vers-registre ;
+- 88h–8Bh : les huit EA, byte/word, mémoire-vers-registre et registre-vers-mémoire ;
+- C6h/C7h : immédiat-vers-mémoire sur les huit EA, byte/word ;
+- A0h–A3h : moffs load/store, segments DS/ES/CS/SS ;
+- 8Ch/8Eh : transferts segment-registre pour les huit registres généraux ; CS destination rejetée.
+
+Les octets sont vérifiés indépendamment pour les familles exercées, avec désassemblage, préservation des neuf FLAGS modélisés, sélection DS/SS et comparaison de l'état architectural source/binaire. Les matrices ModR/M et les contraintes existantes complètent les balayages exhaustifs des champs d'opcode.
+
+La ligne MOV passe à Oui pour le simulateur, l'assembleur, le désassembleur et les tests.
