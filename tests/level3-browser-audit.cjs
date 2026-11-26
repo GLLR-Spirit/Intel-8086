@@ -405,6 +405,9 @@ const assert = require("node:assert/strict");
   assert.ok((await page.locator("#regs").textContent()).includes(firstExerciseAX.toString(16).toUpperCase().padStart(4,"0")+"h"),
     "The loaded exercise solution must execute to its expected register result.");
   await page.locator('[data-view="exercises"]').click();
+  await page.locator("#exerciseList [data-check]").first().click();
+  assert.match(await page.locator("#exerciseList .exercise").first().textContent(),/Réussi/,
+    "The exercise verification action must run the editor source against that exercise's validator.");
   await page.locator("#resetExerciseFilters").click();
   assert.equal((await page.locator("#exerciseCount").textContent()).trim(),allExerciseText,"Reset must restore the full exercise list.");
   await page.locator('[data-view="editor"]').click();
