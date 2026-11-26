@@ -204,6 +204,17 @@ assert.ok(learning.instructions.some(entry=>entry[0]==="PORT"),"The PORT directi
 assert.equal(learning.instructionMeta.PORT.category,"Directive","PORT must be classified as a pedagogical directive.");
 assert.match(learning.instructionMeta.PORT.operation,/IN et OUT/,"PORT documentation must describe its IN/OUT purpose.");
 assert.equal(learning.instructionMeta.VECTOR.category,"Directive","VECTOR must remain explicitly classified as a pedagogical directive.");
+assert.equal(learning.instructions.length,43,"The reference must expose 43 instruction families and pedagogical directives.");
+const referenceNames=learning.instructions.map(entry=>entry[0]);
+assert.equal(new Set(referenceNames).size,referenceNames.length,"The instruction reference must not contain duplicate entries.");
+referenceNames.forEach(name=>{
+  const metadata=learning.instructionMeta[name];
+  assert.ok(metadata,"Every instruction reference entry must have metadata: "+name);
+  assert.ok(Array.isArray(metadata.support)&&metadata.support.length===3,
+    "Every instruction reference entry must declare simulator, assembler and disassembler status: "+name);
+  assert.ok(metadata.support.every(value=>["Pris en charge","Partiel","Non pris en charge"].includes(value)),
+    "Instruction support status must use an explicit supported/partial/unsupported value: "+name);
+});
 
 
 for (let i = 0; i < learning.exercises.length; i++) {
