@@ -121,7 +121,7 @@ for(const [bits,regs,input,expected] of [
   ].join("\n");
   for(const [mode,state] of executeBoth(source)){
    same(readRegister(state,reg,bits),expected,mode+" NOT "+reg+" result");
-   same(state.reg.SP,0x0100,mode+" NOT "+reg+" stack seed balanced");
+   if(reg!=="SP")same(state.reg.SP,0x0100,mode+" NOT "+reg+" stack seed balanced");
    for(const flag of notFlags){
     const bit={CF:1,PF:4,AF:16,ZF:64,SF:128,TF:256,IF:512,DF:1024,OF:2048}[flag];
     same(state.flags[flag],(initialNotFlags&bit)?1:0,mode+" NOT "+reg+" preserves "+flag);
