@@ -202,6 +202,7 @@ const assert = require("node:assert/strict");
   await page.locator("#disassemblyInput").fill(interruptBytes);
   await page.locator("#binaryCS").fill("0000h");
   await page.locator("#binaryIP").fill("0000h");
+  await page.locator(".binary-state-editor summary").click();
   await page.locator("#binaryMemorySeed").fill("");
   await page.locator("#binaryPortSeed").fill("");
   await page.locator("#executeBinary").click();
