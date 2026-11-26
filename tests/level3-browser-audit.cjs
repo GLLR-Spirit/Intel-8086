@@ -140,6 +140,17 @@ const assert = require("node:assert/strict");
     if(chapter>0)assert.equal(await page.locator('[data-lesson="' + (chapter-1) + '"]').getAttribute("aria-current"),null,"Previous chapter must no longer be current.");
   }
   console.log("Course visual coverage: 36/36 chapters have a diagram or visual model.");
+  await page.locator('[data-view="instructions"]').click();
+  await page.locator("#searchInstruction").fill("PORT");
+  assert.equal(await page.locator("#instructionGrid .inst").count(),1,
+    "The PORT directive must be discoverable in the technical reference.");
+  assert.match(await page.locator("#instructionGrid .inst").textContent(),/Directive/);
+  assert.match(await page.locator("#instructionGrid .inst").textContent(),/IN et OUT/);
+  await page.locator("#searchInstruction").fill("VECTOR");
+  assert.equal(await page.locator("#instructionGrid .inst").count(),1,
+    "The VECTOR directive must remain documented separately from hardware opcodes.");
+  await page.locator('[data-view="learn"]').click();
+
 
   // Keyboard and assistive-technology navigation semantics on a fresh page.
   const keyboardPage = await browser.newPage();
