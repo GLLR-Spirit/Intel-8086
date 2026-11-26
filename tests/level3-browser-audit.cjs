@@ -135,17 +135,18 @@ const assert = require("node:assert/strict");
   }
   console.log("Course visual coverage: 36/36 chapters have a diagram or visual model.");
 
-  // Keyboard and assistive-technology navigation semantics.
-  await page.evaluate(() => { if (document.activeElement) document.activeElement.blur(); window.scrollTo(0,0); });
-  await page.keyboard.press("Tab");
-  assert.ok(await page.evaluate(() => document.activeElement.classList.contains("skip-link")),"The first keyboard stop must be the skip link.");
-  assert.equal(await page.locator(".skip-link").evaluate(el => getComputedStyle(el).top),"12px","Skip link must become visible on focus.");
-  await page.locator('[data-view="editor"]').click();
-  assert.equal(await page.locator('[data-view="editor"]').getAttribute("aria-current"),"page");
-  await page.locator('[data-mode="guided"]').click();
-  assert.equal(await page.locator('[data-mode="guided"]').getAttribute("aria-pressed"),"true");
-  assert.equal(await page.locator('[data-mode="free"]').getAttribute("aria-pressed"),"false");
-  await page.locator('[data-view="learn"]').click();
+  // Keyboard and assistive-technology navigation semantics on a fresh page.
+  const keyboardPage = await browser.newPage();
+  await keyboardPage.goto("http://127.0.0.1:4173/",{waitUntil:"networkidle"});
+  await keyboardPage.keyboard.press("Tab");
+  assert.ok(await keyboardPage.evaluate(() => document.activeElement.classList.contains("skip-link")),"The first keyboard stop must be the skip link.");
+  assert.equal(await keyboardPage.locator(".skip-link").evaluate(el => getComputedStyle(el).top),"12px","Skip link must become visible on focus.");
+  await keyboardPage.locator('[data-view="editor"]').click();
+  assert.equal(await keyboardPage.locator('[data-view="editor"]').getAttribute("aria-current"),"page");
+  await keyboardPage.locator('[data-mode="guided"]').click();
+  assert.equal(await keyboardPage.locator('[data-mode="guided"]').getAttribute("aria-pressed"),"true");
+  assert.equal(await keyboardPage.locator('[data-mode="free"]').getAttribute("aria-pressed"),"false");
+  await keyboardPage.close();
   console.log("Keyboard skip navigation, visible focus, aria-current and aria-pressed PASS.");
 
   // Interactive course demonstrations: AX split, FLAGS, segment:offset,
