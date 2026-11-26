@@ -36,7 +36,70 @@ assert.deepEqual(bytes("POP WORD PTR [BX]"),[0x8F,0x07]);
 assert.deepEqual(bytes("POP WORD PTR [BP+SI+4]"),[0x8F,0x42,0x04]);
 for(const source of ["PUSH 1234h","PUSH BYTE PTR [BX]","POP CS","POP BYTE PTR [BX]"])assert.throws(()=>api.assemble(source),source+" must be rejected");
 for(const code of [[0x68,0x34,0x12],[0x6A,0x01]])assert.ok(api.disassemble(code,1).rows[0].instruction.startsWith("DB "),"Immediate PUSH is not 8086");
-function executeBoth(source,initial){const b=bytes(source),a=api.execute(source),d=api.binary(b,0,0,initial||{});assert.equal(a.error,undefined,"source "+a.error);assert.equal(d.error,undefined,"binary "+d.error);return [["source",a],["binary",d]];}
+function executeBoth(source,initial){
+ const b=bytes(source),a=api.execute(source),d=api.binary(b,0,0,initial||{});
+ assert.equal(a.error,undefined,"source "+a.error);assert.equal(d.error,undefined,"binary "+d.error);
+ for(const reg of ["AX","BX","CX","DX","SP","BP","SI","DI","CS","DS","ES","SS"])
+  assert.equal(a.reg[reg],d.reg[reg],"source/binary "+reg+" for "+source);
+ for(const flag of ["CF","PF","AF","ZF","SF","TF","IF","DF","OF"])
+  assert.equal(a.flags[flag],d.flags[flag],"source/binary "+flag+" for "+source);
+ return [["source",a],["binary",d]];
+}
+// Execute all compact PUSH/POP register forms in both engines.
+for(const reg of regs.filter(r=>r!=="SP")){
+ for(const [mode,state] of executeBoth("MOV SP,2000h\nMOV "+reg+",0BEEFh\nPUSH "+reg+"\nMOV DX,0\nPOP DX\nHLT"))
+  {assert.equal(state.reg.DX,0xBEEF,mode+" PUSH "+reg+" / POP DX");assert.equal(state.reg.SP,0x2000,mode+" stack balance "+reg);}
+ for(const [mode,state] of executeBoth("MOV SP,2000h\nMOV AX,0BEEFh\nPUSH AX\nMOV "+reg+",0\nPOP "+reg+"\nHLT"))
+  {assert.equal(state.reg[reg],0xBEEF,mode+" POP "+reg);assert.equal(state.reg.SP,0x2000,mode+" stack balance POP "+reg);}
+}
+for(const [mode,state] of executeBoth("MOV SP,2000h\nMOV AX,0BEEFh\nPUSH AX\nPOP SP\nHLT"))
+ assert.equal(state.reg.SP,0xBEEF,mode+" POP SP loads popped value");
+
+// Execute memory PUSH/POP through all eight effective-address forms.
+// BP-based forms must select SS; the other six forms must select DS.
+function physical(seg,off){return (((seg&0xFFFF)<<4)+(off&0xFFFF))&0xFFFFF;}
+const eaForms=[
+ {expr:"[BX+SI]",segment:"DS",setup:["MOV BX,0200h","MOV SI,0200h"]},
+ {expr:"[BX+DI]",segment:"DS",setup:["MOV BX,0200h","MOV DI,0200h"]},
+ {expr:"[BP+SI]",segment:"SS",setup:["MOV BP,0200h","MOV SI,0200h"]},
+ {expr:"[BP+DI]",segment:"SS",setup:["MOV BP,0200h","MOV DI,0200h"]},
+ {expr:"[SI]",segment:"DS",setup:["MOV SI,0400h"]},
+ {expr:"[DI]",segment:"DS",setup:["MOV DI,0400h"]},
+ {expr:"[BP]",segment:"SS",setup:["MOV BP,0400h"]},
+ {expr:"[BX]",segment:"DS",setup:["MOV BX,0400h"]}
+];
+for(const form of eaForms){
+ const pushSource=[
+  "MOV AX,0BD5h","PUSH AX","POPF","MOV AX,1000h","MOV DS,AX",
+  "MOV AX,3000h","MOV SS,AX","MOV WORD PTR DS:[0400h],0BEEFh",
+  "MOV WORD PTR SS:[0400h],0BEEFh","MOV SP,2000h",...form.setup,
+  "PUSH WORD PTR "+form.expr,"POP DX","HLT"
+ ].join("\n");
+ for(const [mode,state] of executeBoth(pushSource)){
+  assert.equal(state.reg.DX,0xBEEF,mode+" PUSH "+form.expr+" reads selected segment");
+  assert.equal(state.reg.SP,0x2000,mode+" PUSH "+form.expr+" balances stack");
+  const selected=physical(form.segment==="SS"?0x3000:0x1000,0x0400);
+  const other=physical(form.segment==="SS"?0x1000:0x3000,0x0400);
+  assert.equal(state.mem[selected],0xEF,mode+" PUSH "+form.expr+" source low unchanged");
+  assert.equal(state.mem[selected+1],0xBE,mode+" PUSH "+form.expr+" source high unchanged");
+  assert.equal(state.mem[other],0xEF,mode+" PUSH "+form.expr+" other segment unchanged");
+ }
+ const popSource=[
+  "MOV AX,0BD5h","PUSH AX","POPF","MOV AX,1000h","MOV DS,AX",
+  "MOV AX,3000h","MOV SS,AX","MOV WORD PTR DS:[0400h],01234h",
+  "MOV WORD PTR SS:[0400h],01234h","MOV AX,0CAFEh","MOV SP,2000h",
+  "PUSH AX",...form.setup,"POP WORD PTR "+form.expr,"HLT"
+ ].join("\n");
+ for(const [mode,state] of executeBoth(popSource)){
+  assert.equal(state.reg.SP,0x2000,mode+" POP "+form.expr+" balances stack");
+  const selected=physical(form.segment==="SS"?0x3000:0x1000,0x0400);
+  const other=physical(form.segment==="SS"?0x1000:0x3000,0x0400);
+  assert.equal(state.mem[selected],0xFE,mode+" POP "+form.expr+" destination low");
+  assert.equal(state.mem[selected+1],0xCA,mode+" POP "+form.expr+" destination high");
+  assert.equal(state.mem[other],0x34,mode+" POP "+form.expr+" other segment unchanged");
+  assert.equal(state.mem[other+1],0x12,mode+" POP "+form.expr+" other segment high unchanged");
+ }
+}
 for(const [mode,state] of executeBoth("MOV SP, 2000h\nPUSH SP\nHLT")){
  assert.equal(state.reg.SP,0x1FFE,mode+" PUSH SP decrements SP");
  const physical=0x1FFE;assert.equal(state.mem[physical],0xFE,mode+" PUSH SP stores decremented SP low byte");assert.equal(state.mem[physical+1],0x1F,mode+" PUSH SP stores decremented SP high byte");
