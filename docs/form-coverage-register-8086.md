@@ -787,3 +787,17 @@ CI : [45731571537](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/457315
 - F1h est rejeté comme opcode non pris en charge sur 8086 ; il n'est plus désassemblé comme CMC.
 
 **Correction produit :** l'ancien mapping CMC→F1h a été remplacé par CMC→F5h dans l'assembleur et le désassembleur.
+
+
+### 16.20 INT / IRET — interruptions logicielles
+
+`tests/software-int-8086.cjs` : **10/10 réussites** dans le CI [45732748986](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45732748986), **58/58 étapes réussies**.
+
+- `INT imm8` : CD ib, désassemblage et contrôle de plage ;
+- `INT 3` : opcode court CC, désassemblage et exécution du vecteur 3 ;
+- source : directive VECTOR et retour IRET ;
+- binaire : IVT physique initialisée, CS:IP du gestionnaire, retour IRET ;
+- IF/TF effacés dans le gestionnaire puis restaurés, SP et cadre de pile vérifiés ;
+- opérandes invalides et vecteur hors plage rejetés.
+
+Le périmètre ne couvre pas les interruptions matérielles INTR/NMI ni leur arbitrage.

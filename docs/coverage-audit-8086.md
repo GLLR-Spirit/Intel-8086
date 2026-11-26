@@ -86,9 +86,9 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | JMP | Oui | Partiel | Oui | Oui | Oui |
 | CALL | Oui | Partiel | Oui | Oui | Oui |
 | RET | Oui | Partiel | Oui | Oui | Oui |
-| INT | Oui | Partiel | Non | Non | Partiel |
+| INT | Oui | Oui | Oui | Oui | Oui |
 | INTO | Oui | Oui | Oui | Oui | Oui |
-| IRET | Oui | Partiel | Oui | Oui | Partiel |
+| IRET | Oui | Oui | Oui | Oui | Oui |
 | JCXZ | Oui | Oui | Oui | Oui | Oui |
 | LOOP | Oui | Oui | Oui | Oui | Oui |
 | LOOPE | Oui | Oui | Oui | Oui | Oui |
@@ -140,7 +140,7 @@ Les familles suivantes disposent maintenant de contrôles ciblés source et/ou b
 - SHL/SAL, SHR, SAR, ROL, ROR, RCL et RCR : vecteurs source/binaire, compteurs CL non masqués, FLAGS définis, formes ModR/M byte/word et désassemblage testés.
 - INC, DEC et NEG : formes registre/mémoire byte/word, huit registres, huit EA, sélection DS/SS, overrides, FLAGS et chemins source/binaire vérifiés.
 
-CLC, STC, CMC, CLD, STD, CLI et STI ont des tests source/binaire avec octets exacts et préservation des autres FLAGS. CMC est encodé F5h ; F1h reste réservé sur 8086. IN/OUT utilisent une carte de ports logicielle, pas les ports matériels réels. INTO utilise le vecteur logiciel 4 ; WAIT et ESC sont des opérations sans effet dans le modèle logiciel, sans synchronisation FPU ni coprocesseur 8087 réel. INT/IRET et les événements matériels restent une simulation pédagogique limitée ; le laboratoire ne modélise pas l'acquittement INTR/NMI ni les signaux physiques du processeur.
+CLC, STC, CMC, CLD, STD, CLI et STI ont des tests source/binaire avec octets exacts et préservation des autres FLAGS. CMC est encodé F5h ; F1h reste réservé sur 8086. IN/OUT utilisent une carte de ports logicielle, pas les ports matériels réels. INTO utilise le vecteur logiciel 4 ; WAIT et ESC sont des opérations sans effet dans le modèle logiciel, sans synchronisation FPU ni coprocesseur 8087 réel. INT/IRET sont maintenant vérifiés pour les interruptions logicielles via VECTOR en source et l'IVT physique en binaire. Les événements matériels restent hors périmètre : le laboratoire ne modélise pas l'acquittement INTR/NMI ni les signaux physiques du processeur.
 
 ### 3.2 Assembleur
 
@@ -830,3 +830,19 @@ Preuve CI : [45732229845](https://github.com/GLLR-Spirit/Intel-8086/actions/runs
 Une anomalie d'opcode a été corrigée : l'assembleur et le désassembleur utilisaient F1h pour CMC. Ils utilisent maintenant F5h, l'opcode 8086 correct. F1h n'est plus interprété comme CMC et est rejeté comme opcode non pris en charge dans ce modèle 8086.
 
 Chaque instruction est vérifiée avec un mot FLAGS initial contrôlé, en source et en binaire. Le test compare les neuf FLAGS modélisés, vérifie l'opcode et le désassemblage, confirme que SP est restauré et rejette les opérandes explicites.
+
+
+## 18. Réconciliation ciblée — INT / IRET et opcode INT 3
+
+`INT` et `IRET` passent à **Oui** pour le simulateur, l'assembleur, le désassembleur et les tests sur le périmètre des interruptions logicielles.
+
+Preuve CI : [45732748986](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45732748986), commit `ba00962597610098f4a6ad06bfd17027eb06bc93`, **58/58 étapes réussies** ; `tests/software-int-8086.cjs` rapporte **10/10**.
+
+- `INT imm8` : encodage CD ib, désassemblage et validation de la plage 00h–FFh.
+- `INT 3` : encodage court CC, désassemblage dédié et exécution via le vecteur 3.
+- Source : `VECTOR n, HANDLER` route vers le gestionnaire pédagogique.
+- Binaire : l'entrée IVT physique n×4 contient IP puis CS ; le gestionnaire est appelé depuis le CS initialisé.
+- Le gestionnaire observe IF=0 et TF=0 ; IRET restaure IP, CS, FLAGS et SP.
+- Les formes invalides `INT 100h`, `INT -1`, `INT AX` et `INT` sans opérande sont rejetées.
+
+Cette validation concerne les interruptions logicielles. INTR, NMI, l'acquittement bus, la priorité matérielle et l'arbitrage restent hors du modèle.

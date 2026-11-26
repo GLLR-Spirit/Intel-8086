@@ -78,9 +78,9 @@ Cet inventaire est indépendant des 58 cartes de l'interface. Il contient un reg
 | CALL | Appel de procédure | — | Formes directes et indirectes near/far testées ; source et binaire |
 | RET | Retour proche | — | RET/RETF, immédiats, pile et frontières testés source/binaire |
 | RETF | Retour lointain (graphie d'assembleur pour le retour intersegment) | Synonyme de syntaxe à vérifier contre le manuel d'assembleur retenu | RET/RETF, immédiats, pile et frontières testés source/binaire |
-| INT | Interruption logicielle | — | À auditer |
+| INT | Interruption logicielle | — | 10/10 source/binaire ; CD ib et CC INT 3 ; IVT, IF/TF et IRET vérifiés |
 | INTO | Interruption si débordement | — | 4/4 tests ; OF, vecteur 4, source/binaire et désassemblage |
-| IRET | Retour d'interruption | — | À auditer |
+| IRET | Retour d'interruption | — | 10/10 source/binaire ; CD ib et CC INT 3 ; IVT, IF/TF et IRET vérifiés |
 | JCXZ | Saut si CX vaut zéro | — | Test source/binaire ; CX préservé et cible rel8 vérifiés |
 | LOOP | Boucle avec décrémentation de CX | — | Test source/binaire ; CX, FLAGS et cible rel8 vérifiés |
 | LOOPE | Boucle si égalité / ZF=1 | LOOPZ | Test source/binaire ; CX, ZF, FLAGS et cible rel8 vérifiés |
