@@ -244,9 +244,15 @@ const assert = require("node:assert/strict");
     return {listX:list.x,detailX:detail.x,listPosition:getComputedStyle(el.querySelector(".course-list-panel")).position};
   });
   assert.ok(desktopCourseBoxes.listX < desktopCourseBoxes.detailX,"Desktop course list must remain left of the lesson.");
+  const desktopDomOrder = await page.locator(".course-layout").evaluate(el => [...el.children].map(child => child.id || child.className));
+  assert.ok(String(desktopDomOrder[0]).includes("course-list-panel") && desktopDomOrder[1] === "lessonDetail",
+    "Desktop DOM/reading order must match the left-to-right chapter navigation and lesson layout.");
   assert.equal(desktopCourseBoxes.listPosition,"sticky","Desktop chapter navigation must remain accessible while scrolling.");
   const mobileLayoutPage = await browser.newPage({viewport:{width:390,height:844}});
   await mobileLayoutPage.goto("http://127.0.0.1:4173/",{waitUntil:"networkidle"});
+  const mobileDomOrder = await mobileLayoutPage.locator(".course-layout").evaluate(el => [...el.children].map(child => child.id || child.className));
+  assert.ok(mobileDomOrder[0] === "lessonDetail" && String(mobileDomOrder[1]).includes("course-list-panel"),
+    "Mobile DOM/reading order must place lesson content before chapter navigation.");
   const mobileCourseBoxes = await mobileLayoutPage.locator(".course-layout").evaluate(el => {
     const list = el.querySelector(".course-list-panel").getBoundingClientRect();
     const detail = el.querySelector("#lessonDetail").getBoundingClientRect();
