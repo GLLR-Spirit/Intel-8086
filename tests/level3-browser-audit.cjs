@@ -236,6 +236,26 @@ const assert = require("node:assert/strict");
   assert.equal(animationName, "busPacket", "The BIU/EU flow illustration must expose its schematic animation.");
   console.log("Course visual interaction audit: 7/7 interactive demonstrations, BIU animation and register trace PASS.");
 
+  // Course list remains sticky beside lesson content on desktop and moves below it on mobile.
+  const desktopCourseBoxes = await page.locator(".course-layout").evaluate(el => {
+    const list = el.querySelector(".course-list-panel").getBoundingClientRect();
+    const detail = el.querySelector("#lessonDetail").getBoundingClientRect();
+    return {listX:list.x,detailX:detail.x,listPosition:getComputedStyle(el.querySelector(".course-list-panel")).position};
+  });
+  assert.ok(desktopCourseBoxes.listX < desktopCourseBoxes.detailX,"Desktop course list must remain left of the lesson.");
+  assert.equal(desktopCourseBoxes.listPosition,"sticky","Desktop chapter navigation must remain accessible while scrolling.");
+  const mobileLayoutPage = await browser.newPage({viewport:{width:390,height:844}});
+  await mobileLayoutPage.goto("http://127.0.0.1:4173/",{waitUntil:"networkidle"});
+  const mobileCourseBoxes = await mobileLayoutPage.locator(".course-layout").evaluate(el => {
+    const list = el.querySelector(".course-list-panel").getBoundingClientRect();
+    const detail = el.querySelector("#lessonDetail").getBoundingClientRect();
+    return {listY:list.y,detailY:detail.y,listPosition:getComputedStyle(el.querySelector(".course-list-panel")).position};
+  });
+  assert.ok(mobileCourseBoxes.detailY < mobileCourseBoxes.listY,"Mobile lesson content must appear before the 36-chapter list.");
+  assert.equal(mobileCourseBoxes.listPosition,"static","Mobile chapter list must not be trapped in a sticky scroll panel.");
+  await mobileLayoutPage.close();
+  console.log("Responsive course layout: sticky desktop navigation and lesson-first mobile order PASS.");
+
   // Cours, Exercices et Atelier doivent rester des vues distinctes ; les filtres
   // de la page Exercices doivent mettre à jour la liste puis pouvoir être réinitialisés.
   await page.locator('[data-view="exercises"]').click();
