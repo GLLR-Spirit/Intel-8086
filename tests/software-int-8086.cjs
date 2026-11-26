@@ -105,6 +105,31 @@ test("Binary INT reads IVT and returns through IRET",()=>{
  const state=api.executeBinary(assembled.bytes,cs,0,{mem});
  assertInterruptState(state,"binary");
 });
+test("INT 3 uses the dedicated CC opcode and disassembles",()=>{
+ const assembled=api.assemble("INT 3\\nHLT");
+ assert.deepEqual(Array.from(assembled.bytes),[0xCC,0xF4]);
+ const decoded=api.disassemble([0xCC]);
+ assert.equal(decoded.rows.length,1);
+ assert.equal(decoded.rows[0].instruction,"INT 3");
+ assert.deepEqual(Array.from(decoded.rows[0].bytes),[0xCC]);
+});
+test("Source INT 3 routes vector 03h through IRET",()=>{
+ const source=[
+  "VECTOR 3, HANDLER","MOV AX, 0000h","MOV CX, 0302h","PUSH CX","POPF",
+  "INT 3","MOV BX, 0ABCDh","HLT","HANDLER:","PUSHF","POP DX","MOV SI, 5678h","IRET"
+ ].join("\\n");
+ assertInterruptState(api.execute(source),"source INT 3");
+});
+test("Binary INT 3 reads IVT vector 03h and returns through IRET",()=>{
+ const source=[
+  "MOV AX, 0000h","MOV CX, 0302h","PUSH CX","POPF",
+  "INT 3","MOV BX, 0ABCDh","HLT","HANDLER:","PUSHF","POP DX","MOV SI, 5678h","IRET"
+ ].join("\\n");
+ const assembled=api.assemble(source),handler=assembled.symbols.HANDLER;
+ const cs=0x1000,ivt=3*4;
+ const mem={[ivt]:handler&255,[ivt+1]:(handler>>8)&255,[ivt+2]:cs&255,[ivt+3]:(cs>>8)&255};
+ assertInterruptState(api.executeBinary(assembled.bytes,cs,0,{mem}),"binary INT 3");
+});
 for(const invalid of ["INT 100h","INT -1","INT AX","INT"]){
  test("INT rejects invalid operand "+invalid,()=>{
   assert.throws(()=>api.assemble(invalid));
@@ -112,5 +137,5 @@ for(const invalid of ["INT 100h","INT -1","INT AX","INT"]){
  });
 }
 console.log("8086 software INT/IRET audit: "+passed+" passed, "+failed+" failed.");
-console.log("CD ib encoding, VECTOR source path, physical IVT binary path, IF/TF clearing, IRET restoration.");
+console.log("CD ib and CC INT 3 encodings, VECTOR source path, physical IVT binary path, IF/TF clearing, IRET restoration.");
 if(failed)process.exit(1);
