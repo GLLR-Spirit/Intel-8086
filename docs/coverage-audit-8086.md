@@ -685,9 +685,9 @@ Corrections et preuves nouvelles :
 
 ## Avertissement de fraîcheur — matrice de référence historique (25 novembre 2026)
 
-La matrice de 93 entrées et les synthèses chiffrées de ce document sont un **instantané historique de l'audit statique du 24 novembre sur `main`**. Elles ne doivent pas être utilisées comme état courant de la branche `audit/niveau-3-chapitres-12-17`.
+La matrice de 93 entrées et les synthèses chiffrées de ce document sont un **instantané historique de l'audit statique du 24 novembre sur `main`**. Elles ne doivent pas être utilisées comme état courant de `main` sans rapprochement avec les registres de formes et les résultats CI postérieurs.
 
-Depuis cet instantané, la branche d'audit contient notamment des suites dédiées et des contrôles CI pour les instructions de chaîne, les E/S, les ajustements BCD, les rotations/décalages, les transferts indirects, XCHG, LEA, LDS/LES, XLAT et les matrices ModR/M. Certaines cellules « Non » ou « À faire » de la table historique sont donc obsolètes. À l'inverse, la réussite d'une suite dédiée ne suffit pas à passer automatiquement une entrée à « Oui » : il faut vérifier toutes ses formes, ses contraintes, ses effets architecturaux et les chemins assembleur/désassembleur/exécution concernés.
+Depuis cet instantané, la tranche d'audit des chapitres 12 à 17 a été fusionnée dans `main` par la PR #1. Les suites dédiées couvrent notamment les instructions de chaîne, les E/S, les ajustements BCD, les rotations/décalages, les transferts indirects, XCHG, LEA, LDS/LES, XLAT et les matrices ModR/M. Certaines cellules « Non » ou « À faire » de la table historique sont donc obsolètes. À l'inverse, la réussite d'une suite dédiée ne suffit pas à passer automatiquement une entrée à « Oui » : il faut vérifier toutes ses formes, ses contraintes, ses effets architecturaux et les chemins assembleur/désassembleur/exécution concernés.
 
 **Aucun nouveau pourcentage global sur 93 entrées n'est publié dans cette mise à jour.** Il faut d'abord reconstruire la matrice à partir d'un registre de formes canonique et de résultats actuels, sans réutiliser les statuts historiques comme s'ils étaient encore valables. Les limites du modèle logiciel (BIU, bus, temporisations physiques, signaux externes et événements matériels) doivent rester séparées de la couverture fonctionnelle du simulateur.
 
@@ -722,3 +722,19 @@ La suite mémoire couvre les huit formes d'adressage effectif, les déplacements
 **Préfixes :** les quatre overrides de segment ont été exercés avec les quatre instructions et les deux tailles mémoire, en source et en binaire. Les formes registre seules ne prennent pas d'override de segment dans la syntaxe de l'assembleur. REP/REPE/REPNE/REPZ sont rejetés pour ces opérations. Le préfixe LOCK, en revanche, est encodé et conservé : le manuel 8086 décrit LOCK comme un préfixe qui active le signal de bus pendant l'instruction suivante en mode maximum, sans restriction ISA moderne par destination mémoire. Le simulateur ne reproduit pas le signal physique ni l'arbitrage du bus.
 
 **Portée de la réconciliation :** les quatre lignes de la matrice sont passées à Tests = Oui selon la définition de cette colonne (formes encodées/décodées et contrôles indépendants source/binaire). Cela ne certifie ni les 93 entrées globalement, ni le modèle matériel complet du 8086. Les limites BIU, bus, cycles, signaux externes et tous les états FLAGS indéfinis restent hors de cette validation.
+
+## 9. Vérification sur `main` — intégration du test de sélection de segment MUL/DIV
+
+Le fichier `tests/mul-div-segment-selection-8086.cjs` est désormais exécuté par le workflow CI principal, immédiatement après la suite mémoire MUL/IMUL/DIV/IDIV.
+
+Sur le commit `28d680d26d0311ce81a672d81daf9d59184562e4`, le workflow `45729004989` a terminé avec succès (**56/56 étapes**). L'étape de sélection de segment a produit **368 assertions réussies, 0 échec**, dont **192 vecteurs d'exécution source/binaire**.
+
+Détail des 368 assertions :
+- 64 contrôles d'override explicite : quatre instructions × deux tailles × quatre segments × deux chemins ;
+- 128 contrôles de segment par défaut : quatre instructions × deux tailles × huit formes d'adressage × deux chemins ;
+- 96 contrôles LOCK + override : quatre instructions × deux tailles × quatre segments × encodage, source et binaire ;
+- 80 rejets REP : cinq graphies × quatre instructions × quatre classes d'opérandes.
+
+Le premier essai de la matrice étendue avait échoué à cause d'un oracle de test qui traitait `[BP]` comme SS, mais `[BP+SI]` et `[BP+DI]` comme DS. Le diagnostic a montré que les résultats source et binaire sélectionnaient SS ; l'oracle a été corrigé. Le nouveau run complet confirme le résultat.
+
+Cette suite complète les tests déjà présents sur les huit formes ModR/M mémoire, les huit registres byte/word, les déplacements, les limites IDIV et l'interruption de division. Elle ne certifie pas le signal LOCK matériel, l'arbitrage du bus ni l'ensemble des 93 instructions.

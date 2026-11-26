@@ -354,6 +354,6 @@ Les ports sont des valeurs logicielles 16 bits ; IN/OUT AL tronque ou écrit 8 b
 
 ## 7. Actualisation ciblée — MUL, IMUL, DIV et IDIV
 
-Les formes 8086 à un opérande F6/F7 ont été contrôlées dans l'assembleur, le désassembleur, l'exécution source et l'exécution binaire. Le rapport détaillé et les nombres de tests figurent dans `docs/form-coverage-register-8086.md`, section 16.12.
+Les formes 8086 à un opérande F6/F7 ont été contrôlées dans l'assembleur, le désassembleur, l'exécution source et l'exécution binaire. Le rapport détaillé et les nombres de tests figurent dans `docs/form-coverage-register-8086.md`, section 16.12. La sélection de segment implicite et explicite est également couverte par `tests/mul-div-segment-selection-8086.cjs` (368 assertions réussies sur le CI `main` du 26 novembre 2026).
 
 Cette mention ne signifie pas que l'inventaire complet des 93 entrées est certifié. Elle indique que les quatre instructions ont franchi leur audit ciblé de formes, d'opérandes, de préfixes et de cas de division.

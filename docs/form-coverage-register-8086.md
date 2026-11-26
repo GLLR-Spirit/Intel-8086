@@ -677,6 +677,9 @@ Le premier passage a révélé une erreur dans le test lui-même : il comparait 
 
 **Préfixes :**
 - ES, CS, SS et DS : 32 combinaisons d'override mémoire (4 instructions × 2 tailles × 4 segments), avec encodage et exécution source/binaire.
+- `tests/mul-div-segment-selection-8086.cjs` vérifie les segments implicites DS/SS sur les huit formes d'adressage effectif : 128 assertions source/binaire (4 instructions × 2 tailles × 8 formes × 2 chemins).
+- LOCK + override de segment est contrôlé en byte et word pour les quatre instructions : 96 assertions d'encodage, d'exécution source et d'exécution binaire.
+- Les cinq graphies REP/REPE/REPZ/REPNE/REPNZ sont rejetées pour les quatre instructions et les opérandes registre/mémoire byte/word : 80 assertions.
 - REP, REPE, REPNE et REPZ sont rejetés devant ces instructions non-chaîne.
 - Les overrides de segment sur formes registre seules sont rejetés par la syntaxe source car aucune référence mémoire n'existe.
 - LOCK est conservé comme préfixe 8086 devant MUL/IMUL/DIV/IDIV, y compris sur source mémoire en lecture seule. Le manuel 8086 indique que LOCK active le signal de bus pendant l'instruction suivante en mode maximum ; le moteur pédagogique n'émule ni le signal physique ni l'arbitrage.
@@ -687,6 +690,7 @@ Le premier passage a révélé une erreur dans le test lui-même : il comparait 
 |---|---:|
 | `bcd-multiply-divide-8086.cjs` | 6 812 réussis, 0 échec |
 | `mul-div-memory-8086.cjs` | 1 091 réussis, 0 échec |
+| `mul-div-segment-selection-8086.cjs` | 368 réussis, 0 échec ; 192 vecteurs source/binaire |
 | Encodages/désassemblages mémoire | 392 |
 | Exécutions mémoire source/binaire | 384 |
 | Erreurs de division mémoire source/binaire | 16 |
@@ -695,3 +699,6 @@ Le premier passage a révélé une erreur dans le test lui-même : il comparait 
 | Vecteurs DIV/IDIV | 380 |
 
 **Statut de réconciliation :** les quatre lignes correspondantes de `docs/coverage-audit-8086.md` sont marquées Tests = Oui. Cette validation est limitée à ces quatre instructions et à leurs formes documentées ; elle ne certifie pas la matrice complète des 93 entrées ni l'équivalence matérielle du simulateur avec un 8086 physique.
+
+
+**Validation CI sur `main` :** run [45729004989](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45729004989), commit `28d680d26d0311ce81a672d81daf9d59184562e4`, **56/56 étapes réussies**. La matrice étendue des segments par défaut inclut maintenant BX+SI, BX+DI, BP+SI, BP+DI, SI, DI, BP et BX.

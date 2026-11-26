@@ -52,7 +52,7 @@ L'exécution binaire reste celle du simulateur logiciel du projet. Elle ne prouv
 
 Les contrôles ciblés du niveau 3 pour les chapitres 12 à 17 sont réussis, y compris l’exécution Chromium et le workflow CI complet. Cela valide cette phase de contrôle automatisé, mais ne constitue pas l’audit exhaustif de l’ensemble des 36 chapitres ni une validation matérielle complète du 8086. Les vérifications architecturales indépendantes complémentaires restent à poursuivre.
 
-Aucune modification n'a été fusionnée dans `main`.
+À la date de rédaction de ce rapport (25 novembre 2026), aucune modification n'avait encore été fusionnée dans `main`.
 
 
 ## 5. Audit complémentaire de XLAT (D7h)
@@ -333,3 +333,35 @@ Les tests ciblés, la comparaison GNU as et toutes les régressions ont réussi 
 ### Conclusion provisoire
 
 \`CALL FAR ptr16:16\` est désormais assemblé, désassemblé et exécuté dans le périmètre testé. Les ajustements impairs de RET/RETF sont acceptés et appliqués en octets. La famille CALL/RET reste en audit ; aucune validation exhaustive n'est déclarée à ce stade.
+
+
+## 10. Actualisation sur `main` — 26 novembre 2026
+
+### Fusion et méthode de travail
+
+La PR #1, « Audit pédagogique niveau 3 — chapitres 12 à 17 », a été fusionnée dans `main` par le commit `83f351388f900f0995708b22081111f73a9326b3`. La branche d'audit est désormais historique ; les travaux suivants sont effectués directement sur `main`.
+
+La rationalisation des déclencheurs CI a été enregistrée dans `460aa5d47d3d209639f81f330d2031d59a5c1d6e`. Le CI conserve le déclenchement sur push de `main`, les PR vers `main` et le lancement manuel. Les pushes de l'ancienne branche d'audit ne déclenchent plus les deux workflows de validation.
+
+### Complément MUL / IMUL / DIV / IDIV
+
+Le test `tests/mul-div-segment-selection-8086.cjs` a été intégré au workflow CI principal dans le commit `848005271f836d9ffc4ac36dbaa10333d352151c`, puis étendu et corrigé dans `28d680d26d0311ce81a672d81daf9d59184562e4`.
+
+Le premier élargissement des segments par défaut a mis au jour une erreur de l'oracle du test : il reconnaissait SS pour `[BP]`, mais pas pour `[BP+SI]` et `[BP+DI]`. Les résultats observés correspondaient au segment SS ; c'est donc l'attendu du test, et non le moteur, qui a été corrigé. La matrice couvre maintenant les huit formes d'adressage effectif.
+
+**Résultat vérifié :** workflow CI `45729004989`, commit `28d680d26d0311ce81a672d81daf9d59184562e4`, **56/56 étapes réussies**. L'étape dédiée au test de sélection de segment rapporte **368 assertions réussies, 0 échec** et **192 vecteurs d'exécution source/binaire**.
+
+La suite contrôle :
+- les quatre instructions, en byte et word ;
+- les quatre overrides ES, CS, SS et DS, en source et en binaire ;
+- le segment implicite DS ou SS pour chacune des huit formes d'adressage effectif ;
+- LOCK combiné à un override de segment, en byte et word, avec encodage et exécutions source/binaire ;
+- le rejet de REP, REPE, REPZ, REPNE et REPNZ sur des opérandes registre byte/word et mémoire byte/word.
+
+Référence CI : https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45729004989
+
+### Limites restantes
+
+Cette validation complète la sélection de segment et les interactions de préfixes pour ces quatre instructions. Elle ne remplace pas les contrôles arithmétiques de la suite BCD/MUL/DIV, les tests d'erreur de division, ni la comparaison indépendante des encodages. Les FLAGS indéfinis après DIV/IDIV ne doivent pas être comparés ; le signal LOCK physique et l'arbitrage du bus ne sont pas simulés.
+
+Les chapitres 12 à 17 ne sont donc pas déclarés globalement clos : les autres familles et la réconciliation de toutes les formes restent à traiter.
