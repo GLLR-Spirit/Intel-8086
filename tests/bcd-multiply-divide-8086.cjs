@@ -23,7 +23,8 @@ vm.createContext(context);
 const injection = "\nglobalThis.__8086BCDMathApi = {" +
   "\n execute: function (source) { return executeAll(source); }," +
   "\n assemble: function (source) { return assembleProgram(source); }," +
-  "\n disassemble: function (bytes) { return disassembleBytes(bytes); }" +
+  "\n disassemble: function (bytes) { return disassembleBytes(bytes); }," +
+  "\n executeBinary: function (bytes, cs, ip, state) { return executeBinary(bytes, cs, ip, state); }" +
   "\n};\n})();\n";
 const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injection);
 assert.notEqual(instrumented, match[1], "Test API injection point must exist");
@@ -33,7 +34,7 @@ assert.ok(api, "BCD/multiply/divide test API must be exposed");
 
 let passed = 0;
 let failed = 0;
-const totals = { aaaAas: 0, aamAad: 0, daaDas: 0, multiply: 0, divide: 0, encodings: 0 };
+const totals = { aaaAas: 0, aamAad: 0, daaDas: 0, multiply: 0, divide: 0, encodings: 0, bcdBinary: 0 };
 function test(name, fn) {
   try { fn(); passed++; }
   catch (error) { failed++; console.error("FAIL " + name + ": " + error.message); }
@@ -41,6 +42,24 @@ function test(name, fn) {
 function run(source) {
   const state = api.execute(source);
   assert.ok(!state.error, state.error || "Execution failed");
+  const match = source.match(/(?:^|\\n)\\s*(AAA|AAS|AAM|AAD|DAA|DAS)\\s*(?:\\n|$)/m);
+  if (match) {
+    const mnemonic = match[1];
+    const assembled = api.assemble(source);
+    const binary = api.executeBinary(assembled.bytes, 0, 0, {});
+    assert.ok(!binary.error, mnemonic + " binary: " + (binary.error || "execution failed"));
+    for (const reg of ["AX","BX","CX","DX","SP","BP","SI","DI","CS","DS","ES","SS"])
+      assert.equal(binary.reg[reg], state.reg[reg], mnemonic + " source/binary " + reg);
+    const definedFlags = {
+      AAA:["CF","AF","TF","IF","DF"], AAS:["CF","AF","TF","IF","DF"],
+      AAM:["SF","ZF","PF","TF","IF","DF"], AAD:["SF","ZF","PF","TF","IF","DF"],
+      DAA:["CF","AF","SF","ZF","PF","TF","IF","DF"],
+      DAS:["CF","AF","SF","ZF","PF","TF","IF","DF"]
+    }[mnemonic];
+    for (const flag of definedFlags)
+      assert.equal(binary.flags[flag], state.flags[flag], mnemonic + " source/binary " + flag);
+    totals.bcdBinary++;
+  }
   return state;
 }
 function parity8(value) {
@@ -317,7 +336,7 @@ console.log("AAM/AAD vectors : " + totals.aamAad);
 console.log("DAA/DAS vectors : " + totals.daaDas);
 console.log("MUL/IMUL vectors : " + totals.multiply);
 console.log("DIV/IDIV vectors : " + totals.divide);
-console.log("Encodages BCD : " + totals.encodings);
+console.log("Encodages BCD : " + totals.encodings);\nconsole.log("Vecteurs BCD source/binaire : " + totals.bcdBinary);
 console.log("Audit BCD + MUL/DIV : " + passed + " réussis, " + failed + " échecs.");
 console.log("Les FLAGS indéfinis ne sont pas comparés : AAA/AAS SF/ZF/PF/OF ; AAM/AAD AF/CF/OF ; DAA/DAS OF ; MUL/IMUL hors CF/OF ; DIV/IDIV tous les FLAGS.");
 if (failed) process.exit(1);
