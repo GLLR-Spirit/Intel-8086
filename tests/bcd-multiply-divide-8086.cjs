@@ -42,7 +42,7 @@ function test(name, fn) {
 function run(source) {
   const state = api.execute(source);
   assert.ok(!state.error, state.error || "Execution failed");
-  const match = source.match(/(?:^|\\n)\\s*(AAA|AAS|AAM|AAD|DAA|DAS)\\s*(?:\\n|$)/m);
+  const match = source.match(/(?:^|\n)\s*(AAA|AAS|AAM|AAD|DAA|DAS)\s*(?:\n|$)/m);
   if (match) {
     const mnemonic = match[1];
     const assembled = api.assemble(source);
@@ -336,7 +336,8 @@ console.log("AAM/AAD vectors : " + totals.aamAad);
 console.log("DAA/DAS vectors : " + totals.daaDas);
 console.log("MUL/IMUL vectors : " + totals.multiply);
 console.log("DIV/IDIV vectors : " + totals.divide);
-console.log("Encodages BCD : " + totals.encodings);\nconsole.log("Vecteurs BCD source/binaire : " + totals.bcdBinary);
+console.log("Encodages BCD : " + totals.encodings);
+console.log("Vecteurs BCD source/binaire : " + totals.bcdBinary);
 console.log("Audit BCD + MUL/DIV : " + passed + " réussis, " + failed + " échecs.");
 console.log("Les FLAGS indéfinis ne sont pas comparés : AAA/AAS SF/ZF/PF/OF ; AAM/AAD AF/CF/OF ; DAA/DAS OF ; MUL/IMUL hors CF/OF ; DIV/IDIV tous les FLAGS.");
 if (failed) process.exit(1);
