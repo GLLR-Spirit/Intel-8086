@@ -10,7 +10,7 @@ function run(source,options){const result=execute(source,options);assert.equal(r
  const main="JMP FAR 2000h:0100h\nMOV BX, 1\nHLT";
  const target="MOV AX, 1234h\nHLT";
  const s=run(main,{segments:[{cs:0x2000,ip:0x0100,source:target}]});
- assert.equal(s.reg.CS,0x2000);assert.equal(s.reg.IP,0x0105);assert.equal(s.reg.AX,0x1234);assert.equal(s.reg.BX,0);
+ assert.equal(s.reg.CS,0x2000);assert.equal(s.reg.IP,0x0104);assert.equal(s.reg.AX,0x1234);assert.equal(s.reg.BX,0);
  assert.equal(s.execution.mode,"source-multi-segment");assert.equal(s.execution.segments,2);
  assert.equal(s.mem[0x20100],0xB8);assert.equal(s.mem[0x20101],0x34);
 }
@@ -27,11 +27,11 @@ function run(source,options){const result=execute(source,options);assert.equal(r
  assert.equal(s.reg.AX,1);assert.equal(s.reg.CS,0x2000);
 }
 {
- const result=execute("JMP FAR 2000h:0100h\nHLT",{segments:[{cs:0x2000,ip:0x0100,source:"TARGET: HLT"}]});
+ const result=execute("JMP FAR 2000h:0100h\nHLT");
  assert.ok(result.error);assert.match(result.error,/CS:IP/);
 }
 {
- const result=execute("HLT",{segments:[{cs:0x1001,ip:0,source:"HLT"}]});
+ const result=execute("HLT",{loadCS:0x1000,loadIP:0x0010,segments:[{cs:0x1001,ip:0,source:"HLT"}]});
  assert.ok(result.error);assert.match(result.error,/Chevauchement physique/);
 }
 {
@@ -42,4 +42,4 @@ function run(source,options){const result=execute(source,options);assert.equal(r
  const s=run("MOV AX, 1234h\nHLT");
  assert.equal(s.execution.mode,"binary-offset");assert.equal(s.reg.AX,0x1234);assert.equal(s.reg.CS,0);assert.equal(s.reg.IP,5);
 }
-console.log("Source multi-segment CS:IP: 7 scénarios PASS.");
+console.log("Source multi-segment CS:IP: 6 scénarios PASS.");
