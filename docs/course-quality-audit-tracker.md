@@ -15,7 +15,7 @@ For every finding: detect the symptom, inspect the complete affected path, ident
 | 1 | Navigation of 36 chapters | Implemented; runtime verification pending | Active chapter state, invalid-index guards, accessible state attributes, desktop/mobile DOM order, and 36-chapter browser assertions added. The browser audit is now a dedicated CI job. Inspect its first actual run and screenshots. |
 | 2 | 108 assembly examples and expected results | Existing source-level audit covers 108/108; further binary parity audit pending | tests/learning-quality.cjs executes all 108 source examples and requires 108 unique independent expected-state oracles. executeAll assembles each source program before source execution. A separate all-example binary-execution parity check has not yet been established. |
 | 3 | 684 questions and corrections | Duplicate stems corrected; test execution pending | Two exact cross-chapter duplicates were rewritten in chapters 15 and 33. The semantic key was updated. A global exact-stem uniqueness assertion now covers all 684 runtime questions. |
-| 4 | Pedagogical quality of all 36 chapters | Pending deeper review | Review accuracy, progression, prerequisites, depth, terminology, examples, and whether each lesson teaches before assessing. |
+| 4 | Pedagogical quality of all 36 chapters | Content expanded; deeper review pending | 69 short lesson explanations plus two foundational explanations were expanded. The runtime course now has 108/108 lesson theories at 300+ characters (minimum 303); a CI assertion enforces this. Continue reviewing accuracy, progression, prerequisites, terminology and teaching quality. |
 | 5 | Exercises and solutions | Pending | Verify statements, constraints, hints, step-by-step corrections, executable solutions, expected states, difficulty labels, and chapter filters. |
 | 6 | Simulator/course integration | Pending | Verify example loading, source/binary execution paths, step tracing, registers, memory, FLAGS, segments, stack, interrupts and error feedback. |
 | 7 | Accessibility, responsive layout and performance | Partially implemented | Navigation and reading order corrections are in place. Continue keyboard, screen-reader, contrast, zoom, reduced-motion, narrow viewport, loading and performance audits. |
@@ -31,6 +31,12 @@ For every finding: detect the symptom, inspect the complete affected path, ident
 - Invalid chapter and lesson indexes are guarded.
 - Desktop and mobile reading order is synchronized with the responsive layout.
 - Browser assertions now check all 36 chapter selections and the selected detail panel.
+
+### Lesson content
+
+- Expanded the technical explanations in 69 short lesson entries and two foundational entries.
+- Added a CI requirement that every one of the 108 visible lessons contains at least 300 characters of technical explanation; the inspected runtime data has a minimum of 303 characters and an average of 453.
+- Corrected the REP zero-count explanation: REP with CX=0 performs no iterations and leaves CX and the string indexes unchanged. The existing string-instruction tests already cover this case in both source and binary execution.
 
 ### Question bank
 
