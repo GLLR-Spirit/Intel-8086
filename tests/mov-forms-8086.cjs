@@ -184,17 +184,12 @@ for(const seg of segments){
    test("MOV moffs "+direction+" "+width+" "+seg,()=>{
     const initial=bits===8?0x5A:0x1234,other=bits===8?0x11:0x1111,value=bits===8?0xA5:0xA55A;
     const init=[
-     "MOV AX,1000h","MOV DS,AX","MOV AX,2000h","MOV ES,AX","MOV AX,3000h","MOV SS,AX",
-     "MOV BYTE PTR DS:[0400h],"+(seg==="DS"?initial:other).toString(16)+"h",
-     "MOV BYTE PTR ES:[0400h],"+(seg==="ES"?initial:other).toString(16)+"h",
-     "MOV BYTE PTR SS:[0400h],"+(seg==="SS"?initial:other).toString(16)+"h",
-     "MOV BYTE PTR CS:[0400h],"+(seg==="CS"?initial:other).toString(16)+"h"
+     "MOV AX,1000h","MOV DS,AX","MOV AX,2000h","MOV ES,AX","MOV AX,3000h","MOV SS,AX"
     ];
-    if(bits===16){
-     init.splice(7,0,"MOV BYTE PTR DS:[0401h],"+((seg==="DS"?initial:other)>>8).toString(16)+"h");
-     init.splice(9,0,"MOV BYTE PTR ES:[0401h],"+((seg==="ES"?initial:other)>>8).toString(16)+"h");
-     init.splice(11,0,"MOV BYTE PTR SS:[0401h],"+((seg==="SS"?initial:other)>>8).toString(16)+"h");
-     init.splice(13,0,"MOV BYTE PTR CS:[0401h],"+((seg==="CS"?initial:other)>>8).toString(16)+"h");
+    for(const segment of ["DS","ES","SS","CS"]){
+     const word=segment===seg?initial:other;
+     init.push("MOV BYTE PTR "+segment+":[0400h],"+(word&255).toString(16)+"h");
+     if(bits===16)init.push("MOV BYTE PTR "+segment+":[0401h],"+(word>>8).toString(16)+"h");
     }
     const instr=direction==="load"
       ?"MOV "+reg+", "+seg+":[0400h]"
