@@ -315,6 +315,60 @@ for (const [label, source, expected] of binaryVectors) {
   totals.binaryParity++;
 }
 
+// 7B. Broader TEST source/binary checks: byte/word, register/memory,
+//     immediate/register, segment override, operand preservation and defined FLAGS.
+function verifyTestBoth(label, source, expectedFlags, memoryChecks) {
+  test("TEST source/binary architectural check " + label, () => {
+    const assembled = api.assemble(source);
+    const sourceState = run(source);
+    const binaryState = api.executeBinary(assembled.bytes, {});
+    assert.ok(!binaryState.error, binaryState.error || "Binary TEST execution failed");
+    for (const reg of ["AX","BX","CX","DX","SI","DI","BP","SP","DS","ES","SS"])
+      assert.equal(binaryState.reg[reg], sourceState.reg[reg], label + " " + reg + " source/binary");
+    for (const flag of ["CF","OF","SF","ZF","PF","TF","IF","DF"]) {
+      assert.equal(binaryState.flags[flag], sourceState.flags[flag], label + " " + flag + " source/binary");
+      assert.equal(sourceState.flags[flag], expectedFlags[flag], label + " " + flag + " oracle");
+    }
+    for (const item of memoryChecks || []) {
+      const address = physical(item.segment, item.offset);
+      for (const state of [sourceState, binaryState]) {
+        assert.equal(state.mem[address], item.low, label + " memory low byte unchanged");
+        if (item.high !== undefined)
+          assert.equal(state.mem[physical(item.segment, (item.offset + 1) & 0xFFFF)], item.high,
+            label + " memory high byte unchanged");
+      }
+    }
+  });
+  totals.binaryParity++;
+}
+const testFlags = (sf,zf,pf) => ({CF:0,OF:0,SF:sf,ZF:zf,PF:pf,TF:1,IF:1,DF:0});
+verifyTestBoth("word register", [
+  "MOV AX, 0BD5h","PUSH AX","POPF","MOV AX, 8001h","MOV BX, 8000h",
+  "TEST AX, BX","HLT"
+].join("\n"), testFlags(1,0,1), []);
+verifyTestBoth("word accumulator immediate", [
+  "MOV AX, 0BD5h","PUSH AX","POPF","MOV AX, 8000h",
+  "TEST AX, 8000h","HLT"
+].join("\n"), testFlags(1,0,1), []);
+verifyTestBoth("word memory register", [
+  "MOV AX, 0BD5h","PUSH AX","POPF","MOV AX, 1000h","MOV DS, AX",
+  "MOV BX, 0200h","MOV WORD PTR [BX], 8001h","MOV CX, 8000h",
+  "TEST WORD PTR [BX], CX","HLT"
+].join("\n"), testFlags(1,0,1), [{segment:0x1000,offset:0x0200,low:0x01,high:0x80}]);
+verifyTestBoth("byte memory with ES override", [
+  "MOV AX, 0BD5h","PUSH AX","POPF","MOV AX, 2000h","MOV ES, AX",
+  "MOV DI, 0300h","MOV BYTE PTR ES:[DI], 0F0h","MOV BL, 0Fh",
+  "TEST BYTE PTR ES:[DI], BL","HLT"
+].join("\n"), testFlags(0,1,1), [{segment:0x2000,offset:0x0300,low:0xF0}]);
+verifyTestBoth("byte memory immediate", [
+  "MOV AX, 0BD5h","PUSH AX","POPF","MOV AX, 1000h","MOV DS, AX",
+  "MOV BX, 0200h","MOV BYTE PTR [BX], 80h","TEST BYTE PTR [BX], 80h","HLT"
+].join("\n"), testFlags(1,0,0), [{segment:0x1000,offset:0x0200,low:0x80}]);
+verifyTestBoth("word memory immediate", [
+  "MOV AX, 0BD5h","PUSH AX","POPF","MOV AX, 1000h","MOV DS, AX",
+  "MOV BX, 0200h","MOV WORD PTR [BX], 0F0Fh","TEST WORD PTR [BX], 00F0h","HLT"
+].join("\n"), testFlags(0,1,1), [{segment:0x1000,offset:0x0200,low:0x0F,high:0x0F}]);
+
 // 8. Negative cases and truncated instruction streams.
 for (const source of [
   "AND AL, 256",
