@@ -23,7 +23,8 @@ vm.createContext(context);
 const injection = "\nglobalThis.__8086GroupsApi = {" +
   "\n assemble: function (source) { return assembleProgram(source); }," +
   "\n disassemble: function (bytes) { return disassembleBytes(bytes); }," +
-  "\n execute: function (source) { return executeAll(source); }" +
+  "\n execute: function (source) { return executeAll(source); }," +
+  "\n executeBinary: function (bytes, cs, ip, state) { return executeBinary(bytes, cs, ip, state); }" +
   "\n};\n})();\n";
 const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injection);
 assert.notEqual(instrumented, match[1], "Test API injection point must exist");
@@ -147,7 +148,8 @@ for (const [source, expected] of unaryVectors) {
 
 // All FF extensions: /0 INC, /1 DEC, /2 near CALL, /3 far CALL
 // (memory only), /4 near JMP, /5 far JMP (memory only), /6 PUSH,
-// /6 PUSH memory-only, /7 reserved. Check all 256 ModR/M values.
+// /0 INC and /1 DEC accept r/m16 (register or memory). /3 CALL far, /5 JMP far,
+// and /6 PUSH require memory; /7 is reserved. Check all 256 ModR/M values.
 const ffNames = ["INC", "DEC", "CALL", "CALL FAR", "JMP", "JMP FAR", "PUSH", null];
 for (let ext = 0; ext < 8; ext++) {
   for (let mod = 0; mod < 4; mod++) {
@@ -159,7 +161,7 @@ for (let ext = 0; ext < 8; ext++) {
         assert.equal(result.rows.length, 1);
         assert.deepEqual(Array.from(result.rows[0].bytes), code);
         const instruction = result.rows[0].instruction;
-        if (ext === 7 || (mod === 3 && [0, 1, 3, 5, 6].includes(ext))) {
+        if (ext === 7 || (mod === 3 && [3, 5, 6].includes(ext))) {
           assert.ok(instruction.startsWith("DB "), instruction);
         } else {
           assert.ok(instruction.startsWith(ffNames[ext] + " "), instruction);
@@ -227,6 +229,35 @@ const movImmediateVectors = [
 for (const [source, expected] of movImmediateVectors) {
   test("C6/C7 assembler " + source, () => assert.deepEqual(assemble(source), expected));
   counts.c6c7++;
+}
+
+// FF /0 and /1 are true r/m16 forms: Mod=11 register-direct encodings
+// must execute in the binary path, even though the assembler prefers 40h-4Fh.
+for (let rm = 0; rm < 8; rm++) {
+  const register = regs16[rm];
+  test("Binary FF /0 INC " + register + " accepts register-direct mode", () => {
+    const bytes = [0xFF, modrm(3, 0, rm), 0xF4];
+    const result = api.executeBinary(bytes, 0, 0, {
+      reg: { [register]: 0xFFFF },
+      flags: { CF: 1 }
+    });
+    assert.ok(!result.error, result.error || "FF /0 " + register);
+    assert.equal(result.reg[register], 0, register + " wraps at 16 bits");
+    assert.equal(result.flags.CF, 1, "INC preserves CF");
+  });
+  counts.execution++;
+
+  test("Binary FF /1 DEC " + register + " accepts register-direct mode", () => {
+    const bytes = [0xFF, modrm(3, 1, rm), 0xF4];
+    const result = api.executeBinary(bytes, 0, 0, {
+      reg: { [register]: 0 },
+      flags: { CF: 1 }
+    });
+    assert.ok(!result.error, result.error || "FF /1 " + register);
+    assert.equal(result.reg[register], 0xFFFF, register + " wraps at 16 bits");
+    assert.equal(result.flags.CF, 1, "DEC preserves CF");
+  });
+  counts.execution++;
 }
 
 // Independent execution checks for supported unary and PUSH forms.

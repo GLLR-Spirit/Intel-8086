@@ -217,9 +217,24 @@ test("RETF imm16 removes caller arguments after far return", () => {
 });
 counts.execution++;
 
-test("odd RET adjustment is explicitly outside stack-tracker execution model", () => {
-  const s = api.execute(["CALL PROC", "HLT", "PROC: RET 1"].join("\n"));
-  assert.match(s.error, /ajustement impair non pris en charge/i);
+test("RET near accepts odd byte cleanup", () => {
+  const s = execution(["CALL PROC", "HLT", "PROC: RET 1"].join("\n"));
+  assert.equal(s.reg.SP, 0xFFFF);
+  assert.equal(s.stack.length, 0);
+});
+counts.execution++;
+
+test("RETF far accepts odd byte cleanup", () => {
+  const template = [
+    "MOV BX, 0100h", "MOV WORD PTR [BX], 0", "MOV WORD PTR [BX+2], 1111h",
+    "CALL FAR PTR [BX]", "HLT", "PROC: RETF 1"
+  ].join("\n");
+  const target = api.assemble(template).symbols.PROC;
+  const src = template.replace("MOV WORD PTR [BX], 0", "MOV WORD PTR [BX], " + target);
+  const s = execution(src);
+  assert.equal(s.reg.CS, 0);
+  assert.equal(s.reg.SP, 0xFFFF);
+  assert.equal(s.stack.length, 0);
 });
 counts.execution++;
 

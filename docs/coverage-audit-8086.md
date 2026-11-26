@@ -1,8 +1,9 @@
 # Audit de couverture du jeu d'instructions Intel 8086
 
 **Dépôt audité :** `GLLR-Spirit/Intel-8086`  
-**Branche :** `main`  
-**Date de l'audit statique :** 24 novembre 2026  
+**Branche de travail actualisée :** `audit/niveau-3-chapitres-12-17`  
+**Date de l'audit statique initial :** 24 novembre 2026  
+**Dernière actualisation ciblée :** 26 novembre 2026  
 **Périmètre :** Intel 8086 original uniquement ; aucune instruction 80186 ou ultérieure n'est comptée.  
 **Nature :** audit statique du code, de la documentation et des tests existants. Ce document ne prétend pas certifier le comportement électrique ou matériel du processeur.
 
@@ -29,17 +30,17 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | Instruction | Documentation | Simulateur | Assembleur | Désassembleur | Tests |
 |---|---|---|---|---|---|
 | MOV | Oui | Oui | Partiel | Partiel | Partiel |
-| XCHG | Oui | Oui | Oui | Oui | À faire |
+| XCHG | Oui | Oui | Oui | Oui | Partiel |
 | LEA | Oui | Oui | Oui | Oui | À faire |
 | LES | Oui | Oui | Oui | Oui | À faire |
 | LDS | Oui | Oui | Oui | Oui | À faire |
-| XLAT | Oui | Non | Non | Non | À faire |
+| XLAT | Oui | Oui | Oui | Oui | Partiel |
 | PUSH | Oui | Oui | Oui | Oui | Partiel |
 | POP | Oui | Oui | Partiel | Partiel | Partiel |
 | PUSHF | Oui | Oui | Oui | Oui | Partiel |
 | POPF | Oui | Oui | Oui | Oui | Partiel |
-| LAHF | Oui | Non | Non | Non | À faire |
-| SAHF | Oui | Non | Non | Non | À faire |
+| LAHF | Oui | Oui | Oui | Oui | Partiel |
+| SAHF | Oui | Oui | Oui | Oui | Partiel |
 | MOVSB | Oui | Oui | Non | Non | Partiel |
 | MOVSW | Oui | Oui | Non | Non | Partiel |
 | CMPSB | Oui | Oui | Non | Non | Partiel |
@@ -58,10 +59,10 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | DEC | Oui | Oui | Oui | Oui | Partiel |
 | NEG | Oui | Oui | Oui | Oui | Partiel |
 | CMP | Oui | Oui | Partiel | Partiel | Partiel |
-| MUL | Oui | Oui | Oui | Oui | Partiel |
-| IMUL | Oui | Oui | Oui | Oui | Partiel |
-| DIV | Oui | Oui | Oui | Oui | Partiel |
-| IDIV | Oui | Oui | Oui | Oui | Partiel |
+| MUL | Oui | Oui | Oui | Oui | Oui |
+| IMUL | Oui | Oui | Oui | Oui | Oui |
+| DIV | Oui | Oui | Oui | Oui | Oui |
+| IDIV | Oui | Oui | Oui | Oui | Oui |
 | AAA | Oui | Non | Non | Non | À faire |
 | AAS | Oui | Non | Non | Non | À faire |
 | AAM | Oui | Non | Non | Non | À faire |
@@ -385,7 +386,7 @@ Ce résultat valide les tests déclarés, pas l'exhaustivité matérielle de l'I
 
 Une batterie supplémentaire `tests/opcode-byte-sweep.cjs` est exécutée par CI. Elle balaie les 256 octets possibles en position d'opcode primaire, puis toutes les 256 valeurs ModR/M pour chacune des 67 familles ModR/M du décodeur, soit 17 152 combinaisons ModR/M et 17 408 flux vérifiés au total. Les assertions portent sur la robustesse du parseur, les frontières des instructions, les offsets continus et la consommation exacte du flux ; elles ne prétendent pas certifier la sémantique de chaque opcode.
 
-Une anomalie de référence a également été corrigée : pour `MOV Sreg` (`8C`/`8E`), Intel table 4-13 définit le champ comme `0SR`. Les sélecteurs `/4` à `/7` sont non utilisés et doivent rester `DB`; `/0` à `/3` restent ES/CS/SS/DS, y compris `MOV CS` via `8E /1` sur le 8086 original. Le décodeur, la matrice ModR/M, les tests d'adressage et les tests de contraintes ont été alignés sur cette règle.
+Une anomalie de référence a également été corrigée : pour `MOV Sreg` (`8C`/`8E`), le champ segment est `0SR` (`/0` ES, `/1` CS, `/2` SS, `/3` DS) ; `/4` à `/7` ne sont pas utilisés. La référence Intel ASM86 indique que CS n'est pas une destination autorisée pour MOV : `8E /1` est donc rejeté, tandis que `8C /1` (lecture de CS vers r/m16) reste valide. Le décodeur, l'assembleur et les tests sont alignés sur cette distinction.
 
 Le préfixe LOCK est désormais contrôlé de manière cohérente entre le désassembleur et le sous-ensemble de formes accepté par l'analyseur. Le verrouillage réel du bus, les autres maîtres de bus et l'atomicité matérielle ne sont toujours pas simulés.
 
@@ -410,3 +411,314 @@ L'IVT binaire fait maintenant l'objet d'un contrôle supplémentaire du cadre m�
 Résultats CI du commit `217c0a413c937d1248573e1f1f9f879c57d69ba6` : **143 vecteurs indépendants réussis**, **83 tests différentiels réussis, 0 échec**, et **27 corrections pédagogiques exécutables validées**. Détail : [audit-chain-strings-8086.md](audit-chain-strings-8086.md).
 
 La politique de l'analyseur rejette explicitement les préfixes répétés de même catégorie et LOCK sur les instructions de chaîne. Cette politique de validation du laboratoire ne doit pas être confondue avec une modélisation complète de tous les cas de préfixes matériels.
+
+
+## Audit indépendant de LAHF et SAHF — 25 novembre 2026
+
+La suite dédiée `tests/lahf-sahf-8086.cjs` est maintenant intégrée au workflow CI.
+
+- **LAHF : 32/32 combinaisons** des cinq indicateurs SF/ZF/AF/PF/CF transférées dans AH ; contrôle du bit 1 forcé et de la préservation de FLAGS.
+- **SAHF : 256/256 valeurs de AH** ; contrôle des cinq indicateurs restaurés et de la préservation de OF, TF, IF et DF.
+- Les deux chemins d'exécution (source assemblée et binaire dynamique) sont comparés sur les registres et les indicateurs.
+- Encodages fixes contrôlés sur les octets indépendants `9Fh` (LAHF) et `9Eh` (SAHF), avec désassemblage brut et exécution binaire.
+- Quatre formes syntaxiques avec opérandes superflus sont rejetées.
+
+Résultat CI : [run 45592060463](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45592060463), commit `aaa1b499a3147b654a73cad6cbb4dc1b9ad131a0` — **298 réussis, 0 échec** pour la suite dédiée.
+
+Les lignes LAHF/SAHF passent de « non prises en charge » à « présentes » pour le simulateur, l'assembleur et le désassembleur. Le statut de tests reste **Partiel** dans la matrice globale : la suite couvre de manière exhaustive les valeurs d'entrée pertinentes de ces deux instructions dans le modèle logiciel, mais ne constitue pas une comparaison avec un 8086 physique ou un émulateur indépendant complet.
+
+
+## Audit indépendant de XLAT — 25 novembre 2026
+
+La suite `tests/xlat-8086.cjs` est intégrée au workflow CI. L'inspection préalable a confirmé que XLAT était déjà implémentée dans le moteur source, l'assembleur, le désassembleur et le chemin binaire ; la matrice précédente sous-estimait donc l'état réel du code. La validation indépendante permet maintenant de documenter ce support sans le qualifier d'exhaustif.
+
+- **Encodage/désassemblage : 9 contrôles** — opcode fixe `D7h`, frontières avec HLT et préfixes de segment ES (`26 D7`), CS (`2E D7`), SS (`36 D7`) et DS (`3E D7`).
+- **Exécution source : 5 cas** — quatre sélecteurs de segment (DS explicite, ES, SS, CS) et DS par défaut.
+- **Exécution binaire : 6 cas** — mêmes quatre sélecteurs, DS par défaut et rebouclage physique sur 20 bits.
+- **FLAGS : 8 contrôles** — les neuf indicateurs représentés par le simulateur sont préchargés et vérifiés inchangés dans les chemins source et binaire.
+- **Adresses : 3 contrôles** — addition BX+AL avec rebouclage 16 bits, sélection du segment et adresse physique 20 bits.
+- **Rejets : 4 contrôles** — lecture d'un octet non initialisé en source et en binaire, et rejet de deux syntaxes avec opérandes superflus.
+
+La suite vérifie notamment que `BX+AL` est ramené sur 16 bits avant la formation de l'adresse physique, que DS est le segment par défaut, que le préfixe explicite sélectionne le segment demandé et qu'une lecture non initialisée provoque une erreur au lieu de retourner implicitement zéro.
+
+Les compteurs par dimension se recouvrent : les contrôles FLAGS et adresses sont inclus dans les cas d'exécution source/binaire et ne doivent pas être additionnés comme des tests distincts.\n\nRésultat : [workflow CI 45593318116](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45593318116), commit `50b982ca58e9b0cd4ae2d7e31c130876eb1f17ab` — **24 réussis, 0 échec** pour la suite XLAT ; workflow global **success**.
+
+La matrice passe à « Oui » pour la présence dans le simulateur, l'assembleur et le désassembleur. Le statut des tests reste **Partiel** : les scénarios indépendants listés sont vérifiés, mais aucune comparaison complète avec un 8086 physique ou un émulateur matériel indépendant n'a été effectuée.
+
+
+## Audit indépendant XCHG — 25 novembre 2026
+
+La suite indépendante `tests/xchg-8086.cjs` est intégrée au workflow CI. Elle vérifie séparément les encodages, le désassemblage, les exécutions source et binaires, les FLAGS et les contraintes syntaxiques. Les contrôles ne constituent pas une preuve de fidélité électrique ou de comportement sur un processeur physique.
+
+- **Paires registre-registre : 128 contrôles source** — les 8 registres 8 bits et les 8 registres 16 bits, avec les 64 paires ordonnées dans chaque largeur.
+- **Encodages registres :** les formes ModR/M `86h` et `87h`, et la famille compacte `90h–97h` ; la génération des octets et le désassemblage sont contrôlés.
+- **Mémoire : 18 contrôles de forme** — les huit modes effectifs 8086 en byte et word, le cas spécial `[BP]` encodé avec déplacement nul, ainsi que l'adressage direct `disp16`.
+- **Préfixes de segment : 12 contrôles** — DS, ES, SS et CS dans les chemins source, assembleur/désassembleur et binaire. Les cas DS/SS par défaut sont également exercés dans la matrice des adresses effectives.
+- **Exécution binaire : 152 contrôles** — les 64 paires 8 bits, les 64 paires 16 bits, les formes mémoire, les sélecteurs de segment et les cas spéciaux.
+- **FLAGS : 302 vérifications imbriquées** — CF, PF, AF, ZF, SF, TF, IF, DF et OF sont contrôlés inchangés ; ce compteur recoupe les cas source et binaire.
+- **Contraintes : 8 rejets** — mémoire-mémoire, immédiat, registres de segment et incompatibilités de taille.
+- **Cas spéciaux :** `XCHG AX,AX` est assemblé en `90h`, dont le désassemblage canonique est `NOP` ; `XCHG AX,registre` utilise la famille compacte `90h–97h`.
+
+Le 8086 active implicitement le verrouillage du bus pour un `XCHG` dont l'un des opérandes est en mémoire. Le laboratoire valide l'échange de données et l'encodage, mais ne simule ni le signal LOCK, ni l'arbitrage du bus, ni l'atomicité face à un autre maître de bus. L'acceptation syntaxique du préfixe explicite `LOCK` ne constitue pas une validation de ces propriétés matérielles.
+
+Les compteurs par dimension se recouvrent : les contrôles FLAGS sont inclus dans les exécutions, et les contrôles d'encodage sont inclus dans les formes testées. Ils ne doivent pas être additionnés pour produire un nombre global de cas distincts.
+
+Résultat : [workflow CI 45597601029](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45597601029), commit `4f78a8417aa1b10002a8a702f77cf933bd38f614` — **471 réussis, 0 échec** pour la suite XCHG ; workflow global **success**.
+
+Le statut des tests passe à **Partiel** : les formes et chemins explicitement énumérés sont testés indépendamment, mais les séquences d'opcodes ne sont pas comparées à un processeur physique ni à un émulateur matériel indépendant. Le verrouillage implicite du bus reste hors du modèle logiciel.
+
+
+---
+
+# Actualisation de la matrice — 25 novembre 2026
+
+**Branche audit :** `audit/niveau-3-chapitres-12-17`  
+**Commit du moteur testé :** `a25dc8c2cfe832dfa525fd2c1b32714c5d40ab91`  
+**CI :** [run 45676144779](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45676144779) — succès  
+**Navigateur :** [run 45676144619](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45676144619) — succès
+
+Cette section conserve les 93 mnémoniques comme inventaire de travail. Les statuts affichés sont provisoires : ils n'ont pas encore été réconciliés pour toutes les formes d'opérandes, tailles, extensions ModR/M, préfixes et chemins source/binaire. Les tableaux antérieurs restent un instantané historique. L'ancienne synthèse contenait déjà un écart arithmétique : ses lignes donnaient 66/6/21 pour le simulateur, et non 62/6/25.
+
+## Convention de cette actualisation
+
+- **Oui** : une voie de traitement est présente dans le composant.
+- **Partiel** : une voie existe, mais le modèle ou la couverture de formes reste incomplet.
+- **À faire** : aucune validation indépendante ciblée suffisante n'est établie.
+- Une implémentation présente n'est pas une validation exhaustive. Les 17 152 balayages structurels vérifient la robustesse de décodage et la consommation des octets, pas la sémantique de chaque opcode.
+
+## Matrice des 93 entrées
+
+| Instruction | Simulateur | Assembleur | Désassembleur | Tests indépendants |
+|---|---|---|---|---|
+| MOV | Oui | Partiel | Partiel | Partiel |
+| XCHG | Oui | Oui | Oui | Partiel |
+| LEA | Oui | Oui | Oui | Partiel |
+| LES | Oui | Oui | Oui | Partiel |
+| LDS | Oui | Oui | Oui | Partiel |
+| XLAT | Oui | Oui | Oui | Partiel |
+| PUSH | Oui | Oui | Oui | Partiel |
+| POP | Oui | Partiel | Partiel | Partiel |
+| PUSHF | Oui | Oui | Oui | Partiel |
+| POPF | Oui | Oui | Oui | Partiel |
+| LAHF | Oui | Oui | Oui | Partiel |
+| SAHF | Oui | Oui | Oui | Partiel |
+| MOVSB | Oui | Oui | Oui | Partiel |
+| MOVSW | Oui | Oui | Oui | Partiel |
+| CMPSB | Oui | Oui | Oui | Partiel |
+| CMPSW | Oui | Oui | Oui | Partiel |
+| SCASB | Oui | Oui | Oui | Partiel |
+| SCASW | Oui | Oui | Oui | Partiel |
+| LODSB | Oui | Oui | Oui | Partiel |
+| LODSW | Oui | Oui | Oui | Partiel |
+| STOSB | Oui | Oui | Oui | Partiel |
+| STOSW | Oui | Oui | Oui | Partiel |
+| ADD | Oui | Partiel | Partiel | Partiel |
+| ADC | Oui | Partiel | Partiel | Partiel |
+| SUB | Oui | Partiel | Partiel | Partiel |
+| SBB | Oui | Partiel | Partiel | Partiel |
+| INC | Oui | Oui | Oui | Partiel |
+| DEC | Oui | Oui | Oui | Partiel |
+| NEG | Oui | Oui | Oui | Partiel |
+| CMP | Oui | Partiel | Partiel | Partiel |
+| MUL | Oui | Oui | Oui | Partiel |
+| IMUL | Oui | Oui | Oui | Partiel |
+| DIV | Oui | Oui | Oui | Partiel |
+| IDIV | Oui | Oui | Oui | Partiel |
+| AAA | Oui | Oui | Oui | Partiel |
+| AAS | Oui | Oui | Oui | Partiel |
+| AAM | Oui | Oui | Oui | Partiel |
+| AAD | Oui | Oui | Oui | Partiel |
+| DAA | Oui | Oui | Oui | Partiel |
+| DAS | Oui | Oui | Oui | Partiel |
+| CBW | Oui | Oui | Oui | Partiel |
+| CWD | Oui | Oui | Oui | Partiel |
+| AND | Oui | Partiel | Partiel | Partiel |
+| OR | Oui | Partiel | Partiel | Partiel |
+| XOR | Oui | Partiel | Partiel | Partiel |
+| NOT | Oui | Oui | Oui | Partiel |
+| TEST | Oui | Partiel | Partiel | Partiel |
+| ROL | Oui | Oui | Oui | Partiel |
+| ROR | Oui | Oui | Oui | Partiel |
+| RCL | Oui | Oui | Oui | Partiel |
+| RCR | Oui | Oui | Oui | Partiel |
+| SHL | Oui | Oui | Oui | Partiel |
+| SHR | Oui | Oui | Oui | Partiel |
+| SAR | Oui | Oui | Oui | Partiel |
+| JMP | Partiel | Partiel | Partiel | Partiel |
+| CALL | Partiel | Partiel | Partiel | Partiel |
+| RET | Partiel | Partiel | Partiel | Partiel |
+| INT | Partiel | Oui | Oui | Partiel |
+| INTO | Oui | Oui | Oui | Partiel |
+| IRET | Partiel | Oui | Oui | Partiel |
+| JCXZ | Oui | Oui | Oui | Partiel |
+| LOOP | Oui | Oui | Oui | Partiel |
+| LOOPE | Oui | Oui | Oui | Partiel |
+| LOOPNE | Oui | Oui | Oui | Partiel |
+| JO | Oui | Oui | Oui | Partiel |
+| JNO | Oui | Oui | Oui | Partiel |
+| JB | Oui | Oui | Oui | Partiel |
+| JAE | Oui | Oui | Oui | Partiel |
+| JE | Oui | Oui | Oui | Partiel |
+| JNE | Oui | Oui | Oui | Partiel |
+| JBE | Oui | Oui | Oui | Partiel |
+| JA | Oui | Oui | Oui | Partiel |
+| JS | Oui | Oui | Oui | Partiel |
+| JNS | Oui | Oui | Oui | Partiel |
+| JP | Oui | Oui | Oui | Partiel |
+| JNP | Oui | Oui | Oui | Partiel |
+| JL | Oui | Oui | Oui | Partiel |
+| JGE | Oui | Oui | Oui | Partiel |
+| JLE | Oui | Oui | Oui | Partiel |
+| JG | Oui | Oui | Oui | Partiel |
+| CLC | Oui | Oui | Oui | Partiel |
+| STC | Oui | Oui | Oui | Partiel |
+| CMC | Oui | Oui | Oui | Partiel |
+| CLD | Oui | Oui | Oui | Partiel |
+| STD | Oui | Oui | Oui | Partiel |
+| CLI | Oui | Oui | Oui | Partiel |
+| STI | Oui | Oui | Oui | Partiel |
+| IN | Oui | Oui | Oui | Partiel |
+| OUT | Oui | Oui | Oui | Partiel |
+| NOP | Oui | Oui | Oui | À faire |
+| HLT | Partiel | Oui | Oui | À faire |
+| WAIT | Partiel | Oui | Oui | À faire |
+| ESC | Partiel | Oui | Oui | Partiel |
+
+## État du décompte — non consolidé
+
+Les 93 mnémoniques canoniques sont conservés comme inventaire de départ, mais les statuts de la matrice n'ont pas encore été réconciliés forme par forme sur la branche courante. Les anciens décomptes statiques sont historiques et ne doivent pas être repris comme chiffres actuels.
+
+**Aucun décompte consolidé et aucun pourcentage global ne sont publiés à ce stade.** Pour chaque instruction, il faut encore distinguer :
+- présence du chemin source ;
+- formes d'opérandes et tailles acceptées ;
+- émission assembleur ;
+- désassemblage et consommation exacte des octets ;
+- exécution binaire ;
+- tests ciblés ;
+- oracle indépendant ;
+- restrictions architecturales et préfixes.
+
+La matrice actuelle reste un registre de travail, pas un résultat chiffré. Le registre forme-par-forme est le support de la prochaine consolidation.
+
+## Éléments de preuve dans le CI
+
+Le workflow réussi a notamment exécuté :
+- 143 vecteurs indépendants d'instructions ;
+- 2 352 assertions de matrice ModR/M ;
+- 17 152 combinaisons de balayage structurel opcode/ModR/M ;
+- 3 412 contrôles différentiels FLAGS ;
+- 275 contrôles de contraintes d'opérandes ;
+- 1 358 contrôles de groupes F6/F7/FF/C6/C7 ;
+- 305 contrôles de pile et de transferts ;
+- les suites BCD, décalages/rotations, logique, NEG, LAHF/SAHF, XLAT, XCHG, LEA, LDS/LES, CALL indirect et branches ;
+- des oracles indépendants rapportant 393 216 cas arithmétiques 8 bits, 800 cas frontières 16 bits, 1 350 vecteurs ALU binaires, 20 736 cas de décalages/rotations 8 bits, 504 cas 16 bits, 3 072 ajustements AAA/AAS/DAA/DAS, 256 AAM, 65 536 AAD, 256 CBW, 65 536 CWD, 32 cas LAHF/SAHF et 64 codes ESC.
+
+Les nombres de plusieurs suites se recouvrent et ne doivent pas être additionnés comme s'il s'agissait d'entrées uniques.
+
+## Limites qui empêchent encore la clôture de la phase 2
+
+1. Le tableau ci-dessus compte des mnémotechniques, pas toutes les formes d'opérandes.
+2. Les instructions de chaîne nécessitent encore une matrice indépendante DS:SI / ES:DI, DF, CX, préfixes REP et effets FLAGS, en source et en binaire.
+3. IN/OUT sont simulés via un état de ports configurable, pas par un périphérique matériel.
+4. WAIT et ESC n'émulent ni le coprocesseur 8087 ni ses signaux ; leur prise en charge reste partielle côté modèle.
+5. CALL/JMP/RET ont des chemins testés, mais le moteur source utilise un IP logique et n'est pas un processeur matériel.
+6. Les extensions ModR/M, tailles, formes invalides, préfixes, limites de déplacement et flux tronqués doivent être consignés forme par forme avant le calcul pondéré définitif.
+
+**Conclusion :** cette matrice constitue un inventaire des 93 entrées et de la présence de leurs chemins de base, pas un score. La phase 2 n'est pas clôturée : le registre forme-par-forme, les préfixes et les validations indépendantes restent à terminer avant tout calcul pondéré.
+
+
+---
+
+## Préfixe LOCK — actualisation du 25 novembre 2026
+
+Le préfixe F0h est maintenant traité selon la documentation du 8086 : il peut précéder l'instruction suivante, et le verrouillage reste actif pendant tout le bloc d'une instruction de chaîne répétée. Le modèle logiciel ne simule pas le signal LOCK électrique ni l'arbitrage entre maîtres de bus.
+
+Couverture ajoutée :
+- `LOCK INC AX` : source, assemblage, désassemblage et exécution binaire ; le préfixe est accepté même si l'instruction ne protège aucune donnée mémoire partagée.
+- `LOCK MOVSB` et `LOCK REP MOVSB` : assemblage, désassemblage, exécution source et binaire.
+- `LOCK REP MOVSB` : vérification de CX, SI, DI, octets copiés et préservation des neuf FLAGS modélisés.
+- `LOCK ADD`, `LOCK CMP`, `LOCK MOV` et `LOCK XCHG` : le désassembleur accepte le préfixe sur des formes mémoire et registre.
+- `LOCK` combiné à un override de segment mémoire : contrôle différentiel existant.
+- Préfixes REP répétés et overrides de segment répétés : toujours rejetés par les tests de contraintes.
+
+Nouveaux contrôles :
+- `tests/lock-prefix-8086.cjs`
+- mise à jour de `tests/instruction-vectors.cjs`, `tests/xchg-8086.cjs` et `tests/dynamic-differential.cjs`
+- étape CI dédiée « Run 8086 LOCK prefix and repeated string tests ».
+
+**Limite :** cette actualisation valide l'acceptation et les effets fonctionnels du préfixe, pas le signal LOCK sur le bus. Les interactions exhaustives entre F0h, F2h/F3h, overrides de segment, flux tronqués et ordre de préfixes restent à inscrire dans le registre forme-par-forme. Aucun pourcentage global n'est calculé.
+
+
+## Vérification CI des ajouts de transferts far et préfixes
+
+Sur le commit de code `7c8f356771848c797825b78498d02438886976d2` :
+- CI `45688448342` : succès ;
+- audit navigateur `45688448597` : succès.
+
+Le CI inclut désormais les tests dédiés `LOCK REP MOVSB`, `JMP FAR` direct et `JMP FAR` indirect sur huit modes mémoire, ainsi que la comparaison GNU as pour les formes far directes et les formes indirectes [BX]/[BX+SI]. La matrice générale reste provisoire et aucun pourcentage global n'est publié.
+
+
+## Transferts de contrôle indirects — nouvelle validation
+
+La passe de tests sur JMP complète la couverture précédente de CALL :
+- `JMP r/m16` — `FF /4` : huit registres 16 bits et huit modes d'adressage mémoire, source et binaire.
+- `JMP ptr16:16` — `EA` : far direct, CS:IP vérifiés en source et binaire.
+- `JMP m16:16` — `FF /5` : huit modes mémoire, override ES, exécution vers un segment distinct.
+- GNU as : comparaisons near indirect registre/mémoire, far direct et far indirect [BX]/[BX+SI].
+- Les tests contrôlent SP, absence de cadre de retour pour JMP et neuf FLAGS modélisés.
+
+Run CI `45689117952` : succès, y compris les tests directs et indirects JMP, les tests LOCK et la suite différentielle.
+
+Cela ferme une tranche importante des transferts indirects, mais ne clôt pas la matrice des 93 instructions : les autres familles, formes et préfixes restent à réconcilier. Aucun pourcentage global n'est publié.
+
+## Actualisation du registre des formes — 25 novembre 2026
+
+Les 93 mnémoniques de cette matrice disposent maintenant d'un index de rapprochement vers leur famille de formes dans `docs/form-coverage-register-8086.md` (§15). La matrice par mnémonique ne constitue pas un score de couverture : ses statuts décrivent uniquement la présence ou le caractère partiel d'un chemin de base. La validation de toutes les formes, tailles, préfixes et restrictions reste suivie séparément.
+
+Corrections et preuves nouvelles :
+- Le groupe FF est décomposé extension par extension ; /0 INC MEM16, /1 DEC MEM16, /6 PUSH MEM16 et /3,/5 far sont mémoire uniquement ; /2 et /4 near acceptent registre ou mémoire ; /7 est non utilisé.
+- Le désassembleur ne présente plus FF C0, FF C8 ou FF F0 comme INC AX, DEC AX ou PUSH AX : ces formes registre-direct sont conservées comme DB. Les formes registre utilisent les opcodes compacts 40–47, 48–4F et 50–57.
+- Les tests group-opcodes, modrm-matrix, addressing-displacement et push-pop-forms contrôlent ces restrictions.
+- CALL indirect et JMP indirect sont suivis séparément : FF /2 et FF /4 near r/m16 ; FF /3 et FF /5 far MEM16 ; les huit formes d'adressage, les overrides de segment et les neuf FLAGS modélisés sont vérifiés par les suites dédiées.
+
+**Décision :** aucun pourcentage global n'est calculé. Le calcul pondéré attend la clôture des registres de formes pour les 93 entrées, y compris les interactions de préfixes et les chemins source/binaire.
+
+## Avertissement de fraîcheur — matrice de référence historique (25 novembre 2026)
+
+La matrice de 93 entrées et les synthèses chiffrées de ce document sont un **instantané historique de l'audit statique du 24 novembre sur `main`**. Elles ne doivent pas être utilisées comme état courant de la branche `audit/niveau-3-chapitres-12-17`.
+
+Depuis cet instantané, la branche d'audit contient notamment des suites dédiées et des contrôles CI pour les instructions de chaîne, les E/S, les ajustements BCD, les rotations/décalages, les transferts indirects, XCHG, LEA, LDS/LES, XLAT et les matrices ModR/M. Certaines cellules « Non » ou « À faire » de la table historique sont donc obsolètes. À l'inverse, la réussite d'une suite dédiée ne suffit pas à passer automatiquement une entrée à « Oui » : il faut vérifier toutes ses formes, ses contraintes, ses effets architecturaux et les chemins assembleur/désassembleur/exécution concernés.
+
+**Aucun nouveau pourcentage global sur 93 entrées n'est publié dans cette mise à jour.** Il faut d'abord reconstruire la matrice à partir d'un registre de formes canonique et de résultats actuels, sans réutiliser les statuts historiques comme s'ils étaient encore valables. Les limites du modèle logiciel (BIU, bus, temporisations physiques, signaux externes et événements matériels) doivent rester séparées de la couverture fonctionnelle du simulateur.
+
+## 8. Actualisation ciblée — MUL, IMUL, DIV et IDIV (26 novembre 2026)
+
+Les quatre entrées ont désormais une validation détaillée des formes 8086 à un opérande :
+
+- F6 /4 et F7 /4 : MUL r/m8 et r/m16.
+- F6 /5 et F7 /5 : IMUL r/m8 et r/m16.
+- F6 /6 et F7 /6 : DIV r/m8 et r/m16.
+- F6 /7 et F7 /7 : IDIV r/m8 et r/m16.
+- F6/F7 /1 reste réservé ; il est conservé comme forme invalide et ne doit pas être interprété comme une instruction.
+
+**Résultats dédiés du commit 531f1a7ba7c51fcf62fa2ba20e53b9dc864b83a6 :**
+
+| Contrôle | Résultat |
+|---|---:|
+| Suite BCD + MUL/DIV | 6 812 réussis, 0 échec |
+| Suite mémoire MUL/IMUL/DIV/IDIV | 1 091 réussis, 0 échec |
+| Encodages/désassemblages mémoire | 392 |
+| Overrides de segment | 32 |
+| Exécutions mémoire source/binaires | 384 |
+| Erreurs de division mémoire source/binaires | 16 |
+| Extensions F6/F7 contrôlées | 16 |
+| Vecteurs MUL/IMUL | 1 300 |
+| Vecteurs DIV/IDIV | 380 |
+
+La suite mémoire couvre les huit formes d'adressage effectif, les déplacements disp8/disp16, l'adressage direct, les registres byte/word, les contraintes d'opérandes, les quatre overrides de segment et les chemins source/binaire. Les tests de division vérifient le vecteur 0, le non-engagement du quotient en cas d'erreur et le retour par IRET lorsque le vecteur est initialisé.
+
+**Règle IDIV spécifique au 8086 original :** le manuel Intel d'octobre 1979, section IDIV, p. 2-37, fixe les quotients à -127..+127 pour r/m8 et -32767..+32767 pour r/m16. Les valeurs -128 et -32768 déclenchent donc l'interruption de division sur ce modèle historique. Ne pas remplacer ces limites par celles de générations x86 ultérieures. [Manuel Intel 8086 Family User's Manual (1979)](https://www.inf.pucrs.br/~calazans/undergrad/orgcomp_EC/mat_microproc/intel-8086_family_Users_Manual.pdf).
+
+**Préfixes :** les quatre overrides de segment ont été exercés avec les quatre instructions et les deux tailles mémoire, en source et en binaire. Les formes registre seules ne prennent pas d'override de segment dans la syntaxe de l'assembleur. REP/REPE/REPNE/REPZ sont rejetés pour ces opérations. Le préfixe LOCK, en revanche, est encodé et conservé : le manuel 8086 décrit LOCK comme un préfixe qui active le signal de bus pendant l'instruction suivante en mode maximum, sans restriction ISA moderne par destination mémoire. Le simulateur ne reproduit pas le signal physique ni l'arbitrage du bus.
+
+**Portée de la réconciliation :** les quatre lignes de la matrice sont passées à Tests = Oui selon la définition de cette colonne (formes encodées/décodées et contrôles indépendants source/binaire). Cela ne certifie ni les 93 entrées globalement, ni le modèle matériel complet du 8086. Les limites BIU, bus, cycles, signaux externes et tous les états FLAGS indéfinis restent hors de cette validation.

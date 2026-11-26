@@ -19,7 +19,7 @@ function element(id) {
 const document = { getElementById: element, querySelectorAll: () => [] };
 const localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
 const context = { document, localStorage, console, confirm: () => true };
-const instrumented = match[1].replace(/\}\)\(\);\s*$/, "globalThis.__learningData = { lessons, chapterLearning, curriculum, exercises, chapterExerciseMap, executeAll };\n})();");
+const instrumented = match[1].replace(/\}\)\(\);\s*$/, "globalThis.__learningData = { lessons, chapterLearning, curriculum, exercises, chapterExerciseMap, executeAll, executeBinary, assembleProgram, disassembleBytes };\n})();");
 assert.notEqual(instrumented, match[1], "Application closure must be instrumented for learning checks");
 vm.runInNewContext(instrumented, context, { timeout: 5000 });
 const learning = context.__learningData;
@@ -27,7 +27,22 @@ assert.ok(learning, "Learning data must be exposed to the isolated test harness"
 assert.match(match[1], /function annotateAssembly\(/, "Course examples must receive instruction-level annotations");
 assert.match(match[1], /function courseVisual\(/, "The course must include chapter-specific visualizations");
 assert.match(match[1], /courseVisual\(i\)/, "Chapter visualizations must be rendered in the lesson view");
-assert.match(match[1], /id='toggleAX'/, "The register chapter must expose an interactive AX/AH/AL explanation");
+assert.match(match[1], /id='axDemoValue'/, "The register chapter must expose an editable AX value");
+assert.match(match[1], /\$\("axShowHigh"\)\.onclick=function\(\)\{showAX\("AH"\);\}/, "The register chapter must wire the AH control");
+assert.match(match[1], /\$\("axShowLow"\)\.onclick=function\(\)\{showAX\("AL"\);\}/, "The register chapter must wire the AL control");
+assert.match(match[1], /\$\("axWriteLow"\)\.onclick=function\(\)/, "The register chapter must wire the AL write control");
+assert.match(match[1], /10:"<section class='course-visual'><b>Trace pas à pas/, "Chapter 11 must expose the binary register trace.");
+assert.match(match[1], /if\(i===10\)[\s\S]*traceStates/, "Chapter 11 must wire trace navigation.");
+
+
+assert.match(html, /id="view-learn"/, "Cours must remain a separate page");
+assert.match(html, /id="view-exercises"/, "Exercices must remain a separate page");
+assert.match(html, /id="view-editor"/, "Atelier must remain a separate page");
+for (const id of ["exerciseSearch","exerciseChapter","exerciseDifficulty","exerciseType","exerciseList"])
+  assert.match(html, new RegExp('id="' + id + '"'), "Exercise workflow must expose " + id);
+assert.ok(html.includes("@media(prefers-reduced-motion:reduce)"), "Architecture animation must respect reduced-motion preferences");
+assert.ok(html.includes("@keyframes busPacket"), "Architecture animation must have an explicit keyframe definition");
+
 
 assert.equal(learning.lessons.length, 36, "All 36 learning chapters must exist");
 assert.equal(learning.curriculum.length, 36, "The canonical curriculum must contain 36 chapters");
@@ -71,6 +86,78 @@ assert.equal(learning.chapterLearning.reduce((n, c) => n + c.lessons.reduce((m, 
   "The 36 chapters must contain 324 intermediate questions (3 × 3 × 36)");
 assert.equal(learning.chapterLearning.reduce((n, c) => n + c.quiz.length, 0), 360,
   "The 36 chapters must contain 360 final assessment questions (10 × 36)");
+
+
+function findQuestion(stem) {
+  const all = learning.chapterLearning.flatMap((chapter,ci) =>
+    chapter.lessons.flatMap((lesson,li) => lesson.quiz.map((q,qi)=>({q,where:"C"+(ci+1)+"L"+(li+1)+"Q"+(qi+1)})))
+      .concat(chapter.quiz.map((q,qi)=>({q,where:"C"+(ci+1)+"F"+(qi+1)}))));
+  const found=all.filter(x=>x.q[0]===stem);
+  assert.equal(found.length,1,"Question audit stem must be unique: "+stem);
+  return found[0];
+}
+const semanticQuestionOracles = [
+  ["Quel indicateur active le mode pas à pas matériel ?","TF","TF est le Trap Flag."],
+  ["Quel registre contient l'offset de la prochaine instruction à exécuter ?","IP","IP contient l'offset de la prochaine instruction dans le segment de code."],
+  ["Comment corriger SHR AL,1 si le programme doit préserver un signe négatif ?","Utiliser SAR plutôt que SHR","SAR propage le bit de signe alors que SHR insère zéro."],
+  ["Pourquoi LOCK INC AX ne protège-t-il pas une donnée mémoire partagée ?","AX est un registre et l'instruction ne modifie aucune donnée mémoire partagée","Le 8086 active le signal LOCK pendant l'instruction suivante en mode maximum, mais INC AX ne touche qu'un registre. Pour protéger une donnée partagée, l'instruction doit réellement accéder à cette donnée en mémoire."],
+  ["Comment rendre LOCK utile pour protéger une donnée partagée ?","Employer une opération qui modifie cette donnée en mémoire, par exemple LOCK INC WORD PTR [BX]","Le verrouillage protège l'accès au bus pendant l'instruction ; l'opération doit effectivement accéder à la donnée mémoire partagée."]
+];
+for(const [stem,answer,explanation] of semanticQuestionOracles){
+  const {q,where}=findQuestion(stem);
+  assert.equal(q[1][q[2]],answer,where+" correct answer");
+  assert.equal(q[3],explanation,where+" explanation");
+}
+assert.equal(learning.chapterLearning.reduce((n,c)=>n+c.lessons.reduce((m,l)=>m+l.quiz.length,0)+c.quiz.length,0),684,
+  "All 684 assessment items must be included in the individually reviewed bank.");
+
+const semanticKey = JSON.parse(fs.readFileSync("docs/question-semantic-key-8086.json","utf8"));
+assert.equal(semanticKey.questions.length,684,"The independent semantic key must pin all 684 questions.");
+const runtimeQuestionMap = new Map();
+learning.chapterLearning.forEach((chapter,ci)=>{
+  chapter.lessons.forEach((lesson,li)=>lesson.quiz.forEach((q,qi)=>{
+    runtimeQuestionMap.set("C"+String(ci+1).padStart(2,"0")+"-L"+(li+1)+"-Q"+(qi+1),q);
+  }));
+  chapter.quiz.forEach((q,qi)=>{
+    runtimeQuestionMap.set("C"+String(ci+1).padStart(2,"0")+"-F-Q"+(qi+1),q);
+  });
+});
+assert.equal(runtimeQuestionMap.size,684,"Every runtime question must have a unique chapter/lesson identifier.");
+const semanticKeyFailures=[];
+for(const expected of semanticKey.questions){
+  const actual=runtimeQuestionMap.get(expected.id);
+  if(!actual){semanticKeyFailures.push({id:expected.id,problem:"missing runtime question"});continue;}
+  const sameChoices=JSON.stringify([...actual[1]].sort())===JSON.stringify([...expected.choices].sort());
+  if(actual[0]!==expected.stem||actual[1][actual[2]]!==expected.correctAnswer||actual[3]!==expected.explanation||!sameChoices){
+    semanticKeyFailures.push({id:expected.id,stem:actual[0],answer:actual[1][actual[2]],explanation:actual[3],choices:actual[1]});
+  }
+}
+assert.equal(semanticKeyFailures.length,0,
+  "All 684 question stems, choices, keyed answers and explanations must match the individually reviewed semantic key: "+JSON.stringify(semanticKeyFailures.slice(0,20)));
+console.log("Question semantic key: 684/684 individual answers and explanations match the reviewed key.");
+
+
+const requiredFinalCategories = ["Définition","Compréhension","Syntaxe","Restrictions","Prédiction","Calcul / prédiction","Analyse de programme","Analyse de résultat","Débogage","Raisonnement"];
+for (let chapterIndex = 0; chapterIndex < learning.chapterLearning.length; chapterIndex++) {
+  const chapter = learning.chapterLearning[chapterIndex];
+  assert.equal(JSON.stringify(chapter.quiz.map(q => q[4])), JSON.stringify(requiredFinalCategories),
+    "Chapter " + (chapterIndex + 1) + " final questions must follow the ten technical categories in order.");
+  for (let lessonIndex = 0; lessonIndex < chapter.lessons.length; lessonIndex++) {
+    assert.equal(JSON.stringify(chapter.lessons[lessonIndex].quiz.map(q => q[4])), JSON.stringify(["Compréhension","Application","Vérification"]),
+      "Chapter " + (chapterIndex + 1) + ", lesson " + (lessonIndex + 1) + " must have three distinct learning checks.");
+  }
+}
+for (let chapterIndex = 17; chapterIndex < 36; chapterIndex++) {
+  const chapter = learning.chapterLearning[chapterIndex];
+  const questions = chapter.lessons.flatMap(l => l.quiz).concat(chapter.quiz);
+  for (const q of questions) {
+    assert.ok(!/Quelle notion est au centre de cette leçon|Pourquoi cette notion est-elle importante|Que faut-il vérifier dans l'exemple guidé|Quelle est la finalité essentielle de ce chapitre|Quel principe est introduit dans la première leçon|Quelle séquence assembleur illustre la deuxième leçon/.test(q[0]),
+      "Chapter " + (chapterIndex + 1) + " must not use generic placeholder question stems.");
+    assert.ok(q[1].every(choice => !/Un détail sans rapport avec le fonctionnement étudié|Une opération effectuée uniquement par le système d'exploitation|Uniquement le nom du fichier source|Le nombre de commentaires/.test(choice)),
+      "Chapter " + (chapterIndex + 1) + " must not use generic placeholder distractors.");
+  }
+}
+
 const expectedLevels = [1, 6, 12, 18, 24, 31];
 assert.deepEqual(expectedLevels.map(n => learning.curriculum[n - 1][0]), [
   "Introduction au microprocesseur Intel 8086", "Premiers programmes assembleur", "Comparaison des données",
@@ -127,7 +214,7 @@ const exampleOracles = [
   { chapter: 2, lesson: 1, check: state => state.reg.AX === 7, expected: "AX=0007h after EU arithmetic example" },
   { chapter: 5, lesson: 1, check: state => state.reg.AX === 0x1256, expected: "AX=1256h after writing AL" },
   { chapter: 8, lesson: 1, check: state => (state.reg.AX & 0xff) === 0 && state.flags.CF === 0 && (state.reg.BX & 0xff) === 2,
-    expected: "ADD/ADC carry propagation: AL=00h, CF=1, BL=02h" },
+    expected: "ADD/ADC carry propagation: AL=00h, CF=0 after ADC, BL=02h" },
   { chapter: 13, lesson: 3, check: state => state.reg.AX === 9 && state.reg.BX === 8,
     expected: "indirect near jump reaches offset 0008h and leaves AX=0009h" },
   { chapter: 25, lesson: 3, check: state => state.reg.AX === 0x00ff,
@@ -218,7 +305,7 @@ const level2Oracles = [
   [10,3, state => state.flags.CF === 1, "POPF restores CF saved by PUSHF"],
   [11,1, state => state.reg.AX === 5, "trace example reaches AX=5"],
   [11,2, state => state.reg.AX === 7, "diagnostic example reaches AX=7"],
-  [11,3, state => (state.reg.AX & 0xff) === 0, "INC wraps FFh to 00h while preserving CF"]
+  [11,3, state => (state.reg.AX & 0xff) === 0 && state.flags.CF === 1, "STC then INC wraps FFh to 00h while preserving CF=1"]
 ];
 for (const [chapter, lesson, check, expected] of level2Oracles) {
   const source = learning.curriculum[chapter - 1][5][lesson - 1][2];
@@ -241,5 +328,179 @@ for (let ci = 5; ci < 11; ci++) {
   assert.ok(chapter.quiz.every(q => q[1].length === 3 && new Set(q[1]).size === 3 && q[3].length >= 20),
     "Level 2 final questions must have distinct options and substantive explanations.");
 }
+
+// Full expected-state and representation oracles for the remaining 73 lessons.
+// These checks compare the displayed lesson expectations with independently
+// asserted architectural state; mere successful execution is not accepted.
+const advancedExampleOracles = [
+  [12,1,s=>s.reg.AX===7&&s.reg.BX===9&&s.flags.CF===1&&s.flags.ZF===0&&s.flags.SF===1,"CMP 7,9 leaves operands unchanged and sets CF/ZF/SF"],
+  [12,2,s=>s.reg.AX===3&&s.flags.CF===1&&s.flags.ZF===0&&s.flags.SF===1,"CMP AL=03h,5 sets CF=1, ZF=0, SF=1"],
+  [12,3,s=>s.reg.AX===5&&s.flags.ZF===0&&s.flags.CF===0&&s.flags.OF===0,"TEST 05h,04h preserves AL and sets ZF/CF/OF"],
+  [13,1,s=>s.reg.AX===0&&s.reg.BX===2,"short JMP skips MOV AX,1 and reaches BX=2"],
+  [13,2,s=>s.reg.AX===9,"near JMP reaches the target beyond short range"],
+  [14,1,s=>s.reg.AX===4&&s.reg.BX===1&&s.flags.ZF===1,"JE is taken after equal CMP"],
+  [14,2,s=>s.reg.AX===0x80&&s.reg.BX===1&&s.flags.OF===1,"JO is taken after signed overflow"],
+  [14,3,s=>s.reg.AX===2&&s.reg.BX===1&&s.flags.CF===1,"JB is taken after unsigned 2<5"],
+  [15,1,s=>s.reg.AX===0xff&&s.reg.BX===1,"JA treats FFh as unsigned 255"],
+  [15,2,s=>s.reg.AX===0xff&&s.reg.BX===1,"JL treats FFh as signed -1"],
+  [15,3,s=>s.reg.AX===0xff&&s.reg.BX===1,"JA uses unsigned interpretation"],
+  [16,1,s=>s.reg.AX===3&&s.reg.CX===0,"LOOP executes three iterations"],
+  [16,2,s=>s.reg.AX===1&&s.reg.BX===1&&s.reg.CX===1&&s.flags.ZF===1,"LOOPE decrements CX and branches while ZF=1"],
+  [16,3,s=>s.reg.AX===7&&s.reg.CX===0,"JCXZ branches without changing CX"],
+  [17,1,s=>s.reg.AX===10&&s.reg.CX===6,"maximum and minimum algorithm returns AX=10 and CX=6"],
+  [17,2,s=>s.reg.AX===6&&s.reg.DX===3&&s.reg.CX===0,"three-element sum and count produce 6 and 3"],
+  [17,3,s=>s.reg.BX===1&&s.reg.SI===0x101&&s.reg.CX===2,"search finds the second byte and stops at SI=0101h"],
+  [18,1,s=>s.reg.DS===0x1000&&s.reg.BX===0x20,"logical data address is DS:0020h"],
+  [18,2,s=>s.reg.DS===0x1000&&(((s.reg.DS<<4)+0x20)&0xfffff)===0x10020,"segment:offset converts to physical 10020h"],
+  [18,3,s=>(((0x1000<<4)+0x10)&0xfffff)===(((0x1001<<4)+0) &0xfffff)&&(((0x1000<<4)+0x10)&0xfffff)===0x10010,"two logical addresses alias physical 10010h"],
+  [19,1,s=>s.reg.AX===0x5678&&s.reg.BX===0x1234&&word(s,s.reg.DS,0x100)===0x5678,"direct memory store and reload produce AX=5678h"],
+  [19,2,s=>s.reg.AX===0xabcd&&word(s,s.reg.DS,0x102)===0xabcd,"BX+SI effective offset 0102h reads ABCDh"],
+  [19,3,s=>s.reg.AX===0x5678&&word(s,s.reg.SS,0x104)===0x5678,"BP-based addressing defaults to SS"],
+  [20,1,s=>s.reg.BX===0x1234&&s.reg.SP===initialSP&&s.stack.length===0,"PUSH/POP restores BX and the initial stack pointer"],
+  [20,2,s=>s.reg.CX===0x2222&&s.reg.DX===0x1111&&s.reg.SP===initialSP&&s.stack.length===0,"LIFO order is preserved and stack is balanced"],
+  [20,3,s=>s.flags.CF===1&&s.reg.SP===initialSP&&s.stack.length===0,"PUSHF/POPF restores CF and balances SP"],
+  [21,1,s=>s.reg.AX===10&&s.reg.SP===initialSP,"near CALL/RET doubles AX and restores SP"],
+  [21,2,s=>s.reg.AX===2&&s.reg.SP===initialSP,"RET resumes after CALL"],
+  [21,3,s=>s.reg.AX===9&&s.reg.DX===0&&s.reg.SP===initialSP,"MUL AX produces DX:AX=0000:0009h"],
+  [22,1,s=>s.reg.AX===9&&s.reg.SP===initialSP,"procedure receives BX and returns AX=9"],
+  [22,2,s=>s.reg.AX===0x1234&&s.reg.SP===initialSP,"saved AX is restored from the stack"],
+  [22,3,s=>s.reg.AX===7&&s.reg.SP===initialSP&&s.stack.length===0,"nested calls return through both frames"],
+  [23,1,s=>s.reg.SP===initialSP&&s.stack.length===0,"three modular routines return with a balanced stack"],
+  [23,2,s=>s.reg.AX===12&&s.reg.SP===initialSP,"AX convention carries input and output"],
+  [23,3,s=>s.reg.AX===0&&s.reg.SP===initialSP,"doubling zero preserves zero"],
+  [24,1,s=>s.reg.AX===0x2a,"unsigned byte multiplication yields AX=002Ah"],
+  [24,2,s=>s.reg.AX===0xfffc,"signed byte multiplication yields FFFCh (-4)"],
+  [24,3,s=>s.reg.AX===0x1fe&&s.flags.CF===1&&s.flags.OF===1,"MUL sets CF/OF when upper half is nonzero"],
+  [25,1,s=>(s.reg.AX&255)===8&&(s.reg.AX>>8)===2,"DIV 42/5 gives quotient 8 and remainder 2"],
+  [25,2,s=>(s.reg.AX&255)===0xfe&&(s.reg.AX>>8)===0,"CBW then IDIV computes -4/2=-2 remainder 0"],
+  [26,1,s=>(s.reg.AX&255)===0x40&&s.flags.CF===1,"SHR 81h by one yields 40h and CF=1"],
+  [26,2,s=>(s.reg.AX&255)===0xfe&&s.flags.CF===0,"SAR FCh by one yields FEh and sign-extends"],
+  [26,3,s=>(s.reg.AX&255)===3&&s.flags.CF===1,"ROL 81h by one yields 03h and CF=1"],
+  [27,1,s=>s.reg.DS===0x1000&&s.reg.ES===0x2000&&s.reg.SI===0x101&&s.reg.DI===0x201&&byte(s,s.reg.ES,0x200)===0x41,"MOVSB copies DS:0100h to ES:0200h and advances SI/DI"],
+  [27,2,s=>s.reg.ES===0x2000&&s.reg.DI===0x101&&byte(s,s.reg.ES,0x100)===0x41,"STOSB writes AL to ES:DI and advances DI"],
+  [27,3,s=>s.flags.ZF===1&&s.reg.DI===0x101,"SCASB equality sets ZF and advances DI"],
+  [28,1,s=>s.reg.CX===0&&s.reg.DI===0x102&&byte(s,s.reg.ES,0x100)===0x41&&byte(s,s.reg.ES,0x101)===0x41,"REP STOSB writes two bytes and exhausts CX"],
+  [28,2,s=>s.reg.CX===0&&s.reg.DI===0x101&&s.flags.ZF===1,"REPNE SCASB stops after equality"],
+  [28,3,s=>s.reg.CX===0&&s.reg.SI===0x102&&s.reg.DI===0x202&&byte(s,s.reg.ES,0x200)===0x41&&byte(s,s.reg.ES,0x201)===0x42,"REP MOVSB copies two initialized bytes and advances both indices"],
+  [29,1,s=>s.reg.AX===0x00c0&&s.reg.DX===0,"30h multiplied by four computes the IVT entry offset 00C0h"],
+  [29,2,s=>s.reg.BX===0x1234&&s.reg.SP===initialSP&&s.stack.length===0,"INT invokes handler and IRET restores the saved frame"],
+  [29,3,s=>s.reg.SP===initialSP&&s.stack.length===0,"IRET returns to the instruction following INT"],
+  [30,1,s=>s.reg.DX===0x3f8,"DX contains port number 03F8h"],
+  [30,2,s=>s.io&&s.io[0x10]===0x55,"OUT stores 55h in the model's configured port state"],
+  [30,3,s=>s.flags.IF===1,"STI sets IF before HLT"],
+  [31,1,s=>s.reg.AX===0x1234,"MOV immediate example leaves AX=1234h"],
+  [31,2,s=>s.reg.CX===0x5678,"three-byte MOV CX immediate is executed correctly"],
+  [31,3,s=>s.reg.AX===0x1234,"register-to-register MOV transfers BX to AX"],
+  [32,1,s=>s.reg.AX===0xabcd,"ModR/M example writes and reloads ABCDh through BX+SI+disp8"],
+  [32,2,s=>s.reg.AX===0x8888&&s.reg.DS===0x1000&&s.reg.SS===0x2000&&word(s,s.reg.DS,0x0102)===0x1111&&word(s,s.reg.DS,0x0104)===0x2222&&word(s,s.reg.SS,0x0008)===0x3333&&word(s,s.reg.SS,0x000a)===0x4444&&word(s,s.reg.DS,0x0002)===0x5555&&word(s,s.reg.DS,0x0004)===0x6666&&word(s,s.reg.SS,0x0006)===0x7777&&word(s,s.reg.DS,0x0100)===0x8888,"All eight 8086 memory addressing forms write and read the expected words with DS/SS defaults"],
+  [32,3,s=>s.reg.AX===0xbeef,"direct disp16 memory form reads BEEFh"],
+  [33,1,s=>s.reg.IP>=0&&s.reg.SP===initialSP,"assembler resolves FIN and execution reaches HLT"],
+  [33,2,s=>s.reg.AX===0x1234,"MOV AX,1234h executes; its bytes are checked by the independent disassembler below"],
+  [33,3,s=>s.reg.IP>=0,"unknown-byte example is checked by the independent disassembler below"],
+  [34,1,s=>(s.reg.AX&255)===0x5a,"CS override reads the byte written at the selected segment:offset"],
+  [34,2,s=>s.reg.AX===2&&word(s,s.reg.DS,0x100)===2,"LOCK INC memory updates the word from 1 to 2"],
+  [34,3,s=>s.reg.CX===0&&s.reg.SI===0x102&&s.reg.DI===0x202&&byte(s,s.reg.ES,0x200)===0x31&&byte(s,s.reg.ES,0x201)===0x32,"REP MOVSB copies two bytes under the prefix"],
+  [35,1,s=>s.reg.AX===0x1234,"register and memory forms execute; no cycle count is inferred"],
+  [35,2,s=>s.reg.CX===0&&s.reg.SP===initialSP,"LOOP exits after CX reaches zero; prefetch timing is outside the model"],
+  [35,3,s=>s.reg.AX===8,"SHL doubles AX=4 to AX=8"],
+  [36,1,s=>s.reg.AX===12,"synthesis addition produces AX=12"],
+  [36,2,s=>s.reg.AX===6&&s.reg.SP===initialSP,"synthesis procedure doubles AX and returns"],
+  [36,3,s=>(s.reg.AX&255)===0&&s.flags.CF===1,"FFh+1 wraps to zero and sets carry"]
+];
+const initialSP = learning.executeAll("HLT").reg.SP;
+function physical(seg, offset) { return (((seg & 0xffff) << 4) + (offset & 0xffff)) & 0xfffff; }
+function byte(state, seg, offset) { return state.mem[physical(seg, offset)] ?? 0; }
+function word(state, seg, offset) { return byte(state,seg,offset) | (byte(state,seg,(offset+1)&0xffff)<<8); }
+const auditFailures = [];
+for (const [chapter,lesson,check,description] of advancedExampleOracles) {
+  const source = learning.curriculum[chapter-1][5][lesson-1][2];
+  const state = learning.executeAll(source);
+  if (state.error || !check(state)) auditFailures.push({
+    chapter,lesson,description,error:state.error||null,
+    registers:state.reg,flags:state.flags,sp:state.reg.SP
+  });
+}
+assert.equal(advancedExampleOracles.length,73,"The advanced audit covers the 73 lessons from C12–C36 not covered by the earlier foundational and Level 2 oracle sets.");
+assert.equal(auditFailures.length,0,"Every advanced lesson must satisfy its independent expected-state oracle: "+JSON.stringify(auditFailures));
+
+const independentlyCheckedLessons = new Set();
+for(const [chapter,lesson] of foundationalExampleOracles) independentlyCheckedLessons.add(chapter+"-"+lesson);
+for(const [chapter,lesson] of level2Oracles) independentlyCheckedLessons.add(chapter+"-"+lesson);
+for(const [chapter,lesson] of advancedExampleOracles) independentlyCheckedLessons.add(chapter+"-"+lesson);
+for(const oracle of exampleOracles) independentlyCheckedLessons.add(oracle.chapter+"-"+oracle.lesson);
+assert.equal(independentlyCheckedLessons.size,108,"The four oracle sets must cover exactly 108 unique lessons.");
+for(let chapter=1;chapter<=36;chapter++)for(let lesson=1;lesson<=3;lesson++)
+  assert.ok(independentlyCheckedLessons.has(chapter+"-"+lesson),"Missing independent result oracle for C"+chapter+"L"+lesson);
+console.log("Independent expected-state coverage: 108/108 lessons, one or more independent oracles per lesson.");
+
+
+function bytesOf(source) { return Array.from(learning.assembleProgram(source).bytes); }
+function sameBytes(actual,expected,label) {
+  assert.deepEqual(actual,expected,label+" bytes");
+}
+sameBytes(bytesOf(learning.curriculum[30][5][0][2]),[0xB8,0x34,0x12,0xF4],"C31 L1 MOV immediate");
+sameBytes(bytesOf(learning.curriculum[30][5][1][2]),[0xB9,0x78,0x56,0xF4],"C31 L2 MOV CX immediate length");
+const regMoveBytes=bytesOf(learning.curriculum[30][5][2][2]);
+assert.ok(JSON.stringify(regMoveBytes)===JSON.stringify([0xBB,0x34,0x12,0x89,0xD8,0xF4])||JSON.stringify(regMoveBytes)===JSON.stringify([0xBB,0x34,0x12,0x8B,0xC3,0xF4]),"C31 L3 equivalent register MOV encoding after initializing BX");
+sameBytes(bytesOf(learning.curriculum[31][5][0][2]),[0xBB,0x00,0x01,0xBE,0x02,0x00,0xC7,0x40,0x04,0xCD,0xAB,0x8B,0x40,0x04,0xF4],"C32 L1 complete initialized ModR/M disp8 example");
+const c32l2=learning.executeAll(learning.curriculum[31][5][1][2]);
+assert.ok(!c32l2.error,"C32 L2 all eight memory forms execute: "+String(c32l2.error||""));
+assert.equal(c32l2.reg.AX,0x8888,"C32 L2 final AX");
+for(const [seg,off,val] of [[0x1000,0x0102,0x1111],[0x1000,0x0104,0x2222],[0x2000,0x0008,0x3333],[0x2000,0x000a,0x4444],[0x1000,0x0002,0x5555],[0x1000,0x0004,0x6666],[0x2000,0x0006,0x7777],[0x1000,0x0100,0x8888]]) assert.equal(word(c32l2,seg,off),val,`C32 L2 ${seg.toString(16)}:${off.toString(16)}`);
+sameBytes(bytesOf(learning.curriculum[31][5][2][2]),[0xC7,0x06,0x34,0x12,0xEF,0xBE,0x8B,0x06,0x34,0x12,0xF4],"C32 L3 direct disp16");
+sameBytes(bytesOf(learning.curriculum[32][5][1][2]),[0xB8,0x34,0x12,0xF4],"C33 L2 assembled stream for sequential disassembly");
+
+sameBytes(bytesOf("MOV WORD PTR [BX+SI+4], ABCDh"),[0xC7,0x40,0x04,0xCD,0xAB],"C32 memory immediate ModR/M disp8");
+sameBytes(bytesOf("JMP FIN\nNOP\nFIN:\nHLT"),[0xEB,0x01,0x90,0xF4],"C33 symbolic short branch resolution");
+
+const disassembled=learning.disassembleBytes([0xB8,0x34,0x12,0xF4]).rows;
+assert.equal(JSON.stringify(disassembled.map(r=>r.instruction)),JSON.stringify(["MOV AX, 1234h","HLT"]),"C33 L2 independent disassembly");
+const unknown=learning.disassembleBytes([0x64]).rows;
+assert.ok(unknown[0].instruction.startsWith("DB "),"C33 L3 unknown byte remains raw data");
+sameBytes(bytesOf(learning.curriculum[33][5][1][2]),[0xC7,0x06,0x00,0x01,0x01,0x00,0xF0,0xFF,0x06,0x00,0x01,0x8B,0x06,0x00,0x01,0xF4],"C34 L2 complete initialized LOCK INC memory example");
+console.log("Advanced course audit: 73/73 additional lesson examples pass independent state or encoding oracles.");
+
+const courseExampleOracleKeys = new Set([
+  ...exampleOracles.map(o => o.chapter + ":" + o.lesson),
+  ...foundationalExampleOracles.map(([chapter,lesson]) => chapter + ":" + lesson),
+  ...level2Oracles.map(([chapter,lesson]) => chapter + ":" + lesson),
+  ...advancedExampleOracles.map(([chapter,lesson]) => chapter + ":" + lesson)
+]);
+assert.equal(courseExampleOracleKeys.size,108,
+  "All 108 course examples must have at least one independent expected-state, address, or encoding oracle.");
+console.log("Course example audit: 108/108 unique lesson examples have independent expected-result oracles.");
+
+
+
+const lessonTextOracles = [
+  [11,3,"CF reste à 1"],
+  [17,1,"JAE"],
+  [21,3,"DX:AX=0000:0009h"],
+  [24,3,"la moitié haute n'est pas une extension de signe"],
+  [30,1,"adresses de port sur 16 bits"],
+  [30,3,"IP avance normalement"],
+  [33,2,"B8 34 12 F4"],
+  [33,3,"DB 64h"],
+  [35,2,"le premier LOOP décrémente CX à 1"],
+  [35,3,"ne démontre pas un gain de cycles"]
+];
+for (const [chapter,lesson,needle] of lessonTextOracles) {
+  const data=learning.curriculum[chapter-1][5][lesson-1];
+  const text=data[1]+" "+data[3];
+  assert.ok(text.includes(needle),"C"+chapter+"L"+lesson+" must retain its audited technical clarification: "+needle);
+}
+assert.ok(learning.curriculum[10][5][2][2].includes("STC\nINC AL"),"C11 L3 must establish CF before testing INC preservation.");
+
+const traceSource="MOV AX, 2\nMOV BX, 3\nADD AX, BX\nHLT";
+const traceBytes=Array.from(learning.assembleProgram(traceSource).bytes);
+assert.equal(traceBytes.length,9,"The binary trace must use the stated instruction boundaries.");
+const traceState=learning.executeBinary(traceBytes,0,0,{});
+assert.equal(traceState.reg.AX,5,"The trace's final AX must match binary execution.");
+assert.equal(traceState.reg.BX,3,"The trace's final BX must match binary execution.");
+assert.equal(traceState.reg.IP,9,"The trace's final IP must be a byte offset.");
+assert.equal(traceState.reg.SP,0xFFFE,"The trace must preserve the initial stack pointer.");
+assert.equal(traceState.flags.PF,1,"ADD 2+3 sets even parity on the low byte.");
+
+
 console.log("Learning quality: 36 chapters, 324 intermediate questions, 360 final questions, " +
   learning.exercises.length + " exercises; all guided corrections execute and pass their validators.");

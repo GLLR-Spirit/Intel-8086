@@ -72,10 +72,100 @@ Consulter [coverage-audit-8086.md](coverage-audit-8086.md) pour les statuts sép
 
 ## Révision de la matrice 8C/8E et balayage structurel — 25 novembre 2026
 
-La réinspection de la table 4-13 du manuel Intel 8086 Family User's Manual a révélé une erreur dans une ancienne hypothèse de test : le champ de sélection du registre de segment est `0SR`, et non un champ 3 bits replié par `reg & 3`. Les sélecteurs `/0` à `/3` désignent ES, CS, SS et DS ; `/4` à `/7` sont indiqués « not used ». Le désassembleur et les suites de tests ont été corrigés en conséquence. `MOV CS, r/m16` via `8E /1` reste accepté dans le mode 8086 original.
+La réinspection de la table 4-13 du manuel Intel 8086 Family User's Manual confirme que le champ de sélection du registre de segment est `0SR` : `/0` ES, `/1` CS, `/2` SS, `/3` DS ; `/4` à `/7` sont « not used ». La référence Intel ASM86 précise que CS n'est pas autorisé comme destination de MOV. Ainsi, `MOV r/m16, CS` (`8C /1`) reste valide, mais `MOV CS, r/m16` (`8E /1`) est rejeté par l'assembleur et conservé comme octet non décodé dans le désassembleur.
 
 La CI inclut désormais un balayage structurel des 256 valeurs d'opcode primaire et des 256 valeurs ModR/M pour chacune des 67 familles décodées avec ModR/M. Le test vérifie l'absence de crash, la progression continue des offsets et la consommation exacte des octets. Il ne valide pas le sens de chaque opcode ni les effets d'exécution : ces assertions exigent toujours des oracles indépendants spécifiques.
 
 Le même lot corrige le désassembleur pour que son traitement de LOCK reste cohérent avec le sous-ensemble verrouillable accepté par l'analyseur du laboratoire : destination mémoire obligatoire pour les opérations prises en charge, avec traitement distinct de XCHG mémoire. Cela ne constitue pas une simulation de la sortie LOCK, du bus ou de l'arbitrage.
 
 Validation CI : run 45512297498, commit `f0573072cf57ad741a0b6e33165f0ffa61d9cd75` — success, toutes les étapes exécutées.
+
+## Recoupement indépendant par assembleur externe — 25 novembre 2026
+
+Un contrôle différentiel a été ajouté dans `tests/gnu-as-crosscheck.cjs` et intégré au workflow CI. Il assemble le même programme avec l'assembleur du laboratoire et GNU `as` en mode `.code16`, extrait le segment `.text` avec `objcopy`, puis compare les flux octet par octet.
+
+Le vecteur couvre explicitement :
+
+- MOV immédiat vers AX et BX ;
+- CMP registre-registre et accumulateur-immédiat ;
+- JMP direct court, JMP direct near hors portée rel8 et JMP indirect par BX ;
+- les 16 opcodes Jcc de `70h` à `7Fh` ;
+- LOOPNE, LOOPE, LOOP et JCXZ (`E0h` à `E3h`).
+
+Les 209 octets du programme sont comparés intégralement entre les deux assembleurs. En outre, 59 octets clés sont épinglés à des valeurs fixes indépendantes afin d'éviter qu'une même erreur de génération ne passe simplement par égalité entre deux sorties. Le contrôle local a été exécuté avec GNU Binutils 2.44 ; le workflow CI sur le commit `56dd1e4d40220856fd72f940fa688f430f31242b` a réussi, y compris cette nouvelle étape.
+
+**Portée et limites :** ce recoupement confirme uniquement les formes et les cas présents dans ce vecteur. GNU `as` constitue une implémentation d'assemblage indépendante, pas un oracle matériel Intel ni une preuve d'exhaustivité. Il ne valide pas l'exécution réelle, les effets FLAGS, les indicateurs indéfinis, les cycles, les signaux de bus ou toutes les combinaisons ModR/M. Ces contrôles restent ouverts et doivent être étendus instruction par instruction.
+
+## Décalages, rotations et FLAGS — contrôle architectural ciblé — 25 novembre 2026
+
+La table Intel du *8086 Family User's Manual*, section « Shifts » et « Rotates » (p. 2-39), précise que le compteur peut être fourni par `CL` et atteindre 255 sur le 8086. Contrairement aux générations suivantes, le 8086 ne réduit pas le compteur aux cinq bits de poids faible. La même section précise notamment :
+
+- décalages : `AF` indéfini ; `PF/SF/ZF` mis à jour ; `CF` reçoit le dernier bit sorti ; `OF` indéfini pour un compte multibit et défini pour un décalage d'un bit ;
+- rotations : seuls `CF` et `OF` sont affectés ; `CF` reçoit le dernier bit tourné ; `OF` est indéfini pour un compte multibit ;
+- un compte nul ne modifie ni l'opérande ni les FLAGS.
+
+Le fichier `tests/shift-rotate-8086.cjs` compare le simulateur à un modèle de référence indépendant pour `SHL`, `SAL`, `SHR`, `SAR`, `ROL`, `ROR`, `RCL` et `RCR`, en 8 et 16 bits. Il couvre six motifs initiaux par taille, les deux états initiaux de CF et treize comptes (`0, 1, 2, 7, 8, 9, 15, 16, 17, 31, 32, 33, 255`). Il vérifie aussi huit encodages group-2 et le rejet des comptes immédiats autres que 1 sur le 8086.
+
+Résultat : **2 505 assertions réussies** dans le workflow CI du commit `03bff143da3561216842ee7bc1a10025d6805d2b` ([exécution CI](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45579293315)). Les indicateurs architecturaux indéfinis ne sont jamais comparés à une valeur arbitraire : `AF` des décalages et `OF` des opérations multibit sont exclus des assertions.
+
+La fiche d'instructions a été clarifiée pour énoncer explicitement les cas `OF` indéfini et le cas du compte nul. Le modèle logiciel peut produire une valeur concrète pour un indicateur indéfini ; cette valeur ne doit pas être présentée comme une garantie architecturale.
+
+**Limites :** ce lot valide les sémantiques testées du simulateur par rapport au modèle dérivé du manuel Intel. Il ne constitue pas une mesure sur silicium, ne vérifie pas les timings matériels et ne clôt pas l'audit des autres familles d'instructions ou de tous les cas de bord.
+
+## Ajustements BCD/ASCII et multiplication/division — 25 novembre 2026
+
+Une suite de référence distincte a été ajoutée dans `tests/bcd-multiply-divide-8086.cjs` et intégrée à la CI.
+
+### Ajustements décimaux et ASCII
+
+Les vecteurs couvrent les six instructions :
+
+- `AAA` et `AAS` : toutes les 256 valeurs initiales de AL, les deux états de AF et les deux états de CF, avec contrôle de AL, AH, AF et CF ;
+- `AAM` et `AAD` : la base implicite décimale 10 du 8086, des valeurs réparties sur AX et toutes les valeurs de AL avec AH nul ou non nul ;
+- `DAA` et `DAS` : toutes les 256 valeurs de AL avec les quatre combinaisons AF/CF, contrôle du résultat, AF, CF, SF, ZF et PF.
+
+Les six encodages canoniques sont comparés à des octets fixes et leur désassemblage est vérifié. Les indicateurs indéfinis ne sont pas comparés : SF/ZF/PF/OF après AAA/AAS, AF/CF/OF après AAM/AAD, et OF après DAA/DAS.
+
+### Multiplication et division
+
+- `MUL` et `IMUL` : 1 300 vecteurs 8/16 bits, contrôle des produits complets dans AX ou DX:AX et des seuls indicateurs définis CF/OF.
+- `DIV` et `IDIV` : 340 vecteurs couvrant les tailles 8/16 bits, les dividendes signés/non signés, les quotients valides, les dépassements de quotient et la division par zéro. Les FLAGS ne sont pas comparés, car ils sont indéfinis après ces opérations.
+
+### Résultat CI et correction de métadonnées
+
+Sur le commit `e1da4b507dc9786fc7cc19905dcc3732f365979f`, la CI a réussi avec **6 772 assertions** et aucune défaillance ([run CI](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45581069336)). Le total comprend 2 048 vecteurs AAA/AAS, 1 024 AAM/AAD, 2 048 DAA/DAS, 1 300 MUL/IMUL, 340 DIV/IDIV et 12 vérifications d'encodage/désassemblage BCD.
+
+La fiche de `NEG` contenait un statut erroné « Non pris en charge » alors que l'assembleur, le désassembleur et le moteur d'exécution possèdent des chemins pour cette instruction. Son statut a été corrigé en « Pris en charge » pour le simulateur et « Partiel » pour l'assembleur et le désassembleur, en attendant l'audit complet des formes mémoire. Les trois fiches BCD ont été mises à « Pris en charge » dans les trois composants, car leurs formes implicites uniques sont testées en exécution, assemblage et désassemblage.
+
+**Limites :** ces vecteurs valident le sous-ensemble décrit, pas toutes les formes mémoire ni l'ensemble des interactions entre instructions. Ils ne constituent pas une mesure sur processeur physique. Les comportements exacts des cas d'exception matériels, des timings et des indicateurs indéfinis restent hors de cette validation logicielle.
+
+## Complément — limite négative propre à IDIV sur 8086 — 25 novembre 2026
+
+Le manuel Intel *8086 Family User's Manual* d'octobre 1979 (section IDIV, p. 2-37) donne les plages de quotient suivantes pour le 8086 original :
+
+- diviseur 8 bits : −127 à +127 ;
+- diviseur 16 bits : −32 767 à +32 767.
+
+Le manuel précise qu'un quotient en dehors de ces plages déclenche l'interruption de type 0. Les processeurs ultérieurs ont élargi la borne négative et acceptent −128 et −32 768. Cette différence est également décrite dans la note Microsoft Q68599 sur les processeurs 8086/8088.
+
+L'ancien moteur acceptait à tort les deux valeurs minimales négatives. La borne basse de `executeMultiplyDivide` a été corrigée, les tests intégrés ont été adaptés, et la suite indépendante couvre maintenant explicitement `AX=FF80h, IDIV BL=1` ainsi que `DX:AX=FFFF8000h, IDIV BX=1` comme cas de dépassement.
+
+La CI sur le commit `2ebc6c23543694bbfa51ee42cd97edf501fa36bc` a réussi avec **6 792 assertions** : [run CI](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45581647925).
+
+**État à ce commit historique :** le simulateur signalait encore ces divisions invalides par une erreur contrôlée. Le complément ci-dessous décrit la correction ultérieure sur la même branche.
+
+## Interruption de division — raccordement au vecteur 0 — 25 novembre 2026
+
+Les erreurs de `DIV` et `IDIV` sont désormais raccordées au mécanisme d'interruption déjà présent dans le simulateur, au lieu d'être systématiquement remontées comme des erreurs terminales.
+
+- Dans l'exécution du programme source, un gestionnaire `VECTOR 0, ETIQUETTE` reçoit les divisions par zéro et les dépassements de quotient.
+- Dans l'exécution binaire, le moteur lit l'entrée IVT du vecteur 0 aux adresses physiques `00000h` à `00003h` (offset IP puis segment CS).
+- Les deux chemins empilent `FLAGS`, `CS` et l'IP de reprise dans cet ordre, effacent `IF` et `TF` à l'entrée, puis transfèrent le contrôle au gestionnaire.
+- `IRET` restaure le cadre et reprend après l'instruction `DIV`/`IDIV` fautive, conformément au comportement historique du 8086 pour cette exception.
+- Si le gestionnaire source n'est pas déclaré ou si l'entrée IVT binaire est absente/incomplète, le simulateur conserve un diagnostic explicite au lieu de poursuivre silencieusement.
+
+La suite `tests/divide-error-interrupt-8086.cjs` vérifie huit scénarios source et les huit scénarios correspondants en exécution binaire : division par zéro et dépassement de quotient, `DIV` et `IDIV`, opérandes 8 et 16 bits. Elle contrôle aussi la conservation de `AX`/`DX` sur le chemin d'exception, l'exécution du gestionnaire, l'effacement temporaire de `IF`/`TF`, la restauration des FLAGS, le retour à l'instruction suivant la division et la restauration de `SS:SP`. Deux cas supplémentaires vérifient le diagnostic en l'absence de gestionnaire.
+
+La suite complète de CI du commit `12239566043af5befb6201c58ca7ce11c8e5e06d` a réussi ; l'étape dédiée « Run 8086 divide-error interrupt tests » est verte (https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45583099100).
+
+**Périmètre restant :** cette correction modélise l'exception processeur de division de type 0 dans le moteur pédagogique. Elle ne simule pas les signaux électriques, les cycles, l'arbitrage des interruptions matérielles INTR/NMI ni le matériel physique. Les formes mémoire de `MUL`/`IMUL`/`DIV`/`IDIV` et l'audit approfondi de `NEG` restent à traiter séparément.

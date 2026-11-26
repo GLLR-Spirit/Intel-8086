@@ -292,13 +292,18 @@ test("RET et RETF rejettent un cadre de pile incompatible", () => {
 });
 categories.invalid++;
 
-test("RET avec ajustement impair reste refusé à l'exécution, bien que décodable", () => {
+test("RET avec ajustement impair est exécuté en source et en binaire", () => {
+  const source = "CALL SUB\nHLT\nSUB: RET 1";
   const decoded = api.disassemble([0xc2, 0x01, 0x00]);
   assert.equal(decoded.rows[0].instruction, "RET 0001h");
-  const result = api.execute("CALL SUB\nHLT\nSUB: RET 1");
-  assert.match(result.error, /ajustement impair non pris en charge/i);
+  const sourceState = runSource(source);
+  const { state: binaryState } = runBinary(source);
+  assert.equal(sourceState.reg.SP, 0xffff);
+  assert.equal(binaryState.reg.SP, 0xffff);
+  assert.equal(sourceState.stack.length, 0);
+  assert.equal(binaryState.stack.length, 0);
 });
-categories.invalid++;
+categories.stack++;
 
 test("IRET restaure FLAGS, CS et IP depuis un cadre VECTOR dans le moteur source", () => {
   const source = [
@@ -701,7 +706,8 @@ test("LOCK ADD mémoire — préfixe F0, validation et round-trip", () => {
   const lockRow=assembled.rows.find(row=>row.instruction.startsWith("LOCK"));
   assert.deepEqual(Array.from(lockRow.bytes.slice(0,2)),[0xf0,0x01]);
   assert.equal(binaryState.mem[0x100]|(binaryState.mem[0x101]<<8),3);
-  assert.throws(()=>api.assemble("LOCK CMP WORD PTR [BX], AX\nHLT"),/LOCK/);
+  const lockedCmp=api.assemble("LOCK CMP WORD PTR [BX], AX\nHLT");
+  assert.equal(lockedCmp.bytes[0],0xF0,"LOCK CMP is a valid 8086 prefixed instruction");
 });
 test("SAL et alias LOOPZ/LOOPNZ — encodages 8086 identiques", () => {
   compareSourceBinary("MOV AL, 80h\nSAL AL, 1\nHLT");
@@ -1233,23 +1239,21 @@ test("PUSHF expose les bits réservés 12–15 à 1 sur 8086", () => {
 });
 categories.stack++;
 
-test("LOCK est réservé aux opérations verrouillables avec destination mémoire", () => {
+test("LOCK 8086 est un préfixe accepté devant l'instruction suivante", () => {
   const cases = [
-    { bytes:[0xf0,0x01,0x07], valid:true, name:"LOCK ADD [BX],AX" },
-    { bytes:[0xf0,0xff,0x07], valid:true, name:"LOCK INC [BX]" },
-    { bytes:[0xf0,0x87,0x07], valid:true, name:"LOCK XCHG [BX],AX" },
-    { bytes:[0xf0,0x89,0x07], valid:false, name:"LOCK MOV [BX],AX" },
-    { bytes:[0xf0,0x03,0x07], valid:false, name:"LOCK ADD AX,[BX]" },
-    { bytes:[0xf0,0x39,0x07], valid:false, name:"LOCK CMP [BX],AX" },
-    { bytes:[0xf0,0x01,0xc3], valid:false, name:"LOCK ADD BX,AX" },
-    { bytes:[0xf0,0x87,0xc3], valid:false, name:"LOCK XCHG BX,AX" }
+    { bytes:[0xf0,0x01,0x07], name:"LOCK ADD [BX],AX" },
+    { bytes:[0xf0,0xff,0x07], name:"LOCK INC [BX]" },
+    { bytes:[0xf0,0x87,0x07], name:"LOCK XCHG [BX],AX" },
+    { bytes:[0xf0,0x89,0x07], name:"LOCK MOV [BX],AX" },
+    { bytes:[0xf0,0x03,0x07], name:"LOCK ADD AX,[BX]" },
+    { bytes:[0xf0,0x39,0x07], name:"LOCK CMP [BX],AX" },
+    { bytes:[0xf0,0x01,0xc3], name:"LOCK ADD BX,AX" },
+    { bytes:[0xf0,0x87,0xc3], name:"LOCK XCHG BX,AX" }
   ];
   for (const item of cases) {
     const decoded=api.disassemble(item.bytes);
     assert.equal(decoded.rows.length,1,item.name+" one row");
-    const instruction=decoded.rows[0].instruction;
-    if(item.valid) assert.ok(instruction.startsWith("LOCK "),item.name+" accepted: "+instruction);
-    else assert.ok(instruction.startsWith("DB "),item.name+" must remain raw: "+instruction);
+    assert.equal(decoded.rows[0].instruction.startsWith("LOCK "),true,item.name+" accepted: "+decoded.rows[0].instruction);
   }
 });
 categories.invalid++;

@@ -72,7 +72,7 @@ Le moteur JavaScript est un interpréteur pédagogique, pas un émulateur matér
 - Logique : `AND`, `OR`, `XOR`, `NOT`, `TEST`
 - Décalages : `SHL`, `SAL`, `SHR`
 - Comparaison et branchements : `CMP`, `JMP`, `JE/JZ`, `JNE/JNZ`, `JC/JNC`, `JS/JNS`, `JO/JNO`, `JP/JNP`, `JG/JGE/JL/JLE`, `JA/JAE/JB/JBE`
-- Multiplication et division : `MUL`, `IMUL`, `DIV`, `IDIV` (opérandes implicites `AX` et `DX:AX`, vérification du quotient et division par zéro)
+- Multiplication et division : `MUL`, `IMUL`, `DIV`, `IDIV` (opérandes implicites `AX` et `DX:AX`, vérification du quotient ; les divisions par zéro et dépassements déclenchent le vecteur d'interruption 0 lorsqu'un gestionnaire source `VECTOR 0` ou une entrée IVT binaire valide est défini)
 - Boucles et pile : `LOOP`, `PUSH`, `POP`, `PUSHF`, `POPF`, `CALL`, `RET` (mots stockés en little-endian dans la mémoire simulée à l'adresse physique calculée depuis `SS:SP`, avec métadonnées de contrôle pour les retours)
 - Manipulation des indicateurs : `CLI`, `STI`, `CLC`, `STC`, `CMC`, `CLD`, `STD` ; `PUSHF`/`POPF` sauvegardent et restaurent le mot FLAGS simulé
 - Contrôle : `NOP`, `HLT`

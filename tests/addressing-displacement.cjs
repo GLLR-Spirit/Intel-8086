@@ -222,8 +222,8 @@ for (const opcode of [0xC6, 0xC7]) {
   }
 }
 // FE: only /0 INC and /1 DEC are defined.
-// FF: /0..6 are defined; /3 and /5 require memory operands. /7 is undefined.
- // The decoder recognizes the near indirect and PUSH forms plus far memory forms.
+// FF: /0..6 are defined; /3, /5 and /6 require memory operands. /7 is undefined.
+// /0 and /1 are r/m16 forms and therefore also accept register-direct mode.
 for (let ext = 0; ext < 8; ext++) {
   test("FE extension · /" + ext, () => {
     const instruction = decodeInstruction(0xFE, ext);
@@ -232,7 +232,7 @@ for (let ext = 0; ext < 8; ext++) {
   groupCases++;
   test("FF extension support · /" + ext, () => {
     const instruction = decodeInstruction(0xFF, ext);
-    const invalidRegisterForm = [0, 1, 3, 5, 6, 7].includes(ext);
+    const invalidRegisterForm = [3, 5, 6, 7].includes(ext);
     assert.equal(instruction.startsWith("DB "), invalidRegisterForm, instruction);
     const architecturallyDefined = ext <= 6 && !invalidRegisterForm;
     assert.equal(architecturallyDefined, !instruction.startsWith("DB "));
@@ -254,9 +254,15 @@ for (const ext of [2, 3, 4, 5, 6]) {
 for (const opcode of [0x8C, 0x8E]) {
   for (let ext = 0; ext < 8; ext++) {
     test("MOV segment extension · " + opcode.toString(16) + " /" + ext, () => {
+      if (opcode === 0x8E && ext === 1) {
+        const rows = api.disassemble([opcode, modrm(3, ext, 0)]).rows;
+        assert.ok(rows[0].instruction.startsWith("DB "), rows[0].instruction);
+        assert.deepEqual(Array.from(rows[0].bytes), [opcode]);
+        return;
+      }
       const instruction = decodeInstruction(opcode, ext);
-      // Intel 8086 Table 4-13 encodes the selector as 0SR: /0..3 valid,
-      // /4..7 marked "not used". /1 (MOV CS, r/m16) is valid on 8086.
+      // Intel 8086 Table 4-13: /0..3 select ES/CS/SS/DS, /4..7 are not used.
+      // Intel ASM86 disallows CS as the destination of MOV (8E /1).
       const reservedSelector = ext >= 4;
       assert.equal(instruction.startsWith("DB "), reservedSelector, instruction);
       if (!reservedSelector) {

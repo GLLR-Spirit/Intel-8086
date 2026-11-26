@@ -2,7 +2,7 @@ name: Validate Intel 8086 Lab
 
 on:
   push:
-    branches: [main]
+    branches: [main, audit/niveau-3-chapitres-12-17]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -26,14 +26,62 @@ jobs:
         run: node tests/learning-quality.cjs
       - name: Run independent instruction vectors
         run: node tests/instruction-vectors.cjs
+      - name: Run all eight 8086 IN/OUT forms and port-state tests
+        run: node tests/io-ports-8086.cjs
+      - name: Cross-check encodings with GNU as in 16-bit mode
+        run: node tests/gnu-as-crosscheck.cjs
       - name: Run exhaustive ModR/M matrix
         run: node tests/modrm-matrix.cjs
+      - name: Run independent ALU operand-form matrix
+        run: node tests/alu-forms-8086.cjs
+      - name: Run ALU segment and repeat prefix interactions
+        run: node tests/alu-prefix-interactions-8086.cjs
       - name: Run all-opcode and ModR/M structural sweeps
         run: node tests/opcode-byte-sweep.cjs
       - name: Run addressing and displacement tests
         run: node tests/addressing-displacement.cjs
       - name: Run FLAGS differential vectors
         run: node tests/flags-differential.cjs
+      - name: Run 8086 shift and rotate flag tests
+        run: node tests/shift-rotate-8086.cjs
+      - name: Run 8086 BCD and multiply/divide architectural vectors
+        run: node tests/bcd-multiply-divide-8086.cjs
+      - name: Run independent 8086 logical instruction audit
+        run: node tests/logical-ops-8086.cjs
+      - name: Run logical instruction prefix interactions
+        run: node tests/logical-prefix-interactions-8086.cjs
+      - name: Run independent 8086 NOT operand and prefix audit
+        run: node tests/not-forms-8086.cjs
+      - name: Run INC DEC NEG operand and prefix audit
+        run: node tests/unary-arithmetic-prefix-8086.cjs
+      - name: Run 8086 divide-error interrupt tests
+        run: node tests/divide-error-interrupt-8086.cjs
+      - name: Run INTO overflow interrupt tests
+        run: node tests/into-8086.cjs
+      - name: Run 8086 memory MUL IMUL DIV IDIV audit
+        run: node tests/mul-div-memory-8086.cjs
+      - name: Run independent 8086 NEG instruction audit
+        run: node tests/neg-8086.cjs
+      - name: Run independent 8086 LAHF and SAHF audit
+        run: node tests/lahf-sahf-8086.cjs
+      - name: Run independent 8086 XLAT instruction audit
+        run: node tests/xlat-8086.cjs
+      - name: Verify XLAT complete register and FLAGS preservation
+        run: node tests/xlat-state-8086.cjs
+      - name: Cross-check XLAT encodings with GNU as
+        run: node tests/xlat-gnu-crosscheck.cjs
+      - name: Run independent 8086 XCHG instruction audit
+        run: node tests/xchg-8086.cjs
+      - name: Cross-check XCHG encodings with GNU as
+        run: node tests/xchg-gnu-crosscheck.cjs
+      - name: Run independent 8086 LEA instruction audit
+        run: node tests/lea-8086.cjs
+      - name: Cross-check LEA encodings with GNU as
+        run: node tests/lea-gnu-crosscheck.cjs
+      - name: Run independent 8086 LDS and LES instruction audits
+        run: node tests/lds-les-8086.cjs
+      - name: Cross-check LDS and LES encodings with GNU as
+        run: node tests/lds-les-gnu-crosscheck.cjs
       - name: Run operand constraint tests
         run: node tests/operand-constraints.cjs
       - name: Run original 8086 segment selector vectors
@@ -42,9 +90,31 @@ jobs:
         run: node tests/group-opcodes.cjs
       - name: Run POP, control transfer and stack tests
         run: node tests/control-stack.cjs
+      - name: Run CALL/RET stack boundary and odd cleanup tests
+        run: node tests/call-ret-stack-boundaries.cjs
+      - name: Run CALL/RET direct far architectural tests
+        run: node tests/call-ret-8086.cjs
+      - name: Run exhaustive near and far indirect CALL tests
+        run: node tests/call-indirect-8086.cjs
+      - name: Cross-check CALL/RET/JMP near and far encodings with GNU as
+        run: node tests/call-ret-gnu-crosscheck.cjs
       - name: Run relative branch and displacement tests
         run: node tests/relative-branches.cjs
       - name: Run byte-offset execution tests
         run: node tests/byte-offset-execution.cjs
+      - name: Run 8086 LOCK prefix and repeated string tests
+        run: node tests/lock-prefix-8086.cjs
+      - name: Run all ten 8086 string instruction audits
+        run: node tests/string-instructions-8086.cjs
+      - name: Run direct far JMP tests
+        run: node tests/jmp-far-8086.cjs
+      - name: Run indirect far JMP eight-mode tests
+        run: node tests/jmp-far-indirect-8086.cjs
+      - name: Run near indirect JMP register and memory tests
+        run: node tests/jmp-near-indirect-8086.cjs
+      - name: Run PUSH/POP forms and stack semantics tests
+        run: node tests/push-pop-forms-8086.cjs
       - name: Run dynamic differential audit
         run: node tests/dynamic-differential.cjs
+      - name: Run independent 8086 WAIT and ESC audit
+        run: node tests/wait-esc-8086.cjs

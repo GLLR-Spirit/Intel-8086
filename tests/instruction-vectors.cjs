@@ -208,10 +208,12 @@ for (const [name, machineBytes, expectedText] of decoderVectors) {
   });
 }
 
-test("Préfixes de chaîne — doublons et combinaisons non admises explicitement", () => {
+test("Préfixes de chaîne — doublons rejetés, LOCK accepté sur 8086", () => {
   assert.throws(() => bytesOf("REP REP MOVSB"), /imbriqués|répétés|doit précéder/i);
   assert.throws(() => bytesOf("CS:\nDS: MOVSB"), /imbriqués|répétés/i);
-  assert.throws(() => bytesOf("LOCK MOVSB"), /LOCK.*chaîne/i);
+  assert.deepEqual(bytesOf("LOCK MOVSB"), [0xF0,0xA4]);
+  assert.deepEqual(bytesOf("LOCK REP MOVSB"), [0xF0,0xF3,0xA4]);
+  assert.equal(disassemble([0xF0,0xF3,0xA4]).rows[0].instruction, "LOCK REP MOVSB");
   assert.throws(() => disassemble([0xF3,0xF2,0xA4]), /REP répétés/i);
   assert.throws(() => disassemble([0x2E,0x3E,0xA4]), /segment répétés/i);
 });
