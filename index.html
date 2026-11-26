@@ -1470,7 +1470,7 @@ var level3FinalQuestions=[
  ["Un Jcc effectue-t-il lui-même CMP ?",["Non, il teste les FLAGS existants","Oui, toujours CMP AX,0","Seulement pour JE"],0,"Le branchement conditionnel ne fait que lire les indicateurs."]
  ],
  [
- ["Quelle est la plage non signée d'un octet ?",["0 à 255","−128 à 127","−255 à 255"],0,"Un octet non signé représente 256 valeurs de 0 à 255."],
+ ["Combien de motifs binaires distincts peut-on représenter sur 8 bits ?",["128","256","512"],1,"Huit bits offrent 2^8 combinaisons distinctes ; l’interprétation signée ou non signée change les valeurs associées, pas le nombre de motifs."],
  ["Quelle est la plage signée d'un octet en complément à deux ?",["−128 à 127","0 à 255","−127 à 128"],0,"La représentation signée 8 bits utilise −128 à +127."],
  ["Après CMP AL,BL, JB correspond à…",["AL inférieur à BL en non signé","AL inférieur à BL en signé","AL égal à BL"],0,"JB teste CF=1."],
  ["JL correspond à…",["Inférieur signé","Inférieur non signé","Supérieur non signé"],0,"JL teste SF≠OF."],
@@ -1804,7 +1804,7 @@ var auditedL4to6FinalB=[
  auditedQ("Que doit couvrir un audit ModR/M ?",["Toutes les valeurs Mod, Reg, R/M, déplacements et extensions pertinentes","Seulement les huit registres","Seulement Mod=11"],0,"Les combinaisons ModR/M et les cas spéciaux déterminent la validité et la longueur.","Raisonnement")
 ],
 [
- auditedQ("Quel est le rôle de l'assembleur ?",["Traduire les mnémoniques en octets et résoudre les symboles","Exécuter le programme sur le processeur","Créer automatiquement les variables"],0,"L'assembleur produit le code machine et résout les références.","Définition"),
+ auditedQ("Que désigne l’offset d’une instruction dans un segment ?",["Sa position relative au début du segment","Son adresse physique sur 20 bits","Le nombre de ses opérandes"],0,"L’offset repère une instruction à l’intérieur du segment ; l’adresse physique dépend aussi de la base du segment.","Définition"),
  auditedQ("Pourquoi un assembleur peut-il utiliser deux passes ?",["Pour calculer les offsets et résoudre les références","Pour doubler les instructions","Pour exécuter chaque ligne deux fois"],0,"Une première passe établit les adresses et une seconde encode les cibles.","Compréhension"),
  auditedQ("Que fait JMP FIN lorsque FIN est une étiquette ?",["Transfère le contrôle vers l'offset de FIN","Charge le texte FIN dans AX","Lit un pointeur far en mémoire"],0,"L'assembleur résout l'étiquette en déplacement relatif.","Syntaxe"),
  auditedQ("Pourquoi le désassembleur ne retrouve-t-il pas toujours les noms d'étiquettes ?",["Les symboles ne sont pas présents dans les octets bruts","Les opcodes n'ont pas de longueur","Les registres sont chiffrés"],0,"Le code machine ne conserve pas nécessairement les noms symboliques de la source.","Restrictions"),
