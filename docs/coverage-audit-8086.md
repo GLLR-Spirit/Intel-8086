@@ -109,13 +109,13 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | JGE | Oui | Oui | Oui | Oui | Oui |
 | JLE | Oui | Oui | Oui | Oui | Oui |
 | JG | Oui | Oui | Oui | Oui | Oui |
-| CLC | Oui | Oui | Oui | Oui | Partiel |
-| STC | Oui | Oui | Oui | Oui | Partiel |
-| CMC | Oui | Oui | Oui | Oui | Partiel |
-| CLD | Oui | Oui | Oui | Oui | Partiel |
-| STD | Oui | Oui | Oui | Oui | Partiel |
-| CLI | Oui | Oui | Oui | Oui | Partiel |
-| STI | Oui | Oui | Oui | Oui | Partiel |
+| CLC | Oui | Oui | Oui | Oui | Oui |
+| STC | Oui | Oui | Oui | Oui | Oui |
+| CMC | Oui | Oui | Oui | Oui | Oui |
+| CLD | Oui | Oui | Oui | Oui | Oui |
+| STD | Oui | Oui | Oui | Oui | Oui |
+| CLI | Oui | Oui | Oui | Oui | Oui |
+| STI | Oui | Oui | Oui | Oui | Oui |
 | IN | Oui | Oui | Oui | Oui | Oui |
 | OUT | Oui | Oui | Oui | Oui | Oui |
 | NOP | Oui | Oui | Oui | Oui | À faire |
@@ -140,7 +140,7 @@ Les familles suivantes disposent maintenant de contrôles ciblés source et/ou b
 - SHL/SAL, SHR, SAR, ROL, ROR, RCL et RCR : vecteurs source/binaire, compteurs CL non masqués, FLAGS définis, formes ModR/M byte/word et désassemblage testés.
 - INC, DEC et NEG : formes registre/mémoire byte/word, huit registres, huit EA, sélection DS/SS, overrides, FLAGS et chemins source/binaire vérifiés.
 
-IN/OUT utilisent une carte de ports logicielle, pas les ports matériels réels. INTO utilise le vecteur logiciel 4 ; WAIT et ESC sont des opérations sans effet dans le modèle logiciel, sans synchronisation FPU ni coprocesseur 8087 réel. INT/IRET et les événements matériels restent une simulation pédagogique limitée ; le laboratoire ne modélise pas l'acquittement INTR/NMI ni les signaux physiques du processeur.
+CLC, STC, CMC, CLD, STD, CLI et STI ont des tests source/binaire avec octets exacts et préservation des autres FLAGS. CMC est encodé F5h ; F1h reste réservé sur 8086. IN/OUT utilisent une carte de ports logicielle, pas les ports matériels réels. INTO utilise le vecteur logiciel 4 ; WAIT et ESC sont des opérations sans effet dans le modèle logiciel, sans synchronisation FPU ni coprocesseur 8087 réel. INT/IRET et les événements matériels restent une simulation pédagogique limitée ; le laboratoire ne modélise pas l'acquittement INTR/NMI ni les signaux physiques du processeur.
 
 ### 3.2 Assembleur
 
@@ -819,3 +819,14 @@ IN et OUT passent à Oui sur le modèle de ports logiciels ; INTO, LAHF et SAHF 
 - cross-check d'encodage GNU : réussi.
 
 Le statut concerne l'instruction XLAT et son modèle de table logicielle ; l'alias XLATB n'est pas compté comme instruction canonique distincte.
+
+
+## 17. Réconciliation ciblée — instructions de contrôle des FLAGS
+
+Les sept instructions `CLC`, `STC`, `CMC`, `CLD`, `STD`, `CLI` et `STI` passent à **Oui** pour le simulateur, l'assembleur, le désassembleur et les tests sur le périmètre vérifié.
+
+Preuve CI : [45732229845](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45732229845), commit `f96017267d5406ea764c90931124cdd0dec353f8`, **57/57 étapes réussies** ; la suite `tests/flag-control-8086.cjs` rapporte **29/29**.
+
+Une anomalie d'opcode a été corrigée : l'assembleur et le désassembleur utilisaient F1h pour CMC. Ils utilisent maintenant F5h, l'opcode 8086 correct. F1h n'est plus interprété comme CMC et est rejeté comme opcode non pris en charge dans ce modèle 8086.
+
+Chaque instruction est vérifiée avec un mot FLAGS initial contrôlé, en source et en binaire. Le test compare les neuf FLAGS modélisés, vérifie l'opcode et le désassemblage, confirme que SP est restauré et rejette les opérandes explicites.

@@ -774,3 +774,16 @@ Limites de modèle : IN/OUT utilisent une carte logicielle ; INTO vérifie l'int
 - Cross-check GNU de l'encodage : réussi.
 
 CI : [45731571537](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45731571537).
+
+
+### 16.19 Instructions de contrôle des FLAGS — CLC/STC/CMC/CLD/STD/CLI/STI
+
+`tests/flag-control-8086.cjs` : **29/29 réussites** dans le CI [45732229845](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45732229845), **57/57 étapes réussies**.
+
+- Les sept opcodes sont vérifiés : F8h, F9h, F5h, FCh, FDh, FAh et FBh.
+- Les chemins source et binaire sont comparés sur les neuf FLAGS modélisés.
+- Chaque instruction ne modifie que le bit ciblé ; les autres FLAGS sont préservés.
+- Les octets exacts, le désassemblage, l'absence d'opérandes et la restauration de SP après PUSH/POPF sont contrôlés.
+- F1h est rejeté comme opcode non pris en charge sur 8086 ; il n'est plus désassemblé comme CMC.
+
+**Correction produit :** l'ancien mapping CMC→F1h a été remplacé par CMC→F5h dans l'assembleur et le désassembleur.

@@ -135,13 +135,13 @@ Chaque graphie ci-dessous est conservée comme entrée autonome. Les synonymes n
 | POPF | Restauration de FLAGS | — | À auditer |
 | LAHF | Copie de la partie basse de FLAGS vers AH | — | 298 tests ; 32 combinaisons de FLAGS source/binaire et octets fixes |
 | SAHF | Copie de AH vers les indicateurs modifiables | — | 298 tests ; 256 valeurs AH source/binaire et octets fixes |
-| CLC | Effacement de CF | — | À auditer |
-| STC | Positionnement de CF | — | À auditer |
-| CMC | Complément de CF | — | À auditer |
-| CLD | Effacement de DF | — | À auditer |
-| STD | Positionnement de DF | — | À auditer |
-| CLI | Désactivation des interruptions masquables | — | À auditer |
-| STI | Activation des interruptions masquables | — | À auditer |
+| CLC | Effacement de CF | — | 29/29 tests source/binaire ; opcode exact, désassemblage, FLAGS préservés et opérandes rejetés |
+| STC | Positionnement de CF | — | 29/29 tests source/binaire ; opcode exact, désassemblage, FLAGS préservés et opérandes rejetés |
+| CMC | Complément de CF | — | 29/29 tests source/binaire ; opcode exact, désassemblage, FLAGS préservés et opérandes rejetés |
+| CLD | Effacement de DF | — | 29/29 tests source/binaire ; opcode exact, désassemblage, FLAGS préservés et opérandes rejetés |
+| STD | Positionnement de DF | — | 29/29 tests source/binaire ; opcode exact, désassemblage, FLAGS préservés et opérandes rejetés |
+| CLI | Désactivation des interruptions masquables | — | 29/29 tests source/binaire ; opcode exact, désassemblage, FLAGS préservés et opérandes rejetés |
+| STI | Activation des interruptions masquables | — | 29/29 tests source/binaire ; opcode exact, désassemblage, FLAGS préservés et opérandes rejetés |
 
 ## 7. Entrées/sorties et synchronisation
 
