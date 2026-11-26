@@ -4,7 +4,7 @@ const elements=new Map();function element(id){if(!elements.has(id))elements.set(
 const context={document:{getElementById:element,querySelectorAll:()=>[]},localStorage:{getItem:()=>null,setItem:()=>{},removeItem:()=>{}},console};vm.createContext(context);
 const injection="\nglobalThis.api={execute:(s,o)=>executeAll(s,o),assemble:s=>assembleProgram(s),binary:(b,c,i,state)=>executeBinary(b,c,i,state)};\n})();\n";
 const instrumented=match[1].replace(/\n\}\)\(\);\s*$/,injection);assert.notEqual(instrumented,match[1]);
-vm.runInContext(instrumented,context,{timeout:30000});const execute=context.api.execute;
+vm.runInContext(instrumented,context,{timeout:30000});const api=context.api,execute=api.execute;
 function run(source,options){const result=execute(source,options);assert.equal(result.error,undefined,result.error||"execution failed");return result;}
 function physical(cs,ip){return (((cs<<4)+(ip&65535))&0xFFFFF);}
 function binaryFor(main,options,segments){
