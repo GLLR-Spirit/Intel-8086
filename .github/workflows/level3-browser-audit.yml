@@ -12,8 +12,6 @@ on:
       - "tests/call-ret-interactive-8086.cjs"
       - "tests/call-indirect-interactive-8086.cjs"
       - ".github/workflows/level3-browser-audit.yml"
-  push:
-    branches: [audit/niveau-3-chapitres-12-17]
   workflow_dispatch:
 permissions:
   contents: read
