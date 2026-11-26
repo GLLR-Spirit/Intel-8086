@@ -136,6 +136,7 @@ const assert = require("node:assert/strict");
   console.log("Course visual coverage: 36/36 chapters have a diagram or visual model.");
 
   // Keyboard and assistive-technology navigation semantics.
+  await page.evaluate(() => { if (document.activeElement) document.activeElement.blur(); window.scrollTo(0,0); });
   await page.keyboard.press("Tab");
   assert.ok(await page.evaluate(() => document.activeElement.classList.contains("skip-link")),"The first keyboard stop must be the skip link.");
   assert.equal(await page.locator(".skip-link").evaluate(el => getComputedStyle(el).top),"12px","Skip link must become visible on focus.");
