@@ -41,16 +41,16 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | POPF | Oui | Oui | Oui | Oui | Partiel |
 | LAHF | Oui | Oui | Oui | Oui | Partiel |
 | SAHF | Oui | Oui | Oui | Oui | Partiel |
-| MOVSB | Oui | Oui | Non | Non | Partiel |
-| MOVSW | Oui | Oui | Non | Non | Partiel |
-| CMPSB | Oui | Oui | Non | Non | Partiel |
-| CMPSW | Oui | Oui | Non | Non | Partiel |
-| SCASB | Oui | Oui | Non | Non | Partiel |
-| SCASW | Oui | Oui | Non | Non | Partiel |
-| LODSB | Oui | Oui | Non | Non | Partiel |
-| LODSW | Oui | Oui | Non | Non | Partiel |
-| STOSB | Oui | Oui | Non | Non | Partiel |
-| STOSW | Oui | Oui | Non | Non | Partiel |
+| MOVSB | Oui | Oui | Oui | Oui | Oui |
+| MOVSW | Oui | Oui | Oui | Oui | Oui |
+| CMPSB | Oui | Oui | Oui | Oui | Oui |
+| CMPSW | Oui | Oui | Oui | Oui | Oui |
+| SCASB | Oui | Oui | Oui | Oui | Oui |
+| SCASW | Oui | Oui | Oui | Oui | Oui |
+| LODSB | Oui | Oui | Oui | Oui | Oui |
+| LODSW | Oui | Oui | Oui | Oui | Oui |
+| STOSB | Oui | Oui | Oui | Oui | Oui |
+| STOSW | Oui | Oui | Oui | Oui | Oui |
 | ADD | Oui | Oui | Partiel | Partiel | Partiel |
 | ADC | Oui | Oui | Partiel | Partiel | Partiel |
 | SUB | Oui | Oui | Partiel | Partiel | Partiel |
@@ -58,7 +58,7 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | INC | Oui | Oui | Oui | Oui | Partiel |
 | DEC | Oui | Oui | Oui | Oui | Partiel |
 | NEG | Oui | Oui | Oui | Oui | Partiel |
-| CMP | Oui | Oui | Partiel | Partiel | Partiel |
+| CMP | Oui | Oui | Oui | Oui | Oui |
 | MUL | Oui | Oui | Oui | Oui | Oui |
 | IMUL | Oui | Oui | Oui | Oui | Oui |
 | DIV | Oui | Oui | Oui | Oui | Oui |
@@ -71,11 +71,11 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | DAS | Oui | Non | Non | Non | À faire |
 | CBW | Oui | Non | Non | Non | À faire |
 | CWD | Oui | Non | Non | Non | À faire |
-| AND | Oui | Oui | Partiel | Partiel | À faire |
-| OR | Oui | Oui | Partiel | Partiel | À faire |
-| XOR | Oui | Oui | Partiel | Partiel | À faire |
+| AND | Oui | Oui | Oui | Oui | Oui |
+| OR | Oui | Oui | Oui | Oui | Oui |
+| XOR | Oui | Oui | Oui | Oui | Oui |
 | NOT | Oui | Oui | Oui | Oui | Partiel |
-| TEST | Oui | Oui | Partiel | Partiel | À faire |
+| TEST | Oui | Oui | Oui | Oui | Oui |
 | ROL | Oui | Non | Non | Non | À faire |
 | ROR | Oui | Non | Non | Non | À faire |
 | RCL | Oui | Non | Non | Non | À faire |
@@ -83,32 +83,32 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | SHL | Oui | Oui | Non | Non | Partiel |
 | SHR | Oui | Oui | Non | Non | Partiel |
 | SAR | Oui | Non | Non | Non | À faire |
-| JMP | Oui | Partiel | Partiel | Partiel | Partiel |
-| CALL | Oui | Partiel | Partiel | Partiel | Partiel |
-| RET | Oui | Partiel | Partiel | Partiel | Partiel |
+| JMP | Oui | Partiel | Oui | Oui | Oui |
+| CALL | Oui | Partiel | Oui | Oui | Oui |
+| RET | Oui | Partiel | Oui | Oui | Oui |
 | INT | Oui | Partiel | Non | Non | Partiel |
 | INTO | Oui | Non | Non | Non | À faire |
 | IRET | Oui | Partiel | Oui | Oui | Partiel |
-| JCXZ | Oui | Non | Non | Non | À faire |
-| LOOP | Oui | Oui | Oui | Oui | Partiel |
-| LOOPE | Oui | Non | Non | Non | À faire |
-| LOOPNE | Oui | Non | Non | Non | À faire |
-| JO | Oui | Oui | Oui | Oui | À faire |
-| JNO | Oui | Oui | Oui | Oui | À faire |
-| JB | Oui | Oui | Oui | Oui | À faire |
-| JAE | Oui | Oui | Oui | Oui | À faire |
-| JE | Oui | Oui | Oui | Oui | À faire |
-| JNE | Oui | Oui | Oui | Oui | À faire |
-| JBE | Oui | Oui | Oui | Oui | À faire |
-| JA | Oui | Oui | Oui | Oui | À faire |
-| JS | Oui | Oui | Oui | Oui | À faire |
-| JNS | Oui | Oui | Oui | Oui | À faire |
-| JP | Oui | Oui | Oui | Oui | À faire |
-| JNP | Oui | Oui | Oui | Oui | À faire |
-| JL | Oui | Oui | Oui | Oui | À faire |
-| JGE | Oui | Oui | Oui | Oui | À faire |
-| JLE | Oui | Oui | Oui | Oui | À faire |
-| JG | Oui | Oui | Oui | Oui | À faire |
+| JCXZ | Oui | Oui | Oui | Oui | Oui |
+| LOOP | Oui | Oui | Oui | Oui | Oui |
+| LOOPE | Oui | Oui | Oui | Oui | Oui |
+| LOOPNE | Oui | Oui | Oui | Oui | Oui |
+| JO | Oui | Oui | Oui | Oui | Oui |
+| JNO | Oui | Oui | Oui | Oui | Oui |
+| JB | Oui | Oui | Oui | Oui | Oui |
+| JAE | Oui | Oui | Oui | Oui | Oui |
+| JE | Oui | Oui | Oui | Oui | Oui |
+| JNE | Oui | Oui | Oui | Oui | Oui |
+| JBE | Oui | Oui | Oui | Oui | Oui |
+| JA | Oui | Oui | Oui | Oui | Oui |
+| JS | Oui | Oui | Oui | Oui | Oui |
+| JNS | Oui | Oui | Oui | Oui | Oui |
+| JP | Oui | Oui | Oui | Oui | Oui |
+| JNP | Oui | Oui | Oui | Oui | Oui |
+| JL | Oui | Oui | Oui | Oui | Oui |
+| JGE | Oui | Oui | Oui | Oui | Oui |
+| JLE | Oui | Oui | Oui | Oui | Oui |
+| JG | Oui | Oui | Oui | Oui | Oui |
 | CLC | Oui | Oui | Oui | Oui | Partiel |
 | STC | Oui | Oui | Oui | Oui | Partiel |
 | CMC | Oui | Oui | Oui | Oui | Partiel |
@@ -125,50 +125,32 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 
 ### Synthèse des statuts
 
-| Composant | Oui | Partiel | Non / à faire |
-|---|---:|---:|---:|
-| Documentation (inventaire) | 93 | 0 | 0 |
-| Simulateur | 62 | 6 | 25 |
-| Assembleur | 35 | 15 | 43 |
-| Désassembleur | 35 | 15 | 43 |
-| Tests | 0 | 39 | 54 |
+**Aucun total global ni pourcentage n'est publié à cette étape.** La matrice de 93 entrées est en cours de réconciliation : les lignes explicitement vérifiées dans les actualisations datées sont mises à jour, tandis que les autres conservent leur statut précédent jusqu'à audit individuel. Les anciens totaux du 24 novembre ne doivent plus être interprétés comme une synthèse courante.
 
-**Attention :** ces nombres sont des décomptes d'entrées canoniques, pas des pourcentages de formes d'opérandes. Une instruction marquée `Oui` au niveau d'un composant peut encore avoir des restrictions, des cas limites ou des cycles non validés. Les statuts « Oui » ne constituent pas un certificat d'équivalence avec un 8086 physique.
-
-## 3. Constats techniques principaux
+## 3. Constats techniques principaux — état ciblé au 26 novembre 2026
 
 ### 3.1 Simulateur
 
-Le moteur interprète les principales familles arithmétiques/logiques, les transferts de données, les opérations de pile, les instructions de chaîne et plusieurs contrôles de flux. Il modélise également les interruptions au moyen de la directive pédagogique `VECTOR` et un service DOS limité.
+Les familles suivantes disposent maintenant de contrôles ciblés source et/ou binaire, détaillés dans les rapports et tests cités plus loin :
+- CMP, TEST, AND, OR et XOR : résultats et FLAGS définis vérifiés ; AF reste exclu lorsqu'il est indéfini.
+- JMP, CALL et RET : formes directes et indirectes near/far testées. Le simulateur source conserve un IP logique ; l'exécution binaire dynamique travaille avec les offsets octet. Cette distinction maintient le statut global du simulateur à **Partiel** pour les transferts de contrôle.
+- Les 16 conditions Jcc, LOOP, LOOPE, LOOPNE et JCXZ : conditions, compte CX, FLAGS et chemins source/binaire testés.
+- MOVS, CMPS, STOS, LODS et SCAS en byte/word : registres, mémoire, segments, REP, DF et frontières d'offset testés.
+- MUL, IMUL, DIV et IDIV : formes mémoire, segments et interactions de préfixes testés.
 
-Limites notables :
-- `CALL` et `JMP` directs par étiquette et indirects near/far sont exécutés. `RET` et `RETF` restaurent respectivement IP et IP:CS. L'IP de l'interpréteur reste un indice logique d'instruction, pas un offset octet réel ; les cibles indirectes doivent donc viser un indice du programme analysé.
-- `INT` est une simulation pédagogique des gestionnaires `VECTOR` et de quelques services ; ce n'est pas le matériel d'interruption complet.
-- `HLT` termine l'exécution pédagogique ; il ne modélise pas le réveil matériel par interruption.
-- `LOOPE`, `LOOPNE`, `JCXZ`, `IN`, `OUT`, `INTO`, `XLAT`, les ajustements ASCII/BCD, les rotations, `SAR`, `LAHF`, `SAHF`, `WAIT` et `ESC` ne sont pas exécutés. `NEG` est désormais simulé.
+Les interruptions restent une simulation pédagogique limitée ; le laboratoire ne modélise pas tous les événements matériels, l'acquittement INTR/NMI ni les signaux physiques du processeur.
 
 ### 3.2 Assembleur
 
-Le générateur binaire reste partiel. Il émet notamment MOV, arithmétique/logique, XCHG, LEA/LES/LDS, INC/DEC, pile, les groupes F6/F7 et les formes near indirectes FF /2 et /4.
+Les formes CMP, AND, OR, XOR et TEST ont des tests d'encodage pour les variantes registre, mémoire et immédiat, en byte/word. Les formes directes et indirectes de JMP/CALL near/far, les retours RET/RETF, les Jcc, les quatre boucles et les dix formes de chaîne sont également vérifiés dans leurs périmètres documentés.
 
-Limites observées dans le code :
-- Les groupes immédiats `80h/81h` sont générés pour l'arithmétique/logique ; la forme signée courte `83h` n'est pas générée.
-- `MOV` ne couvre pas toutes les variantes/opcodes, notamment les formes accumulator/moffs dédiées.
-- `PUSH MEM16` via FF /6 est généré pour les formes mémoire ; le registre utilise l'encodage compact `50+reg`. `POP r/m16` mémoire est généré via 8F /0 ; /1–/7 sont réservés.
-- `JMP` et `CALL` directs restent assemblés en near relatif 16 bits ; les formes near indirectes FF /2 et /4 sont également générées. Les formes far indirectes ne sont pas assemblées.
-- `RET` C2/C3 et `RETF` CA/CB sont générés, avec ou sans immédiat. Les formes far indirectes FF /3 et /5 sont assemblées via `FAR PTR [mem]`.
-- Les groupes F6/F7 (TEST r/m, immédiat ; NOT, NEG, MUL, IMUL, DIV, IDIV) et FF /6 PUSH sont encodés. Les chaînes, `REP`, les E/S, shifts/rotations et plusieurs instructions fixes restent absents.
+Les groupes F6/F7 et FF ont des extensions valides et réservées distinctement testées. Les préfixes et les contraintes d'opérandes sont suivis séparément ; la réussite d'un opcode de base ne valide pas toutes les permutations de préfixes.
 
 ### 3.3 Désassembleur
 
-Le décodeur reconnaît un sous-ensemble des familles précédentes, mais ne constitue pas un désassembleur universel 8086.
+Les formes CMP/TEST/logiques, les transferts de contrôle, les quatre boucles et les dix opcodes de chaîne disposent de tests de désassemblage avec octets fixes ou contrôles indépendants. Les flux tronqués, les extensions réservées et les formes far registre-direct invalides sont contrôlés dans les suites dédiées.
 
-Limites observées :
-- Les opcodes de chaîne et préfixes REP ne sont pas décodés comme instructions.
-- Les formes near indirectes FF /2 et /4 sont décodées ; FF /3 et /5 sont décodées uniquement avec un opérande mémoire. Les formes short et directes far restent hors couverture.
-- `RET` C2/C3 et `RETF` CA/CB sont désormais décodés, immédiats compris. Les extensions FF /3 et /5 restent décodées uniquement en mémoire.
-- Les groupes F6/F7 et FF sont partiellement couverts ; les opcodes E/S, shifts/rotations, ajustements, `INT`, `INTO`, `WAIT`, `ESC`, `XLAT`, `LAHF` et `SAHF` restent hors couverture.
-- Le décodage d'un opcode isolé ou d'une extension ModR/M non prise en charge doit rester strictement distingué d'une désassemblage complet : le décodeur peut émettre `DB` pour les octets qu'il ne sait pas interpréter.
+Le tableau de 93 entrées demeure l'autorité de synthèse : les statuts non actualisés ci-dessus ne sont pas inférés à partir de la présence d'une fonction ou d'un mnémonique dans l'interface.
 
 ## 4. Alias et préfixes — hors dénominateur
 
@@ -768,3 +750,21 @@ Les contrôles pédagogiques et d'exécution sont également vérifiés :
 Les dix questions finales de chaque chapitre conservent dix sous-catégories techniques organisées en cinq paires : définition/compréhension, syntaxe/restrictions, prédiction/calcul, analyse de programme/analyse de résultat, débogage/raisonnement. Cela fournit deux questions dans chacun des cinq grands domaines pédagogiques.
 
 Ces résultats ferment les contrôles ciblés de ces chapitres, mais ne remplacent pas une revue éditoriale humaine de chaque formulation ni la réconciliation globale des 93 instructions.
+
+
+## 12. Réconciliation ciblée de la matrice — 26 novembre 2026
+
+Les lignes suivantes ont été actualisées à partir des tests exécutés sur `main` :
+
+- **CMP, AND, OR, XOR, TEST** : encodage/désassemblage des formes testées et contrôles sémantiques indépendants ; TEST vérifie les tailles byte/word et les opérandes registre/mémoire.
+- **JMP, CALL, RET** : les formes directes et indirectes near/far sont testées ; le simulateur reste marqué Partiel à cause de la distinction entre IP logique source et offsets octet du moteur binaire.
+- **16 Jcc et les quatre boucles** : encodeur, décodeur et sémantique source/binaire vérifiés.
+- **Les dix instructions de chaîne** : opcodes byte/word, encodage, désassemblage et scénarios source/binaire vérifiés.
+
+Résultats de référence :
+- CMP/TEST/logique : run [45730214193](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45730214193), 56/56 étapes réussies ; 68 611 tests logiques et 22 524 assertions de formes ALU.
+- Branchements et boucles : run [45729424128](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45729424128), 209/209.
+- Pile et transferts : 305/305, CALL indirect 177/177, CALL/RET limites 6/6.
+- Chaînes : 29/29, audit différentiel 33/33.
+
+Les alias des Jcc et des boucles ne sont pas automatiquement considérés comme testés individuellement : les contrôles de cette tranche portent sur les 16 conditions canoniques et les quatre mnémoniques de boucle canoniques. Aucun pourcentage global n'est calculé tant que les autres lignes des 93 entrées ne sont pas réconciliées.

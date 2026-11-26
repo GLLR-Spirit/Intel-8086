@@ -11,16 +11,16 @@ Cet inventaire est indépendant des 58 cartes de l'interface. Il contient un reg
 | Mnémotechnique | Famille / remarque | Alias ou graphies associées | Contrôle |
 |---|---|---|---|
 | MOV | Transfert de données | — | À auditer |
-| MOVSB | Chaîne, octet | — | À auditer |
-| MOVSW | Chaîne, mot | — | À auditer |
-| CMPSB | Comparaison de chaîne, octet | — | À auditer |
-| CMPSW | Comparaison de chaîne, mot | — | À auditer |
-| SCASB | Recherche/comparaison de chaîne, octet | — | À auditer |
-| SCASW | Recherche/comparaison de chaîne, mot | — | À auditer |
-| LODSB | Chargement depuis chaîne, octet | — | À auditer |
-| LODSW | Chargement depuis chaîne, mot | — | À auditer |
-| STOSB | Stockage dans chaîne, octet | — | À auditer |
-| STOSW | Stockage dans chaîne, mot | — | À auditer |
+| MOVSB | Chaîne, octet | — | 29/29 tests de chaîne ; source/binaire, mémoire et FLAGS |
+| MOVSW | Chaîne, mot | — | 29/29 tests de chaîne ; source/binaire, mémoire et FLAGS |
+| CMPSB | Comparaison de chaîne, octet | — | 29/29 tests de chaîne ; source/binaire, FLAGS et index |
+| CMPSW | Comparaison de chaîne, mot | — | 29/29 tests de chaîne ; source/binaire, FLAGS et index |
+| SCASB | Recherche/comparaison de chaîne, octet | — | 29/29 tests de chaîne ; source/binaire, FLAGS et index |
+| SCASW | Recherche/comparaison de chaîne, mot | — | 29/29 tests de chaîne ; source/binaire, FLAGS et index |
+| LODSB | Chargement depuis chaîne, octet | — | 29/29 tests de chaîne ; source/binaire, registres et segments |
+| LODSW | Chargement depuis chaîne, mot | — | 29/29 tests de chaîne ; source/binaire, registres et segments |
+| STOSB | Stockage dans chaîne, octet | — | 29/29 tests de chaîne ; source/binaire, mémoire et FLAGS |
+| STOSW | Stockage dans chaîne, mot | — | 29/29 tests de chaîne ; source/binaire, mémoire et FLAGS |
 | XCHG | Échange | — | Audit indépendant ciblé ; verrouillage implicite du bus non simulé |
 | LEA | Chargement de l'adresse effective | — | À auditer |
 | LES | Chargement d'un pointeur far vers ES:registre | — | À auditer |
@@ -38,7 +38,7 @@ Cet inventaire est indépendant des 58 cartes de l'interface. Il contient un reg
 | INC | Incrémentation | — | À auditer |
 | DEC | Décrémentation | — | À auditer |
 | NEG | Négation arithmétique | — | À auditer |
-| CMP | Comparaison par soustraction | — | À auditer |
+| CMP | Comparaison par soustraction | — | Tests source/binaire ciblés ; formes ALU et flags comparatifs vérifiés sur main (26/11/2026) |
 | MUL | Multiplication non signée | — | Formes 8086 auditées (tranche ciblée) |
 | IMUL | Multiplication signée | — | Formes 8086 auditées (tranche ciblée) |
 | DIV | Division non signée | — | Formes 8086 auditées (tranche ciblée) |
@@ -56,11 +56,11 @@ Cet inventaire est indépendant des 58 cartes de l'interface. Il contient un reg
 
 | Mnémotechnique | Famille / remarque | Alias ou graphies associées | Contrôle |
 |---|---|---|---|
-| AND | ET logique | — | À auditer |
-| OR | OU logique | — | À auditer |
-| XOR | OU exclusif | — | À auditer |
+| AND | ET logique | — | Tests source/binaire ; table byte exhaustive et formes registre/mémoire/immédiat vérifiées |
+| OR | OU logique | — | Tests source/binaire ; table byte exhaustive et formes registre/mémoire/immédiat vérifiées |
+| XOR | OU exclusif | — | Tests source/binaire ; table byte exhaustive et formes registre/mémoire/immédiat vérifiées |
 | NOT | Complément bit à bit | — | À auditer |
-| TEST | ET logique sans stockage du résultat | — | À auditer |
+| TEST | ET logique sans stockage du résultat | — | Tests source/binaire ; byte/word, registre/mémoire/immédiat vérifiés ; AF indéfini exclu |
 | ROL | Rotation gauche | — | À auditer |
 | ROR | Rotation droite | — | À auditer |
 | RCL | Rotation gauche via CF | — | À auditer |
@@ -74,18 +74,18 @@ Cet inventaire est indépendant des 58 cartes de l'interface. Il contient un reg
 
 | Mnémotechnique | Famille / remarque | Alias ou graphies associées | Contrôle |
 |---|---|---|---|
-| JMP | Saut inconditionnel | — | À auditer |
-| CALL | Appel de procédure | — | À auditer |
-| RET | Retour proche | — | À auditer |
-| RETF | Retour lointain (graphie d'assembleur pour le retour intersegment) | Synonyme de syntaxe à vérifier contre le manuel d'assembleur retenu | À auditer |
+| JMP | Saut inconditionnel | — | Formes directes et indirectes near/far testées ; source et binaire |
+| CALL | Appel de procédure | — | Formes directes et indirectes near/far testées ; source et binaire |
+| RET | Retour proche | — | RET/RETF, immédiats, pile et frontières testés source/binaire |
+| RETF | Retour lointain (graphie d'assembleur pour le retour intersegment) | Synonyme de syntaxe à vérifier contre le manuel d'assembleur retenu | RET/RETF, immédiats, pile et frontières testés source/binaire |
 | INT | Interruption logicielle | — | À auditer |
 | INTO | Interruption si débordement | — | À auditer |
 | IRET | Retour d'interruption | — | À auditer |
-| JCXZ | Saut si CX vaut zéro | — | À auditer |
-| LOOP | Boucle avec décrémentation de CX | — | À auditer |
-| LOOPE | Boucle si égalité / ZF=1 | LOOPZ | À auditer |
+| JCXZ | Saut si CX vaut zéro | — | Test source/binaire ; CX préservé et cible rel8 vérifiés |
+| LOOP | Boucle avec décrémentation de CX | — | Test source/binaire ; CX, FLAGS et cible rel8 vérifiés |
+| LOOPE | Boucle si égalité / ZF=1 | LOOPZ | Test source/binaire ; CX, ZF, FLAGS et cible rel8 vérifiés |
 | LOOPZ | Synonyme de LOOPE | LOOPE | À auditer |
-| LOOPNE | Boucle si non-égalité / ZF=0 | LOOPNZ | À auditer |
+| LOOPNE | Boucle si non-égalité / ZF=0 | LOOPNZ | Test source/binaire ; CX, ZF, FLAGS et cible rel8 vérifiés |
 | LOOPNZ | Synonyme de LOOPNE | LOOPNE | À auditer |
 
 ## 5. Sauts conditionnels (conditions et synonymes)
