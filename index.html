@@ -319,6 +319,7 @@ function evaluateQuiz(questions,prefix,scoreNode,storage,key){
  storageSet(prefix==="final"?"i86-chapter-scores-v2":"i86-lesson-scores-v2",JSON.stringify(storage));
  $(scoreNode).textContent="Résultat : "+score+"/"+questions.length+" · Meilleur score : "+storage[key]+"/"+questions.length;
 }
+function parseHexInput(value,max){var raw=String(value).trim();if(!/^[0-9A-F]+$/i.test(raw))return null;var parsed=parseInt(raw,16);return Number.isInteger(parsed)&&parsed>=0&&parsed<=max?parsed:null;}
 function showLesson(i,lessonIndex){
  var l=lessons[i],c=chapterLearning[i],saved=chapterScores[i],lesson=c.lessons[Math.min(c.lessons.length-1,lessonIndex||0)],lessonKey=i+"-"+(lessonIndex||0),lessonSaved=lessonScores[lessonKey];
  var lessonTabs=c.lessons.map(function(x,n){return '<button class="btn '+(n===(lessonIndex||0)?"primary":"")+'" data-sublesson="'+n+'">'+(n+1)+'. '+x.title+'</button>';}).join("");
@@ -326,7 +327,7 @@ function showLesson(i,lessonIndex){
  document.querySelectorAll("[data-sublesson]").forEach(function(b){b.onclick=function(){showLesson(i,+b.dataset.sublesson);};});
  if(i===4){
  var axInput=$("axDemoValue"),axOut=$("axDemoResult");
- function readAX(){var v=parseInt(axInput.value,16);return Number.isInteger(v)&&v>=0&&v<=0xffff?v:null;}
+ function readAX(){return parseHexInput(axInput.value,0xffff);}
  function showAX(part){var v=readAX();if(v===null){axOut.textContent="Saisir une valeur hexadécimale entre 0000 et FFFF.";return;}var hi=(v>>8)&255,lo=v&255;axOut.textContent="AX="+v.toString(16).toUpperCase().padStart(4,"0")+"h · AH="+hi.toString(16).toUpperCase().padStart(2,"0")+"h · AL="+lo.toString(16).toUpperCase().padStart(2,"0")+"h · "+(part==="AH"?"AH sélectionné":"AL sélectionné");}
  $("axShowHigh").onclick=function(){showAX("AH");};
  $("axShowLow").onclick=function(){showAX("AL");};
@@ -349,13 +350,13 @@ if(i===10){
 }
 if(i===11){
  var cmpA=$("cmpDemoA"),cmpB=$("cmpDemoB"),cmpOut=$("cmpDemoResult");
- $("calcCmpFlags").onclick=function(){var a=parseInt(cmpA.value,16),b=parseInt(cmpB.value,16);if(!Number.isInteger(a)||!Number.isInteger(b)||a<0||b<0||a>65535||b>65535){cmpOut.textContent="Saisir deux mots hexadécimaux entre 0000 et FFFF.";return;}var r=(a-b)&65535,cf=a<b?1:0,zf=r===0?1:0,sf=(r&0x8000)?1:0,of=(((a^b)&(a^r)&0x8000)!==0)?1:0,lo=r&255,ones=0;for(var bit=0;bit<8;bit++)ones+=(lo>>bit)&1;var pf=(ones%2===0)?1:0,af=((a^b^r)&0x10)?1:0;cmpOut.textContent="Résultat="+r.toString(16).toUpperCase().padStart(4,"0")+"h · CF="+cf+" ZF="+zf+" SF="+sf+" OF="+of+" PF="+pf+" AF="+af;};
+ $("calcCmpFlags").onclick=function(){var a=parseHexInput(cmpA.value,0xffff),b=parseHexInput(cmpB.value,0xffff);if(a===null||b===null){cmpOut.textContent="Saisir deux mots hexadécimaux entre 0000 et FFFF.";return;}var r=(a-b)&65535,cf=a<b?1:0,zf=r===0?1:0,sf=(r&0x8000)?1:0,of=(((a^b)&(a^r)&0x8000)!==0)?1:0,lo=r&255,ones=0;for(var bit=0;bit<8;bit++)ones+=(lo>>bit)&1;var pf=(ones%2===0)?1:0,af=((a^b^r)&0x10)?1:0;cmpOut.textContent="Résultat="+r.toString(16).toUpperCase().padStart(4,"0")+"h · CF="+cf+" ZF="+zf+" SF="+sf+" OF="+of+" PF="+pf+" AF="+af;};
 }
 if(i===17){
- $("calcSegmentAddress").onclick=function(){var seg=parseInt($("segDemoValue").value,16),off=parseInt($("offDemoValue").value,16),out=$("segmentDemoResult");if(!Number.isInteger(seg)||!Number.isInteger(off)||seg<0||seg>65535||off<0||off>65535){out.textContent="Segment et offset doivent être des mots hexadécimaux.";return;}var physical=((seg<<4)+off)&0xfffff;out.textContent=seg.toString(16).toUpperCase().padStart(4,"0")+"h:"+off.toString(16).toUpperCase().padStart(4,"0")+"h → "+physical.toString(16).toUpperCase().padStart(5,"0")+"h";};
+ $("calcSegmentAddress").onclick=function(){var seg=parseHexInput($("segDemoValue").value,0xffff),off=parseHexInput($("offDemoValue").value,0xffff),out=$("segmentDemoResult");if(seg===null||off===null){out.textContent="Segment et offset doivent être des mots hexadécimaux.";return;}var physical=((seg<<4)+off)&0xfffff;out.textContent=seg.toString(16).toUpperCase().padStart(4,"0")+"h:"+off.toString(16).toUpperCase().padStart(4,"0")+"h → "+physical.toString(16).toUpperCase().padStart(5,"0")+"h";};
 }
 if(i===19){
- $("calcEffectiveAddress").onclick=function(){var bx=parseInt($("eaBX").value,16),si=parseInt($("eaSI").value,16),disp=parseInt($("eaDisp").value,16),out=$("eaDemoResult");if(![bx,si,disp].every(Number.isInteger)||[bx,si,disp].some(v=>v<0||v>65535)){out.textContent="BX, SI et déplacement doivent être des mots hexadécimaux.";return;}var ea=(bx+si+disp)&65535;out.textContent="EA="+ea.toString(16).toUpperCase().padStart(4,"0")+"h · segment par défaut DS";};
+ $("calcEffectiveAddress").onclick=function(){var bx=parseHexInput($("eaBX").value,0xffff),si=parseHexInput($("eaSI").value,0xffff),disp=parseHexInput($("eaDisp").value,0xffff),out=$("eaDemoResult");if(bx===null||si===null||disp===null){out.textContent="BX, SI et déplacement doivent être des mots hexadécimaux.";return;}var ea=(bx+si+disp)&65535;out.textContent="EA="+ea.toString(16).toUpperCase().padStart(4,"0")+"h · segment par défaut DS";};
 }
 if(i===20){
  var stackValues=[];
@@ -367,7 +368,7 @@ if(i===20){
 }
 if(i===31){
  var rmNames=["[BX+SI]","[BX+DI]","[BP+SI]","[BP+DI]","[SI]","[DI]","[BP]","[BX]"],regNames=["AX","CX","DX","BX","SP","BP","SI","DI"];
- $("decodeModRM").onclick=function(){var raw=$("modrmDemoValue").value,byteValue=parseInt(raw,16),out=$("modrmDemoResult");if(!Number.isInteger(byteValue)||byteValue<0||byteValue>255){out.textContent="Saisir un octet hexadécimal entre 00 et FF.";return;}var mod=(byteValue>>6)&3,reg=(byteValue>>3)&7,rm=byteValue&7,bits=byteValue.toString(2).padStart(8,"0"),rmText=mod===3?regNames[rm]:(rm===6&&mod===0?"[disp16]":rm===6?"[BP]":rmNames[rm]),disp=mod===0?"aucun":mod===1?"disp8 signé":"disp16 signé";out.textContent=byteValue.toString(16).toUpperCase().padStart(2,"0")+"h = "+bits+"b · MOD="+mod+" · REG="+regNames[reg]+" · R/M="+rmText+" · déplacement="+disp;};
+ $("decodeModRM").onclick=function(){var raw=$("modrmDemoValue").value,byteValue=parseHexInput(raw,0xff),out=$("modrmDemoResult");if(byteValue===null){out.textContent="Saisir un octet hexadécimal entre 00 et FF.";return;}var mod=(byteValue>>6)&3,reg=(byteValue>>3)&7,rm=byteValue&7,bits=byteValue.toString(2).padStart(8,"0"),rmText=mod===3?regNames[rm]:(rm===6&&mod===0?"[disp16]":rm===6?"[BP]":rmNames[rm]),disp=mod===0?"aucun":mod===1?"disp8 signé":"disp16 signé";out.textContent=byteValue.toString(16).toUpperCase().padStart(2,"0")+"h = "+bits+"b · MOD="+mod+" · REG="+regNames[reg]+" · R/M="+rmText+" · déplacement="+disp;};
 }
  $("lessonExample").onclick=function(){$("code").value=lesson.example;navigate("editor");resetCPU();};
  $("goExercises").onclick=function(){navigate("exercises");};
