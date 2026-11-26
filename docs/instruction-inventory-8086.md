@@ -61,14 +61,14 @@ Cet inventaire est indépendant des 58 cartes de l'interface. Il contient un reg
 | XOR | OU exclusif | — | Tests source/binaire ; table byte exhaustive et formes registre/mémoire/immédiat vérifiées |
 | NOT | Complément bit à bit | — | À auditer |
 | TEST | ET logique sans stockage du résultat | — | Tests source/binaire ; byte/word, registre/mémoire/immédiat vérifiés ; AF indéfini exclu |
-| ROL | Rotation gauche | — | À auditer |
-| ROR | Rotation droite | — | À auditer |
-| RCL | Rotation gauche via CF | — | À auditer |
-| RCR | Rotation droite via CF | — | À auditer |
-| SHL | Décalage logique gauche | SAL | À auditer |
-| SAL | Synonyme de SHL | SHL | À auditer |
-| SHR | Décalage logique droite | — | À auditer |
-| SAR | Décalage arithmétique droite | — | À auditer |
+| ROL | Rotation gauche | — | 3529 tests de groupe 2 ; source/binaire, ModR/M et désassemblage |
+| ROR | Rotation droite | — | 3529 tests de groupe 2 ; source/binaire, ModR/M et désassemblage |
+| RCL | Rotation gauche via CF | — | 3529 tests de groupe 2 ; source/binaire, ModR/M et désassemblage |
+| RCR | Rotation droite via CF | — | 3529 tests de groupe 2 ; source/binaire, ModR/M et désassemblage |
+| SHL | Décalage logique gauche | SAL | 3529 tests de groupe 2 ; source/binaire, ModR/M et désassemblage |
+| SAL | Synonyme de SHL | SHL | Alias de SHL ; couvert par les 3529 tests de groupe 2 |
+| SHR | Décalage logique droite | — | 3529 tests de groupe 2 ; source/binaire, ModR/M et désassemblage |
+| SAR | Décalage arithmétique droite | — | 3529 tests de groupe 2 ; source/binaire, ModR/M et désassemblage |
 
 ## 4. Transfert de contrôle, appels et interruptions
 

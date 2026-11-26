@@ -728,3 +728,16 @@ Les formes d'encodage CMP sont décrites au §3. Les contrôles sémantiques com
 **Résultat CI :** [45730214193](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45730214193), commit `bf994802a22425d1bddf7991e1d8a55d1f6ac522`, **56/56 étapes réussies**.
 
 Cette mise à jour valide les cas explicitement listés. Elle ne transforme pas les 9 formes CMP ni les formes TEST en une certification exhaustive de toutes les combinaisons ModR/M et de tous les états possibles.
+
+
+### 16.15 Groupe 2 — décalages et rotations
+
+`tests/shift-rotate-8086.cjs` rapporte **3 529 réussites, 0 échec** dans le workflow [45731020812](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45731020812).
+
+- 2 496 vecteurs sémantiques comparés en source et en binaire ;
+- 1 024 formes d'encodage/désassemblage couvrant les huit opérations, byte/word, huit registres et 24 formes mémoire ModR/M, avec compte 1 et CL ;
+- les comptes CL 0, 1, 2, 7, 8, 9, 15, 16, 17, 31, 32, 33 et 255 ;
+- CF d'entrée 0 et 1 pour les rotations via CF ;
+- AF des décalages et OF des opérations multibit laissés indéfinis et non comparés.
+
+`SAL` est testé comme alias de `SHL`. Les formes immédiates C0h/C1h, absentes du 8086 original, sont rejetées et ne sont pas comptées parmi les formes valides.

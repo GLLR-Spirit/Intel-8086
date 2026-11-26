@@ -76,13 +76,13 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | XOR | Oui | Oui | Oui | Oui | Oui |
 | NOT | Oui | Oui | Oui | Oui | Partiel |
 | TEST | Oui | Oui | Oui | Oui | Oui |
-| ROL | Oui | Non | Non | Non | À faire |
-| ROR | Oui | Non | Non | Non | À faire |
-| RCL | Oui | Non | Non | Non | À faire |
-| RCR | Oui | Non | Non | Non | À faire |
-| SHL | Oui | Oui | Non | Non | Partiel |
-| SHR | Oui | Oui | Non | Non | Partiel |
-| SAR | Oui | Non | Non | Non | À faire |
+| ROL | Oui | Oui | Oui | Oui | Oui |
+| ROR | Oui | Oui | Oui | Oui | Oui |
+| RCL | Oui | Oui | Oui | Oui | Oui |
+| RCR | Oui | Oui | Oui | Oui | Oui |
+| SHL | Oui | Oui | Oui | Oui | Oui |
+| SHR | Oui | Oui | Oui | Oui | Oui |
+| SAR | Oui | Oui | Oui | Oui | Oui |
 | JMP | Oui | Partiel | Oui | Oui | Oui |
 | CALL | Oui | Partiel | Oui | Oui | Oui |
 | RET | Oui | Partiel | Oui | Oui | Oui |
@@ -137,18 +137,19 @@ Les familles suivantes disposent maintenant de contrôles ciblés source et/ou b
 - Les 16 conditions Jcc, LOOP, LOOPE, LOOPNE et JCXZ : conditions, compte CX, FLAGS et chemins source/binaire testés.
 - MOVS, CMPS, STOS, LODS et SCAS en byte/word : registres, mémoire, segments, REP, DF et frontières d'offset testés.
 - MUL, IMUL, DIV et IDIV : formes mémoire, segments et interactions de préfixes testés.
+- SHL/SAL, SHR, SAR, ROL, ROR, RCL et RCR : vecteurs source/binaire, compteurs CL non masqués, FLAGS définis, formes ModR/M byte/word et désassemblage testés.
 
 Les interruptions restent une simulation pédagogique limitée ; le laboratoire ne modélise pas tous les événements matériels, l'acquittement INTR/NMI ni les signaux physiques du processeur.
 
 ### 3.2 Assembleur
 
-Les formes CMP, AND, OR, XOR et TEST ont des tests d'encodage pour les variantes registre, mémoire et immédiat, en byte/word. Les formes directes et indirectes de JMP/CALL near/far, les retours RET/RETF, les Jcc, les quatre boucles et les dix formes de chaîne sont également vérifiés dans leurs périmètres documentés.
+Les formes CMP, AND, OR, XOR et TEST ont des tests d'encodage pour les variantes registre, mémoire et immédiat, en byte/word. Le groupe 2 (SHL/SAL, SHR, SAR, ROL, ROR, RCL, RCR) est vérifié sur les formes registre et mémoire ModR/M, en byte/word, avec les comptes 1 et CL. Les formes directes et indirectes de JMP/CALL near/far, les retours RET/RETF, les Jcc, les quatre boucles et les dix formes de chaîne sont également vérifiés dans leurs périmètres documentés.
 
 Les groupes F6/F7 et FF ont des extensions valides et réservées distinctement testées. Les préfixes et les contraintes d'opérandes sont suivis séparément ; la réussite d'un opcode de base ne valide pas toutes les permutations de préfixes.
 
 ### 3.3 Désassembleur
 
-Les formes CMP/TEST/logiques, les transferts de contrôle, les quatre boucles et les dix opcodes de chaîne disposent de tests de désassemblage avec octets fixes ou contrôles indépendants. Les flux tronqués, les extensions réservées et les formes far registre-direct invalides sont contrôlés dans les suites dédiées.
+Les formes CMP/TEST/logiques, les transferts de contrôle, les quatre boucles, les dix opcodes de chaîne et le groupe 2 des décalages/rotations disposent de tests de désassemblage avec octets fixes ou contrôles indépendants. Les flux tronqués, les extensions réservées et les formes far registre-direct invalides sont contrôlés dans les suites dédiées.
 
 Le tableau de 93 entrées demeure l'autorité de synthèse : les statuts non actualisés ci-dessus ne sont pas inférés à partir de la présence d'une fonction ou d'un mnémonique dans l'interface.
 
@@ -768,3 +769,17 @@ Résultats de référence :
 - Chaînes : 29/29, audit différentiel 33/33.
 
 Les alias des Jcc et des boucles ne sont pas automatiquement considérés comme testés individuellement : les contrôles de cette tranche portent sur les 16 conditions canoniques et les quatre mnémoniques de boucle canoniques. Aucun pourcentage global n'est calculé tant que les autres lignes des 93 entrées ne sont pas réconciliées.
+
+
+## 13. Réconciliation ciblée — groupe 2 des décalages et rotations
+
+Les sept instructions canoniques `ROL`, `ROR`, `RCL`, `RCR`, `SHL`, `SHR` et `SAR` passent maintenant à **Oui** pour le simulateur, l'assembleur, le désassembleur et les tests, sur le périmètre vérifié.
+
+Preuve CI : [45731020812](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45731020812), commit `f2abee26ebb135087c0e157888a0ae138b1e8235`, **56/56 étapes réussies**.
+
+- **2 496 vecteurs sémantiques** exécutés dans les deux chemins (source et binaire), pour huit opérations, deux tailles, six valeurs représentatives par taille, treize comptes CL et les deux états CF d'entrée.
+- **1 024 formes d'encodage/désassemblage** : registres byte/word et 24 formes mémoire ModR/M, avec compte immédiat 1 et compte CL.
+- Comptes CL testés sans masque 5 bits : 0, 1, 2, 7, 8, 9, 15, 16, 17, 31, 32, 33 et 255.
+- Les FLAGS indéfinis ne sont pas imposés : AF pour les décalages et OF pour les comptes supérieurs à 1.
+
+Le mnémonique `SAL` est traité comme alias de `SHL` et n'ajoute pas une entrée canonique à la matrice des 93 instructions. Les encodages immédiats C0h/C1h ne sont pas attribués au 8086.
