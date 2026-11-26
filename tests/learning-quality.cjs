@@ -294,6 +294,16 @@ for (let chapterIndex = 0; chapterIndex < learning.chapterLearning.length; chapt
         "Chapter " + (chapterIndex + 1) + " repeats a lesson question in its final assessment.");
     }
   }
+
+}
+
+// Global uniqueness: repeated stems across different chapters are also rejected.
+const allQuestionStems = learning.chapterLearning.flatMap(chapter =>
+  chapter.lessons.flatMap(lesson => lesson.quiz.map(q => String(q[0]).trim().toLocaleLowerCase()))
+    .concat(chapter.quiz.map(q => String(q[0]).trim().toLocaleLowerCase()))
+);
+assert.equal(new Set(allQuestionStems).size, allQuestionStems.length,
+  "The 684-question bank must not repeat an exact question stem across chapters.");
 }
 
 
