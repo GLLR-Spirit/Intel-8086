@@ -39,8 +39,8 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | POP | Oui | Oui | Partiel | Partiel | Partiel |
 | PUSHF | Oui | Oui | Oui | Oui | Partiel |
 | POPF | Oui | Oui | Oui | Oui | Partiel |
-| LAHF | Oui | Oui | Oui | Oui | Partiel |
-| SAHF | Oui | Oui | Oui | Oui | Partiel |
+| LAHF | Oui | Oui | Oui | Oui | Oui |
+| SAHF | Oui | Oui | Oui | Oui | Oui |
 | MOVSB | Oui | Oui | Oui | Oui | Oui |
 | MOVSW | Oui | Oui | Oui | Oui | Oui |
 | CMPSB | Oui | Oui | Oui | Oui | Oui |
@@ -87,7 +87,7 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | CALL | Oui | Partiel | Oui | Oui | Oui |
 | RET | Oui | Partiel | Oui | Oui | Oui |
 | INT | Oui | Partiel | Non | Non | Partiel |
-| INTO | Oui | Non | Non | Non | À faire |
+| INTO | Oui | Oui | Oui | Oui | Oui |
 | IRET | Oui | Partiel | Oui | Oui | Partiel |
 | JCXZ | Oui | Oui | Oui | Oui | Oui |
 | LOOP | Oui | Oui | Oui | Oui | Oui |
@@ -116,12 +116,12 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | STD | Oui | Oui | Oui | Oui | Partiel |
 | CLI | Oui | Oui | Oui | Oui | Partiel |
 | STI | Oui | Oui | Oui | Oui | Partiel |
-| IN | Oui | Non | Non | Non | À faire |
-| OUT | Oui | Non | Non | Non | À faire |
+| IN | Oui | Oui | Oui | Oui | Oui |
+| OUT | Oui | Oui | Oui | Oui | Oui |
 | NOP | Oui | Oui | Oui | Oui | À faire |
 | HLT | Oui | Partiel | Oui | Oui | À faire |
-| WAIT | Oui | Non | Non | Non | À faire |
-| ESC | Oui | Non | Non | Non | À faire |
+| WAIT | Oui | Partiel | Oui | Oui | Oui |
+| ESC | Oui | Partiel | Oui | Oui | Oui |
 
 ### Synthèse des statuts
 
@@ -140,7 +140,7 @@ Les familles suivantes disposent maintenant de contrôles ciblés source et/ou b
 - SHL/SAL, SHR, SAR, ROL, ROR, RCL et RCR : vecteurs source/binaire, compteurs CL non masqués, FLAGS définis, formes ModR/M byte/word et désassemblage testés.
 - INC, DEC et NEG : formes registre/mémoire byte/word, huit registres, huit EA, sélection DS/SS, overrides, FLAGS et chemins source/binaire vérifiés.
 
-Les interruptions restent une simulation pédagogique limitée ; le laboratoire ne modélise pas tous les événements matériels, l'acquittement INTR/NMI ni les signaux physiques du processeur.
+IN/OUT utilisent une carte de ports logicielle, pas les ports matériels réels. INTO utilise le vecteur logiciel 4 ; WAIT et ESC sont des opérations sans effet dans le modèle logiciel, sans synchronisation FPU ni coprocesseur 8087 réel. INT/IRET et les événements matériels restent une simulation pédagogique limitée ; le laboratoire ne modélise pas l'acquittement INTR/NMI ni les signaux physiques du processeur.
 
 ### 3.2 Assembleur
 
@@ -797,3 +797,15 @@ Preuve CI : [45731571537](https://github.com/GLLR-Spirit/Intel-8086/actions/runs
 - `NOT` reste couvert par sa suite dédiée : 16 formes registre, 48 formes mémoire, quatre segments, LOCK, rejet REP et préservation des FLAGS.
 
 Les FLAGS indéfinis ne sont pas imposés. Cette actualisation ne valide pas automatiquement les alias ou les instructions hors de ces familles.
+
+
+## 15. Réconciliation ciblée — E/S, FLAGS et échappement coprocesseur
+
+L'actualisation du 26 novembre 2026 repose sur le CI [45731571537](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45731571537), commit `bbbf5eb1248c0e1ccb76e10d631081e4125991e1`, **56/56 étapes réussies**.
+
+- **IN/OUT** : 23/23 tests ; les huit formes (imm8/DX × AL/AX) ont des octets exacts, un désassemblage vérifié, une exécution source et binaire et une validation de l'état du port. Le modèle reste une carte de ports logicielle.
+- **INTO** : 4/4 tests ; encodage CEh, désassemblage, non-déclenchement si OF=0, appel du vecteur 4 si OF=1, chemins source et binaire. Ce contrôle n'est pas une validation des interruptions matérielles asynchrones.
+- **LAHF/SAHF** : 298 tests ; 32 combinaisons des cinq FLAGS copiés par LAHF et les 256 valeurs possibles de AH pour SAHF, avec comparaison source/binaire, encodages et syntaxes invalides.
+- **WAIT/ESC** : 6 719 assertions ; WAIT 9Bh, 64 numéros ESC, formes registre/mémoire et 2 048 combinaisons opcode/ModR/M désassemblées ; sémantique logicielle sans effet vérifiée en source et en binaire.
+
+IN et OUT passent à Oui sur le modèle de ports logiciels ; INTO, LAHF et SAHF passent à Oui dans leur périmètre testé. WAIT et ESC gardent le simulateur à Partiel : l'attente du coprocesseur et l'exécution 8087 ne sont pas modélisées. INT et IRET restent partiels ; XLAT conserve son statut partiel tant que les autres vecteurs et interactions de préfixes ne sont pas entièrement réconciliés.

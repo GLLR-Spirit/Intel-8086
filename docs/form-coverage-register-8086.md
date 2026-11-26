@@ -753,3 +753,15 @@ Le workflow [45731571537](https://github.com/GLLR-Spirit/Intel-8086/actions/runs
 - `tests/not-forms-8086.cjs` : **327 assertions** ; 16 formes registre, 48 formes mémoire, quatre overrides, LOCK, rejet REP et préservation des FLAGS.
 
 Les FLAGS non définis ne sont pas comparés. Les résultats sont limités aux formes et vecteurs explicitement testés.
+
+
+### 16.17 E/S, interruptions conditionnelles, FLAGS et ESC
+
+Résultats vérifiés dans le CI [45731571537](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45731571537) :
+
+- `tests/io-ports-8086.cjs` : **23/23** ; huit formes IN/OUT, encodage, désassemblage, source/binaire, FLAGS et état de la carte de ports logicielle.
+- `tests/into-8086.cjs` : **4/4** ; INTO avec OF=0/1, vecteur 4, IRET, pile, FLAGS et source/binaire.
+- `tests/lahf-sahf-8086.cjs` : **298/298** ; 32 combinaisons LAHF, 256 valeurs SAHF, source/binaire, FLAGS et octets fixes.
+- `tests/wait-esc-8086.cjs` : **6 719 assertions** ; WAIT, 64 numéros ESC, formes registre/mémoire et 2 048 combinaisons opcode/ModR/M désassemblées.
+
+Limites de modèle : IN/OUT utilisent une carte logicielle ; INTO vérifie l'interruption logicielle conditionnelle, pas les interruptions matérielles ; WAIT/ESC n'émulent ni synchronisation FPU ni coprocesseur 8087.

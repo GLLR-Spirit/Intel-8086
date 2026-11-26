@@ -35,7 +35,7 @@ Cet inventaire est indépendant des 58 cartes de l'interface. Il contient un reg
 | ADC | Addition avec retenue | — | À auditer |
 | SUB | Soustraction | — | À auditer |
 | SBB | Soustraction avec emprunt | — | À auditer |
-| INC | Incrémentation | — | 3529 tests groupe 2 distincts ; INC/DEC/NEG : 1976 assertions préfixes et EA, source/binaire |
+| INC | Incrémentation | — | INC/DEC/NEG : 1976 assertions préfixes et EA, source/binaire |
 | DEC | Décrémentation | — | INC/DEC/NEG : 1976 assertions préfixes et EA, source/binaire ; 48 vecteurs FLAGS source/binaire |
 | NEG | Négation arithmétique | — | 651 tests ; byte exhaustif et word frontières source/binaire, registres et mémoire |
 | CMP | Comparaison par soustraction | — | Tests source/binaire ciblés ; formes ALU et flags comparatifs vérifiés sur main (26/11/2026) |
@@ -79,7 +79,7 @@ Cet inventaire est indépendant des 58 cartes de l'interface. Il contient un reg
 | RET | Retour proche | — | RET/RETF, immédiats, pile et frontières testés source/binaire |
 | RETF | Retour lointain (graphie d'assembleur pour le retour intersegment) | Synonyme de syntaxe à vérifier contre le manuel d'assembleur retenu | RET/RETF, immédiats, pile et frontières testés source/binaire |
 | INT | Interruption logicielle | — | À auditer |
-| INTO | Interruption si débordement | — | À auditer |
+| INTO | Interruption si débordement | — | 4/4 tests ; OF, vecteur 4, source/binaire et désassemblage |
 | IRET | Retour d'interruption | — | À auditer |
 | JCXZ | Saut si CX vaut zéro | — | Test source/binaire ; CX préservé et cible rel8 vérifiés |
 | LOOP | Boucle avec décrémentation de CX | — | Test source/binaire ; CX, FLAGS et cible rel8 vérifiés |
@@ -133,8 +133,8 @@ Chaque graphie ci-dessous est conservée comme entrée autonome. Les synonymes n
 | POP | Dépilement d'un opérande mot | — | À auditer |
 | PUSHF | Empilement de FLAGS | — | À auditer |
 | POPF | Restauration de FLAGS | — | À auditer |
-| LAHF | Copie de la partie basse de FLAGS vers AH | — | À auditer |
-| SAHF | Copie de AH vers les indicateurs modifiables | — | À auditer |
+| LAHF | Copie de la partie basse de FLAGS vers AH | — | 298 tests ; 32 combinaisons de FLAGS source/binaire et octets fixes |
+| SAHF | Copie de AH vers les indicateurs modifiables | — | 298 tests ; 256 valeurs AH source/binaire et octets fixes |
 | CLC | Effacement de CF | — | À auditer |
 | STC | Positionnement de CF | — | À auditer |
 | CMC | Complément de CF | — | À auditer |
@@ -147,12 +147,12 @@ Chaque graphie ci-dessous est conservée comme entrée autonome. Les synonymes n
 
 | Mnémotechnique | Famille / remarque | Alias ou graphies associées | Contrôle |
 |---|---|---|---|
-| IN | Lecture d'un port d'E/S | — | À auditer |
-| OUT | Écriture vers un port d'E/S | — | À auditer |
+| IN | Lecture d'un port d'E/S | — | 23/23 tests ; huit formes, encodage/désassemblage et source/binaire ; carte de ports logicielle |
+| OUT | Écriture vers un port d'E/S | — | 23/23 tests ; huit formes, encodage/désassemblage et source/binaire ; carte de ports logicielle |
 | NOP | Aucune opération architecturale | — | À auditer |
 | HLT | Arrêt du processeur jusqu'à événement de réveil | — | À auditer |
-| WAIT | Attente de synchronisation avec le coprocesseur | FWAIT (synonyme de syntaxe à documenter séparément selon l'assembleur) | À auditer |
-| ESC | Transfert/échappement vers coprocesseur | — | À auditer |
+| WAIT | Attente de synchronisation avec le coprocesseur | FWAIT (synonyme de syntaxe à documenter séparément selon l'assembleur) | 6 719 assertions globales WAIT/ESC ; WAIT sans effet logiciel, FPU non simulée |
+| ESC | Transfert/échappement vers coprocesseur | — | 6 719 assertions globales WAIT/ESC ; 64 codes, 2 048 ModR/M, FPU non simulée |
 | LOCK | Préfixe de verrouillage de bus, pas une instruction autonome | — | À auditer |
 
 ## 8. Préfixes de répétition
