@@ -16,7 +16,7 @@ For every finding: detect the symptom, inspect the complete affected path, ident
 | 2 | 108 assembly examples and expected results | Existing source-level audit covers 108/108; further binary parity audit pending | tests/learning-quality.cjs executes all 108 source examples and requires 108 unique independent expected-state oracles. executeAll assembles each source program before source execution. A separate all-example binary-execution parity check has not yet been established. |
 | 3 | 684 questions and corrections | Duplicate stems corrected; test execution pending | Two exact cross-chapter duplicates were rewritten in chapters 15 and 33. The semantic key was updated. A global exact-stem uniqueness assertion now covers all 684 runtime questions. |
 | 4 | Pedagogical quality of all 36 chapters | Content expanded; deeper review pending | 69 short lesson explanations plus two foundational explanations were expanded. The runtime course now has 108/108 lesson theories at 300+ characters (minimum 303); a CI assertion enforces this. Continue reviewing accuracy, progression, prerequisites, terminology and teaching quality. |
-| 5 | Exercises and solutions | Pending | Verify statements, constraints, hints, step-by-step corrections, executable solutions, expected states, difficulty labels, and chapter filters. |
+| 5 | Exercises and solutions | Expanded; automated verification pending | Exercise bank now contains 42 guided exercises with explicit topic-to-chapter mappings covering all 36 chapters. Fifteen advanced exercises were added; two integration exercises were mapped and classified. Tests validate metadata, every complete solution and its validator; extra byte oracles cover encoding, ModR/M and symbol resolution. Browser checks now verify that chapter, difficulty and type filters return genuinely matching exercises. |
 | 6 | Simulator/course integration | Pending | Verify example loading, source/binary execution paths, step tracing, registers, memory, FLAGS, segments, stack, interrupts and error feedback. |
 | 7 | Accessibility, responsive layout and performance | Partially implemented | Navigation and reading order corrections are in place. Continue keyboard, screen-reader, contrast, zoom, reduced-motion, narrow viewport, loading and performance audits. |
 | 8 | Documentation versus implemented behavior | Pending | Compare every documented instruction/form, assembler and disassembler restriction, execution behavior and unsupported/partial feature against implementation and independent tests. |
@@ -37,6 +37,14 @@ For every finding: detect the symptom, inspect the complete affected path, ident
 - Expanded the technical explanations in 69 short lesson entries and two foundational entries.
 - Added a CI requirement that every one of the 108 visible lessons contains at least 300 characters of technical explanation; the inspected runtime data has a minimum of 303 characters and an average of 453.
 - Corrected the REP zero-count explanation: REP with CX=0 performs no iterations and leaves CX and the string indexes unchanged. The existing string-instruction tests already cover this case in both source and binary execution.
+
+### Exercises
+
+- Replaced position-based and keyword-inferred chapter associations with explicit mappings for all 42 exercises.
+- Added 15 practical exercises covering jumps, procedures, stack parameters, modular routines, MUL/DIV, shifts, interrupts, I/O, encoding, ModR/M, disassembly, segment overrides, optimization limits and a memory-array project.
+- Mapped the two existing integration exercises to the chapters they actually combine and set explicit difficulty/type metadata.
+- Strengthened stack validators to check SP restoration and empty stack metadata; the reverse string-copy validator now checks destination bytes as well as SI, DI and DF.
+- Added CI contracts for 42 exercises, complete coverage of 36 chapters, valid metadata and executable validated solutions; browser checks verify the actual filtered card metadata and chapter association.
 
 ### Question bank
 
