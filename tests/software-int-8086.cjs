@@ -106,7 +106,7 @@ test("Binary INT reads IVT and returns through IRET",()=>{
  assertInterruptState(state,"binary");
 });
 test("INT 3 uses the dedicated CC opcode and disassembles",()=>{
- const assembled=api.assemble("INT 3\\nHLT");
+ const assembled=api.assemble("INT 3\nHLT");
  assert.deepEqual(Array.from(assembled.bytes),[0xCC,0xF4]);
  const decoded=api.disassemble([0xCC]);
  assert.equal(decoded.rows.length,1);
@@ -117,14 +117,14 @@ test("Source INT 3 routes vector 03h through IRET",()=>{
  const source=[
   "VECTOR 3, HANDLER","MOV AX, 0000h","MOV CX, 0302h","PUSH CX","POPF",
   "INT 3","MOV BX, 0ABCDh","HLT","HANDLER:","PUSHF","POP DX","MOV SI, 5678h","IRET"
- ].join("\\n");
+ ].join("\n");
  assertInterruptState(api.execute(source),"source INT 3");
 });
 test("Binary INT 3 reads IVT vector 03h and returns through IRET",()=>{
  const source=[
   "MOV AX, 0000h","MOV CX, 0302h","PUSH CX","POPF",
   "INT 3","MOV BX, 0ABCDh","HLT","HANDLER:","PUSHF","POP DX","MOV SI, 5678h","IRET"
- ].join("\\n");
+ ].join("\n");
  const assembled=api.assemble(source),handler=assembled.symbols.HANDLER;
  const cs=0x1000,ivt=3*4;
  const mem={[ivt]:handler&255,[ivt+1]:(handler>>8)&255,[ivt+2]:cs&255,[ivt+3]:(cs>>8)&255};
