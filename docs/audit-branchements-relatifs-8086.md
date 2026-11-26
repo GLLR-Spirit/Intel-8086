@@ -73,7 +73,7 @@ La relaxation automatique ne propose pas de syntaxe pour forcer un JMP near lors
 
 ## 7. Batterie de tests
 
-- [`tests/relative-branches.cjs`](../tests/relative-branches.cjs) : relaxation JMP, limites rel8/rel16, seize conditions, FLAGS, LOOP et flux tronqués (**187 vecteurs**).
+- [`tests/relative-branches.cjs`](../tests/relative-branches.cjs) : relaxation JMP, limites rel8/rel16, seize conditions, FLAGS, LOOP et flux tronqués (**209 vecteurs**).
 - [`tests/byte-offset-execution.cjs`](../tests/byte-offset-execution.cjs) : table d'offsets, IP séquentiel, branchements, CALL/RET et segment de 65 536 octets (**7 scénarios indépendants**).
 - [`tests/control-stack.cjs`](../tests/control-stack.cjs) : transferts indirects near/far, pile, retours et contraintes POP/RET.
 
@@ -91,3 +91,19 @@ Le laboratoire accepte maintenant un tableau d'octets avec un `CS:IP` initial ch
 
 Le chargeur binaire utilise désormais une lecture mémoire à chaque instruction. Le décodeur ne parcourt que l'instruction courante, puis l'interpréteur recommence au nouvel `CS:IP`. Les branchements peuvent viser des octets qui n'étaient pas des débuts d'instructions dans un désassemblage linéaire, et les modifications du code sont relues à leur prochain fetch. Voir [l'audit du chargement binaire](audit-chargement-binaire-8086.md).
 
+
+
+## Actualisation sur `main` — 26 novembre 2026
+
+La suite `tests/relative-branches.cjs` a été étendue pour vérifier les deux chemins d'exécution. Les 16 conditions Jcc sont évaluées sur huit couples d'opérandes ; chaque cas compare les résultats source et binaire ainsi que CF, PF, AF, ZF, SF et OF.
+
+La famille des boucles est désormais vérifiée instruction par instruction :
+- `LOOPNE` (`E0`), `LOOPE` (`E1`), `LOOP` (`E2`) et `JCXZ` (`E3`) ont chacun un test d'encodage et un test de désassemblage ;
+- les conditions prises et non prises sont contrôlées en source et en binaire ;
+- les valeurs CX=0, CX=1 et CX=2 vérifient le décrémentement, le bouclage à FFFFh et l'absence de décrémentement de JCXZ ;
+- les neuf FLAGS modélisés sont contrôlés comme préservés par les instructions de boucle ;
+- les cibles rel8 et les flux tronqués sont testés pour les quatre opcodes.
+
+**Résultat vérifié :** `tests/relative-branches.cjs` rapporte **209 réussites, 0 échec**. Le workflow CI `45729424128` sur le commit `faef6b83c1e5aba2626148bb6b341fc0079031f5` a terminé avec succès (**56/56 étapes**). [Workflow CI](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45729424128)
+
+Cette validation ne remplace pas l'audit des transferts indirects, des frontières de segments, ni les limites du modèle de code chargé et de la BIU.

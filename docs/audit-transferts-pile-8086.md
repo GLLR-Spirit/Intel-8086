@@ -58,7 +58,7 @@ L'interpréteur exécute désormais les transferts indirects :
 
 Le simulateur n'est pas un émulateur binaire chargé à une adresse physique. Son `IP` est un **indice logique dans la liste des instructions analysées**, et non l'offset octet réel du code machine. Par conséquent, les tests indirects utilisent des valeurs de cible correspondant à ces indices. Le décodage binaire, lui, calcule les offsets d'instructions selon les octets.
 
-Le suivi de pile enregistre des mots et leur rôle (`data`, `return`, `return-ip`, `return-cs`, etc.). Pour préserver la cohérence de ces métadonnées, l'exécution de `RET imm16` et `RETF imm16` est limitée aux ajustements pairs qui retirent un nombre entier de mots suivis. Un ajustement impair reste une forme machine valide, et reste encodable/décodable, mais l'interpréteur le refuse explicitement. Cette restriction appartient au modèle pédagogique de pile, pas à l'architecture 8086.
+Le suivi de pile enregistre des mots et leur rôle (`data`, `return`, `return-ip`, `return-cs`, etc.). **Correction du 25 novembre 2026 :** `RET imm16` et `RETF imm16` acceptent également les ajustements impairs. Après le dépilement de l'adresse de retour, l'immédiat est ajouté à SP en octets, modulo 16 bits. Si l'ajustement est impair, les métadonnées typées de pile sont abandonnées car elles ne peuvent plus représenter un alignement par mots ; les octets mémoire et SP restent les données de référence. L'ancienne restriction aux ajustements pairs est obsolète.
 
 Les erreurs de pile (pile vide, type de retour incompatible, segment de retour absent, argument non marqué comme donnée) sont signalées plutôt que de produire un état CS:IP artificiel.
 
@@ -74,7 +74,7 @@ Elle couvre :
 - les flux tronqués ;
 - l'exécution CALL/JMP indirecte par registre et mémoire ;
 - la restauration de CS:IP et les effets sur SP ;
-- `RET imm16` et `RETF imm16`, y compris la limite explicite des ajustements impairs.
+- `RET imm16` et `RETF imm16`, y compris les ajustements impairs appliqués en octets.
 
 La suite est exécutée dans le workflow CI principal. Le run [45482367409](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45482367409), sur le commit `04f7ee9c918f42cb7c25d8124ecf983ff0e9bcc4`, a validé les 304 vecteurs de cette suite. Le workflow complet a réussi avec **8 549 vérifications, 0 échec**. Ce résultat ne constitue pas une certification matérielle du processeur.
 
@@ -96,3 +96,18 @@ Les nouveaux tests binaires couvrent POP, POPF, RET, RETF sans métadonnées, et
 Validation du workflow : https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45511311367 — commit 915d12868de2c91ce8a3cd11f0432c43b3b95256 — **success**, toutes les étapes CI réussies.
 
 Limite maintenue : la pile reste bornée par le modèle d'adressage et le suivi du laboratoire ; les cycles de bus et les effets de concurrence ne sont pas modélisés.
+
+
+## Actualisation sur `main` — 26 novembre 2026
+
+Le CI courant confirme les suites de pile et de transferts sur le commit `faef6b83c1e5aba2626148bb6b341fc0079031f5` :
+
+- `tests/control-stack.cjs` : **305/305** ;
+- `tests/call-ret-stack-boundaries.cjs` : **6/6** ;
+- `tests/call-ret-8086.cjs` : **4/4** ;
+- `tests/call-indirect-8086.cjs` : **177/177** ;
+- workflow CI principal : **56/56 étapes**, run [45729424128](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45729424128).
+
+Les ajustements impairs `RET 1`, `RET 3` et `RETF 1` sont maintenant couverts par les tests. Les chemins source et binaire sont comparés pour les cas de frontières de pile. Les limites du modèle de pile typée restent documentées : après un ajustement impair, les métadonnées sont abandonnées, sans altérer le calcul architectural de SP.
+
+Les tests dédiés CALL indirect et le scénario Playwright correspondant avaient également réussi sur le commit fusionné de la PR #1. Cette validation ciblée ne signifie pas que toutes les instructions du groupe FF ou tous les transferts multi-segments sont certifiés.

@@ -365,3 +365,24 @@ Référence CI : https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45729004
 Cette validation complète la sélection de segment et les interactions de préfixes pour ces quatre instructions. Elle ne remplace pas les contrôles arithmétiques de la suite BCD/MUL/DIV, les tests d'erreur de division, ni la comparaison indépendante des encodages. Les FLAGS indéfinis après DIV/IDIV ne doivent pas être comparés ; le signal LOCK physique et l'arbitrage du bus ne sont pas simulés.
 
 Les chapitres 12 à 17 ne sont donc pas déclarés globalement clos : les autres familles et la réconciliation de toutes les formes restent à traiter.
+
+
+## 11. Actualisation des branchements, boucles et pile sur `main` — 26 novembre 2026
+
+La validation de la famille MUL/IMUL/DIV/IDIV a été complétée par une tranche indépendante sur les branchements et la pile. Sur le commit `faef6b83c1e5aba2626148bb6b341fc0079031f5`, le workflow CI [45729424128](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45729424128) a terminé avec **56/56 étapes réussies**.
+
+| Contrôle ciblé | Résultat |
+|---|---:|
+| Branchements relatifs et boucles | 209/209 |
+| Transferts et pile | 305/305 |
+| CALL/RET limites de pile | 6/6 |
+| CALL FAR direct | 4/4 |
+| CALL indirect | 177/177 |
+| Instructions de chaîne | 29/29 |
+| Audit différentiel | 33/33 |
+
+La suite des branchements compare maintenant les 16 conditions Jcc sur huit couples d'opérandes en source et en binaire. LOOP, LOOPE, LOOPNE et JCXZ sont également contrôlées dans les deux chemins, avec vérification des conditions, de CX et des neuf FLAGS modélisés.
+
+Pour CALL/RET, les tests couvrent les appels near/far, les formes indirectes, l'ordre CS:IP sur pile, les limites SP et les ajustements impairs de RET/RETF. Pour les chaînes, les dix formes byte/word sont testées avec les chemins source et binaire, les segments, REP, DF et les frontières d'offset.
+
+**État global :** ces résultats ferment des sous-périmètres ciblés, pas l'audit exhaustif des chapitres 12 à 17. Les formes restantes, les interactions de préfixes non couvertes, les autres familles d'instructions et la réconciliation des 93 entrées restent ouvertes.

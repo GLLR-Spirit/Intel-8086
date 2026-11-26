@@ -702,3 +702,15 @@ Le premier passage a révélé une erreur dans le test lui-même : il comparait 
 
 
 **Validation CI sur `main` :** run [45729004989](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45729004989), commit `28d680d26d0311ce81a672d81daf9d59184562e4`, **56/56 étapes réussies**. La matrice étendue des segments par défaut inclut maintenant BX+SI, BX+DI, BP+SI, BP+DI, SI, DI, BP et BX.
+
+### 16.13 Branchements relatifs et famille LOOP — actualisation du 26 novembre 2026
+
+La suite `tests/relative-branches.cjs` rapporte **209 assertions réussies, 0 échec** dans le CI du commit `faef6b83c1e5aba2626148bb6b341fc0079031f5`.
+
+- Les 16 Jcc disposent des encodages et désassemblages canoniques 70h–7Fh ; les huit couples d'opérandes couvrent les 16 conditions dans les chemins source et binaire, avec comparaison des six FLAGS définis par CMP.
+- LOOP, LOOPE, LOOPNE et JCXZ disposent chacun de tests d'encodage et de désassemblage.
+- Les scénarios source/binaire contrôlent les branches prises et non prises, CX=0/1/2, le bouclage à FFFFh, la préservation des neuf FLAGS et l'absence de décrémentement de CX pour JCXZ.
+- Les déplacements rel8 des quatre boucles sont vérifiés au désassemblage ; les flux tronqués E0–E3 sont rejetés.
+- JMP short est contrôlé aux limites -128/+127, la relaxation bascule en near au-delà ; CALL/JMP rel16 vérifient -32768/+32767 et le bouclage 16 bits de IP.
+
+**Validation CI :** run [45729424128](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45729424128), **56/56 étapes réussies**. Les résultats restent limités aux formes et états explicitement listés ; aucune couverture globale des 93 instructions n'est déduite.

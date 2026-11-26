@@ -1,7 +1,7 @@
 # Audit de couverture du jeu d'instructions Intel 8086
 
 **Dépôt audité :** `GLLR-Spirit/Intel-8086`  
-**Branche de travail actualisée :** `audit/niveau-3-chapitres-12-17`  
+**Branche de travail actuelle :** `main`  
 **Date de l'audit statique initial :** 24 novembre 2026  
 **Dernière actualisation ciblée :** 26 novembre 2026  
 **Périmètre :** Intel 8086 original uniquement ; aucune instruction 80186 ou ultérieure n'est comptée.  
@@ -738,3 +738,12 @@ Détail des 368 assertions :
 Le premier essai de la matrice étendue avait échoué à cause d'un oracle de test qui traitait `[BP]` comme SS, mais `[BP+SI]` et `[BP+DI]` comme DS. Le diagnostic a montré que les résultats source et binaire sélectionnaient SS ; l'oracle a été corrigé. Le nouveau run complet confirme le résultat.
 
 Cette suite complète les tests déjà présents sur les huit formes ModR/M mémoire, les huit registres byte/word, les déplacements, les limites IDIV et l'interruption de division. Elle ne certifie pas le signal LOCK matériel, l'arbitrage du bus ni l'ensemble des 93 instructions.
+
+
+## 10. Actualisation — branchements et boucles sur `main` (26 novembre 2026)
+
+La suite `tests/relative-branches.cjs` a été étendue aux chemins source et binaire. Elle rapporte **209 réussites, 0 échec** dans le workflow [45729424128](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45729424128), commit `faef6b83c1e5aba2626148bb6b341fc0079031f5`. Le workflow complet a réussi (**56/56 étapes**).
+
+Les 16 Jcc sont vérifiées sur huit couples d'opérandes, avec résultats de branchement et FLAGS définis de CMP comparés dans les deux chemins. LOOP, LOOPE, LOOPNE et JCXZ sont contrôlées en encodage, désassemblage, sémantique vraie/fausse, compte CX, préservation des neuf FLAGS, cible rel8 et flux tronqués. La suite couvre également les limites rel8, la relaxation JMP short/near, les limites rel16 et le bouclage IP 16 bits.
+
+Le registre de formes décrit maintenant cette preuve ciblée. Les 93 entrées canoniques ne sont pas encore réconciliées ; aucun pourcentage global n'est publié.

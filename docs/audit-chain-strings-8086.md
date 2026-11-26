@@ -107,3 +107,14 @@ La suite a été étendue après l'audit initial :
 - parcours pédagogique : **17 chapitres, 34 questions, 27 corrections exécutables validées**.
 
 Ces tests ciblent les frontières et comportements listés. Ils ne constituent pas une preuve exhaustive de toutes les séquences de préfixes ni de tous les états matériels possibles.
+
+
+## Actualisation CI sur `main` — 26 novembre 2026
+
+Le workflow principal [45729424128](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45729424128), commit `faef6b83c1e5aba2626148bb6b341fc0079031f5`, a réussi avec **56/56 étapes**.
+
+- `tests/string-instructions-8086.cjs` : **29/29** tests réussis. Chaque scénario utilise les chemins source et binaire, avec contrôle des registres, de la mémoire et des FLAGS pertinents.
+- `tests/dynamic-differential.cjs` : **33/33** tests réussis.
+- Les dix formes MOVS, CMPS, STOS, LODS et SCAS en byte/word sont assemblées et désassemblées ; les scénarios dédiés vérifient également les overrides, REP/REPE/REPNE, CX=0, DF et les frontières d'offset.
+
+La réussite de ces suites valide les scénarios logiciels décrits ; elle ne modélise pas les interruptions matérielles asynchrones, les signaux du bus, la BIU ni les timings cycle-exact.

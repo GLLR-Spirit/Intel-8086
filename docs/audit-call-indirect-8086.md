@@ -1,6 +1,6 @@
 # Audit approfondi — CALL indirect 8086
 
-**Branche :** `audit/niveau-3-chapitres-12-17`  
+**Branche de travail actuelle :** `main`  
 **Périmètre :** `FF /2` (CALL near indirect) et `FF /3` (CALL far indirect), assembleur, désassembleur, exécution source et binaire.  
 **Référence d'encodage indépendante :** GNU Binutils `as` 2.46, mode `.code16`.  
 **Statut :** tests automatisés du moteur et validation Playwright réussis sur les commits de test référencés ci-dessous. Aucune conclusion de validation globale 8086 n'en découle.
@@ -100,3 +100,16 @@ Sur le commit `21b6c66fb35bf8057e0e81c73fa168a099a83b89` :
 - Le workflow navigateur a exécuté `tests/call-indirect-interactive-8086.cjs` et terminé avec succès ; il vérifie le parcours interactif et le chemin binaire.
 
 Cette mise à jour clôt le point « attente du workflow Playwright » pour le périmètre effectivement testé. Elle ne transforme pas ce périmètre en validation exhaustive de toutes les variantes de CALL/RET, de tous les préfixes ni de l'ensemble de la matrice ModR/M. La conclusion globale reste limitée aux formes décrites dans ce rapport et dans les tests dédiés.
+
+
+## Actualisation sur `main` — 26 novembre 2026
+
+La PR #1 qui contenait cette tranche d'audit a été fusionnée dans `main`. Le workflow CI principal actuel, run [45729424128](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45729424128), confirme :
+
+- `tests/call-indirect-8086.cjs` : **177/177** ;
+- `tests/call-ret-8086.cjs` : **4/4** ;
+- `tests/call-ret-stack-boundaries.cjs` : **6/6** ;
+- `tests/control-stack.cjs` : **305/305** ;
+- workflow complet : **56/56 étapes réussies**.
+
+Le test Chromium de CALL indirect avait réussi sur le commit de la PR fusionnée, run [45725877536](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45725877536). Le dernier changement de code relatif à cette actualisation concerne les tests de branchement ; aucune modification du moteur CALL/RET n'a été introduite dans ce lot.
