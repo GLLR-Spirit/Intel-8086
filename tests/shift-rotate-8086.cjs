@@ -25,7 +25,9 @@ vm.createContext(context);
 const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, `
 globalThis.__8086ShiftApi = {
   assemble: source => assembleProgram(source),
-  execute: source => executeAll(source)
+  disassemble: bytes => disassembleBytes(bytes),
+  execute: source => executeAll(source),
+  executeBinary: (bytes,cs,ip,state) => executeBinary(bytes,cs,ip,state)
 };
 })();
 `);
@@ -119,9 +121,12 @@ function execute(op, bits, value, count, carryIn) {
     op + " " + register + ", CL",
     "HLT"
   ].join("\n");
-  const state = api.execute(source);
-  assert.ok(!state.error, state.error || (op + " execution failed"));
-  return state;
+  const assembled = api.assemble(source);
+  const sourceState = api.execute(source);
+  const binaryState = api.executeBinary(assembled.bytes, 0, 0, {});
+  assert.ok(!sourceState.error, sourceState.error || (op + " source execution failed"));
+  assert.ok(!binaryState.error, binaryState.error || (op + " binary execution failed"));
+  return [["source", sourceState], ["binary", binaryState]];
 }
 
 let passed = 0;
@@ -151,21 +156,21 @@ for (const bits of [8, 16]) {
           const label = op + " " + bits + "-bit value=" +
             value.toString(16) + " count=" + count + " CF-in=" + carryIn;
           test(label, () => {
-            const actual = execute(op, bits, value, count, carryIn);
+            const states = execute(op, bits, value, count, carryIn);
             const expected = reference(op, value, bits, count, carryIn);
-            const actualValue = bits === 8 ? actual.reg.AX & 0xFF : actual.reg.AX;
-            assert.equal(actualValue, expected.result, label + " result");
-            assert.equal(actual.flags.CF, expected.flags.CF, label + " CF");
-
             const flagsToCheck = count === 0
               ? ["PF", "AF", "ZF", "SF", "OF"]
               : expected.rotating
                 ? ["PF", "AF", "ZF", "SF"]
                 : ["PF", "ZF", "SF"];
-
             if (count === 1) flagsToCheck.push("OF");
-            for (const flag of flagsToCheck) {
-              assert.equal(actual.flags[flag], expected.flags[flag], label + " " + flag);
+            for (const [mode, actual] of states) {
+              const actualValue = bits === 8 ? actual.reg.AX & 0xFF : actual.reg.AX;
+              assert.equal(actualValue, expected.result, label + " " + mode + " result");
+              assert.equal(actual.flags.CF, expected.flags.CF, label + " " + mode + " CF");
+              for (const flag of flagsToCheck) {
+                assert.equal(actual.flags[flag], expected.flags[flag], label + " " + mode + " " + flag);
+              }
             }
           });
         }
@@ -186,11 +191,63 @@ const encodingVectors = [
   ["RCR AL, CL", [0xD2, 0xD8]]
 ];
 for (const [source, expected] of encodingVectors) {
-  test("8086 group-2 encoding " + source, () => {
+  test("8086 group-2 encoding and disassembly " + source, () => {
     const actual = Array.from(api.assemble(source).bytes);
     assert.deepEqual(actual, expected);
+    const decoded = api.disassemble(expected);
+    assert.equal(decoded.rows.length, 1, source + " must decode as one instruction");
+    assert.deepEqual(Array.from(decoded.rows[0].bytes), expected, source + " decoded bytes");
+    const canonical = source.startsWith("SAL ") ? "SHL " : source.split(" ")[0] + " ";
+    assert.ok(decoded.rows[0].instruction.startsWith(canonical), decoded.rows[0].instruction);
   });
 }
+// Exhaustive group-2 ModR/M shape checks for all operations, widths,
+// register-direct fields, eight EA forms and disp8/disp16/direct addressing.
+const group2Ext = { ROL:0, ROR:1, RCL:2, RCR:3, SHL:4, SAL:4, SHR:5, SAR:7 };
+const regs8 = ["AL","CL","DL","BL","AH","CH","DH","BH"];
+const regs16 = ["AX","CX","DX","BX","SP","BP","SI","DI"];
+const ea = ["BX+SI","BX+DI","BP+SI","BP+DI","SI","DI","BP","BX"];
+function memoryForm(mod,rm) {
+  if (mod===0 && rm===6) return {operand:"[4660]",disp:[0x34,0x12]};
+  if (mod===0) return {operand:"["+ea[rm]+"]",disp:[]};
+  if (mod===1) return {operand:rm===6?"[BP+1]":"["+ea[rm]+"+1]",disp:[0x01]};
+  return {operand:rm===6?"[BP+256]":"["+ea[rm]+"+256]",disp:[0x00,0x01]};
+}
+let encodingMatrixCases=0;
+for(const op of operations)for(const bits of [8,16]) {
+  const regs=bits===8?regs8:regs16;
+  const ptr=bits===8?"BYTE PTR ":"WORD PTR ";
+  for(let rm=0;rm<8;rm++)for(const countForm of ["1","CL"]) {
+    const opcode=countForm==="1"?(bits===8?0xD0:0xD1):(bits===8?0xD2:0xD3);
+    const expected=[opcode,0xC0|(group2Ext[op]<<3)|rm];
+    const source=op+" "+regs[rm]+", "+countForm;
+    test("Group-2 register ModR/M "+source,()=>{
+      assert.deepEqual(Array.from(api.assemble(source).bytes),expected,source);
+      const decoded=api.disassemble(expected);
+      assert.equal(decoded.rows.length,1,source+" decode");
+      assert.deepEqual(Array.from(decoded.rows[0].bytes),expected,source+" bytes");
+    });
+    encodingMatrixCases++;
+  }
+  for(let mod=0;mod<=2;mod++)for(let rm=0;rm<8;rm++) {
+    const form=memoryForm(mod,rm);
+    for(const countForm of ["1","CL"]) {
+      const opcode=countForm==="1"?(bits===8?0xD0:0xD1):(bits===8?0xD2:0xD3);
+      const modrm=(mod<<6)|(group2Ext[op]<<3)|rm;
+      const expected=[opcode,modrm,...form.disp];
+      const source=op+" "+ptr+form.operand+", "+countForm;
+      test("Group-2 memory ModR/M "+bits+" "+mod+"/"+rm+" "+op+" "+countForm,()=>{
+        assert.deepEqual(Array.from(api.assemble(source).bytes),expected,source);
+        const decoded=api.disassemble(expected);
+        assert.equal(decoded.rows.length,1,source+" decode");
+        assert.deepEqual(Array.from(decoded.rows[0].bytes),expected,source+" bytes");
+      });
+      encodingMatrixCases++;
+    }
+  }
+}
+console.log("Group-2 ModR/M encoding/disassembly matrix: "+encodingMatrixCases+" forms.");
+
 test("8086 rejects shift/rotate immediate counts other than 1", () => {
   for (const source of ["SHL AX, 2", "SHR AL, 3", "ROL AX, 4", "RCR AL, 8"]) {
     assert.throws(() => api.assemble(source), undefined, source);
