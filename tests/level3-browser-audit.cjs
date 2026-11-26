@@ -155,6 +155,76 @@ const assert = require("node:assert/strict");
   await keyboardPage.close();
   console.log("Keyboard skip navigation, visible focus, aria-current and aria-pressed PASS.");
 
+  // Course example hand-off must load the selected lesson's exact source into the editor.
+  await page.locator('[data-lesson="0"]').click();
+  const lessonExample=await page.evaluate(()=>window.__8086Audit.curriculum[0][5][0][2]);
+  const lessonExpectedAX=await page.evaluate(()=>window.__8086Audit.executeAll(window.__8086Audit.curriculum[0][5][0][2]).reg.AX);
+  await page.locator("#lessonExample").click();
+  assert.equal(await page.locator("#view-editor").evaluate(el=>el.classList.contains("active")),true,
+    "Loading a course example must open the editor.");
+  assert.equal(await page.locator("#code").inputValue(),lessonExample,
+    "The editor must receive the exact selected lesson example.");
+  await page.locator("#run").click();
+  assert.ok((await page.locator("#regs").textContent()).includes(lessonExpectedAX.toString(16).toUpperCase().padStart(4,"0")+"h"),
+    "The loaded lesson example must produce its documented final register value.");
+
+  // A run stopped at the 10,000-instruction safety ceiling is not successful completion.
+  await page.locator("#reset").click();
+  await page.locator("#code").fill("BOUCLE:\\nJMP BOUCLE");
+  await page.locator("#run").click();
+  assert.match(await page.locator("#status").textContent(),/Limite de sécurité atteinte/,
+    "An infinite loop must report the safety stop instead of successful completion.");
+  assert.match(await page.locator("#lineStatus").textContent(),/Exécution interrompue/,
+    "The line status must identify the execution limit.");
+
+  // Binary execution: source-linked IVT/PORT metadata and explicit initial memory/I/O.
+  const interruptSource="VECTOR 30h, HANDLER\\nMOV AX, 0\\nINT 30h\\nHLT\\nHANDLER:\\nMOV AX, 1234h\\nIRET";
+  await page.locator("#code").fill(interruptSource);
+  const interruptBytes=await page.evaluate(src=>window.__8086Audit.assembleProgram(src).bytes.map(x=>x.toString(16).toUpperCase().padStart(2,"0")).join(" "),interruptSource);
+  await page.locator("#disassemblyInput").fill(interruptBytes);
+  await page.locator("#binaryCS").fill("0000h");
+  await page.locator("#binaryIP").fill("0000h");
+  await page.locator("#binaryMemorySeed").fill("");
+  await page.locator("#binaryPortSeed").fill("");
+  await page.locator("#executeBinary").click();
+  assert.match(await page.locator("#binaryExecutionReport").textContent(),/EXÉCUTION BINAIRE RÉUSSIE/,
+    "A source-matched VECTOR directive must initialize the physical IVT for binary execution.");
+  assert.ok((await page.locator("#regs").textContent()).includes("1234h"),
+    "The binary interrupt handler must update AX.");
+  assert.match(await page.locator("#stackView").textContent(),/Pile vide/,
+    "IRET must restore the binary interrupt stack.");
+
+  const memorySource="MOV AX, WORD PTR [00C0h]\\nHLT";
+  await page.locator("#code").fill(memorySource);
+  const memoryBytes=await page.evaluate(src=>window.__8086Audit.assembleProgram(src).bytes.map(x=>x.toString(16).toUpperCase().padStart(2,"0")).join(" "),memorySource);
+  await page.locator("#disassemblyInput").fill(memoryBytes);
+  await page.locator("#binaryMemorySeed").fill("00C0h=34h\\n00C1h=12h");
+  await page.locator("#binaryPortSeed").fill("");
+  await page.locator("#executeBinary").click();
+  assert.match(await page.locator("#binaryExecutionReport").textContent(),/EXÉCUTION BINAIRE RÉUSSIE/);
+  assert.ok((await page.locator("#regs").textContent()).includes("1234h"),
+    "Explicit physical-memory seeds must be available to the binary executor.");
+
+  const portSource="MOV DX, 20h\\nIN AL, DX\\nHLT";
+  await page.locator("#code").fill(portSource);
+  const portBytes=await page.evaluate(src=>window.__8086Audit.assembleProgram(src).bytes.map(x=>x.toString(16).toUpperCase().padStart(2,"0")).join(" "),portSource);
+  await page.locator("#disassemblyInput").fill(portBytes);
+  await page.locator("#binaryMemorySeed").fill("");
+  await page.locator("#binaryPortSeed").fill("20h=55h");
+  await page.locator("#executeBinary").click();
+  assert.match(await page.locator("#binaryExecutionReport").textContent(),/EXÉCUTION BINAIRE RÉUSSIE/);
+  assert.ok((await page.locator("#regs").textContent()).includes("0055h"),
+    "Explicit port seeds must be available to IN/OUT in binary mode.");
+
+  const sourcePortProgram="PORT 20h, 55h\\nMOV DX, 20h\\nIN AL, DX\\nHLT";
+  await page.locator("#code").fill(sourcePortProgram);
+  const sourcePortBytes=await page.evaluate(src=>window.__8086Audit.assembleProgram(src).bytes.map(x=>x.toString(16).toUpperCase().padStart(2,"0")).join(" "),sourcePortProgram);
+  await page.locator("#disassemblyInput").fill(sourcePortBytes);
+  await page.locator("#binaryPortSeed").fill("");
+  await page.locator("#executeBinary").click();
+  assert.ok((await page.locator("#regs").textContent()).includes("0055h"),
+    "A byte-identical source program may provide its PORT directive metadata to binary execution.");
+
   // Interactive course demonstrations: AX split, FLAGS, segment:offset,
   // effective address, LIFO stack, and ModR/M field decoding.
   await page.locator('[data-lesson="10"]').click();
