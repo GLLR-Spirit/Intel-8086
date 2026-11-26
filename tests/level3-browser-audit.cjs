@@ -225,6 +225,8 @@ const assert = require("node:assert/strict");
   assert.ok((await page.locator("#regs").textContent()).includes("0055h"),
     "A byte-identical source program may provide its PORT directive metadata to binary execution.");
 
+  await page.locator('[data-view="learn"]').click();
+
   // Interactive course demonstrations: AX split, FLAGS, segment:offset,
   // effective address, LIFO stack, and ModR/M field decoding.
   await page.locator('[data-lesson="10"]').click();
