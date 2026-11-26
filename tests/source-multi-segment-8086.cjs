@@ -60,56 +60,56 @@ function compareArchitecturalState(source,binary,label){
 }
 
 {
- const main="JMP FAR 2000h:0100h\\nMOV BX, 1\\nHLT",segments=[{cs:0x2000,ip:0x0100,source:"MOV AX, 1234h\\nHLT"}];
+ const main="JMP FAR 2000h:0100h\nMOV BX, 1\nHLT",segments=[{cs:0x2000,ip:0x0100,source:"MOV AX, 1234h\nHLT"}];
  const source=run(main,{segments}),binary=binaryFor(main,{},segments);
  compareArchitecturalState(source,binary,"direct far JMP across source segments");
  assert.equal(source.reg.AX,0x1234);assert.equal(source.reg.BX,0);
 }
 {
- const main="CALL FAR 2000h:0100h\\nHLT",segments=[{cs:0x2000,ip:0x0100,source:"MOV AX, 5678h\\nRETF"}];
+ const main="CALL FAR 2000h:0100h\nHLT",segments=[{cs:0x2000,ip:0x0100,source:"MOV AX, 5678h\nRETF"}];
  const source=run(main,{segments}),binary=binaryFor(main,{},segments);
  compareArchitecturalState(source,binary,"direct far CALL and RETF across source segments");
  assert.equal(source.reg.AX,0x5678);assert.equal(source.reg.CS,0);assert.equal(source.reg.SP,0xFFFE);
 }
 {
- const main="MOV WORD PTR [0200h], 0100h\\nMOV WORD PTR [0202h], 2000h\\nJMP FAR PTR [0200h]\\nMOV BX, 1\\nHLT";
- const segments=[{cs:0x2000,ip:0x0100,source:"MOV AX, 2468h\\nHLT"}];
+ const main="MOV WORD PTR [0200h], 0100h\nMOV WORD PTR [0202h], 2000h\nJMP FAR PTR [0200h]\nMOV BX, 1\nHLT";
+ const segments=[{cs:0x2000,ip:0x0100,source:"MOV AX, 2468h\nHLT"}];
  const source=run(main,{segments}),binary=binaryFor(main,{},segments);
  compareArchitecturalState(source,binary,"indirect far JMP through source-built pointer");
  assert.equal(source.reg.AX,0x2468);assert.equal(source.reg.BX,0);
 }
 {
- const main="MOV WORD PTR [0200h], 0100h\\nMOV WORD PTR [0202h], 2000h\\nCALL FAR PTR [0200h]\\nHLT";
- const segments=[{cs:0x2000,ip:0x0100,source:"MOV AX, 369Ch\\nRETF"}];
+ const main="MOV WORD PTR [0200h], 0100h\nMOV WORD PTR [0202h], 2000h\nCALL FAR PTR [0200h]\nHLT";
+ const segments=[{cs:0x2000,ip:0x0100,source:"MOV AX, 369Ch\nRETF"}];
  const source=run(main,{segments}),binary=binaryFor(main,{},segments);
  compareArchitecturalState(source,binary,"indirect far CALL and RETF through source-built pointer");
  assert.equal(source.reg.AX,0x369C);assert.equal(source.reg.CS,0);assert.equal(source.reg.SP,0xFFFE);
 }
 {
- const main="CALL FAR 2000h:0100h\\nHLT";
- const target="CALL INNER\\nMOV AX, 2222h\\nRETF\\nINNER: MOV BX, 1111h\\nRET";
+ const main="CALL FAR 2000h:0100h\nHLT";
+ const target="CALL INNER\nMOV AX, 2222h\nRETF\nINNER: MOV BX, 1111h\nRET";
  const segments=[{cs:0x2000,ip:0x0100,source:target}];
  const source=run(main,{segments}),binary=binaryFor(main,{},segments);
  compareArchitecturalState(source,binary,"nested near CALL/RET inside far-called segment");
  assert.equal(source.reg.AX,0x2222);assert.equal(source.reg.BX,0x1111);assert.equal(source.reg.CS,0);
 }
 {
- const main="JMP FAR 2000h:0100h\\nHLT";
- const options={loadCS:0x1000,loadIP:0x0100},segments=[{cs:0x2000,ip:0x0100,source:"MOV AX, 4321h\\nHLT"}];
+ const main="JMP FAR 2000h:0100h\nHLT";
+ const options={loadCS:0x1000,loadIP:0x0100},segments=[{cs:0x2000,ip:0x0100,source:"MOV AX, 4321h\nHLT"}];
  const source=run(main,Object.assign({},options,{segments})),binary=binaryFor(main,options,segments);
  compareArchitecturalState(source,binary,"same IP value in distinct CS images");
  assert.equal(source.reg.AX,0x4321);
 }
 {
  const main="JMP FAR 2000h:0000h";
- const options={loadCS:0x1000,loadIP:0xFFFE},segments=[{cs:0x2000,ip:0,source:"MOV AX, 1111h\\nHLT"}];
+ const options={loadCS:0x1000,loadIP:0xFFFE},segments=[{cs:0x2000,ip:0,source:"MOV AX, 1111h\nHLT"}];
  const source=run(main,Object.assign({},options,{segments})),binary=binaryFor(main,options,segments);
  compareArchitecturalState(source,binary,"initial IP wrap at FFFFh");
  assert.equal(source.reg.AX,0x1111);
 }
 {
  const main="JMP FAR 0000h:0000h";
- const options={loadCS:0xFFFF,loadIP:0},segments=[{cs:0,ip:0,source:"MOV AX, 55AAh\\nHLT"}];
+ const options={loadCS:0xFFFF,loadIP:0},segments=[{cs:0,ip:0,source:"MOV AX, 55AAh\nHLT"}];
  const source=run(main,Object.assign({},options,{segments})),binary=binaryFor(main,options,segments);
  compareArchitecturalState(source,binary,"20-bit physical address wrap");
  assert.equal(source.reg.AX,0x55AA);
@@ -119,7 +119,7 @@ function compareArchitecturalState(source,binary,label){
  assert.ok(result.error);assert.match(result.error,/Chevauchement physique/);
 }
 {
- const result=execute("JMP FAR 2000h:0100h\\nHLT");
+ const result=execute("JMP FAR 2000h:0100h\nHLT");
  assert.ok(result.error);assert.match(result.error,/CS:IP/);
 }
 
