@@ -46,6 +46,8 @@ jobs:
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium
+      - name: Préparer les captures visuelles
+        run: mkdir -p artifacts
       - name: Démarrer le serveur statique
         run: |
           python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/8086-server.log 2>&1 &
@@ -64,3 +66,11 @@ jobs:
         run: node tests/call-ret-interactive-8086.cjs
       - name: Vérifier CALL indirect near/far via Pas à pas et exécution binaire
         run: node tests/call-indirect-interactive-8086.cjs
+      - name: Publier les captures desktop et mobile
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: intel-8086-site-visual-review
+          path: artifacts/*.png
+          if-no-files-found: warn
+          retention-days: 7
