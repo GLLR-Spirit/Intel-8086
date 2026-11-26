@@ -51,10 +51,10 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | LODSW | Oui | Oui | Oui | Oui | Oui |
 | STOSB | Oui | Oui | Oui | Oui | Oui |
 | STOSW | Oui | Oui | Oui | Oui | Oui |
-| ADD | Oui | Oui | Partiel | Oui | Oui |
-| ADC | Oui | Oui | Partiel | Oui | Oui |
-| SUB | Oui | Oui | Partiel | Oui | Oui |
-| SBB | Oui | Oui | Partiel | Oui | Oui |
+| ADD | Oui | Oui | Oui | Oui | Oui |
+| ADC | Oui | Oui | Oui | Oui | Oui |
+| SUB | Oui | Oui | Oui | Oui | Oui |
+| SBB | Oui | Oui | Oui | Oui | Oui |
 | INC | Oui | Oui | Oui | Oui | Oui |
 | DEC | Oui | Oui | Oui | Oui | Oui |
 | NEG | Oui | Oui | Oui | Oui | Oui |
@@ -906,7 +906,7 @@ Preuve CI : [45734054877](https://github.com/GLLR-Spirit/Intel-8086/actions/runs
 - `tests/alu-prefix-interactions-8086.cjs` : 40 exécutions source/binaire couvrant cinq opérations, quatre overrides de segment et les deux directions mémoire.
 - `tests/flags-differential.cjs` : les 2 016 vecteurs ADD/ADC/SUB/SBB/CMP sont maintenant comparés en source et en binaire sur les six FLAGS arithmétiques définis et la préservation TF/IF/DF ; la suite complète rapporte 3 412 réussites.
 
-Les quatre lignes ADD, ADC, SUB et SBB passent à Oui pour le désassembleur et les tests. Les FLAGS non définis restent exclus des comparaisons.
+Les quatre lignes ADD, ADC, SUB et SBB passent à Oui pour l'assembleur, le désassembleur et les tests. Les FLAGS non définis restent exclus des comparaisons.
 
 
 ## 23. Réconciliation ciblée — NOT
@@ -939,3 +939,8 @@ La suite exécute et vérifie en source/binaire :
 Les octets sont vérifiés indépendamment pour les familles exercées, avec désassemblage, préservation des neuf FLAGS modélisés, sélection DS/SS et comparaison de l'état architectural source/binaire. Les matrices ModR/M et les contraintes existantes complètent les balayages exhaustifs des champs d'opcode.
 
 La ligne MOV passe à Oui pour le simulateur, l'assembleur, le désassembleur et les tests.
+
+
+## 25. Vérification de la couverture assembleur — ADD / ADC / SUB / SBB
+
+Les 5 120 formes directionnelles, 480 formes immédiates et dix variantes accumulateur sont assemblées à partir de sources distinctes, puis comparées à leurs octets attendus. Les formes 80h/81h/83h et les extensions de groupe sont également contrôlées par les tests ModR/M. Les quatre lignes passent donc à **Oui** dans la colonne Assembleur.

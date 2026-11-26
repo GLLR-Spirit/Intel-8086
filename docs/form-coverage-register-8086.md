@@ -897,3 +897,8 @@ CI [45734760943](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45734760
 - MOV CS,reg rejeté.
 
 Les suites `modrm-matrix`, `group-opcodes` et `operand-constraints` complètent cette validation pour les champs ModR/M et les formes réservées.
+
+
+### 16.28 ADD / ADC / SUB / SBB — validation assembleur
+
+Les 5 120 formes directionnelles, 480 formes immédiates et dix variantes accumulateur sont vérifiées contre leurs octets attendus ; les extensions de groupe et champs ModR/M sont couvertes par `alu-forms-8086.cjs` et `modrm-matrix.cjs`. Statut assembleur : Oui pour les quatre instructions.

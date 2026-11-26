@@ -405,3 +405,17 @@ Sur le commit `bf994802a22425d1bddf7991e1d8a55d1f6ac522`, le workflow CI [457302
 La suite logique rapporte **68 611 réussites, 0 échec** et dix équivalences source/binaire. Six vecteurs TEST supplémentaires vérifient les formes byte/word, registre/mémoire, immédiat et override ES. CMP dispose de nouveaux contrôles source/binaire sur les formes byte registre et word mémoire, complétés par les huit couples d'opérandes de la matrice Jcc.
 
 **Conclusion de cette étape :** les contrôles pédagogiques des chapitres 12 à 17 et les compléments CMP/TEST sont maintenant documentés avec leurs résultats. L'audit ne sera déclaré globalement clos qu'après vérification des formes restantes, réconciliation du registre et actualisation prudente de la matrice des 93 instructions.
+
+
+## 12. État consolidé de la matrice — 26 novembre 2026
+
+La matrice canonique comporte **93 instructions**. À la réconciliation actuelle :
+
+- **93/93** ont une entrée de test associée et exécutée dans le CI ;
+- aucune ligne ne reste à `Tests = À faire` ou `Tests = Partiel` ;
+- les colonnes Assembleur et Désassembleur sont à Oui pour les 93 lignes ;
+- cinq entrées gardent un statut simulateur Partiel : `JMP`, `CALL`, `RET`, `WAIT` et `ESC`.
+
+Les cinq statuts partiels ne doivent pas être masqués par le fait que des tests existent. WAIT/ESC n'émulent pas le coprocesseur 8087 ni sa synchronisation ; JMP/CALL/RET demandent encore une clôture sémantique des variantes et interactions de contrôle de flux. La matrice ne publie donc aucun pourcentage de conformité matérielle.
+
+Les preuves et limites par famille sont inscrites dans `docs/form-coverage-register-8086.md` et `docs/coverage-audit-8086.md`. La clôture pédagogique des chapitres 12 à 17 reste distincte de la prétention à une émulation matérielle exhaustive.
