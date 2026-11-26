@@ -69,8 +69,8 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | AAD | Oui | Oui | Oui | Oui | Oui |
 | DAA | Oui | Oui | Oui | Oui | Oui |
 | DAS | Oui | Oui | Oui | Oui | Oui |
-| CBW | Oui | Non | Non | Non | À faire |
-| CWD | Oui | Non | Non | Non | À faire |
+| CBW | Oui | Oui | Oui | Oui | Oui |
+| CWD | Oui | Oui | Oui | Oui | Oui |
 | AND | Oui | Oui | Oui | Oui | Oui |
 | OR | Oui | Oui | Oui | Oui | Oui |
 | XOR | Oui | Oui | Oui | Oui | Oui |
@@ -118,8 +118,8 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | STI | Oui | Oui | Oui | Oui | Oui |
 | IN | Oui | Oui | Oui | Oui | Oui |
 | OUT | Oui | Oui | Oui | Oui | Oui |
-| NOP | Oui | Oui | Oui | Oui | À faire |
-| HLT | Oui | Partiel | Oui | Oui | À faire |
+| NOP | Oui | Oui | Oui | Oui | Oui |
+| HLT | Oui | Oui | Oui | Oui | Oui |
 | WAIT | Oui | Partiel | Oui | Oui | Oui |
 | ESC | Oui | Partiel | Oui | Oui | Oui |
 
@@ -143,6 +143,8 @@ Les familles suivantes disposent maintenant de contrôles ciblés source et/ou b
 - XCHG : paires de registres, formes mémoire, overrides, LOCK, FLAGS et chemins source/binaire vérifiés.
 - LEA/LDS/LES : EA, pointeurs 16:16, segments, déplacements, FLAGS et chemins source/binaire vérifiés.
 - AAA/AAS/AAM/AAD/DAA/DAS : vecteurs BCD, octets d'encodage, désassemblage et FLAGS définis vérifiés.
+- CBW/CWD : extension de signe source/binaire, 256 valeurs AL et frontières AX, FLAGS préservés.
+- NOP/HLT : opcodes, désassemblage, préservation de l'état et arrêt effectif testés.
 
 CLC, STC, CMC, CLD, STD, CLI et STI ont des tests source/binaire avec octets exacts et préservation des autres FLAGS. CMC est encodé F5h ; F1h reste réservé sur 8086. IN/OUT utilisent une carte de ports logicielle, pas les ports matériels réels. INTO utilise le vecteur logiciel 4 ; WAIT et ESC sont des opérations sans effet dans le modèle logiciel, sans synchronisation FPU ni coprocesseur 8087 réel. INT/IRET sont maintenant vérifiés pour les interruptions logicielles via VECTOR en source et l'IVT physique en binaire. Les événements matériels restent hors périmètre : le laboratoire ne modélise pas l'acquittement INTR/NMI ni les signaux physiques du processeur.
 
@@ -877,3 +879,16 @@ Le CI [45733478487](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45733
 - **AAA/AAS/AAM/AAD/DAA/DAS** : 6 812 réussites, 0 échec ; 5 120 vecteurs BCD exécutés dans les deux chemins et 12 encodages/désassemblages. Seuls les FLAGS définis par chaque instruction sont comparés.
 
 Les dix lignes correspondantes passent à Oui pour le simulateur, l'assembleur, le désassembleur et les tests. Les limites matérielles du modèle ne sont pas élargies par ces validations.
+
+
+## 21. Réconciliation ciblée — CBW / CWD / NOP / HLT
+
+Preuve CI : [45733836180](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45733836180), commit `455f000f5d3ec21e26de6c88a9ed6b0647b4d6a3`, **59/59 étapes réussies** ; `tests/cbw-cwd-nop-hlt-8086.cjs` rapporte **279/279**.
+
+- **CBW** : 256 valeurs possibles de AL, extension du signe dans AX, source/binaire, FLAGS inchangés.
+- **CWD** : 16 valeurs de frontière, extension du signe de AX vers DX:AX, source/binaire, FLAGS inchangés.
+- **NOP** : opcode 90h, désassemblage, aucune modification de registres/FLAGS et exécution de l'instruction suivante.
+- **HLT** : opcode F4h, désassemblage, arrêt avant l'instruction suivante, registres/FLAGS préservés.
+- Opérandes explicites rejetés pour les quatre instructions.
+
+CBW, CWD, NOP et HLT passent à Oui sur le périmètre vérifié.

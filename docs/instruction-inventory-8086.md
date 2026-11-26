@@ -49,8 +49,8 @@ Cet inventaire est indépendant des 58 cartes de l'interface. Il contient un reg
 | AAD | Ajustement ASCII avant division | — | 6 812 suite BCD ; vecteurs source/binaire et encodage/désassemblage |
 | DAA | Ajustement décimal après addition | — | 6 812 suite BCD ; vecteurs source/binaire et encodage/désassemblage |
 | DAS | Ajustement décimal après soustraction | — | 6 812 suite BCD ; vecteurs source/binaire et encodage/désassemblage |
-| CBW | Conversion octet signé en mot | — | À auditer |
-| CWD | Extension du signe de AX vers DX:AX | — | À auditer |
+| CBW | Conversion octet signé en mot | — | 256 valeurs AL source/binaire ; 98h, désassemblage et FLAGS préservés |
+| CWD | Extension du signe de AX vers DX:AX | — | 16 frontières AX source/binaire ; 99h, désassemblage et FLAGS préservés |
 
 ## 3. Logique et manipulation de bits
 
@@ -149,8 +149,8 @@ Chaque graphie ci-dessous est conservée comme entrée autonome. Les synonymes n
 |---|---|---|---|
 | IN | Lecture d'un port d'E/S | — | 23/23 tests ; huit formes, encodage/désassemblage et source/binaire ; carte de ports logicielle |
 | OUT | Écriture vers un port d'E/S | — | 23/23 tests ; huit formes, encodage/désassemblage et source/binaire ; carte de ports logicielle |
-| NOP | Aucune opération architecturale | — | À auditer |
-| HLT | Arrêt du processeur jusqu'à événement de réveil | — | À auditer |
+| NOP | Aucune opération architecturale | — | 90h ; état/FLAGS préservés, suite d'exécution et désassemblage |
+| HLT | Arrêt du processeur jusqu'à événement de réveil | — | F4h ; arrêt effectif avant l'instruction suivante, désassemblage |
 | WAIT | Attente de synchronisation avec le coprocesseur | FWAIT (synonyme de syntaxe à documenter séparément selon l'assembleur) | 6 719 assertions globales WAIT/ESC ; WAIT sans effet logiciel, FPU non simulée |
 | ESC | Transfert/échappement vers coprocesseur | — | 6 719 assertions globales WAIT/ESC ; 64 codes, 2 048 ModR/M, FPU non simulée |
 | LOCK | Préfixe de verrouillage de bus, pas une instruction autonome | — | À auditer |

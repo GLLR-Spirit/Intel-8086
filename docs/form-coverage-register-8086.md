@@ -841,3 +841,16 @@ CI [45733478487](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45733478
 - `tests/lds-les-8086.cjs` : **69/69** ; LDS et LES, pointeurs 16:16, EA, destinations, segments et FLAGS source/binaire.
 
 Ces validations couvrent les formes documentées par les tests ; elles ne constituent pas une certification matérielle cycle par cycle.
+
+
+### 16.24 CBW / CWD / NOP / HLT
+
+CI [45733836180](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45733836180) : **59/59 étapes réussies**.
+
+`tests/cbw-cwd-nop-hlt-8086.cjs` : **279/279 réussites**.
+- CBW : 256 valeurs AL, source/binaire, résultat AX et FLAGS préservés.
+- CWD : 16 frontières de signe AX, source/binaire, résultat DX:AX et FLAGS préservés.
+- NOP : 90h, désassemblage, aucune modification architecturale.
+- HLT : F4h, désassemblage, arrêt avant l'instruction suivante.
+- Les quatre instructions rejettent les opérandes explicites.
+
