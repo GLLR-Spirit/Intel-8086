@@ -55,9 +55,9 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | ADC | Oui | Oui | Partiel | Partiel | Partiel |
 | SUB | Oui | Oui | Partiel | Partiel | Partiel |
 | SBB | Oui | Oui | Partiel | Partiel | Partiel |
-| INC | Oui | Oui | Oui | Oui | Partiel |
-| DEC | Oui | Oui | Oui | Oui | Partiel |
-| NEG | Oui | Oui | Oui | Oui | Partiel |
+| INC | Oui | Oui | Oui | Oui | Oui |
+| DEC | Oui | Oui | Oui | Oui | Oui |
+| NEG | Oui | Oui | Oui | Oui | Oui |
 | CMP | Oui | Oui | Oui | Oui | Oui |
 | MUL | Oui | Oui | Oui | Oui | Oui |
 | IMUL | Oui | Oui | Oui | Oui | Oui |
@@ -138,6 +138,7 @@ Les familles suivantes disposent maintenant de contrôles ciblés source et/ou b
 - MOVS, CMPS, STOS, LODS et SCAS en byte/word : registres, mémoire, segments, REP, DF et frontières d'offset testés.
 - MUL, IMUL, DIV et IDIV : formes mémoire, segments et interactions de préfixes testés.
 - SHL/SAL, SHR, SAR, ROL, ROR, RCL et RCR : vecteurs source/binaire, compteurs CL non masqués, FLAGS définis, formes ModR/M byte/word et désassemblage testés.
+- INC, DEC et NEG : formes registre/mémoire byte/word, huit registres, huit EA, sélection DS/SS, overrides, FLAGS et chemins source/binaire vérifiés.
 
 Les interruptions restent une simulation pédagogique limitée ; le laboratoire ne modélise pas tous les événements matériels, l'acquittement INTR/NMI ni les signaux physiques du processeur.
 
@@ -783,3 +784,16 @@ Preuve CI : [45731020812](https://github.com/GLLR-Spirit/Intel-8086/actions/runs
 - Les FLAGS indéfinis ne sont pas imposés : AF pour les décalages et OF pour les comptes supérieurs à 1.
 
 Le mnémonique `SAL` est traité comme alias de `SHL` et n'ajoute pas une entrée canonique à la matrice des 93 instructions. Les encodages immédiats C0h/C1h ne sont pas attribués au 8086.
+
+
+## 14. Réconciliation ciblée — INC, DEC et NEG
+
+Les lignes canoniques `INC`, `DEC` et `NEG` passent maintenant à **Oui** pour le simulateur, l'assembleur, le désassembleur et les tests, sur le périmètre vérifié.
+
+Preuve CI : [45731571537](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45731571537), commit `bbbf5eb1248c0e1ccb76e10d631081e4125991e1`, **56/56 étapes réussies**.
+
+- `INC/DEC` : 48 vecteurs FLAGS source/binaire ; huit registres byte et huit registres word ; huit formes mémoire effectives byte/word ; sélection DS/SS ; overrides ES/CS/SS/DS ; LOCK byte/word ; rejet des préfixes REP et des overrides sans opérande mémoire.
+- `NEG` : 651 tests réussis ; les 256 entrées byte et 15 frontières word sont vérifiées en source et en binaire ; huit registres par taille ; 11 formes mémoire en source/binaire ; overrides de segment et limites d'offset/physiques.
+- `NOT` reste couvert par sa suite dédiée : 16 formes registre, 48 formes mémoire, quatre segments, LOCK, rejet REP et préservation des FLAGS.
+
+Les FLAGS indéfinis ne sont pas imposés. Cette actualisation ne valide pas automatiquement les alias ou les instructions hors de ces familles.

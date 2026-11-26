@@ -741,3 +741,15 @@ Cette mise à jour valide les cas explicitement listés. Elle ne transforme pas 
 - AF des décalages et OF des opérations multibit laissés indéfinis et non comparés.
 
 `SAL` est testé comme alias de `SHL`. Les formes immédiates C0h/C1h, absentes du 8086 original, sont rejetées et ne sont pas comptées parmi les formes valides.
+
+
+### 16.16 INC, DEC, NEG et NOT — actualisation du 26 novembre 2026
+
+Le workflow [45731571537](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45731571537) a terminé avec **56/56 étapes réussies**.
+
+- `tests/unary-arithmetic-prefix-8086.cjs` : **1 976 assertions** ; 24 cas d'override de segment source/binaire, 48 formes registre source/binaire (trois opérations × deux tailles × huit registres), 32 formes mémoire INC/DEC (deux opérations × deux tailles × huit EA), sélection DS/SS, LOCK byte/word et rejets REP.
+- `tests/flags-differential.cjs` : **3 412 réussites, 0 échec**, dont 48 vecteurs INC/DEC comparés source/binaire sur CF, PF, AF, ZF, SF, OF et la préservation TF/IF/DF.
+- `tests/neg-8086.cjs` : **651 réussites, 0 échec** ; les 256 entrées byte et 15 frontières word sont exécutées dans les deux chemins ; les formes registre et les 11 EA mémoire sont vérifiées.
+- `tests/not-forms-8086.cjs` : **327 assertions** ; 16 formes registre, 48 formes mémoire, quatre overrides, LOCK, rejet REP et préservation des FLAGS.
+
+Les FLAGS non définis ne sont pas comparés. Les résultats sont limités aux formes et vecteurs explicitement testés.

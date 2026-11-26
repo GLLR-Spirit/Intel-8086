@@ -35,9 +35,9 @@ Cet inventaire est indépendant des 58 cartes de l'interface. Il contient un reg
 | ADC | Addition avec retenue | — | À auditer |
 | SUB | Soustraction | — | À auditer |
 | SBB | Soustraction avec emprunt | — | À auditer |
-| INC | Incrémentation | — | À auditer |
-| DEC | Décrémentation | — | À auditer |
-| NEG | Négation arithmétique | — | À auditer |
+| INC | Incrémentation | — | 3529 tests groupe 2 distincts ; INC/DEC/NEG : 1976 assertions préfixes et EA, source/binaire |
+| DEC | Décrémentation | — | INC/DEC/NEG : 1976 assertions préfixes et EA, source/binaire ; 48 vecteurs FLAGS source/binaire |
+| NEG | Négation arithmétique | — | 651 tests ; byte exhaustif et word frontières source/binaire, registres et mémoire |
 | CMP | Comparaison par soustraction | — | Tests source/binaire ciblés ; formes ALU et flags comparatifs vérifiés sur main (26/11/2026) |
 | MUL | Multiplication non signée | — | Formes 8086 auditées (tranche ciblée) |
 | IMUL | Multiplication signée | — | Formes 8086 auditées (tranche ciblée) |
