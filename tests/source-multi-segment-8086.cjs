@@ -36,6 +36,6 @@ function run(source,options){const result=execute(source,options);assert.equal(r
 }
 {
  const s=run("MOV AX, 1234h\nHLT");
- assert.equal(s.execution.mode,"binary-offset");assert.equal(s.reg.AX,0x1234);assert.equal(s.reg.CS,0);assert.equal(s.reg.IP,5);
+ assert.equal(s.execution.mode,"binary-offset");assert.equal(s.reg.AX,0x1234);assert.equal(s.reg.CS,0);assert.equal(s.reg.IP,4);
 }
 console.log("Source multi-segment CS:IP: 5 scénarios PASS.");
