@@ -120,6 +120,21 @@ function navigate(v){document.querySelectorAll(".view").forEach(function(x){x.cl
 document.querySelectorAll(".nav").forEach(function(b){b.onclick=function(){navigate(b.dataset.view);};});$("openLab").onclick=function(){navigate("editor");};
 document.querySelectorAll("[data-mode]").forEach(function(b){b.onclick=function(){mode=b.dataset.mode;document.querySelectorAll("[data-mode]").forEach(function(x){var active=x===b;x.classList.toggle("active",active);x.setAttribute("aria-pressed",String(active));});renderLessons();};});
 function stats(){$("lessonCount").textContent=completed.size;$("passCount").textContent=passed.size;}
+function syncCourseReadingOrder(){
+ var layout=document.querySelector(".course-layout");
+ if(!layout)return;
+ var list=layout.querySelector(".course-list-panel");
+ var detail=layout.querySelector("#lessonDetail");
+ if(!list||!detail)return;
+ var mobile=window.matchMedia("(max-width: 900px)").matches;
+ var first=mobile?detail:list;
+ if(layout.firstElementChild!==first)layout.insertBefore(first,layout.firstElementChild);
+}
+var courseLayoutBreakpoint=window.matchMedia("(max-width: 900px)");
+syncCourseReadingOrder();
+if(courseLayoutBreakpoint.addEventListener)courseLayoutBreakpoint.addEventListener("change",syncCourseReadingOrder);
+else if(courseLayoutBreakpoint.addListener)courseLayoutBreakpoint.addListener(syncCourseReadingOrder);
+
 
 function renderLessons(){$("lessonList").innerHTML=lessons.map(function(l,i){return '<button class="lesson" data-lesson="'+i+'"><strong>'+(i+1)+'. '+l[0]+' '+(completed.has(i)?"✓":"")+'</strong><small>'+l[1]+'</small></button>';}).join("");document.querySelectorAll("[data-lesson]").forEach(function(b){b.onclick=function(){showLesson(+b.dataset.lesson);};});if(mode==="guided"&&!completed.size)showLesson(0);}
 exercises.push(
