@@ -123,4 +123,4 @@ function compareArchitecturalState(source,binary,label){
  assert.ok(result.error);assert.match(result.error,/CS:IP/);
 }
 
-console.log("Source multi-segment CS:IP: 14 scénarios PASS.");
+console.log("Source multi-segment CS:IP: 16 scénarios PASS.");
