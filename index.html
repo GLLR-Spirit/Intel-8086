@@ -72,7 +72,7 @@ var exercises=[
 ["Somme de 1 à 6","Utilise CX comme compteur et additionne 1 à 6. Résultat AX=21.","MOV AX, 0\nMOV BX, 1\nMOV CX, 6\nDEBUT:\n; ajoute BX, incrémente BX, LOOP\nHLT",function(s){return s.reg.AX===21&&s.reg.CX===0;}]
 ];
 exercises.push(
-["Architecture : transfert entre registres","Charge 1234h dans AX, copie AX dans BX puis vérifie que BX contient 1234h.","MOV AX, 1234h\nMOV BX, AX\nHLT",function(s){return s.reg.AX===0x1234&&s.reg.BX===0x1234;}],
+["Architecture : transfert entre registres","Complète le programme : charge 1234h dans AX, copie AX dans BX puis termine. Les deux registres doivent contenir 1234h.","; charge 1234h dans AX\n; copie AX dans BX\nHLT",function(s){return s.reg.AX===0x1234&&s.reg.BX===0x1234;},{level:"Débutant",hint:"MOV AX,1234h initialise le registre source ; MOV BX,AX copie son contenu sans modifier AX.",steps:["Charge 1234h dans AX.","Copie AX dans BX avec MOV BX,AX.","HLT termine le programme ; vérifie AX et BX."],solution:"MOV AX, 1234h\nMOV BX, AX\nHLT"},{type:"completion",difficulty:"Débutant"}],
 ["Numération : addition en hexadécimal","Calcule 2Ah + 06h dans AL. Résultat attendu : 30h.","MOV AL, 2Ah\nMOV BL, 6\nADD AL, BL\nHLT",function(s){return (s.reg.AX&255)===0x30;}],
 ["Registres : modifier un octet","Charge AX avec 1234h puis AL avec 56h. AX doit devenir 1256h.","MOV AX, 1234h\nMOV AL, 56h\nHLT",function(s){return s.reg.AX===0x1256;}],
 ["MOV : respecter destination et source","Copie 25 dans AX puis AX dans BX. Les deux registres doivent contenir 25.","MOV AX, 25\nMOV BX, AX\nHLT",function(s){return s.reg.AX===25&&s.reg.BX===25;}],
