@@ -17,9 +17,9 @@ For every finding: detect the symptom, inspect the complete affected path, ident
 | 3 | 684 questions and corrections | Duplicate stems corrected; test execution pending | Two exact cross-chapter duplicates were rewritten in chapters 15 and 33. The semantic key was updated. A global exact-stem uniqueness assertion now covers all 684 runtime questions. |
 | 4 | Pedagogical quality of all 36 chapters | Content expanded; deeper review pending | 69 short lesson explanations plus two foundational explanations were expanded. The runtime course now has 108/108 lesson theories at 300+ characters (minimum 303); a CI assertion enforces this. Continue reviewing accuracy, progression, prerequisites, terminology and teaching quality. |
 | 5 | Exercises and solutions | Expanded; automated verification pending | Exercise bank now contains 42 guided exercises with explicit topic-to-chapter mappings covering all 36 chapters. Fifteen advanced exercises were added; two integration exercises were mapped and classified. Tests validate metadata, every complete solution and its validator; extra byte oracles cover encoding, ModR/M and symbol resolution. Browser checks now verify that chapter, difficulty and type filters return genuinely matching exercises. |
-| 6 | Simulator/course integration | Pending | Verify example loading, source/binary execution paths, step tracing, registers, memory, FLAGS, segments, stack, interrupts and error feedback. |
-| 7 | Accessibility, responsive layout and performance | Partially implemented | Navigation and reading order corrections are in place. Continue keyboard, screen-reader, contrast, zoom, reduced-motion, narrow viewport, loading and performance audits. |
-| 8 | Documentation versus implemented behavior | Pending | Compare every documented instruction/form, assembler and disassembler restriction, execution behavior and unsupported/partial feature against implementation and independent tests. |
+| 6 | Simulator/course integration | Integration fixes implemented; runtime verification pending | Course examples and exercise statements/corrections now have browser hand-off tests. Binary execution accepts explicit physical-memory and port seeds; source VECTOR/PORT metadata is reused only when loaded bytes exactly match the current source. IVT target/range and code-overlap checks were added. Binary results synchronize the visible CPU state, and the next source step/run resets cleanly. The 10,000-instruction ceiling now reports an interruption instead of false success. Source/binary interrupt, memory, I/O and stack checks are in the browser suite. |
+| 7 | Accessibility, responsive layout and performance | Partially implemented | Navigation and reading order corrections are in place. The memory panel sorts displayed addresses and explicitly reports when its 24-byte view is truncated. Continue keyboard, screen-reader, contrast, zoom, reduced-motion, narrow viewport, loading and performance audits. |
+| 8 | Documentation versus implemented behavior | Partially updated | Added PORT to the directive reference and clarified that VECTOR/PORT are pedagogical metadata, not hardware opcodes. Binary IVT and port initialization rules now match the UI. Continue the full instruction/form and unsupported-feature audit. |
 | 9 | CI and publication | Partially implemented; verification pending | Browser audit job added to .github/workflows/ci.yml. Inspect actual workflow runs, failures, artifacts, deployment status and the live published site. |
 
 ## Findings fixed
@@ -37,6 +37,15 @@ For every finding: detect the symptom, inspect the complete affected path, ident
 - Expanded the technical explanations in 69 short lesson entries and two foundational entries.
 - Added a CI requirement that every one of the 108 visible lessons contains at least 300 characters of technical explanation; the inspected runtime data has a minimum of 303 characters and an average of 453.
 - Corrected the REP zero-count explanation: REP with CX=0 performs no iterations and leaves CX and the string indexes unchanged. The existing string-instruction tests already cover this case in both source and binary execution.
+
+### Simulator/course integration
+
+- Added a documented initial-memory editor for physical 20-bit addresses and an initial-port editor for binary execution.
+- Binary execution reuses VECTOR and PORT metadata only when the supplied byte stream exactly matches the current source assembly; otherwise, explicit initial memory/port values are required.
+- Added IVT target-range and code-overlap validation, and synchronized the binary result with the visible CPU state so subsequent source stepping/running starts from a clean reset.
+- Fixed the run-limit status: reaching 10,000 instructions now reports a safety interruption rather than successful completion.
+- Sorted the memory display and made its 24-byte truncation explicit.
+- Added browser checks for lesson-example loading, exercise statement/solution loading, binary INT/IRET, manual memory and port seeds, source PORT metadata, and binary-to-source transitions.
 
 ### Exercises
 
