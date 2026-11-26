@@ -474,6 +474,9 @@ function bytesOf(source) { return Array.from(learning.assembleProgram(source).by
 function sameBytes(actual,expected,label) {
   assert.deepEqual(actual,expected,label+" bytes");
 }
+sameBytes(bytesOf(learning.exercises[34][4].solution),[0xB8,0x34,0x12,0xF4],"Exercise C31 MOV immediate encoding");
+sameBytes(bytesOf(learning.exercises[35][4].solution),[0xBB,0x00,0x01,0xBE,0x02,0x00,0xC7,0x40,0x04,0xCD,0xAB,0x8B,0x40,0x04,0xF4],"Exercise C32 ModR/M and displacement encoding");
+sameBytes(bytesOf(learning.exercises[36][4].solution),[0xEB,0x01,0x90,0xB8,0x34,0x12,0xF4],"Exercise C33 symbolic branch and instruction boundaries");
 sameBytes(bytesOf(learning.curriculum[30][5][0][2]),[0xB8,0x34,0x12,0xF4],"C31 L1 MOV immediate");
 sameBytes(bytesOf(learning.curriculum[30][5][1][2]),[0xB9,0x78,0x56,0xF4],"C31 L2 MOV CX immediate length");
 const regMoveBytes=bytesOf(learning.curriculum[30][5][2][2]);
