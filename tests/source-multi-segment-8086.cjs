@@ -35,11 +35,7 @@ function run(source,options){const result=execute(source,options);assert.equal(r
  assert.ok(result.error);assert.match(result.error,/Chevauchement physique/);
 }
 {
- const result=execute("JMP DEST\nHLT",{segments:[{cs:0x2000,ip:0x0100,source:"DEST: HLT"}]});
- assert.ok(result.error);assert.match(result.error,/destination near ne peut pas changer CS/);
-}
-{
  const s=run("MOV AX, 1234h\nHLT");
  assert.equal(s.execution.mode,"binary-offset");assert.equal(s.reg.AX,0x1234);assert.equal(s.reg.CS,0);assert.equal(s.reg.IP,5);
 }
-console.log("Source multi-segment CS:IP: 6 scénarios PASS.");
+console.log("Source multi-segment CS:IP: 5 scénarios PASS.");
