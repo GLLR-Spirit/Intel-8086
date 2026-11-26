@@ -216,6 +216,55 @@ const assert = require("node:assert/strict");
   assert.equal(await page.locator("#view-learn").isVisible(),true,"Cours must be a distinct view.");
   console.log("Cours/Exercices/Atelier separation and exercise filters PASS.");
 
+  // Converter rejects partial parses and invalid digits instead of silently accepting prefixes.
+  await page.locator('[data-view="tools"]').click();
+  await page.locator("#base").selectOption("16");
+  await page.locator("#number").fill("2A");
+  assert.equal((await page.locator("#dec").textContent()).trim(),"42");
+  await page.locator("#number").fill("12G");
+  assert.match(await page.locator("#convertStatus").textContent(),/entier valide/i);
+  await page.locator("#base").selectOption("2");
+  await page.locator("#number").fill("102");
+  assert.match(await page.locator("#convertStatus").textContent(),/entier valide/i);
+  await page.locator("#base").selectOption("10");
+  await page.locator("#number").fill("65536");
+  assert.match(await page.locator("#convertStatus").textContent(),/entier valide/i);
+  await page.locator("#number").fill("65535");
+  assert.equal((await page.locator("#hex").textContent()).trim(),"FFFF");
+  assert.equal((await page.locator("#bin").textContent()).trim(),"1111111111111111");
+  console.log("Base converter strict validation and 16-bit limits PASS.");
+
+  // Clear progress must remove the current versioned keys, including per-lesson scores.
+  await page.evaluate(() => {
+    localStorage.setItem("i86-lessons-v2", "[1,2]");
+    localStorage.setItem("i86-exercises", "[0]");
+    localStorage.setItem("i86-chapter-scores-v2", "{\\"0\\":10}");
+    localStorage.setItem("i86-lesson-scores-v2", "{\\"0-0\\":3}");
+  });
+  page.once("dialog", dialog => dialog.accept());
+  await page.locator("#clearProgress").click();
+  const cleared = await page.evaluate(() => [
+    "i86-lessons-v2","i86-exercises","i86-chapter-scores-v2","i86-lesson-scores-v2"
+  ].map(key => localStorage.getItem(key)));
+  assert.deepEqual(cleared,[null,null,null,null],"Clear progress must remove all current progress keys.");
+  console.log("Progress reset removes all versioned lesson, exercise and quiz-score keys PASS.");
+
+  // The application remains usable when browser storage is blocked.
+  const blockedPage = await browser.newPage();
+  const blockedErrors = [];
+  blockedPage.on("pageerror", error => blockedErrors.push(error.message));
+  await blockedPage.addInitScript(() => {
+    Object.defineProperty(window,"localStorage",{configurable:true,get(){throw new DOMException("Storage blocked","SecurityError");}});
+  });
+  await blockedPage.goto("http://127.0.0.1:4173/?audit=1",{waitUntil:"networkidle"});
+  assert.equal((await blockedPage.locator("h1").first().textContent()).trim(),"Intel 8086 Lab");
+  await blockedPage.locator('[data-view="editor"]').click();
+  await blockedPage.locator("#save").click();
+  assert.match(await blockedPage.locator("#status").textContent(),/Stockage local indisponible/i);
+  assert.deepEqual(blockedErrors,[],"Blocked localStorage must not crash the page.");
+  await blockedPage.close();
+  console.log("Blocked localStorage fallback PASS.");
+
 
 
   assert.deepEqual(report.failures, [], report.failures.join("\n"));
