@@ -714,3 +714,17 @@ La suite `tests/relative-branches.cjs` rapporte **209 assertions réussies, 0 é
 - JMP short est contrôlé aux limites -128/+127, la relaxation bascule en near au-delà ; CALL/JMP rel16 vérifient -32768/+32767 et le bouclage 16 bits de IP.
 
 **Validation CI :** run [45729424128](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45729424128), **56/56 étapes réussies**. Les résultats restent limités aux formes et états explicitement listés ; aucune couverture globale des 93 instructions n'est déduite.
+
+
+### 16.14 CMP et TEST — actualisation du 26 novembre 2026
+
+Les formes d'encodage CMP sont décrites au §3. Les contrôles sémantiques complémentaires exécutés dans le CI `45730214193` sont :
+
+- `tests/alu-forms-8086.cjs` : **22 524 assertions** au total ; CMP byte registre et word mémoire sont comparés en source et en binaire, avec conservation des opérandes et contrôle des FLAGS définis.
+- `tests/relative-branches.cjs` : huit couples d'opérandes couvrent les 16 conditions Jcc en source et en binaire ; les FLAGS CF, PF, AF, ZF, SF et OF issus de CMP sont comparés à un oracle arithmétique indépendant.
+- `tests/logical-ops-8086.cjs` : **68 611 réussites, 0 échec** ; tables de vérité byte exhaustives, cas limites word, encodages registre/mémoire/immédiat et **10 équivalences source/binaire**.
+- Les six nouveaux vecteurs TEST vérifient registre byte/word, immédiat accumulateur, mémoire byte/word, opérande registre/mémoire et override ES. Ils contrôlent CF/OF/SF/ZF/PF, préservent les FLAGS non modifiés et vérifient que TEST ne modifie ni les opérandes ni la mémoire. AF reste volontairement exclu car indéfini pour TEST sur 8086.
+
+**Résultat CI :** [45730214193](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45730214193), commit `bf994802a22425d1bddf7991e1d8a55d1f6ac522`, **56/56 étapes réussies**.
+
+Cette mise à jour valide les cas explicitement listés. Elle ne transforme pas les 9 formes CMP ni les formes TEST en une certification exhaustive de toutes les combinaisons ModR/M et de tous les états possibles.

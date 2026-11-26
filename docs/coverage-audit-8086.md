@@ -747,3 +747,24 @@ La suite `tests/relative-branches.cjs` a été étendue aux chemins source et bi
 Les 16 Jcc sont vérifiées sur huit couples d'opérandes, avec résultats de branchement et FLAGS définis de CMP comparés dans les deux chemins. LOOP, LOOPE, LOOPNE et JCXZ sont contrôlées en encodage, désassemblage, sémantique vraie/fausse, compte CX, préservation des neuf FLAGS, cible rel8 et flux tronqués. La suite couvre également les limites rel8, la relaxation JMP short/near, les limites rel16 et le bouclage IP 16 bits.
 
 Le registre de formes décrit maintenant cette preuve ciblée. Les 93 entrées canoniques ne sont pas encore réconciliées ; aucun pourcentage global n'est publié.
+
+
+## 11. Actualisation — CMP / TEST et qualité pédagogique (26 novembre 2026)
+
+Le workflow CI [45730214193](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45730214193), commit `bf994802a22425d1bddf7991e1d8a55d1f6ac522`, a terminé avec succès (**56/56 étapes**).
+
+- `tests/alu-forms-8086.cjs` : **22 524 assertions** ; les formes CMP disposent maintenant de contrôles sémantiques source/binaire supplémentaires en byte registre et word mémoire.
+- `tests/logical-ops-8086.cjs` : **68 611 réussites, 0 échec**, dont **10 équivalences source/binaire** ; six nouveaux scénarios TEST couvrent registre/mémoire, byte/word, immédiat, override ES, FLAGS définis et préservation des opérandes/mémoire.
+- `tests/relative-branches.cjs` : les 16 Jcc comparent CMP et les FLAGS définis sur huit couples d'opérandes, en source et en binaire.
+
+### Contrôle du cours — chapitres 12 à 17
+
+Les contrôles pédagogiques et d'exécution sont également vérifiés :
+
+- `tests/learning-quality.cjs` : **108/108 exemples exécutés**, **108/108 leçons avec oracle indépendant**, **684/684 questions** conformes à la clé sémantique ; les 36 chapitres contiennent 324 questions intermédiaires et 360 questions finales.
+- Audit navigateur [45725877536](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45725877536) : **378/378 auto-tests**, 18 exemples de cours, 16 conditions Jcc, 32 cas vrai/faux, 54 questions intermédiaires et 60 questions finales pour les chapitres 12 à 17 ; 7/7 démonstrations interactives.
+- La séparation Cours/Exercices/Atelier et les filtres de la page Exercices ont également réussi.
+
+Les dix questions finales de chaque chapitre conservent dix sous-catégories techniques organisées en cinq paires : définition/compréhension, syntaxe/restrictions, prédiction/calcul, analyse de programme/analyse de résultat, débogage/raisonnement. Cela fournit deux questions dans chacun des cinq grands domaines pédagogiques.
+
+Ces résultats ferment les contrôles ciblés de ces chapitres, mais ne remplacent pas une revue éditoriale humaine de chaque formulation ni la réconciliation globale des 93 instructions.

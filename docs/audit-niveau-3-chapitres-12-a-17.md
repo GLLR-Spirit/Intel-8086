@@ -386,3 +386,22 @@ La suite des branchements compare maintenant les 16 conditions Jcc sur huit coup
 Pour CALL/RET, les tests couvrent les appels near/far, les formes indirectes, l'ordre CS:IP sur pile, les limites SP et les ajustements impairs de RET/RETF. Pour les chaînes, les dix formes byte/word sont testées avec les chemins source et binaire, les segments, REP, DF et les frontières d'offset.
 
 **État global :** ces résultats ferment des sous-périmètres ciblés, pas l'audit exhaustif des chapitres 12 à 17. Les formes restantes, les interactions de préfixes non couvertes, les autres familles d'instructions et la réconciliation des 93 entrées restent ouvertes.
+
+
+## 12. Clôture des contrôles pédagogiques et CMP/TEST — 26 novembre 2026
+
+Sur le commit `bf994802a22425d1bddf7991e1d8a55d1f6ac522`, le workflow CI [45730214193](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45730214193) a réussi avec **56/56 étapes**.
+
+### Chapitres 12 à 17 — preuves pédagogiques
+
+- **18 exemples** des six chapitres ont été comparés entre interprétation source et exécution binaire par le test navigateur.
+- **54 questions intermédiaires** et **60 questions finales** ont été vérifiées pour cette tranche.
+- La suite qualité couvre les **108/108 exemples** des 36 chapitres avec des oracles indépendants et confirme les **684/684 questions** contre la clé sémantique.
+- Les dix questions finales sont organisées en cinq paires de domaines : définition/compréhension, syntaxe/restrictions, prédiction/calcul, analyse de programme/résultat et débogage/raisonnement.
+- Les démonstrations interactives ont réussi **7/7** ; la séparation des pages Cours, Exercices et Atelier et les filtres d'exercices ont réussi.
+
+### CMP / TEST — compléments indépendants
+
+La suite logique rapporte **68 611 réussites, 0 échec** et dix équivalences source/binaire. Six vecteurs TEST supplémentaires vérifient les formes byte/word, registre/mémoire, immédiat et override ES. CMP dispose de nouveaux contrôles source/binaire sur les formes byte registre et word mémoire, complétés par les huit couples d'opérandes de la matrice Jcc.
+
+**Conclusion de cette étape :** les contrôles pédagogiques des chapitres 12 à 17 et les compléments CMP/TEST sont maintenant documentés avec leurs résultats. L'audit ne sera déclaré globalement clos qu'après vérification des formes restantes, réconciliation du registre et actualisation prudente de la matrice des 93 instructions.
