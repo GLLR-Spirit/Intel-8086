@@ -207,7 +207,10 @@ var curriculum=[["Introduction au microprocesseur Intel 8086","Débutant","Aucun
 
 var chapterScores=storageJSON("i86-chapter-scores-v2",{});if(!chapterScores||typeof chapterScores!=="object"||Array.isArray(chapterScores))chapterScores={};
 var lessonScores=storageJSON("i86-lesson-scores-v2",{});if(!lessonScores||typeof lessonScores!=="object"||Array.isArray(lessonScores))lessonScores={};
-var chapterExerciseMap=curriculum.map(function(c,i){return Math.min(exercises.length-1,Math.floor(i*exercises.length/curriculum.length));});
+var exerciseChapterAssignments=[
+[8],[7],[16],[12,14],[17],[1,2,5],[3,4,8],[5],[6,7],[20],[9],[18],[8,10],[14,15],[16,17],[20],[9],[18,19],[11,12,14],[14,15],[12,17],[11,16],[7,11],[9,16,17],[18,27,28],
+[13],[21],[22],[23],[24],[25],[26],[29],[30],[31],[32],[33],[34],[35],[36]
+];
 lessons=curriculum.map(function(c,i){return [c[0],"Niveau "+(c[1])+" · "+(["Fondations","Instructions","Algorithmique","Mémoire et structuration","Systèmes avancés","Architecture interne"][i<5?0:i<11?1:i<17?2:i<23?3:i<30?4:5]),"<p>"+c[3]+"</p><p><b>Prérequis :</b> "+c[2]+"</p>",c[5][0][2]];});
 function rotateQuiz(q,seed){var shift=seed%q[1].length;return [q[0],q[1].slice(shift).concat(q[1].slice(0,shift)),(q[2]-shift+q[1].length)%q[1].length,q[3],q[4]||""];}
 var foundationalLessonQuestions=[
@@ -571,17 +574,16 @@ exercises.push(
 );
 var exerciseFilterState={search:"",chapter:"all",difficulty:"all",type:"all"};
 function exerciseMetadata(x,i){
- var title=(x[0]+" "+x[1]).toLowerCase(),chapters=[];
- chapterExerciseMap.forEach(function(ex,chapter){if(ex===i)chapters.push(chapter);});
- var rules=[
- [/architecture|microprocesseur|biu|eu|bus/,0],[/binaire|hexadécimal|numération/,1],[/registre/,2],[/mov|transfert/,3],[/addition|soustraction|arithmétique|mul|div|idiv/,4],[/comparaison|branche|cmp|signe/,5],[/boucle|loop|répét/,6],[/pile|push|pop|stack/,7],[/logique|xor|and|or|masque/,8],[/segment|mémoire|adressage/,9],[/débog|erreur|corrig/,10],[/procédure|call|ret/,11],[/flags|indicateur/,12],[/chaîne|movs|lods|stos|cmps|scas/,13],[/rep|préfixe/,14],[/interrupt|iret|int /,15],[/encodage|opcode|modrm|mod\/rm|binaire machine/,16],
- [/échange|transfert|mov/,3],[/somme|addition|soustraction|mul|div|arithmétique/,4],[/boucle|loop|répét/,6],[/maximum|comparer|comparaison|branche|signé/,5],[/débog|corrig|erreur/,10],[/procédure|call|ret/,11],[/flags|indicateur/,12],[/chaîne|movs|lods|stos|cmps|scas|copie de mots/,13],[/rep|préfixe|répétition/,14],[/interrupt|iret|int /,15]
- ];
- rules.forEach(function(rule){if(rule[0].test(title)&&chapters.indexOf(rule[1])<0)chapters.push(rule[1]);});
- if(!chapters.length)chapters=[Math.min(16,Math.max(0,i%17))];
+ var chapters=(exerciseChapterAssignments[i]||[]).map(function(n){return n-1;});
  var g=x[4]||{},type=x[5]&&x[5].type;
- if(!type){if(/débog|corriger|erreur volontaire|programme erroné/.test(title))type="debug";else if(/; écris|; ajoute|; cmp|; complète|à compléter/.test(x[2]))type="completion";else if(/projet|concevoir|programme complet|routine complète/.test(title))type="probleme";else if(/comparer|prévoir|raisonnement|interpréter|déterminer/.test(title+" "+x[1].toLowerCase()))type="raisonnement";else type="application";}
- var difficulty=(x[5]&&x[5].difficulty)||g.level|| (i<5?"Débutant":"Intermédiaire");
+ if(!type){
+  if(/débog|corriger|erreur volontaire|programme erroné/.test((x[0]+" "+x[1]).toLowerCase()))type="debug";
+  else if(/; écris|; ajoute|; cmp|; complète|à compléter/.test(x[2]))type="completion";
+  else if(/projet|concevoir|programme complet|routine complète/.test((x[0]+" "+x[1]).toLowerCase()))type="probleme";
+  else if(/comparer|prévoir|raisonnement|interpréter|déterminer/.test((x[0]+" "+x[1]).toLowerCase()))type="raisonnement";
+  else type="application";
+ }
+ var difficulty=(x[5]&&x[5].difficulty)||g.level||(i<5?"Débutant":"Intermédiaire");
  if(!["Débutant","Facile","Intermédiaire","Avancé","Expert"].includes(difficulty))difficulty="Intermédiaire";
  return {chapters:chapters,type:type,difficulty:difficulty};
 }
