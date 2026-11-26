@@ -118,6 +118,8 @@ jobs:
         run: node tests/relative-branches.cjs
       - name: Run byte-offset execution tests
         run: node tests/byte-offset-execution.cjs
+      - name: Run source multi-segment CS:IP execution tests
+        run: node tests/source-multi-segment-8086.cjs
       - name: Run 8086 LOCK prefix and repeated string tests
         run: node tests/lock-prefix-8086.cjs
       - name: Run all ten 8086 string instruction audits
