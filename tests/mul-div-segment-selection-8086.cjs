@@ -111,7 +111,7 @@ function makeSource(op, bits, expression, explicitSegment, divisorValues) {
   assert.ok(addressSetup[expression], "Missing address setup for " + expression);
   lines.push(...addressSetup[expression]);
   const target = ptr + (explicitSegment ? explicitSegment + ":" : "") + expression;
-  const selected = explicitSegment || (expression === "[BP]" ? "SS" : "DS");
+  const selected = explicitSegment || (expression.includes("BP") ? "SS" : "DS");
   const expected = vector(op, bits, divisorValues[selected]);
   lines.push("MOV DX, " + word(expected.dxIn));
   lines.push("MOV AX, " + word(expected.axIn));
@@ -173,27 +173,29 @@ for (const op of ["MUL", "IMUL", "DIV", "IDIV"]) {
 // two prefix bytes are both retained before the F6/F7 opcode, then execute
 // both the source and binary forms. The memory operand is read-only here.
 for (const op of ["MUL", "IMUL", "DIV", "IDIV"]) {
-  for (const segment of segments) {
-    const bits = 8;
-    const item = makeSource(op, bits, segment.expression, segment.name, divisorValues);
-    const source = item.source.replace(op + " BYTE PTR " + segment.name + ":" + segment.expression,
-      "LOCK\n" + op + " BYTE PTR " + segment.name + ":" + segment.expression);
-    const label = "LOCK + " + segment.name + " + " + op;
-    test("LOCK and segment prefix encoding " + label, () => {
-      const bytes = Array.from(api.assemble(source).bytes);
-      const opcodeIndex = bytes.findIndex((value, index) =>
-        value === 0xF6 && index >= 2 && bytes[index - 1] !== undefined);
-      assert.ok(opcodeIndex >= 2, label + " must retain both prefixes");
-      assert.ok(bytes.slice(0, opcodeIndex).includes(0xF0), label + " LOCK byte");
-      assert.ok(bytes.slice(0, opcodeIndex).includes(segment.prefix), label + " segment byte");
-    });
-    test("LOCK and segment prefix source execution " + label, () => {
-      assertState(api.execute(source), item.expected, label);
-    });
-    test("LOCK and segment prefix binary execution " + label, () => {
-      const bytes = api.assemble(source).bytes;
-      assertState(api.executeBinary(bytes, 0, 0), item.expected, label);
-    });
+  for (const bits of [8, 16]) {
+    for (const segment of segments) {
+      const ptr = bits === 8 ? "BYTE PTR " : "WORD PTR ";
+      const item = makeSource(op, bits, segment.expression, segment.name, divisorValues);
+      const source = item.source.replace(op + " " + ptr + segment.name + ":" + segment.expression,
+        "LOCK\n" + op + " " + ptr + segment.name + ":" + segment.expression);
+      const label = "LOCK + " + segment.name + " + " + op + " " + bits + "-bit";
+      test("LOCK and segment prefix encoding " + label, () => {
+        const bytes = Array.from(api.assemble(source).bytes);
+        const opcodeIndex = bytes.findIndex((value, index) =>
+          value === (bits === 8 ? 0xF6 : 0xF7) && index >= 2);
+        assert.ok(opcodeIndex >= 2, label + " must retain both prefixes");
+        assert.ok(bytes.slice(0, opcodeIndex).includes(0xF0), label + " LOCK byte");
+        assert.ok(bytes.slice(0, opcodeIndex).includes(segment.prefix), label + " segment byte");
+      });
+      test("LOCK and segment prefix source execution " + label, () => {
+        assertState(api.execute(source), item.expected, label);
+      });
+      test("LOCK and segment prefix binary execution " + label, () => {
+        const bytes = api.assemble(source).bytes;
+        assertState(api.executeBinary(bytes, 0, 0), item.expected, label);
+      });
+    }
   }
 }
 
@@ -201,7 +203,7 @@ for (const op of ["MUL", "IMUL", "DIV", "IDIV"]) {
 // instruction. None of these arithmetic instructions is a string primitive.
 for (const prefix of ["REP", "REPE", "REPZ", "REPNE", "REPNZ"]) {
   for (const op of ["MUL", "IMUL", "DIV", "IDIV"]) {
-    for (const operand of ["BL", "BYTE PTR [BX]"]) {
+    for (const operand of ["BL", "BX", "BYTE PTR [BX]", "WORD PTR [BX]"]) {
       const source = prefix + "\n" + op + " " + operand;
       test("Reject " + prefix + " on " + op + " " + operand, () => {
         assert.throws(() => api.assemble(source), undefined,
