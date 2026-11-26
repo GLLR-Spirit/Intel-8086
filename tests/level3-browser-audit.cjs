@@ -8,6 +8,21 @@ const assert = require("node:assert/strict");
   page.on("pageerror", e => errors.push(e.message));
   await page.goto("http://127.0.0.1:4173/?audit=1", { waitUntil: "networkidle" });
 
+  // Capture each public view at desktop and mobile widths for visual regression review.
+  const views = ["learn", "editor", "instructions", "exercises", "projects", "tools"];
+  for (const view of views) {
+    await page.locator('[data-view="' + view + '"]').click();
+    await page.screenshot({ path: "artifacts/intel8086-desktop-" + view + ".png", fullPage: true });
+  }
+  const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
+  await mobile.goto("http://127.0.0.1:4173/?audit=1", { waitUntil: "networkidle" });
+  for (const view of views) {
+    await mobile.locator('[data-view="' + view + '"]').click();
+    await mobile.screenshot({ path: "artifacts/intel8086-mobile-" + view + ".png", fullPage: true });
+  }
+  await mobile.close();
+  await page.locator('[data-view="learn"]').click();
+
   await page.evaluate(() => {
     if (!window.__8086Audit) throw new Error("API de test absente : charger la page avec ?audit=1");
     window.__8086Audit.runSelfTests();
