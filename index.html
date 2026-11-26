@@ -1050,7 +1050,7 @@ $("binaryFile").onchange=function(){var file=this.files&&this.files[0],node=$("d
 
 function parseBinarySeedPairs(raw,maxAddress,maxValue,label){
  var result={};
- String(raw||"").split(/\\r?\\n/).forEach(function(line,index){
+ String(raw||"").split(/\r?\n/).forEach(function(line,index){
   var entry=line.split(";")[0].trim();
   if(!entry)return;
   var parts=entry.split(/[=:]/);
@@ -1111,12 +1111,12 @@ $("executeBinary").onclick=function(){
   var result=executeBinary(bytes,cs,ip,{io:portState,mem:memoryState});
   if(result.error)throw Error(result.error);
   renderCPU(result);
-  $("console").textContent=(result.output||"Aucune sortie produite.")+"\\n\\nInstructions exécutées : "+result.steps;
-  node.textContent="EXÉCUTION BINAIRE RÉUSSIE\\nMode : "+result.execution.mode+"\\nCS:IP initial : "+result.execution.loadCS.toString(16).toUpperCase().padStart(4,"0")+"h:"+result.execution.loadIP.toString(16).toUpperCase().padStart(4,"0")+"h\\nOctets chargés : "+result.execution.codeSize+"\\nInstructions décodées : "+result.execution.decodedInstructions+"\\nIP final : "+result.reg.IP.toString(16).toUpperCase().padStart(4,"0")+"h\\nMétadonnées source : "+(sourceMatched?"associées":"non associées")+"\\nMémoire initiale : "+Object.keys(memoryState).length+" octet(s) · ports : "+Object.keys(portState).length;
+  $("console").textContent=(result.output||"Aucune sortie produite.")+"\n\nInstructions exécutées : "+result.steps;
+  node.textContent="EXÉCUTION BINAIRE RÉUSSIE\nMode : "+result.execution.mode+"\nCS:IP initial : "+result.execution.loadCS.toString(16).toUpperCase().padStart(4,"0")+"h:"+result.execution.loadIP.toString(16).toUpperCase().padStart(4,"0")+"h\nOctets chargés : "+result.execution.codeSize+"\nInstructions décodées : "+result.execution.decodedInstructions+"\nIP final : "+result.reg.IP.toString(16).toUpperCase().padStart(4,"0")+"h\nMétadonnées source : "+(sourceMatched?"associées":"non associées")+"\nMémoire initiale : "+Object.keys(memoryState).length+" octet(s) · ports : "+Object.keys(portState).length;
   status("Exécution du flux binaire terminée.",false,true);
   $("lineStatus").textContent="Exécution depuis la mémoire binaire.";
  }catch(e){
-  node.textContent="ÉCHEC DE L’EXÉCUTION BINAIRE\\n"+e.message;
+  node.textContent="ÉCHEC DE L’EXÉCUTION BINAIRE\n"+e.message;
   status(e.message,true);
  }
 };
