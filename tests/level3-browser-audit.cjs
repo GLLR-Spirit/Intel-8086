@@ -145,7 +145,7 @@ const assert = require("node:assert/strict");
   const portReferenceCodes=await page.locator("#instructionGrid .inst code").allTextContents();
   assert.ok(portReferenceCodes.includes("PORT"),"The PORT directive must be discoverable in the technical reference.");
   const portCard=page.locator("#instructionGrid .inst").filter({
-    has:page.locator("#instructionGrid .inst code").filter({hasText:/^PORT$/})
+    has:page.locator("code").filter({hasText:/^PORT$/})
   });
   assert.equal(await portCard.count(),1,"The PORT directive must resolve to exactly one reference card.");
   assert.match(await portCard.first().textContent(),/IN et OUT/);
