@@ -68,6 +68,8 @@ jobs:
         run: node tests/into-8086.cjs
       - name: Run 8086 software INT and IRET audit
         run: node tests/software-int-8086.cjs
+      - name: Run 8086 CBW CWD NOP HLT audit
+        run: node tests/cbw-cwd-nop-hlt-8086.cjs
       - name: Run 8086 memory MUL IMUL DIV IDIV audit
         run: node tests/mul-div-memory-8086.cjs
       - name: Run MUL IMUL DIV IDIV segment-selection and prefix audit
