@@ -123,4 +123,48 @@ function compareArchitecturalState(source,binary,label){
  assert.ok(result.error);assert.match(result.error,/CS:IP/);
 }
 
-console.log("Source multi-segment CS:IP: 16 scénarios PASS.");
+
+{
+ const modes=["BX+SI","BX+DI","BP+SI","BP+DI","SI","DI","BP","BX"];
+ const setup=[
+  "MOV AX, 1000h","MOV DS, AX","MOV AX, 1000h","MOV SS, AX",
+  "MOV AX, 3000h","MOV ES, AX","MOV BX, 0100h","MOV BP, 0100h",
+  "MOV SI, 0000h","MOV DI, 0000h",
+  "MOV WORD PTR DS:[0100h], 0100h","MOV WORD PTR DS:[0102h], 2000h"
+ ];
+ for(const mode of modes){
+  const main=setup.concat(["CALL FAR PTR DS:["+mode+"]","HLT"]).join("\n");
+  const segments=[{cs:0x2000,ip:0x0100,source:"MOV AX, 2468h\nRETF"}];
+  const source=run(main,{segments}),binary=binaryFor(main,{},segments);
+  compareArchitecturalState(source,binary,"multi-segment far CALL DS:[ "+mode+" ]");
+  assert.equal(source.reg.AX,0x2468,"far CALL result "+mode);
+  assert.equal(source.reg.CS,0,"far CALL returns to caller "+mode);
+ }
+ for(const mode of modes){
+  const main=setup.concat(["JMP FAR PTR DS:["+mode+"]","MOV BX, 1","HLT"]).join("\n");
+  const segments=[{cs:0x2000,ip:0x0100,source:"MOV AX, 1357h\nHLT"}];
+  const source=run(main,{segments}),binary=binaryFor(main,{},segments);
+  compareArchitecturalState(source,binary,"multi-segment far JMP DS:[ "+mode+" ]");
+  assert.equal(source.reg.AX,0x1357,"far JMP result "+mode);
+  assert.equal(source.reg.BX,0,"far JMP skips caller continuation "+mode);
+ }
+}
+{
+ const main="CALL FAR 2000h:0100h\nHLT";
+ const segments=[
+  {cs:0x2000,ip:0x0100,source:"CALL FAR 3000h:0200h\nMOV AX, 2222h\nRETF"},
+  {cs:0x3000,ip:0x0200,source:"MOV BX, 1111h\nRETF"}
+ ];
+ const source=run(main,{segments}),binary=binaryFor(main,{},segments);
+ compareArchitecturalState(source,binary,"nested far CALL/RETF across three CS images");
+ assert.equal(source.reg.AX,0x2222);assert.equal(source.reg.BX,0x1111);assert.equal(source.reg.CS,0);
+}
+{
+ const main="CALL FAR 2000h:0100h\nHLT";
+ const segments=[{cs:0x2000,ip:0x0100,source:"RETF 1"}];
+ const source=run(main,{segments}),binary=binaryFor(main,{},segments);
+ compareArchitecturalState(source,binary,"odd RETF cleanup across CS images");
+ assert.equal(source.reg.CS,0);assert.equal(source.reg.SP,0xFFFF);
+}
+
+console.log("Source multi-segment CS:IP: 34 scénarios PASS.");
