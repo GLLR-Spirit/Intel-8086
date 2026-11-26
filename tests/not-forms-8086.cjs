@@ -90,6 +90,90 @@ for(const [opcode,width] of [[0xF6,8],[0xF7,16]]){
 }
 check(memoryForms===48,"2 widths × 3 displacement modes × 8 r/m forms");
 
+function physical(seg,off){return ((((seg&0xFFFF)<<4)+(off&0xFFFF))&0xFFFFF);}
+function readRegister(state,reg,bits){
+ if(bits===16)return state.reg[reg];
+ const parent=reg[0]+"X";
+ return reg==="AH"||reg==="CH"||reg==="DH"||reg==="BH"
+   ?(state.reg[parent]>>8)&255:state.reg[parent]&255;
+}
+function executeBoth(source){
+ const bytes=assemble(source),src=api.execute(source),bin=api.binary(bytes,0,0,{});
+ check(src.error===undefined,"NOT source execution: "+src.error);
+ check(bin.error===undefined,"NOT binary execution: "+bin.error);
+ for(const reg of ["AX","BX","CX","DX","SP","BP","SI","DI","CS","DS","ES","SS"])
+  same(src.reg[reg],bin.reg[reg],"NOT source/binary "+reg);
+ for(const flag of ["CF","PF","AF","ZF","SF","TF","IF","DF","OF"])
+  same(src.flags[flag],bin.flags[flag],"NOT source/binary "+flag);
+ return [["source",src],["binary",bin]];
+}
+const initialNotFlags=0x0FD7;
+const notFlags=["CF","PF","AF","ZF","SF","TF","IF","DF","OF"];
+let registerExecutionCases=0;
+for(const [bits,regs,input,expected] of [
+ [8,REG8,0x55,0xAA],
+ [16,REG16,0x55AA,0xAA55]
+]){
+ for(const reg of regs){
+  const source=[
+   "MOV SP,0100h","MOV CX,"+initialNotFlags.toString(16)+"h","PUSH CX","POPF",
+   "MOV "+reg+","+input.toString(16)+"h","NOT "+reg,"HLT"
+  ].join("\n");
+  for(const [mode,state] of executeBoth(source)){
+   same(readRegister(state,reg,bits),expected,mode+" NOT "+reg+" result");
+   same(state.reg.SP,0x0100,mode+" NOT "+reg+" stack seed balanced");
+   for(const flag of notFlags){
+    const bit={CF:1,PF:4,AF:16,ZF:64,SF:128,TF:256,IF:512,DF:1024,OF:2048}[flag];
+    same(state.flags[flag],(initialNotFlags&bit)?1:0,mode+" NOT "+reg+" preserves "+flag);
+   }
+  }
+  registerExecutionCases++;
+ }
+}
+check(registerExecutionCases===16,"NOT execution across all 8 byte and 8 word registers");
+
+const notEA=[
+ {expr:"[BX+SI]",segment:"DS",setup:["MOV BX,0200h","MOV SI,0200h"]},
+ {expr:"[BX+DI]",segment:"DS",setup:["MOV BX,0200h","MOV DI,0200h"]},
+ {expr:"[BP+SI]",segment:"SS",setup:["MOV BP,0200h","MOV SI,0200h"]},
+ {expr:"[BP+DI]",segment:"SS",setup:["MOV BP,0200h","MOV DI,0200h"]},
+ {expr:"[SI]",segment:"DS",setup:["MOV SI,0400h"]},
+ {expr:"[DI]",segment:"DS",setup:["MOV DI,0400h"]},
+ {expr:"[BP]",segment:"SS",setup:["MOV BP,0400h"]},
+ {expr:"[BX]",segment:"DS",setup:["MOV BX,0400h"]}
+];
+let memoryExecutionCases=0;
+for(const [bits,width,input,expected] of [
+ [8,"BYTE",0x55,0xAA],
+ [16,"WORD",0x55AA,0xAA55]
+]){
+ for(const form of notEA){
+  const source=[
+   "MOV AX,1000h","MOV DS,AX","MOV AX,3000h","MOV SS,AX",
+   "MOV "+width+" PTR DS:[0400h],"+input.toString(16)+"h",
+   "MOV "+width+" PTR SS:[0400h],"+input.toString(16)+"h",
+   "MOV CX,"+initialNotFlags.toString(16)+"h","PUSH CX","POPF",
+   "MOV SP,2000h",...form.setup,
+   "NOT "+width+" PTR "+form.expr,"HLT"
+  ].join("\n");
+  const selected=physical(form.segment==="SS"?0x3000:0x1000,0x0400);
+  const other=physical(form.segment==="SS"?0x1000:0x3000,0x0400);
+  for(const [mode,state] of executeBoth(source)){
+   same(state.mem[selected],expected&255,mode+" NOT "+form.expr+" selected low");
+   if(bits===16)same(state.mem[(selected+1)&0xFFFFF],expected>>8,mode+" NOT "+form.expr+" selected high");
+   same(state.mem[other],input&255,mode+" NOT "+form.expr+" other segment unchanged");
+   if(bits===16)same(state.mem[(other+1)&0xFFFFF],input>>8,mode+" NOT "+form.expr+" other segment high unchanged");
+   for(const flag of notFlags){
+    const bit={CF:1,PF:4,AF:16,ZF:64,SF:128,TF:256,IF:512,DF:1024,OF:2048}[flag];
+    same(state.flags[flag],(initialNotFlags&bit)?1:0,mode+" NOT "+form.expr+" preserves "+flag);
+   }
+  }
+  memoryExecutionCases++;
+ }
+}
+check(memoryExecutionCases===16,"NOT memory execution across 8 EA forms in byte and word");
+
+
 // C. The reserved /1 extension remains data, never aliases NOT.
 for(const [opcode,tail] of [[0xF6,[]],[0xF7,[]]]){
   const invalid=[opcode,0xC8]; // MOD=11, REG=/1 (reserved), R/M=AX
@@ -164,5 +248,5 @@ for(const [mode,state,initial] of [
   for(const flag of ["CF","PF","AF","ZF","SF","TF","IF","DF","OF"])
     same(state.flags[flag],initial.flags[flag],"NOT "+mode+" preserves "+flag);
 }
-console.log("NOT independent audit: 16 register forms; 48 memory addressing forms; /1 reserved; invalid operands; four segment overrides; LOCK; REP rejection; source/binary FLAGS preservation.");
+console.log("NOT independent audit: 16 register forms and 16 memory EA execution cases in source/binary; 48 memory encodings; /1 reserved; four segment overrides; LOCK; REP rejection; FLAGS preservation.");
 console.log("Assertions: "+assertions+" passed.");
