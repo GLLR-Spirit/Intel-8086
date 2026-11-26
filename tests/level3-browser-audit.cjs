@@ -237,6 +237,7 @@ const assert = require("node:assert/strict");
   console.log("Course visual interaction audit: 7/7 interactive demonstrations, BIU animation and register trace PASS.");
 
   // Course list remains sticky beside lesson content on desktop and moves below it on mobile.
+  assert.match(await page.locator(".course-list-hint").textContent(),/36 chapitres/,"Desktop chapter list must advertise its internal scrolling.");
   const desktopCourseBoxes = await page.locator(".course-layout").evaluate(el => {
     const list = el.querySelector(".course-list-panel").getBoundingClientRect();
     const detail = el.querySelector("#lessonDetail").getBoundingClientRect();
