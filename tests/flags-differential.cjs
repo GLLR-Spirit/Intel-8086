@@ -115,7 +115,8 @@ for (const bits of [8, 16]) {
           const label = op + " " + bits + "-bit " + a.toString(16) + "," +
             b.toString(16) + " CFin=" + carryIn;
           test("FLAGS arithmétiques · " + label, () => {
-            const state = run(sourceFor(bits, a, b, op, carryIn));
+            const state = runBoth(sourceFor(bits, a, b, op, carryIn),
+              [...flagNames, "TF", "IF", "DF"]);
             for (const flag of flagNames) {
               assert.equal(state.flags[flag], expected[flag],
                 label + " " + flag + " attendu " + expected[flag] +
@@ -242,5 +243,5 @@ console.log("FLAGS arithmétiques : " + arithmeticCases + " vecteurs.");
 console.log("FLAGS INC/DEC : " + incDecCases + " vecteurs.");
 console.log("FLAGS logiques : " + logicalCases + " vecteurs.");
 console.log("FLAGS MUL/IMUL : " + multiplyCases + " vecteurs.");
-console.log("Résultat FLAGS : " + passed + " réussis, " + failed + " échecs.");
+console.log("Résultat FLAGS : " + passed + " réussis, " + failed + " échecs.");\nconsole.log("Vecteurs arithmétiques ADD/ADC/SUB/SBB/CMP : source/binaire.");
 if (failed) process.exit(1);
