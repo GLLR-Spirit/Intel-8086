@@ -129,8 +129,9 @@ function compareArchitecturalState(source,binary,label){
  const setup=[
   "MOV AX, 1000h","MOV DS, AX","MOV AX, 1000h","MOV SS, AX",
   "MOV AX, 3000h","MOV ES, AX","MOV BX, 0100h","MOV BP, 0100h",
-  "MOV SI, 0000h","MOV DI, 0000h",
-  "MOV WORD PTR DS:[0100h], 0100h","MOV WORD PTR DS:[0102h], 2000h"
+  "MOV SI, 0100h","MOV DI, 0100h",
+  "MOV WORD PTR DS:[0100h], 0100h","MOV WORD PTR DS:[0102h], 2000h",
+  "MOV WORD PTR DS:[0200h], 0100h","MOV WORD PTR DS:[0202h], 2000h"
  ];
  for(const mode of modes){
   const main=setup.concat(["CALL FAR PTR DS:["+mode+"]","HLT"]).join("\n");
