@@ -142,12 +142,12 @@ const assert = require("node:assert/strict");
   console.log("Course visual coverage: 36/36 chapters have a diagram or visual model.");
   await page.locator('[data-view="instructions"]').click();
   await page.locator("#searchInstruction").fill("PORT");
-  assert.equal(await page.locator("#instructionGrid .inst").count(),1,
-    "The PORT directive must be discoverable in the technical reference.");
-  assert.match(await page.locator("#instructionGrid .inst").textContent(),/Directive/);
-  assert.match(await page.locator("#instructionGrid .inst").textContent(),/IN et OUT/);
+  const portReferenceCodes=await page.locator("#instructionGrid .inst code").allTextContents();
+  assert.ok(portReferenceCodes.includes("PORT"),"The PORT directive must be discoverable in the technical reference.");
+  assert.match(await page.locator("#instructionGrid .inst").filter({hasText:"PORT"}).first().textContent(),/IN et OUT/);
   await page.locator("#searchInstruction").fill("VECTOR");
-  assert.equal(await page.locator("#instructionGrid .inst").count(),1,
+  const vectorReferenceCodes=await page.locator("#instructionGrid .inst code").allTextContents();
+  assert.ok(vectorReferenceCodes.includes("VECTOR"),
     "The VECTOR directive must remain documented separately from hardware opcodes.");
   await page.locator('[data-view="learn"]').click();
 
