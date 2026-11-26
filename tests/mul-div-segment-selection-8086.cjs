@@ -49,8 +49,14 @@ const segments = [
   { name: "DS", prefix: 0x3E, value: 13, expression: "[BP]" }
 ];
 const defaultSegments = [
-  { name: "DS", expression: "[BX]", value: 7 },
-  { name: "SS", expression: "[BP]", value: 11 }
+  { name: "DS", expression: "[BX+SI]", value: 13 },
+  { name: "DS", expression: "[BX+DI]", value: 13 },
+  { name: "SS", expression: "[BP+SI]", value: 11 },
+  { name: "SS", expression: "[BP+DI]", value: 11 },
+  { name: "DS", expression: "[SI]", value: 13 },
+  { name: "DS", expression: "[DI]", value: 13 },
+  { name: "SS", expression: "[BP]", value: 11 },
+  { name: "DS", expression: "[BX]", value: 13 }
 ];
 
 function vector(op, bits, divisor) {
@@ -92,7 +98,18 @@ function makeSource(op, bits, expression, explicitSegment, divisorValues) {
     lines.push("MOV " + ptr + item.name + ":[0200h], " +
       (bits === 8 ? byte(item.value) : word(item.value)));
   }
-  lines.push("MOV BX, 0200h", "MOV BP, 0200h");
+  const addressSetup = {
+    "[BX+SI]": ["MOV BX, 0100h", "MOV SI, 0100h"],
+    "[BX+DI]": ["MOV BX, 0100h", "MOV DI, 0100h"],
+    "[BP+SI]": ["MOV BP, 0100h", "MOV SI, 0100h"],
+    "[BP+DI]": ["MOV BP, 0100h", "MOV DI, 0100h"],
+    "[SI]": ["MOV SI, 0200h"],
+    "[DI]": ["MOV DI, 0200h"],
+    "[BP]": ["MOV BP, 0200h"],
+    "[BX]": ["MOV BX, 0200h"]
+  };
+  assert.ok(addressSetup[expression], "Missing address setup for " + expression);
+  lines.push(...addressSetup[expression]);
   const target = ptr + (explicitSegment ? explicitSegment + ":" : "") + expression;
   const selected = explicitSegment || (expression === "[BP]" ? "SS" : "DS");
   const expected = vector(op, bits, divisorValues[selected]);
