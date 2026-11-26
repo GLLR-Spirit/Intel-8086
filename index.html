@@ -1083,7 +1083,7 @@ $("executeBinary").onclick=function(){
    Object.keys(sourceProgram.ports||{}).forEach(function(port){if(!Object.prototype.hasOwnProperty.call(portState,port))portState[port]=sourceProgram.ports[port];});
    Object.keys(sourceProgram.vectors||{}).forEach(function(vector){
     var label=sourceProgram.vectors[vector],offset=sourceAssembly.symbols[label];
-    if(offset===undefined)throw Error("Vecteur "+Number(vector).toString(16).toUpperCase()+"h : étiquette absente de la table des symboles.");
+    if(!Number.isInteger(offset)||offset<0||offset>=bytes.length)throw Error("Vecteur "+Number(vector).toString(16).toUpperCase()+"h : gestionnaire absent du flux binaire chargé.");
     var targetIP=(ip+offset)&65535,targetCS=cs&65535,base=Number(vector)*4;
     var values=[targetIP&255,(targetIP>>8)&255,targetCS&255,(targetCS>>8)&255];
     for(var byteIndex=0;byteIndex<4;byteIndex++){
