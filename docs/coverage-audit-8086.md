@@ -74,7 +74,7 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | AND | Oui | Oui | Oui | Oui | Oui |
 | OR | Oui | Oui | Oui | Oui | Oui |
 | XOR | Oui | Oui | Oui | Oui | Oui |
-| NOT | Oui | Oui | Oui | Oui | Partiel |
+| NOT | Oui | Oui | Oui | Oui | Oui |
 | TEST | Oui | Oui | Oui | Oui | Oui |
 | ROL | Oui | Oui | Oui | Oui | Oui |
 | ROR | Oui | Oui | Oui | Oui | Oui |
@@ -144,6 +144,7 @@ Les familles suivantes disposent maintenant de contrôles ciblés source et/ou b
 - XCHG : paires de registres, formes mémoire, overrides, LOCK, FLAGS et chemins source/binaire vérifiés.
 - LEA/LDS/LES : EA, pointeurs 16:16, segments, déplacements, FLAGS et chemins source/binaire vérifiés.
 - AAA/AAS/AAM/AAD/DAA/DAS : vecteurs BCD, octets d'encodage, désassemblage et FLAGS définis vérifiés.
+- NOT : 16 registres et 16 formes mémoire effectives exécutés source/binaire, 48 encodages mémoire, quatre overrides, LOCK, FLAGS préservés.
 - CBW/CWD : extension de signe source/binaire, 256 valeurs AL et frontières AX, FLAGS préservés.
 - NOP/HLT : opcodes, désassemblage, préservation de l'état et arrêt effectif testés.
 
@@ -905,3 +906,18 @@ Preuve CI : [45734054877](https://github.com/GLLR-Spirit/Intel-8086/actions/runs
 - `tests/flags-differential.cjs` : les 2 016 vecteurs ADD/ADC/SUB/SBB/CMP sont maintenant comparés en source et en binaire sur les six FLAGS arithmétiques définis et la préservation TF/IF/DF ; la suite complète rapporte 3 412 réussites.
 
 Les quatre lignes ADD, ADC, SUB et SBB passent à Oui pour le désassembleur et les tests. Les FLAGS non définis restent exclus des comparaisons.
+
+
+## 23. Réconciliation ciblée — NOT
+
+Preuve CI : [45734323686](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45734323686), commit `e0945ee33b55ec30ba7a811f06d130cebefc7bae`, **59/59 étapes réussies**.
+
+`tests/not-forms-8086.cjs` rapporte **1 799 assertions réussies** :
+- 16 formes registre (8 byte + 8 word), exécution source/binaire ;
+- 16 scénarios mémoire (8 EA × byte/word), exécution source/binaire ;
+- sélection DS/SS par défaut et conservation de l'autre segment ;
+- 48 formes d'encodage/désassemblage mémoire ;
+- /1 réservé, opérandes invalides, overrides ES/CS/SS/DS, LOCK et rejet REP ;
+- préservation des neuf FLAGS modélisés.
+
+La ligne NOT passe à Oui pour les tests. Les FLAGS sont comparés comme préservés, car NOT ne modifie aucun indicateur.

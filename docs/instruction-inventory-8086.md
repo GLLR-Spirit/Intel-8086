@@ -59,7 +59,7 @@ Cet inventaire est indépendant des 58 cartes de l'interface. Il contient un reg
 | AND | ET logique | — | Tests source/binaire ; table byte exhaustive et formes registre/mémoire/immédiat vérifiées |
 | OR | OU logique | — | Tests source/binaire ; table byte exhaustive et formes registre/mémoire/immédiat vérifiées |
 | XOR | OU exclusif | — | Tests source/binaire ; table byte exhaustive et formes registre/mémoire/immédiat vérifiées |
-| NOT | Complément bit à bit | — | À auditer |
+| NOT | Complément bit à bit | — | 1 799 assertions ; 16 registres et 16 EA mémoire source/binaire ; overrides, LOCK, FLAGS |
 | TEST | ET logique sans stockage du résultat | — | Tests source/binaire ; byte/word, registre/mémoire/immédiat vérifiés ; AF indéfini exclu |
 | ROL | Rotation gauche | — | 3529 tests de groupe 2 ; source/binaire, ModR/M et désassemblage |
 | ROR | Rotation droite | — | 3529 tests de groupe 2 ; source/binaire, ModR/M et désassemblage |

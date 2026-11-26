@@ -867,3 +867,17 @@ CI [45734054877](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45734054
 - 2 016 vecteurs arithmétiques comparés source/binaire ; suite FLAGS totale : 3 412 réussites.
 
 Les six FLAGS arithmétiques définis sont comparés ; TF, IF et DF sont contrôlés comme préservés. Les FLAGS indéfinis ne sont pas utilisés comme oracle.
+
+
+### 16.26 NOT — exécution exhaustive des formes registre et mémoire
+
+CI [45734323686](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45734323686) : **59/59 étapes réussies**.
+
+`tests/not-forms-8086.cjs` : **1 799 assertions**.
+- 8 registres byte et 8 registres word en source/binaire ;
+- 8 EA mémoire en byte et word, source/binaire ;
+- DS/SS par défaut, mémoire non ciblée inchangée ;
+- 48 encodages/désassemblages mémoire ;
+- /1 réservé, opérandes invalides, quatre overrides, LOCK, rejet REP ;
+- préservation de CF/PF/AF/ZF/SF/TF/IF/DF/OF.
+
