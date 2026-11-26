@@ -19,11 +19,15 @@ function element(id) {
 const document = { getElementById: element, querySelectorAll: () => [] };
 const localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
 const context = { document, localStorage, console, confirm: () => true };
-const instrumented = match[1].replace(/\}\)\(\);\s*$/, "globalThis.__learningData = { lessons, chapterLearning, curriculum, exercises, chapterExerciseMap, executeAll, executeBinary, assembleProgram, disassembleBytes };\n})();");
+const instrumented = match[1].replace(/\}\)\(\);\s*$/, "globalThis.__learningData = { lessons, chapterLearning, curriculum, exercises, chapterExerciseMap, executeAll, executeBinary, assembleProgram, disassembleBytes, courseVisual };\n})();");
 assert.notEqual(instrumented, match[1], "Application closure must be instrumented for learning checks");
 vm.runInNewContext(instrumented, context, { timeout: 5000 });
 const learning = context.__learningData;
 assert.ok(learning, "Learning data must be exposed to the isolated test harness");
+const chapterVisuals = Array.from({length:36},(_,index)=>learning.courseVisual(index));
+assert.equal(chapterVisuals.length,36,"Visual audit must inspect all 36 chapters");
+assert.ok(chapterVisuals.every(markup=>typeof markup==="string"&&markup.includes("course-visual")),
+  "Every chapter must have a chapter-specific visual explanation.");
 assert.match(match[1], /function annotateAssembly\(/, "Course examples must receive instruction-level annotations");
 assert.match(match[1], /function courseVisual\(/, "The course must include chapter-specific visualizations");
 assert.match(match[1], /courseVisual\(i\)/, "Chapter visualizations must be rendered in the lesson view");
@@ -31,7 +35,7 @@ assert.match(match[1], /id='axDemoValue'/, "The register chapter must expose an 
 assert.match(match[1], /\$\("axShowHigh"\)\.onclick=function\(\)\{showAX\("AH"\);\}/, "The register chapter must wire the AH control");
 assert.match(match[1], /\$\("axShowLow"\)\.onclick=function\(\)\{showAX\("AL"\);\}/, "The register chapter must wire the AL control");
 assert.match(match[1], /\$\("axWriteLow"\)\.onclick=function\(\)/, "The register chapter must wire the AL write control");
-assert.match(match[1], /10:"<section class='course-visual'><b>Trace pas à pas/, "Chapter 11 must expose the binary register trace.");
+assert.match(match[1], /["']?10["']?:"<section class='course-visual'><b>Trace pas à pas/, "Chapter 11 must expose the binary register trace.");
 assert.match(match[1], /if\(i===10\)[\s\S]*traceStates/, "Chapter 11 must wire trace navigation.");
 
 
