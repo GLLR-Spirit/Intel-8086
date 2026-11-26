@@ -1,5 +1,17 @@
 name: Niveau 3 — audit navigateur
 on:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "tests/level3-browser-audit.cjs"
+      - "tests/xlat-interactive-8086.cjs"
+      - "tests/xchg-interactive-8086.cjs"
+      - "tests/lea-interactive-8086.cjs"
+      - "tests/lds-les-interactive-8086.cjs"
+      - "tests/call-ret-interactive-8086.cjs"
+      - "tests/call-indirect-interactive-8086.cjs"
+      - ".github/workflows/level3-browser-audit.yml"
   pull_request:
     branches: [main]
     paths:
