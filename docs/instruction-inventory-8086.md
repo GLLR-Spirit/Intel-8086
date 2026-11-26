@@ -21,10 +21,10 @@ Cet inventaire est indépendant des 58 cartes de l'interface. Il contient un reg
 | LODSW | Chargement depuis chaîne, mot | — | 29/29 tests de chaîne ; source/binaire, registres et segments |
 | STOSB | Stockage dans chaîne, octet | — | 29/29 tests de chaîne ; source/binaire, mémoire et FLAGS |
 | STOSW | Stockage dans chaîne, mot | — | 29/29 tests de chaîne ; source/binaire, mémoire et FLAGS |
-| XCHG | Échange | — | Audit indépendant ciblé ; verrouillage implicite du bus non simulé |
-| LEA | Chargement de l'adresse effective | — | À auditer |
-| LES | Chargement d'un pointeur far vers ES:registre | — | À auditer |
-| LDS | Chargement d'un pointeur far vers DS:registre | — | À auditer |
+| XCHG | Échange | — | 483/483 ; paires registres 8/16 bits, mémoire, overrides, LOCK, FLAGS source/binaire |
+| LEA | Chargement de l'adresse effective | — | 47/47 ; huit EA, huit destinations, déplacements, FLAGS, source/binaire |
+| LES | Chargement d'un pointeur far vers ES:registre | — | 69/69 ; pointeurs 16:16, EA, destinations, segments, FLAGS, source/binaire |
+| LDS | Chargement d'un pointeur far vers DS:registre | — | 69/69 ; pointeurs 16:16, EA, destinations, segments, FLAGS, source/binaire |
 | XLAT | Traduction par table | XLATB (synonyme rencontré dans des assembleurs/documentations postérieurs ; statut canonique à confirmer) | 24/24 tests + 2/2 états source/binaire + cross-check GNU ; débordements et segments vérifiés |
 
 ## 2. Arithmétique, ajustement et comparaison
@@ -43,12 +43,12 @@ Cet inventaire est indépendant des 58 cartes de l'interface. Il contient un reg
 | IMUL | Multiplication signée | — | Formes 8086 auditées (tranche ciblée) |
 | DIV | Division non signée | — | Formes 8086 auditées (tranche ciblée) |
 | IDIV | Division signée | — | Formes 8086 auditées (tranche ciblée) |
-| AAA | Ajustement ASCII après addition | — | À auditer |
-| AAS | Ajustement ASCII après soustraction | — | À auditer |
-| AAM | Ajustement ASCII après multiplication | — | À auditer |
-| AAD | Ajustement ASCII avant division | — | À auditer |
-| DAA | Ajustement décimal après addition | — | À auditer |
-| DAS | Ajustement décimal après soustraction | — | À auditer |
+| AAA | Ajustement ASCII après addition | — | 6 812 suite BCD ; vecteurs source/binaire et encodage/désassemblage |
+| AAS | Ajustement ASCII après soustraction | — | 6 812 suite BCD ; vecteurs source/binaire et encodage/désassemblage |
+| AAM | Ajustement ASCII après multiplication | — | 6 812 suite BCD ; vecteurs source/binaire et encodage/désassemblage |
+| AAD | Ajustement ASCII avant division | — | 6 812 suite BCD ; vecteurs source/binaire et encodage/désassemblage |
+| DAA | Ajustement décimal après addition | — | 6 812 suite BCD ; vecteurs source/binaire et encodage/désassemblage |
+| DAS | Ajustement décimal après soustraction | — | 6 812 suite BCD ; vecteurs source/binaire et encodage/désassemblage |
 | CBW | Conversion octet signé en mot | — | À auditer |
 | CWD | Extension du signe de AX vers DX:AX | — | À auditer |
 

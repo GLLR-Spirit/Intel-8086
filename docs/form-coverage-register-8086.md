@@ -816,3 +816,28 @@ CI [45733189875](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45733189
 - les formes immédiates 68h/6Ah rejetées comme non-8086.
 
 `tests/control-stack.cjs` complète avec les matrices ModR/M et les extensions FF /6 et 8F /0 ; les tests de limites pile couvrent SP=0000h, 0001h et FFFEh.
+
+
+### 16.22 Ajustements BCD — AAA/AAS/AAM/AAD/DAA/DAS
+
+CI [45733478487](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45733478487) : **58/58 étapes réussies**.
+
+`tests/bcd-multiply-divide-8086.cjs` :
+- AAA/AAS : 2 048 vecteurs ;
+- AAM/AAD : 1 024 vecteurs ;
+- DAA/DAS : 2 048 vecteurs ;
+- total BCD : **5 120 vecteurs source/binaire** ;
+- encodages et désassemblages : **12** ;
+- suite globale BCD + MUL/DIV : **6 812 réussites, 0 échec**.
+
+Les FLAGS indéfinis sont exclus des comparaisons : AAA/AAS SF/ZF/PF/OF ; AAM/AAD AF/CF/OF ; DAA/DAS OF.
+
+### 16.23 XCHG / LEA / LDS / LES
+
+CI [45733478487](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45733478487) :
+
+- `tests/xchg-8086.cjs` : **483 réussites, 0 échec** ; paires de registres, mémoire, segments, LOCK, contraintes et FLAGS source/binaire.
+- `tests/lea-8086.cjs` : **47/47** ; huit EA, tous les registres de destination, déplacements limites, wrap et absence de lecture mémoire.
+- `tests/lds-les-8086.cjs` : **69/69** ; LDS et LES, pointeurs 16:16, EA, destinations, segments et FLAGS source/binaire.
+
+Ces validations couvrent les formes documentées par les tests ; elles ne constituent pas une certification matérielle cycle par cycle.

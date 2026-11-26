@@ -30,10 +30,10 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | Instruction | Documentation | Simulateur | Assembleur | Désassembleur | Tests |
 |---|---|---|---|---|---|
 | MOV | Oui | Oui | Partiel | Partiel | Partiel |
-| XCHG | Oui | Oui | Oui | Oui | Partiel |
-| LEA | Oui | Oui | Oui | Oui | À faire |
-| LES | Oui | Oui | Oui | Oui | À faire |
-| LDS | Oui | Oui | Oui | Oui | À faire |
+| XCHG | Oui | Oui | Oui | Oui | Oui |
+| LEA | Oui | Oui | Oui | Oui | Oui |
+| LES | Oui | Oui | Oui | Oui | Oui |
+| LDS | Oui | Oui | Oui | Oui | Oui |
 | XLAT | Oui | Oui | Oui | Oui | Oui |
 | PUSH | Oui | Oui | Oui | Oui | Oui |
 | POP | Oui | Oui | Oui | Oui | Oui |
@@ -63,12 +63,12 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 | IMUL | Oui | Oui | Oui | Oui | Oui |
 | DIV | Oui | Oui | Oui | Oui | Oui |
 | IDIV | Oui | Oui | Oui | Oui | Oui |
-| AAA | Oui | Non | Non | Non | À faire |
-| AAS | Oui | Non | Non | Non | À faire |
-| AAM | Oui | Non | Non | Non | À faire |
-| AAD | Oui | Non | Non | Non | À faire |
-| DAA | Oui | Non | Non | Non | À faire |
-| DAS | Oui | Non | Non | Non | À faire |
+| AAA | Oui | Oui | Oui | Oui | Oui |
+| AAS | Oui | Oui | Oui | Oui | Oui |
+| AAM | Oui | Oui | Oui | Oui | Oui |
+| AAD | Oui | Oui | Oui | Oui | Oui |
+| DAA | Oui | Oui | Oui | Oui | Oui |
+| DAS | Oui | Oui | Oui | Oui | Oui |
 | CBW | Oui | Non | Non | Non | À faire |
 | CWD | Oui | Non | Non | Non | À faire |
 | AND | Oui | Oui | Oui | Oui | Oui |
@@ -140,6 +140,9 @@ Les familles suivantes disposent maintenant de contrôles ciblés source et/ou b
 - SHL/SAL, SHR, SAR, ROL, ROR, RCL et RCR : vecteurs source/binaire, compteurs CL non masqués, FLAGS définis, formes ModR/M byte/word et désassemblage testés.
 - INC, DEC et NEG : formes registre/mémoire byte/word, huit registres, huit EA, sélection DS/SS, overrides, FLAGS et chemins source/binaire vérifiés.
 - PUSH, POP, PUSHF et POPF : registres, segments, mémoire sur les huit EA, quatre overrides, pile, FLAGS et chemins source/binaire vérifiés.
+- XCHG : paires de registres, formes mémoire, overrides, LOCK, FLAGS et chemins source/binaire vérifiés.
+- LEA/LDS/LES : EA, pointeurs 16:16, segments, déplacements, FLAGS et chemins source/binaire vérifiés.
+- AAA/AAS/AAM/AAD/DAA/DAS : vecteurs BCD, octets d'encodage, désassemblage et FLAGS définis vérifiés.
 
 CLC, STC, CMC, CLD, STD, CLI et STI ont des tests source/binaire avec octets exacts et préservation des autres FLAGS. CMC est encodé F5h ; F1h reste réservé sur 8086. IN/OUT utilisent une carte de ports logicielle, pas les ports matériels réels. INTO utilise le vecteur logiciel 4 ; WAIT et ESC sont des opérations sans effet dans le modèle logiciel, sans synchronisation FPU ni coprocesseur 8087 réel. INT/IRET sont maintenant vérifiés pour les interruptions logicielles via VECTOR en source et l'IVT physique en binaire. Les événements matériels restent hors périmètre : le laboratoire ne modélise pas l'acquittement INTR/NMI ni les signaux physiques du processeur.
 
@@ -862,3 +865,15 @@ Preuve CI : [45733189875](https://github.com/GLLR-Spirit/Intel-8086/actions/runs
 - PUSHF/POPF vérifient les neuf FLAGS modélisés et l'équilibre de pile.
 - Les formes immédiates PUSH 68h/6Ah, non disponibles sur 8086, sont rejetées.
 
+
+
+## 20. Réconciliation ciblée — XCHG, LEA, LDS, LES et ajustements BCD
+
+Le CI [45733478487](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45733478487) a réussi avec **58/58 étapes**.
+
+- **XCHG** : 483/483 ; paires registre 8/16 bits, formes mémoire, quatre overrides de segment, LOCK, contraintes d'opérandes et préservation des FLAGS source/binaire.
+- **LEA** : 47/47 ; huit EA, huit registres de destination, limites de déplacement, wrap 16 bits, absence de lecture mémoire, préservation des FLAGS, encodage/désassemblage et source/binaire.
+- **LDS/LES** : 69/69 ; pointeurs 16:16, huit EA, huit registres de destination, sélection DS/SS, override ES, wrap d'offset, FLAGS, encodage/désassemblage et source/binaire.
+- **AAA/AAS/AAM/AAD/DAA/DAS** : 6 812 réussites, 0 échec ; 5 120 vecteurs BCD exécutés dans les deux chemins et 12 encodages/désassemblages. Seuls les FLAGS définis par chaque instruction sont comparés.
+
+Les dix lignes correspondantes passent à Oui pour le simulateur, l'assembleur, le désassembleur et les tests. Les limites matérielles du modèle ne sont pas élargies par ces validations.
