@@ -258,10 +258,11 @@ for (let value = 0; value <= 0xFF; value++) {
     "STC", "STD", "NEG AL", "HLT"
   ].join("\n");
   test("NEG AL exhaustif · entrée " + byteHex(value), () => {
-    const state = runSource(source);
-    assert.equal(state.reg.AX & 0xFF, expected.result);
-    assertFlags(state, expected, "NEG " + byteHex(value));
-    assert.equal(state.flags.DF, 1, "NEG must preserve DF");
+    for (const [mode, state] of [["source",runSource(source)],["binaire",runBinary(source)]]) {
+      assert.equal(state.reg.AX & 0xFF, expected.result, mode);
+      assertFlags(state, expected, "NEG " + byteHex(value) + " " + mode);
+      assert.equal(state.flags.DF, 1, "NEG must preserve DF " + mode);
+    }
   });
   counts.flags8++;
 }
@@ -276,10 +277,11 @@ for (const value of wordValues) {
     "STC", "STD", "NEG AX", "HLT"
   ].join("\n");
   test("NEG AX frontière · entrée " + wordHex(value), () => {
-    const state = runSource(source);
-    assert.equal(state.reg.AX, expected.result);
-    assertFlags(state, expected, "NEG " + wordHex(value));
-    assert.equal(state.flags.DF, 1);
+    for (const [mode, state] of [["source",runSource(source)],["binaire",runBinary(source)]]) {
+      assert.equal(state.reg.AX, expected.result, mode);
+      assertFlags(state, expected, "NEG " + wordHex(value) + " " + mode);
+      assert.equal(state.flags.DF, 1, mode);
+    }
   });
   counts.flags16++;
 }

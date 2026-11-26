@@ -76,6 +76,92 @@ for(const op of OPS)for(const seg of SEG)for(const bits of [8,16]){
 }
 check(cases===24,"3 unary arithmetic operations × 4 segments × 2 widths");
 
+function parity8(value){
+ let n=value&0xFF,count=0;
+ for(let i=0;i<8;i++)count+=(n>>i)&1;
+ return count%2===0?1:0;
+}
+function expectedUnary(op,bits,input){
+ const mask=bits===8?0xFF:0xFFFF,sign=bits===8?0x80:0x8000;
+ const result=op.name==="INC"?(input+1)&mask:op.name==="DEC"?(input-1)&mask:(-input)&mask;
+ let af=0;
+ if(op.name==="INC")af=(input&15)===15?1:0;
+ else if(op.name==="DEC")af=(input&15)===0?1:0;
+ else af=(input&15)!==0?1:0;
+ return {result,CF:op.name==="NEG"?(input===0?0:1):1,OF:op.of,
+   AF:af,ZF:result===0?1:0,SF:(result&sign)?1:0,PF:parity8(result)};
+}
+function readRegister(state,reg,bits){
+ if(bits===16)return state.reg[reg];
+ const parent=reg[0]+"X";
+ return reg==="AH"||reg==="CH"||reg==="DH"||reg==="BH"
+   ?(state.reg[parent]>>8)&0xFF:state.reg[parent]&0xFF;
+}
+const regs8=["AL","CL","DL","BL","AH","CH","DH","BH"];
+const regs16=["AX","CX","DX","BX","SP","BP","SI","DI"];
+let registerCases=0;
+for(const op of OPS)for(const bits of [8,16]){
+ const initial=bits===8?op.initial8:op.initial16;
+ const expected=expectedUnary(op,bits,initial);
+ for(const reg of bits===8?regs8:regs16){
+  const source=["MOV "+reg+", "+initial.toString(16)+"h","STC","STD",op.name+" "+reg,"HLT"].join("\n");
+  const bytes=assemble(source);
+  const states=[["source",api.execute(source)],["binary",api.binary(bytes,0,0,{})]];
+  for(const [mode,state] of states){
+   check(state.error===undefined,op.name+" "+reg+" "+mode+" register execution");
+   same(readRegister(state,reg,bits),expected.result,op.name+" "+reg+" "+mode+" result");
+   for(const flag of ["CF","OF","AF","ZF","SF","PF"])
+    same(state.flags[flag],expected[flag],op.name+" "+reg+" "+mode+" "+flag);
+   same(state.flags.DF,1,op.name+" "+reg+" "+mode+" DF preserved");
+  }
+  registerCases++;
+ }
+}
+check(registerCases===48,"3 operations × 2 widths × 8 registers");
+const defaultEA=[
+ {expr:"[BX+SI]",segment:"DS",setup:["MOV BX,0100h","MOV SI,0100h"]},
+ {expr:"[BX+DI]",segment:"DS",setup:["MOV BX,0100h","MOV DI,0100h"]},
+ {expr:"[BP+SI]",segment:"SS",setup:["MOV BP,0100h","MOV SI,0100h"]},
+ {expr:"[BP+DI]",segment:"SS",setup:["MOV BP,0100h","MOV DI,0100h"]},
+ {expr:"[SI]",segment:"DS",setup:["MOV SI,0200h"]},
+ {expr:"[DI]",segment:"DS",setup:["MOV DI,0200h"]},
+ {expr:"[BP]",segment:"SS",setup:["MOV BP,0200h"]},
+ {expr:"[BX]",segment:"DS",setup:["MOV BX,0200h"]}
+];
+let defaultEACases=0;
+for(const op of OPS.filter(x=>x.name==="INC"||x.name==="DEC"))for(const bits of [8,16]){
+ const initial=bits===8?op.initial8:op.initial16;
+ const expected=expectedUnary(op,bits,initial);
+ const width=bits===8?"BYTE":"WORD";
+ for(const form of defaultEA){
+  const source=[
+   "MOV AX,1000h","MOV DS,AX","MOV AX,3000h","MOV SS,AX",
+   "MOV "+width+" PTR DS:[0200h],"+initial.toString(16)+"h",
+   "MOV "+width+" PTR SS:[0200h],"+initial.toString(16)+"h",
+   ...form.setup,"STC","STD",op.name+" "+width+" PTR "+form.expr,"HLT"
+  ].join("\n");
+  const bytes=assemble(source);
+  const states=[["source",api.execute(source)],["binary",api.binary(bytes,0,0,{})]];
+  const selected=physical(form.segment==="SS"?0x3000:0x1000,0x0200);
+  const other=physical(form.segment==="SS"?0x1000:0x3000,0x0200);
+  for(const [mode,state] of states){
+   check(state.error===undefined,op.name+" "+form.expr+" "+mode+" execution");
+   const low=bits===8?expected.result:expected.result&0xFF;
+   const high=(expected.result>>8)&0xFF;
+   same(state.mem[selected],low,op.name+" "+form.expr+" "+mode+" selected segment low");
+   if(bits===16)same(state.mem[(selected+1)&0xFFFFF],high,op.name+" "+form.expr+" "+mode+" selected segment high");
+   same(state.mem[other],bits===8?initial:initial&0xFF,op.name+" "+form.expr+" "+mode+" other segment unchanged");
+   if(bits===16)same(state.mem[(other+1)&0xFFFFF],(initial>>8)&0xFF,op.name+" "+form.expr+" "+mode+" other segment high unchanged");
+   for(const flag of ["CF","OF","AF","ZF","SF","PF"])
+    same(state.flags[flag],expected[flag],op.name+" "+form.expr+" "+mode+" "+flag);
+   same(state.flags.DF,1,op.name+" "+form.expr+" "+mode+" DF preserved");
+  }
+  defaultEACases++;
+ }
+}
+check(defaultEACases===32,"INC/DEC × byte/word × eight effective addresses");
+
+
 // LOCK prefix must remain attached to the memory read-modify-write instruction.
 for(const op of OPS)for(const bits of [8,16]){
  const width=bits===8?"BYTE":"WORD",opcode=bits===8?op.byteOpcode:op.wordOpcode;
@@ -96,5 +182,5 @@ for(const op of OPS)for(const seg of SEG){
  let rejected=false;try{api.assemble(seg.name+":\n"+op.name+" AX");}catch(_){rejected=true;}
  check(rejected,seg.name+" segment prefix rejected without memory for "+op.name);
 }
-console.log("INC/DEC/NEG prefix audit: "+cases+" segment-override source/binary cases; LOCK byte/word forms; REP rejection; segment-without-memory rejection.");
+console.log("INC/DEC/NEG prefix audit: "+cases+" segment-override source/binary cases; "+registerCases+" register forms; "+defaultEACases+" INC/DEC default-segment EA forms; LOCK byte/word; REP and invalid segment-prefix rejection.");
 console.log("Assertions: "+assertions+" passed.");

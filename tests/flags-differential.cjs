@@ -21,7 +21,9 @@ const context = {
 };
 vm.createContext(context);
 const injection = "\nglobalThis.__8086FlagsApi = {" +
-  "\n execute: function (source) { return executeAll(source); }" +
+  "\n execute: function (source) { return executeAll(source); }," +
+  "\n assemble: function (source) { return assembleProgram(source); }," +
+  "\n executeBinary: function (bytes, cs, ip, state) { return executeBinary(bytes, cs, ip, state); }" +
   "\n};\n})();\n";
 const instrumented = match[1].replace(/\n\}\)\(\);\s*$/, injection);
 assert.notEqual(instrumented, match[1], "Test API injection point must exist");
@@ -70,6 +72,17 @@ function run(source) {
   const state = api.execute(source);
   assert.ok(!state.error, state.error || "Execution failed");
   return state;
+}
+function runBoth(source, flags, registers) {
+  const sourceState = run(source);
+  const bytes = api.assemble(source).bytes;
+  const binaryState = api.executeBinary(bytes, 0, 0, {});
+  assert.ok(!binaryState.error, binaryState.error || "Binary execution failed");
+  for (const reg of registers || ["AX","BX","CX","DX","SP","BP","SI","DI","DS","ES","SS"])
+    assert.equal(binaryState.reg[reg], sourceState.reg[reg], "source/binary " + reg);
+  for (const flag of flags)
+    assert.equal(binaryState.flags[flag], sourceState.flags[flag], "source/binary " + flag);
+  return sourceState;
 }
 function sourceFor(bits, a, b, op, carryIn) {
   const regA = bits === 8 ? "AL" : "AX";
@@ -133,12 +146,12 @@ for (const bits of [8, 16]) {
         const expected = referenceArithmetic(value, 1, op === "INC" ? "ADD" : "SUB", bits, 0);
         const label = op + " " + bits + "-bit " + value.toString(16) + " CF=" + initialCF;
         test("FLAGS INC/DEC · " + label, () => {
-          const state = run([
+          const state = runBoth([
             "MOV " + reg + ", 0" + value.toString(16) + "h",
             initialCF ? "STC" : "CLC",
             op + " " + reg,
             "HLT"
-          ].join("\n"));
+          ].join("\n"), ["CF","PF","AF","ZF","SF","OF","TF","IF","DF"]);
           assert.equal(state.reg.AX & mask, expected.result, label + " résultat");
           assert.equal(state.flags.CF, initialCF, label + " CF doit être conservé");
           for (const flag of ["PF", "AF", "ZF", "SF", "OF"]) {
