@@ -205,6 +205,15 @@ assert.equal(learning.instructionMeta.PORT.category,"Directive","PORT must be cl
 assert.match(learning.instructionMeta.PORT.operation,/IN et OUT/,"PORT documentation must describe its IN/OUT purpose.");
 assert.equal(learning.instructionMeta.VECTOR.category,"Directive","VECTOR must remain explicitly classified as a pedagogical directive.");
 assert.equal(learning.instructions.length,64,"The reference must expose 64 instruction families and pedagogical directives.");
+const completeReferenceExamples=["VECTOR","PORT","XCHG","LEA","LES","LDS","ADC","SBB","NEG","IN / OUT","XLAT","CBW / CWD","AAA / AAS","AAM / AAD","DAA / DAS","ROL / ROR / RCL / RCR","SHL / SAL / SHR / SAR","INTO","LOOPE / LOOPNE / JCXZ","LAHF / SAHF","LOCK","ESC","WAIT"];
+completeReferenceExamples.forEach(name=>{
+  const entry=learning.instructions.find(item=>item[0]===name);
+  assert.ok(entry,"Reference example missing for "+name);
+  const assembled=learning.assembleProgram(entry[2]);
+  assert.ok(assembled.bytes.length>0,"Reference example must assemble: "+name);
+  const result=learning.executeAll(entry[2]);
+  assert.ok(!result.error,"Reference example must execute in the documented source path: "+name+" "+(result.error||""));
+});
 const referenceNames=learning.instructions.map(entry=>entry[0]);
 assert.equal(new Set(referenceNames).size,referenceNames.length,"The instruction reference must not contain duplicate entries.");
 referenceNames.forEach(name=>{
