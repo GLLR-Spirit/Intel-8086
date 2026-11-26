@@ -135,11 +135,10 @@ for(const [cx,taken,expectedCX] of [[2,true,1],[1,false,0],[0,true,0xFFFF]]){
  test("LOOP source/binary CX="+cx,()=>verifyLoopCase("LOOP",cx,null,taken,expectedCX,"LOOP CX="+cx));
  counts.loop++;
 }
-for(const [mnemonic,zf,taken] of [
+for(const [mnemonic,zf,taken,cx=2] of [
  ["LOOPE",true,true],["LOOPE",false,false],["LOOPE",true,false,1],
  ["LOOPNE",false,true],["LOOPNE",true,false],["LOOPNE",false,false,1]
 ]){
- const cx=arguments.length===4?1:2;
  const expectedCX=(cx-1)&0xFFFF;
  test(mnemonic+" source/binary ZF="+(zf?1:0)+" CX="+cx,()=>{
   verifyLoopCase(mnemonic,cx,zf,taken,expectedCX,mnemonic+" ZF="+(zf?1:0)+" CX="+cx);
