@@ -158,10 +158,14 @@ assert.deepEqual(expectedLevels.map(n => learning.curriculum[n - 1][0]), [
   "Organisation de la mémoire", "Multiplication", "Encodage des instructions"
 ], "The curriculum must preserve the requested chapter order and level boundaries");
 
-assert.equal(learning.chapterExerciseMap.length, learning.lessons.length,
-  "Every chapter must link to exactly one practical exercise");
-assert.ok(learning.chapterExerciseMap.every(i => Number.isInteger(i) && i >= 0 && i < learning.exercises.length),
-  "Every chapter exercise link must resolve to an existing exercise");
+assert.equal(learning.lessons.length, 36,
+  "The course must expose all 36 chapters before checking exercise coverage");
+assert.equal(learning.exerciseChapterAssignments.length, learning.exercises.length,
+  "Every exercise must have an explicit chapter assignment");
+assert.ok(learning.exerciseChapterAssignments.every(chapters =>
+  Array.isArray(chapters) && chapters.length > 0 &&
+  chapters.every(chapter => Number.isInteger(chapter) && chapter >= 1 && chapter <= 36)),
+  "Every exercise assignment must reference one or more valid 1-based chapter numbers");
 assert.equal(learning.exercises.length, 48, "The exercise bank must contain 48 guided exercises.");
 assert.equal(learning.exerciseChapterAssignments.length, 48, "Every exercise must have an explicit chapter mapping.");
 const exerciseMetadataRows=learning.exercises.map((exercise,index)=>learning.exerciseMetadata(exercise,index));
