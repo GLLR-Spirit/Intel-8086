@@ -133,7 +133,7 @@ Les statuts ont été confrontés aux éléments suivants de `index.html` : `spe
 
 Les familles suivantes disposent maintenant de contrôles ciblés source et/ou binaire, détaillés dans les rapports et tests cités plus loin :
 - CMP, TEST, AND, OR et XOR : résultats et FLAGS définis vérifiés ; AF reste exclu lorsqu'il est indéfini.
-- JMP, CALL et RET : formes directes et indirectes near/far testées. Le simulateur source conserve un IP logique ; l'exécution binaire dynamique travaille avec les offsets octet. Cette distinction maintient le statut global du simulateur à **Partiel** pour les transferts de contrôle.
+- JMP, CALL et RET : les formes directes et indirectes near/far sont testées. Le chemin source construit une correspondance entre indices d'instructions et offsets octet pour un programme chargé dans un seul segment de code ; le moteur binaire lit les octets à partir du CS:IP physique. Le chemin source ne charge pas un second segment de code arbitraire : les transferts far vers du code externe restent donc **Partiels** dans la matrice simulateur.
 - Les 16 conditions Jcc, LOOP, LOOPE, LOOPNE et JCXZ : conditions, compte CX, FLAGS et chemins source/binaire testés.
 - MOVS, CMPS, STOS, LODS et SCAS en byte/word : registres, mémoire, segments, REP, DF et frontières d'offset testés.
 - MUL, IMUL, DIV et IDIV : formes mémoire, segments et interactions de préfixes testés.
@@ -246,7 +246,7 @@ Le champ S:W du manuel Intel 8086 (table 4-7) confirme que S=1 et W=1 étend l�
 Les groupes ont été intégrés au générateur, au décodeur et, pour les opérations déjà interprétées, au simulateur. La nouvelle suite [tests/group-opcodes.cjs](../tests/group-opcodes.cjs) vérifie les encodages fixes, toutes les valeurs ModR/M pertinentes, les extensions réservées, les restrictions mémoire/registres, les flux tronqués et des résultats d'exécution indépendants.
 
 - **F6/F7** : /0 TEST, /1 réservé, /2 NOT, /3 NEG, /4 MUL, /5 IMUL, /6 DIV, /7 IDIV. Les formes r/m sont générées et décodées ; les opérations prises en charge par l'interpréteur sont exécutées.
-- **FF** : /0 INC, /1 DEC, /2 CALL near indirect (registre/mémoire), /3 CALL far indirect (mémoire seulement), /4 JMP near indirect (registre/mémoire), /5 JMP far indirect (mémoire seulement), /6 PUSH MEM16 (mémoire seulement selon la table Intel 8086), /7 réservé. Les formes /2, /4 et /6 mémoire sont générées et décodées ; /3 et /5 sont décodées en mémoire uniquement. L'interpréteur ne simule pas les transferts indirects CALL/JMP ; il les signale explicitement comme non pris en charge.
+- **FF** : /0 INC r/m16, /1 DEC r/m16, /2 CALL near r/m16 (registre ou mémoire), /3 CALL far m16:16 (mémoire seulement), /4 JMP near r/m16 (registre ou mémoire), /5 JMP far m16:16 (mémoire seulement), /6 PUSH m16 (mémoire seulement sur 8086), /7 réservé. Les formes /2 à /6 respectent ces restrictions dans l'assembleur et le désassembleur. Les exécutions source/binaire des formes CALL/JMP indirectes sont couvertes par `call-indirect-8086.cjs`, `jmp-near-indirect-8086.cjs` et `jmp-far-indirect-8086.cjs` ; PUSH mémoire sur huit EA est couvert par `push-pop-forms-8086.cjs`. Les formes registre-direct /3, /5 et /6 sont rejetées.
 - **C6/C7** : /0 MOV r/m,imm valide ; /1..7 réservés. Les 256 valeurs ModR/M par opcode sont testées côté décodeur, avec conservation des octets des extensions invalides.
 
 Audit détaillé : [audit-groupes-opcodes-8086.md](audit-groupes-opcodes-8086.md), qui précise les contraintes des extensions FF, y compris les formes mémoire uniquement.
@@ -265,7 +265,7 @@ Le laboratoire prend maintenant en charge :
 
 La suite dédiée comporte **304 vecteurs**. Le workflow CI [45482367409](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/45482367409) a réussi sur le commit `04f7ee9c918f42cb7c25d8124ecf983ff0e9bcc4` : **8 549 vérifications réussies, 0 échec** au total.
 
-Limite importante : dans l'interpréteur, IP est un indice logique d'instruction et non un offset octet dans un segment de code chargé. Les transferts indirects sont donc simulés dans ce modèle logique. Les formes RET/RETF avec ajustement impair restent encodées et décodées, mais leur exécution est refusée car le suivi pédagogique de pile travaille par mots.
+Note historique, remplacée par les validations du 26 novembre 2026 : le chemin source expose désormais IP comme offset octet grâce à une correspondance entre instructions assemblées et adresses. RET/RETF acceptent les ajustements immédiats impairs et les appliquent en octets après le dépilement du cadre de retour ; les chemins source et binaire sont testés. La limite restante est l'absence de chargement/fetch source de code arbitraire dans un second segment CS ; le moteur binaire dynamique, lui, utilise la mémoire physique CS:IP.
 
 
 ## Mise à jour — branchements relatifs (24 novembre 2026)

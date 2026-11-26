@@ -416,6 +416,6 @@ La matrice canonique comporte **93 instructions**. À la réconciliation actuell
 - les colonnes Assembleur et Désassembleur sont à Oui pour les 93 lignes ;
 - cinq entrées gardent un statut simulateur Partiel : `JMP`, `CALL`, `RET`, `WAIT` et `ESC`.
 
-Les cinq statuts partiels ne doivent pas être masqués par le fait que des tests existent. WAIT/ESC n'émulent pas le coprocesseur 8087 ni sa synchronisation ; JMP/CALL/RET demandent encore une clôture sémantique des variantes et interactions de contrôle de flux. La matrice ne publie donc aucun pourcentage de conformité matérielle.
+Les cinq statuts partiels ne doivent pas être masqués par le fait que des tests existent. WAIT/ESC n'émulent pas le coprocesseur 8087 ni sa synchronisation. Les variantes JMP/CALL/RET — directes et indirectes near/far, huit EA, préfixes, pile, frontières SP et ajustements impairs — disposent maintenant de tests source/binaire ; leur statut simulateur reste Partiel uniquement parce que le chemin source n'exécute pas du code arbitraire chargé dans un second segment CS. Le moteur binaire dynamique vérifie les transferts intersegments en mémoire physique. La matrice ne publie donc aucun pourcentage de conformité matérielle.
 
 Les preuves et limites par famille sont inscrites dans `docs/form-coverage-register-8086.md` et `docs/coverage-audit-8086.md`. La clôture pédagogique des chapitres 12 à 17 reste distincte de la prétention à une émulation matérielle exhaustive.
