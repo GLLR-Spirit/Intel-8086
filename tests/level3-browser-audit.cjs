@@ -168,6 +168,13 @@ const assert = require("node:assert/strict");
 
   // Course example hand-off must load the selected lesson's exact source into the editor.
   await page.locator('[data-lesson="0"]').click();
+  assert.equal(await page.locator("#lessonList").getAttribute("role"),"navigation");
+  assert.equal(await page.locator('[data-lesson="0"]').getAttribute("aria-current"),"step");
+  await page.locator('[data-sublesson="1"]').click();
+  assert.equal(await page.locator('[data-sublesson="1"]').getAttribute("aria-current"),"step",
+    "The selected sublesson must be exposed to assistive technology.");
+  assert.equal(await page.locator('[data-sublesson="1"]').getAttribute("aria-pressed"),"true");
+  await page.locator('[data-sublesson="0"]').click();
   const lessonExample=await page.evaluate(()=>window.__8086Audit.curriculum[0][5][0][2]);
   const lessonExpectedAX=await page.evaluate(()=>window.__8086Audit.executeAll(window.__8086Audit.curriculum[0][5][0][2]).reg.AX);
   await page.locator("#lessonExample").click();
