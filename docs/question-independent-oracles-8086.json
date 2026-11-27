@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "title": "Oracles sémantiques indépendants — tranche initiale",
-  "scope": "Le manifeste conserve six oracles historiques. Les lots des chapitres 1 à 26 couvrent 492 enregistrements de questions, dont trois identifiants déjà présents dans le manifeste historique (C17-F-Q2, C26-F-Q5 et C26-F-Q6). Les six oracles historiques sont comptés une seule fois ; les autres questions restent à certifier.",
+  "scope": "Le manifeste conserve six oracles historiques. Les lots des chapitres 1 à 27 couvrent 511 enregistrements de questions, dont trois identifiants déjà présents dans le manifeste historique (C17-F-Q2, C26-F-Q5 et C26-F-Q6). Les six oracles historiques sont comptés une seule fois ; les autres questions restent à certifier.",
   "referenceBasis": [
     "Intel 8086 Family User's Manual (October 1979), architecture EU/BIU, file de prélecture, arithmétique, instructions de décalage, instructions de chaîne et indicateurs.",
     "Intel MCS-86 Assembly Language Reference Manual, formes d'opérandes et syntaxe assembleur."
@@ -421,15 +421,23 @@
       "reusedHistorical": 2,
       "blocked": 0,
       "pending": 0
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-27.json",
+      "scope": "Chapitre 27 — 19 questions couvertes",
+      "certified": 19,
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0
     }
   ],
   "certificationSummary": {
     "questionCount": 684,
     "historicalOracles": 6,
-    "supplementalBatchRecords": 492,
-    "newSupplementalOracles": 489,
-    "uniqueCertifiedQuestions": 495,
-    "remainingUncertified": 189,
-    "calculation": "492 enregistrements de lots, dont 3 identifiants déjà historiques, plus 6 oracles historiques distincts = 495 questions couvertes ; aucun identifiant n'est compté deux fois."
+    "supplementalBatchRecords": 511,
+    "newSupplementalOracles": 508,
+    "uniqueCertifiedQuestions": 514,
+    "remainingUncertified": 170,
+    "calculation": "511 enregistrements de lots, dont 3 identifiants déjà historiques, plus 6 oracles historiques distincts = 514 questions couvertes ; aucun identifiant n'est compté deux fois."
   }
 }
