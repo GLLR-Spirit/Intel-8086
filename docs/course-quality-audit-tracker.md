@@ -283,3 +283,13 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - CI [run 1869](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46033043857) passed both jobs after the four runtime question corrections and evaluator updates.
 - Separate browser audit [run 1232](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46033043862) passed.
 - The earlier first attempt failed only because the new review test still expected zero corrected items; the assertion was corrected to require four, matching the recorded source changes. The final run passed.
+
+
+### Exercise method validation — 27 November 2026
+
+- Added ordered execution-trace requirements for the repeated-addition loops, signed branch, MUL, DIV, REP MOVSB, REPNE SCASB, and INT/IRET exercises. Existing CALL/RET, BP-based stack-parameter, and two-routine checks remain in place.
+- Added negative cases that first demonstrate the old result-only validator accepts a program that writes the expected final state directly, then verify the method gate rejects that same program.
+- Nine reference solutions pass their method requirements; nine result-only bypass fixtures are rejected.
+- CI run [46057864009](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46057864009), commit `7a7efb50b3f43a096794c3cfc0186ae4142a981f`: simulator job and browser audit job both succeeded. Logs confirm 378/378 integrated self-tests, 108/108 course examples with independent result oracles, and 48/48 guided-correction hand-offs.
+- These controls improve the tested execution-method requirements; they do not constitute individual pedagogical certification of all 48 exercises. The full exercise-by-exercise editorial review remains open.
+- No deployment was triggered.
