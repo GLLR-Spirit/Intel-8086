@@ -634,6 +634,63 @@ const assert = require("node:assert/strict");
     assert.match(await card.locator("p.muted").nth(1).textContent(),/1\. Introduction au microprocesseur Intel 8086/,
       "Every filtered exercise must be genuinely associated with the selected chapter.");
   }
+
+  // Exhaustive Cartesian product: 37 chapter states × 6 difficulty states × 7 type states.
+  // Compare the rendered cards and counter against metadata for every combination.
+  const exhaustiveFilterResult=await page.evaluate(()=>{
+    const api=window.__8086Audit;
+    const chapterValues=["all",...Array.from({length:36},(_,i)=>String(i))];
+    const difficultyValues=["all",...["Débutant","Facile","Intermédiaire","Avancé","Expert"]];
+    const typeValues=["all",...["application","challenge","completion","debug","probleme","raisonnement"]];
+    const chapter=document.querySelector("#exerciseChapter");
+    const difficulty=document.querySelector("#exerciseDifficulty");
+    const type=document.querySelector("#exerciseType");
+    const search=document.querySelector("#exerciseSearch");
+    search.value="";
+    let checked=0;
+    for(const c of chapterValues) for(const d of difficultyValues) for(const t of typeValues){
+      chapter.value=c; difficulty.value=d; type.value=t;
+      chapter.dispatchEvent(new Event("change",{bubbles:true}));
+      difficulty.dispatchEvent(new Event("change",{bubbles:true}));
+      type.dispatchEvent(new Event("change",{bubbles:true}));
+      const expected=api.exercises.map((exercise,index)=>({exercise,index,metadata:api.exerciseMetadata(exercise,index)}))
+        .filter(row=>(c==="all"||row.metadata.chapters.includes(Number(c)))&&
+          (d==="all"||row.metadata.difficulty===d)&&(t==="all"||row.metadata.type===t))
+        .map(row=>(row.index+1)+". "+row.exercise[0]);
+      const actual=[...document.querySelectorAll("#exerciseList .exercise > b")].map(node=>node.textContent.trim());
+      const count=Number((document.querySelector("#exerciseCount").textContent.match(/^\\d+/)||[])[0]);
+      if(count!==expected.length||JSON.stringify(actual)!==JSON.stringify(expected))
+        return {checked,failed:{chapter:c,difficulty:d,type:t,expected,actual,count}};
+      checked++;
+    }
+    chapter.value="all";difficulty.value="all";type.value="all";
+    chapter.dispatchEvent(new Event("change",{bubbles:true}));
+    difficulty.dispatchEvent(new Event("change",{bubbles:true}));
+    type.dispatchEvent(new Event("change",{bubbles:true}));
+    return {checked,failed:null};
+  });
+  assert.equal(exhaustiveFilterResult.checked,1554,"All 1,554 structured filter combinations must be exercised.");
+  assert.equal(exhaustiveFilterResult.failed,null,"Every structured filter combination must match the metadata oracle.");
+
+  // Search must index source, hint, guided steps and solution, not only titles and prompts.
+  const searchCoverage=await page.evaluate(()=>{
+    const search=document.querySelector("#exerciseSearch");
+    const cases=[
+      {query:"B8",expected:35,field:"hint"},
+      {query:"MOV AX, 1234h",expected:35,field:"starter/solution"},
+      {query:"IRET",expected:46,field:"solution"}
+    ];
+    const results=cases.map(test=>{
+      search.value=test.query;search.dispatchEvent(new Event("input",{bubbles:true}));
+      const titles=[...document.querySelectorAll("#exerciseList .exercise > b")].map(node=>node.textContent.trim());
+      return {query:test.query,expected:test.expected,field:test.field,titles,found:titles.some(title=>title.startsWith(test.expected+". "))};
+    });
+    search.value="";search.dispatchEvent(new Event("input",{bubbles:true}));
+    return results;
+  });
+  assert.ok(searchCoverage.every(result=>result.found),
+    "Exercise search must index instruction text in hints, starter code and guided solutions: "+JSON.stringify(searchCoverage));
+
   const firstExerciseStarter=await page.evaluate(()=>window.__8086Audit.exercises[5][2]);
   const firstExerciseSolution=await page.evaluate(()=>window.__8086Audit.exercises[5][4].solution||window.__8086Audit.exercises[5][2]);
   const firstExerciseAX=await page.evaluate(src=>window.__8086Audit.executeAll(src).reg.AX,firstExerciseSolution);
