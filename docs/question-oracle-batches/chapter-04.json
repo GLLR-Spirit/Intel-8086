@@ -423,24 +423,24 @@
       "status": "certified",
       "rule": "signed_add_flag_pair",
       "inputs": {
-        "left": 127,
-        "right": 1,
+        "left": 128,
+        "right": 128,
         "width": 8
       },
       "expected": {
         "OF": 1,
-        "CF": 0
+        "CF": 1
       },
-      "correctAnswer": "OF=1 et CF=0",
-      "derivation": "7Fh+1 produit 80h. Le résultat sort de la plage signée, donc OF=1. Il n'y a pas de retenue non signée au-delà de huit bits, donc CF=0.",
+      "correctAnswer": "OF=1 et CF=1",
+      "derivation": "80h vaut 128 en non signé et −128 en signé. La somme non signée 128+128=256 dépasse FFh, donc CF=1. En interprétation signée, −128+(−128)=−256 est hors de la plage −128 à +127, donc OF=1.",
       "distractorRationales": [
         {
           "choice": "OF=0 et CF=1",
-          "reason": "Pour +127+1, OF vaut 1 mais CF vaut 0 ; cette option inverse les deux indicateurs."
+          "reason": "La retenue non signée est bien présente, mais la somme signée −256 dépasse aussi la borne minimale −128 : OF vaut donc 1."
         },
         {
-          "choice": "OF=1 et CF=1",
-          "reason": "Il n'y a pas de retenue non signée hors de l'octet pour 7Fh+1 ; CF ne vaut donc pas 1."
+          "choice": "OF=1 et CF=0",
+          "reason": "Le débordement signé est présent, mais 128+128=256 produit aussi une retenue au-delà de huit bits : CF vaut 1."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), memory organization, byte/word transfers and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."

@@ -14,23 +14,27 @@
     {
       "id": "C16-L1-Q1",
       "status": "certified",
-      "rule": "loop_counter_register",
+      "rule": "loop_operation_order",
       "inputs": {
         "instruction": "LOOP"
       },
       "expected": {
-        "register": "CX"
+        "sequence": [
+          "decrement_CX",
+          "test_CX_nonzero"
+        ],
+        "branchWhen": "CX!=0"
       },
-      "correctAnswer": "CX",
-      "derivation": "LOOP utilise implicitement CX comme compteur. L'instruction décrémente CX puis branche si la valeur obtenue n'est pas zéro ; AX et IP ne remplacent pas ce compteur implicite.",
+      "correctAnswer": "Elle décrémente CX puis teste si CX est non nul",
+      "derivation": "LOOP décrémente implicitement CX avant de tester le résultat. Le branchement est pris si le compteur après décrémentement reste non nul ; le test ne précède donc pas la décrémentation.",
       "distractorRationales": [
         {
-          "choice": "AX",
-          "reason": "AX est un registre général, mais LOOP utilise implicitement CX comme compteur."
+          "choice": "Elle teste CX puis le décrémente",
+          "reason": "L'ordre architectural est décrémenter CX d'abord, puis tester la valeur obtenue pour décider du branchement."
         },
         {
-          "choice": "IP uniquement",
-          "reason": "IP contient l'offset d'instruction ; il ne remplace pas le compteur implicite CX."
+          "choice": "Elle compare AX et BX puis modifie CX",
+          "reason": "LOOP ne compare pas AX et BX ; elle utilise CX comme compteur implicite."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), LOOP/LOOPE/LOOPNE/JCXZ instruction semantics and relative short branches; Intel MCS-86 Assembly Language Reference Manual, loop control instructions."
@@ -88,24 +92,25 @@
     {
       "id": "C16-L2-Q1",
       "status": "certified",
-      "rule": "loope_condition",
+      "rule": "loope_boundary_trace",
       "inputs": {
-        "afterDecrementCX": 2,
+        "initialCX": 1,
         "ZF": 1
       },
       "expected": {
-        "condition": "CX!=0 && ZF=1"
+        "afterDecrementCX": 0,
+        "branchTaken": false
       },
-      "correctAnswer": "CX après décrémentation est non nul et ZF=1",
-      "derivation": "LOOPE combine le résultat du décrémentement implicite de CX avec l'état courant de ZF. Le branchement exige simultanément un compteur non nul et ZF=1.",
+      "correctAnswer": "Non, CX devient 0 après décrémentation",
+      "derivation": "CX vaut 1 avant LOOPE. L'instruction le décrémente à 0, puis exige simultanément CX non nul et ZF=1. Malgré ZF=1, le compteur nul empêche le branchement.",
       "distractorRationales": [
         {
-          "choice": "CX est nul",
-          "reason": "CX égal à zéro après décrémentement empêche LOOP(E) de poursuivre."
+          "choice": "Oui, car ZF=1 suffit",
+          "reason": "ZF=1 ne suffit pas : LOOPE exige aussi que CX reste non nul après le décrémentement."
         },
         {
-          "choice": "ZF=0 quel que soit CX",
-          "reason": "ZF=0 ne satisfait pas la condition de LOOPE qui exige ZF=1."
+          "choice": "Oui, car CX initial était non nul",
+          "reason": "La condition utilise CX après décrémentement, pas sa valeur initiale."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), LOOP/LOOPE/LOOPNE/JCXZ instruction semantics and relative short branches; Intel MCS-86 Assembly Language Reference Manual, loop control instructions."
@@ -163,24 +168,24 @@
     {
       "id": "C16-L3-Q1",
       "status": "certified",
-      "rule": "jcxz_preserves_cx",
+      "rule": "jcxz_preserves_flags",
       "inputs": {
-        "initialCX": 0
+        "initialFLAGS": 3799
       },
       "expected": {
-        "CXAfter": 0,
-        "CXModified": false
+        "flagsModified": false,
+        "FLAGSAfter": 3799
       },
-      "correctAnswer": "Non",
-      "derivation": "JCXZ vérifie directement si CX vaut zéro et ne décrémente pas le compteur. La valeur de CX reste donc identique après l'instruction, que le branchement soit pris ou non.",
+      "correctAnswer": "Non, FLAGS sont préservés",
+      "derivation": "JCXZ teste uniquement si CX vaut zéro pour choisir la cible relative. Elle ne modifie aucun indicateur arithmétique ; le mot FLAGS reste donc identique.",
       "distractorRationales": [
         {
-          "choice": "Oui, de 1",
-          "reason": "JCXZ ne décrémente pas CX ; il reste donc à zéro dans ce cas."
+          "choice": "Oui, ZF devient 1",
+          "reason": "JCXZ ne met pas ZF à jour ; elle teste directement CX sans produire de résultat arithmétique."
         },
         {
-          "choice": "Oui, de 2",
-          "reason": "JCXZ n'incrémente pas CX non plus ; il n'effectue aucune modification du compteur."
+          "choice": "Oui, CF devient 0",
+          "reason": "JCXZ ne modifie pas CF ni les autres indicateurs ; FLAGS est préservé."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), LOOP/LOOPE/LOOPNE/JCXZ instruction semantics and relative short branches; Intel MCS-86 Assembly Language Reference Manual, loop control instructions."
@@ -414,24 +419,27 @@
     {
       "id": "C16-F-Q8",
       "status": "certified",
-      "rule": "loope_reads_existing_zf",
+      "rule": "loope_zf_source",
       "inputs": {
-        "previousInstruction": "CMP AX,BX"
+        "precedingInstruction": "CMP"
       },
       "expected": {
-        "readsExistingZF": true,
-        "comparesOperands": false
+        "validProducers": [
+          "CMP",
+          "TEST"
+        ],
+        "loopeModifiesZF": false
       },
-      "correctAnswer": "De l'instruction précédente qui l'a défini",
-      "derivation": "LOOPE lit l'état de ZF établi par l'instruction précédente. Elle ne recalcule pas l'égalité et ne compare pas implicitement les registres.",
+      "correctAnswer": "CMP ou TEST",
+      "derivation": "CMP et TEST mettent à jour ZF selon leur résultat logique ou arithmétique. LOOPE ne calcule pas ZF : elle lit la valeur laissée par l'instruction précédente et la combine au compteur CX.",
       "distractorRationales": [
         {
-          "choice": "D'une comparaison implicite de CX",
-          "reason": "LOOPE lit ZF défini par l'instruction précédente ; elle ne compare pas implicitement CX."
+          "choice": "LOOPE elle-même",
+          "reason": "LOOPE ne modifie pas ZF ; elle consulte l'indicateur existant pour décider si elle branche."
         },
         {
-          "choice": "De l'instruction LOOP elle-même",
-          "reason": "LOOP elle-même ne définit pas ZF ; le drapeau provient de l'instruction antérieure."
+          "choice": "MOV qui modifie FLAGS",
+          "reason": "MOV ne modifie pas les indicateurs arithmétiques ; CMP et TEST sont des producteurs adaptés de ZF."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), LOOP/LOOPE/LOOPNE/JCXZ instruction semantics and relative short branches; Intel MCS-86 Assembly Language Reference Manual, loop control instructions."

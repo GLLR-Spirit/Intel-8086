@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue indépendante — chapitre 5",
+  "reviewDate": "2026-11-27",
+  "scope": "Contrôle individuel des 19 questions du chapitre 5 : registres généraux, sous-registres, index, segments, pile, CS:IP et restrictions MOV. Cette revue ne modifie pas le compteur officiel.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Macro Assembly Language Reference Manual",
+      "edition": "1979",
+      "url": "https://manuals.plus/m/3aa41c4d0f61cee77e606f5d25d65c409e33c472f7869184e8bf69d9a2c89b98"
+    }
+  ],
+  "records": [
+    {"id":"C05-L1-Q1","result":"passed","finding":"AX est un registre général 16 bits ; 8 bits correspond à ses sous-registres AH et AL, pas à AX complet.","basis":"Intel 8086 Family User's Manual, registres visibles par le programme."},
+    {"id":"C05-L1-Q2","result":"passed","finding":"AL correspond aux bits 7 à 0 ; AH contient les bits 15 à 8.","basis":"Intel 8086 Family User's Manual, décomposition AX/AH/AL."},
+    {"id":"C05-L1-Q3","result":"passed","finding":"1234h puis MOV AL,56h donne AX=1256h : AH=12h est préservé et AL devient 56h.","basis":"Trace indépendante des sous-registres AX."},
+    {"id":"C05-L2-Q1","result":"passed","finding":"SI est l'index source implicite des instructions de chaîne ; DS est le segment source par défaut.","basis":"Intel 8086 Family User's Manual, instructions de chaîne et registres d'index."},
+    {"id":"C05-L2-Q2","result":"passed","finding":"Une adresse effective contenant BP sélectionne SS par défaut, sauf préfixe de segment explicite.","basis":"Intel 8086 Family User's Manual, formation des adresses effectives et segments par défaut."},
+    {"id":"C05-L2-Q3","result":"passed","finding":"SP contient l'offset du sommet de pile ; SS:SP forme l'adresse logique correspondante.","basis":"Intel 8086 Family User's Manual, organisation de la pile."},
+    {"id":"C05-L3-Q1","result":"passed","finding":"CS:IP identifie le flot d'instructions ; CS sélectionne le segment et IP l'offset.","basis":"Intel 8086 Family User's Manual, registres de segment et pointeur d'instruction."},
+    {"id":"C05-L3-Q2","result":"passed","finding":"DS est le segment par défaut des références de données ordinaires ; les références BP sélectionnent SS.","basis":"Intel 8086 Family User's Manual, règles de segment par défaut."},
+    {"id":"C05-L3-Q3","result":"passed","finding":"MOV CS,AX est interdit : MOV ne peut pas écrire CS comme destination ; les transferts de contrôle appropriés modifient CS:IP.","basis":"Intel MCS-86 Macro Assembly Language Reference Manual, formes MOV et restrictions sur les registres de segment."},
+    {"id":"C05-F-Q1","result":"passed","finding":"AX, BX, CX et DX sont chacun des registres de 16 bits ; 20 bits décrit le bus d'adresses, pas leur largeur.","basis":"Intel 8086 Family User's Manual, Table 1-1 et registres visibles."},
+    {"id":"C05-F-Q2","result":"passed","finding":"AH et AL sont deux sous-registres de 8 bits du même registre AX, et non deux registres 16 bits indépendants.","basis":"Intel 8086 Family User's Manual, figure de décomposition des registres."},
+    {"id":"C05-F-Q3","result":"passed","finding":"MOV AL,56h cible uniquement l'octet faible ; AH et BX ne sont pas modifiés.","basis":"Intel MCS-86 Macro Assembly Language Reference Manual, syntaxe MOV."},
+    {"id":"C05-F-Q4","result":"corrected","finding":"La question répétait le segment par défaut BP de L2-Q2. Remplacée par une vérification de taille : MOV AX,AL est invalide car les opérandes font respectivement 16 et 8 bits.","basis":"Intel MCS-86 Macro Assembly Language Reference Manual, MOV exige des opérandes de même taille."},
+    {"id":"C05-F-Q5","result":"passed","finding":"Chaque MOV charge uniquement le registre nommé : SI=0100h, DI=0200h, BP=0300h et SP=0400h.","basis":"Trace indépendante des quatre instructions MOV."},
+    {"id":"C05-F-Q6","result":"passed","finding":"CS:IP=1000h:0020h donne 1000h×10h+0020h=10020h.","basis":"Intel 8086 Family User's Manual, formation des adresses physiques ; calcul indépendant."},
+    {"id":"C05-F-Q7","result":"corrected","finding":"La question réutilisait le scénario de L1-Q3. Elle vérifie maintenant l'écriture dans AH : MOV AH,56h remplace l'octet fort et préserve AL=34h.","basis":"Trace indépendante des sous-registres AX ; Intel 8086 Family User's Manual."},
+    {"id":"C05-F-Q8","result":"passed","finding":"CS:IP est le couple code ; SS:SP est le couple segment/offset de la pile.","basis":"Intel 8086 Family User's Manual, registres de segment, IP et pile."},
+    {"id":"C05-F-Q9","result":"corrected","finding":"La question répétait l'interdiction MOV CS de L3-Q3. Elle vérifie maintenant la paire destination de MOVSB : source DS:SI, destination ES:DI par défaut.","basis":"Intel 8086 Family User's Manual, MOVSB et registres SI/DI ; destination ES:DI."},
+    {"id":"C05-F-Q10","result":"passed","finding":"Les usages des registres sont conventionnels ou implicites pour certaines instructions, mais ne rendent pas leur emploi explicite exclusif.","basis":"Intel 8086 Family User's Manual, registres généraux et registres d'index."}
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 16,
+    "corrected": 3,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  }
+}

@@ -24,9 +24,9 @@ L'audit d'exhaustivité et de précision est en cours. Le suivi des vérificatio
 
 ## Tests de référence des instructions
 
-Les tests de fumée existants sont complétés par [tests/instruction-vectors.cjs](tests/instruction-vectors.cjs), qui utilise des octets de référence fixes pour contrôler séparément l'assembleur et le désassembleur, puis vérifie quelques résultats du simulateur. Le workflow CI exécute les deux suites ; le run 210 a validé 354 tests de fumée et 40 vecteurs indépendants.
+Les suites automatisées actuelles couvrent les tests de fumée, les vecteurs binaires indépendants, les matrices ModR/M, les interactions de préfixes, les comparaisons avec GNU as en mode 16 bits et les audits différentiels source/binaire. Le [workflow CI](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46014172472) du commit audité du 27 novembre 2026 a réussi : 378/378 smoke tests, 11 568/11 568 cas ModR/M et les autres suites configurées. Le [workflow navigateur](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46014172454) a également réussi.
 
-La couverture reste partielle. ADC et SBB sont désormais implémentées dans le simulateur et partiellement dans l'assembleur/désassembleur ; les formes 83h à immédiat signé court ne sont pas encodées ni décodées.
+Ces résultats valident uniquement les chemins couverts par les tests. Le balayage structurel de tous les octets d'opcode ne prouve pas la sémantique de chaque instruction ; le projet reste un modèle logiciel pédagogique et ne prétend pas reproduire intégralement le matériel 8086.
 
 ## Objectif
 

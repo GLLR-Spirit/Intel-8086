@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue indépendante — chapitre 15",
+  "reviewDate": "2026-11-27",
+  "scope": "Contrôle individuel des 19 questions du chapitre 15 : interprétation signée/non signée, conversion des octets, conditions JB/JL/JA/JG et sélection des branchements.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Macro Assembly Language Reference Manual",
+      "edition": "1979",
+      "url": "https://manuals.plus/m/3aa41c4d0f61cee77e606f5d25d65c409e33c472f7869184e8bf69d9a2c89b98"
+    }
+  ],
+  "records": [
+    {"id":"C15-L1-Q1","result":"passed","finding":"JB utilise CF=1 pour inférieur non signé ; il ne faut pas l'interpréter comme une comparaison signée.","basis":"Intel 8086 Family User's Manual, unsigned conditional jumps."},
+    {"id":"C15-L1-Q2","result":"passed","finding":"JL utilise SF différent de OF pour inférieur signé.","basis":"Intel 8086 Family User's Manual, signed conditional jumps."},
+    {"id":"C15-L1-Q3","result":"passed","finding":"FFh vaut 255 en non signé et −1 en complément à deux sur huit bits.","basis":"Représentation 8 bits et complément à deux."},
+    {"id":"C15-L2-Q1","result":"corrected","finding":"Répétait FFh=−1 déjà vérifié en L1-Q3/FQ6. Elle vérifie maintenant 80h=−128, borne minimale signée sur huit bits.","basis":"Conversion indépendante : 128−256=−128."},
+    {"id":"C15-L2-Q2","result":"corrected","finding":"Répétait JL inférieur signé. Elle teste maintenant JGE supérieur ou égal signé, SF=OF.","basis":"Intel 8086 Family User's Manual, JGE/JL."},
+    {"id":"C15-L2-Q3","result":"passed","finding":"SF et OF doivent être combinés pour les comparaisons signées ; SF seul ne suffit pas en cas de débordement.","basis":"Intel 8086 Family User's Manual, signed condition codes."},
+    {"id":"C15-L3-Q1","result":"passed","finding":"JA exprime strictement supérieur non signé, CF=0 et ZF=0.","basis":"Intel 8086 Family User's Manual, JA."},
+    {"id":"C15-L3-Q2","result":"passed","finding":"JL exprime inférieur signé, SF différent de OF.","basis":"Intel 8086 Family User's Manual, JL."},
+    {"id":"C15-L3-Q3","result":"passed","finding":"Le choix d'une condition dépend de l'interprétation signée ou non signée des données, pas du motif binaire seul.","basis":"Intel 8086 Family User's Manual, signed/unsigned conditional jumps."},
+    {"id":"C15-F-Q1","result":"passed","finding":"Les mêmes huit bits peuvent représenter 255 en non signé ou −1 en signé.","basis":"Complément à deux et interprétation non signée."},
+    {"id":"C15-F-Q2","result":"passed","finding":"Les conditions JB/JAE/JA/JBE s'appuient sur CF et ZF pour l'ordre non signé.","basis":"Intel 8086 Family User's Manual, unsigned conditional jumps."},
+    {"id":"C15-F-Q3","result":"corrected","finding":"Répétait JB inférieur non signé. Elle teste maintenant JAE, supérieur ou égal non signé, CF=0.","basis":"Intel 8086 Family User's Manual, JAE/JNB."},
+    {"id":"C15-F-Q4","result":"corrected","finding":"Répétait JL inférieur signé. Elle teste maintenant JLE, inférieur ou égal signé : ZF=1 ou SF différent de OF.","basis":"Intel 8086 Family User's Manual, JLE."},
+    {"id":"C15-F-Q5","result":"passed","finding":"FFh vaut 255 en non signé.","basis":"Interprétation non signée d'un octet."},
+    {"id":"C15-F-Q6","result":"corrected","finding":"Répétait la conversion FFh=−1. Elle teste maintenant 7Fh=+127, borne maximale signée 8 bits.","basis":"Conversion indépendante de 7Fh en complément à deux."},
+    {"id":"C15-F-Q7","result":"corrected","finding":"Répétait la formule JA de L3-Q1. Elle trace maintenant CMP FFh,01h non signé : 255>1, CF=0, ZF=0, JA pris.","basis":"Trace indépendante d'une comparaison non signée."},
+    {"id":"C15-F-Q8","result":"corrected","finding":"Répétait la formule JG de L3-Q3. Elle trace maintenant CMP FFh,01h signé : −1 n'est pas supérieur à 1, JG non pris.","basis":"Trace indépendante d'une comparaison signée et des indicateurs SF/OF/ZF."},
+    {"id":"C15-F-Q9","result":"passed","finding":"Les familles signées et non signées n'interprètent pas de la même manière les motifs avec bit de signe actif.","basis":"Intel 8086 Family User's Manual, signed/unsigned conditional jumps."},
+    {"id":"C15-F-Q10","result":"passed","finding":"La sélection du saut doit suivre le type logique des données : signé ou non signé.","basis":"Intel 8086 Family User's Manual, conditional jumps."}
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 12,
+    "corrected": 7,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  }
+}

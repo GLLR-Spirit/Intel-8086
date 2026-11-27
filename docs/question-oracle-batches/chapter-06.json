@@ -103,16 +103,16 @@
         "destination": "AX",
         "source": "BX"
       },
-      "correctAnswer": "AX",
-      "derivation": "Dans la syntaxe Intel, MOV s'écrit destination,source. Pour MOV AX,BX, AX reçoit la valeur lue dans BX ; le premier opérande est donc AX.",
+      "correctAnswer": "BX",
+      "derivation": "Dans la syntaxe Intel, MOV s'écrit destination,source. Pour MOV AX,BX, AX est la destination et BX la source ; l'instruction lit donc BX pour écrire sa valeur dans AX.",
       "distractorRationales": [
         {
-          "choice": "BX",
-          "reason": "Dans MOV AX,BX, BX est la source et AX est la destination selon l'ordre Intel."
+          "choice": "AX",
+          "reason": "AX est le premier opérande et constitue la destination ; il reçoit la valeur de BX."
         },
         {
           "choice": "Les deux",
-          "reason": "MOV a un opérande destination et un opérande source ; les deux ne sont pas simultanément la destination."
+          "reason": "MOV possède une destination et une source distinctes ; les deux opérandes ne sont pas simultanément la source."
         }
       ],
       "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
@@ -343,25 +343,25 @@
     {
       "id": "C06-F-Q4",
       "status": "certified",
-      "rule": "mov_memory_to_memory_validity",
+      "rule": "mov_segment_to_segment_invalid",
       "inputs": {
-        "destination": "memory",
-        "source": "memory"
+        "destination": "DS",
+        "source": "ES"
       },
       "expected": {
         "valid": false,
-        "reason": "MOV_does_not_encode_memory_to_memory"
+        "reason": "no_segment_to_segment_form"
       },
-      "correctAnswer": "La forme mémoire vers mémoire n'est pas autorisée",
-      "derivation": "Le 8086 n'encode pas un MOV avec deux opérandes mémoire. Un registre intermédiaire doit recevoir la première valeur avant qu'elle soit écrite à la seconde adresse.",
+      "correctAnswer": "Un transfert direct entre deux registres de segment n'est pas encodable ; passer par AX",
+      "derivation": "Les formes MOV du 8086 autorisent un transfert entre registre de segment et registre général/mémoire, mais pas directement d'un registre de segment vers un autre. Pour copier ES vers DS, on passe par un registre général : MOV AX,ES puis MOV DS,AX.",
       "distractorRationales": [
         {
-          "choice": "Les adresses doivent être paires",
-          "reason": "L'alignement des adresses n'autorise pas deux opérandes mémoire dans MOV sur le 8086."
+          "choice": "Les registres de segment ne peuvent jamais être source de MOV",
+          "reason": "Un registre de segment peut être source de MOV vers un registre général, par exemple MOV AX,ES ; seule la forme segment-vers-segment directe est interdite."
         },
         {
-          "choice": "MOV exige toujours AX",
-          "reason": "MOV n'exige pas toujours AX ; il accepte plusieurs registres, mais pas un transfert mémoire-vers-mémoire direct."
+          "choice": "ES est un registre de 8 bits",
+          "reason": "ES est un registre de segment de 16 bits ; l'erreur est l'absence de forme MOV segment-vers-segment directe."
         }
       ],
       "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
@@ -424,25 +424,48 @@
     {
       "id": "C06-F-Q7",
       "status": "certified",
-      "rule": "jmp_control_transfer",
+      "rule": "jump_program_trace",
       "inputs": {
-        "instruction": "JMP CIBLE",
-        "targetOffset": 288
+        "program": [
+          [
+            "MOV",
+            "AX",
+            4660
+          ],
+          [
+            "JMP",
+            "FIN"
+          ],
+          [
+            "MOV",
+            "AX",
+            22136
+          ],
+          [
+            "LABEL",
+            "FIN"
+          ],
+          [
+            "HLT"
+          ]
+        ],
+        "initialAX": 0
       },
       "expected": {
-        "changesControlFlow": true,
-        "targetIP": 288
+        "finalAX": 4660,
+        "halted": true,
+        "skippedInstruction": "MOV AX,22136"
       },
-      "correctAnswer": "Le flot de contrôle, via IP",
-      "derivation": "JMP modifie le flot d'exécution en transférant IP à l'offset cible (et CS aussi dans les formes far). Il ne modifie pas directement la valeur de AX et ne réalise pas une comparaison pour activer FLAGS.",
+      "correctAnswer": "1234h",
+      "derivation": "MOV AX,1234h initialise AX. JMP FIN transfère le flot à l'étiquette FIN et saute MOV AX,5678h. HLT est atteint avec AX toujours égal à 1234h.",
       "distractorRationales": [
         {
-          "choice": "La valeur de AX",
-          "reason": "JMP ne change pas directement la valeur de AX ; il modifie le flot de contrôle via IP."
+          "choice": "5678h",
+          "reason": "5678h ne serait chargé que si MOV AX,5678h était exécuté, mais le JMP le saute."
         },
         {
-          "choice": "Le contenu de FLAGS par une comparaison",
-          "reason": "JMP ne réalise pas une comparaison ; il ne met donc pas FLAGS à jour comme une instruction de comparaison."
+          "choice": "0000h",
+          "reason": "AX reçoit 1234h avant le saut et cette instruction n'est pas annulée par JMP."
         }
       ],
       "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."

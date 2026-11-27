@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue indépendante — chapitre 10",
+  "reviewDate": "2026-11-27",
+  "scope": "Contrôle individuel des 19 questions du chapitre 10 : FLAGS, CF/OF/PF, IF/DF/TF, STD/CLD, CLI/STI et PUSHF/POPF.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Macro Assembly Language Reference Manual",
+      "edition": "1979",
+      "url": "https://manuals.plus/m/3aa41c4d0f61cee77e606f5d25d65c409e33c472f7869184e8bf69d9a2c89b98"
+    }
+  ],
+  "records": [
+    {"id":"C10-L1-Q1","result":"passed","finding":"CF signale une retenue ou un emprunt dans l'interprétation non signée.","basis":"Intel 8086 Family User's Manual, registre FLAGS."},
+    {"id":"C10-L1-Q2","result":"passed","finding":"CF décrit la retenue/emprunt non signé ; OF signale un résultat signé hors plage. Ils peuvent différer.","basis":"Intel 8086 Family User's Manual, définitions CF et OF."},
+    {"id":"C10-L1-Q3","result":"passed","finding":"PF vaut 1 lorsque l'octet faible contient un nombre pair de bits à 1 ; 03h contient deux bits à 1.","basis":"Intel 8086 Family User's Manual, Parity Flag."},
+    {"id":"C10-L2-Q1","result":"passed","finding":"IF autorise la reconnaissance des interruptions masquables lorsqu'il vaut 1, sous réserve des règles du processeur.","basis":"Intel 8086 Family User's Manual, Interrupt Flag."},
+    {"id":"C10-L2-Q2","result":"passed","finding":"STD positionne DF à 1 et les instructions de chaîne font décroître les index.","basis":"Intel 8086 Family User's Manual, Direction Flag et STD."},
+    {"id":"C10-L2-Q3","result":"passed","finding":"CLI efface IF ; elle n'agit pas sur OF ou ZF pour désactiver les interruptions masquables.","basis":"Intel 8086 Family User's Manual, CLI et IF."},
+    {"id":"C10-L3-Q1","result":"passed","finding":"PUSHF empile le mot FLAGS sur la pile SS:SP.","basis":"Intel 8086 Family User's Manual, PUSHF et pile."},
+    {"id":"C10-L3-Q2","result":"corrected","finding":"L'oracle sauvegardait 0200h, dont CF=0, alors que la séquence STC/PUSHF exige de sauvegarder CF=1. Corrigé avec 0201h et un oracle indépendant qui vérifie CF=1 et IF=1 après POPF.","basis":"Trace recalculée : STC produit CF=1 ; PUSHF sauvegarde 0201h ; CLC efface CF ; POPF restaure 0201h et donc CF=1."},
+    {"id":"C10-L3-Q3","result":"passed","finding":"Les opérations de pile utilisent SS comme segment et SP comme offset.","basis":"Intel 8086 Family User's Manual, SS:SP."},
+    {"id":"C10-F-Q1","result":"passed","finding":"PF est le drapeau de parité paire de l'octet faible.","basis":"Intel 8086 Family User's Manual, FLAGS."},
+    {"id":"C10-F-Q2","result":"passed","finding":"OF signale un débordement dans l'interprétation signée.","basis":"Intel 8086 Family User's Manual, Overflow Flag."},
+    {"id":"C10-F-Q3","result":"passed","finding":"STI positionne IF à 1 pour autoriser les interruptions masquables, selon les règles temporelles du 8086.","basis":"Intel 8086 Family User's Manual, STI et IF."},
+    {"id":"C10-F-Q4","result":"passed","finding":"Les effets FLAGS sont instruction-dépendants : certains bits sont définis, d'autres préservés ou indéfinis.","basis":"Intel 8086 Family User's Manual, tableau des effets sur FLAGS."},
+    {"id":"C10-F-Q5","result":"passed","finding":"CLD efface DF ; les index des instructions de chaîne avancent ensuite dans le sens croissant.","basis":"Intel 8086 Family User's Manual, CLD et Direction Flag."},
+    {"id":"C10-F-Q6","result":"passed","finding":"PUSHF sauvegarde le mot FLAGS avant que POPF ne le restaure ; l'ordre respecte la pile LIFO.","basis":"Intel 8086 Family User's Manual, PUSHF/POPF et pile."},
+    {"id":"C10-F-Q7","result":"passed","finding":"TF est le Trap Flag associé au mécanisme de pas à pas matériel.","basis":"Intel 8086 Family User's Manual, Trap Flag."},
+    {"id":"C10-F-Q8","result":"passed","finding":"POPF restaure le mot FLAGS et peut donc affecter des bits de contrôle tels que IF et TF, pas seulement les indicateurs arithmétiques.","basis":"Intel 8086 Family User's Manual, POPF et FLAGS."},
+    {"id":"C10-F-Q9","result":"passed","finding":"Un SP déséquilibré ou une écriture intercalée peut faire dépiler par POPF un autre mot que celui sauvegardé.","basis":"Intel 8086 Family User's Manual, pile LIFO et PUSHF/POPF."},
+    {"id":"C10-F-Q10","result":"passed","finding":"Un bit IF/TF représenté dans le modèle logiciel ne démontre pas l'émulation des événements, broches et temporisations matériels.","basis":"Intel 8086 Family User's Manual, mécanisme matériel d'interruption ; limites du modèle logiciel."}
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 18,
+    "corrected": 1,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  }
+}

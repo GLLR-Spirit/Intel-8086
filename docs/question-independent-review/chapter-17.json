@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue indépendante — chapitre 17",
+  "reviewDate": "2026-11-27",
+  "scope": "Examen des 19 questions du chapitre 17 : maximum, somme de mots, retenue, recherche séquentielle et limites de tableau.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Macro Assembly Language Reference Manual",
+      "edition": "1979",
+      "url": "https://manuals.plus/m/3aa41c4d0f61cee77e606f5d25d65c409e33c472f7869184e8bf69d9a2c89b98"
+    }
+  ],
+  "records": [
+    {
+      "id": "C17-L1-Q1",
+      "result": "corrected",
+      "finding": "La répétition conceptuelle a été supprimée par une question distincte et un oracle recalculé."
+    },
+    {
+      "id": "C17-L1-Q2",
+      "result": "passed",
+      "finding": "Question vérifiée ; formulation, réponse et explication techniquement cohérentes."
+    },
+    {
+      "id": "C17-L1-Q3",
+      "result": "passed",
+      "finding": "Question vérifiée ; formulation, réponse et explication techniquement cohérentes."
+    },
+    {
+      "id": "C17-L2-Q1",
+      "result": "passed",
+      "finding": "Question vérifiée ; formulation, réponse et explication techniquement cohérentes."
+    },
+    {
+      "id": "C17-L2-Q2",
+      "result": "passed",
+      "finding": "Question vérifiée ; formulation, réponse et explication techniquement cohérentes."
+    },
+    {
+      "id": "C17-L2-Q3",
+      "result": "passed",
+      "finding": "Question vérifiée ; formulation, réponse et explication techniquement cohérentes."
+    },
+    {
+      "id": "C17-L3-Q1",
+      "result": "passed",
+      "finding": "Question vérifiée ; formulation, réponse et explication techniquement cohérentes."
+    },
+    {
+      "id": "C17-L3-Q2",
+      "result": "passed",
+      "finding": "Question vérifiée ; formulation, réponse et explication techniquement cohérentes."
+    },
+    {
+      "id": "C17-L3-Q3",
+      "result": "passed",
+      "finding": "Question vérifiée ; formulation, réponse et explication techniquement cohérentes."
+    },
+    {
+      "id": "C17-F-Q1",
+      "result": "passed",
+      "finding": "Question vérifiée ; formulation, réponse et explication techniquement cohérentes."
+    },
+    {
+      "id": "C17-F-Q2",
+      "result": "passed",
+      "finding": "Question vérifiée ; formulation, réponse et explication techniquement cohérentes."
+    },
+    {
+      "id": "C17-F-Q3",
+      "result": "corrected",
+      "finding": "AX est le registre accumulateur de l'exemple ; CS et IP servent au contrôle du flot de code."
+    },
+    {
+      "id": "C17-F-Q4",
+      "result": "corrected",
+      "finding": "Une somme multi-mots doit propager la retenue au mot haut avec ADC."
+    },
+    {
+      "id": "C17-F-Q5",
+      "result": "passed",
+      "finding": "Question vérifiée ; formulation, réponse et explication techniquement cohérentes."
+    },
+    {
+      "id": "C17-F-Q6",
+      "result": "passed",
+      "finding": "Question vérifiée ; formulation, réponse et explication techniquement cohérentes."
+    },
+    {
+      "id": "C17-F-Q7",
+      "result": "corrected",
+      "finding": "Une recherche infructueuse doit produire un état explicite non trouvé, distinct d'un index valide."
+    },
+    {
+      "id": "C17-F-Q8",
+      "result": "corrected",
+      "finding": "L'index égal à la longueur est hors limites et doit être rejeté avant lecture."
+    },
+    {
+      "id": "C17-F-Q9",
+      "result": "passed",
+      "finding": "Question vérifiée ; formulation, réponse et explication techniquement cohérentes."
+    },
+    {
+      "id": "C17-F-Q10",
+      "result": "corrected",
+      "finding": "Le nombre d'éléments restants doit être vérifié avant chaque lecture mémoire."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 13,
+    "corrected": 6,
+    "needsRevision": 0,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  },
+  "openFindings": [
+    {
+      "id": "final-assessment-blueprint",
+      "description": "Les dix questions finales utilisent encore dix catégories distinctes au lieu de deux questions dans chacune des cinq dimensions demandées (définition, syntaxe, calcul/prédiction, analyse, raisonnement/débogage). À rééquilibrer avant validation pédagogique complète."
+    }
+  ]
+}

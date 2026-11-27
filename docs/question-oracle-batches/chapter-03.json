@@ -69,25 +69,26 @@
       "status": "certified",
       "rule": "binary_to_decimal",
       "inputs": {
-        "bits": "1010"
+        "bits": "1101"
       },
       "expected": {
-        "decimal": 10,
+        "decimal": 13,
         "terms": [
           8,
-          2
+          4,
+          1
         ]
       },
-      "correctAnswer": "8 + 2",
-      "derivation": "Les bits à 1 de 1010₂ sont aux positions 3 et 1. Leurs poids sont 2³=8 et 2¹=2 ; leur somme vaut 10.",
+      "correctAnswer": "8 + 4 + 1",
+      "derivation": "Les bits actifs de 1101₂ sont aux positions 3, 2 et 0. Les poids correspondants sont 2³=8, 2²=4 et 2⁰=1 ; leur somme vaut 13.",
       "distractorRationales": [
         {
-          "choice": "4 + 1",
-          "reason": "Cette décomposition utilise les poids des positions 2 et 0, alors que les bits actifs sont aux positions 3 et 1."
+          "choice": "8 + 2 + 1",
+          "reason": "Cette somme retient à tort le poids 2¹ et omet le poids 2², alors que le motif est 1101₂."
         },
         {
-          "choice": "8 + 4",
-          "reason": "Cette décomposition compte à tort le poids 2² ; le bit correspondant vaut zéro dans 1010₂."
+          "choice": "4 + 2 + 1",
+          "reason": "Cette somme omet le poids 2³=8, dont le bit est actif en position 3."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
@@ -228,27 +229,24 @@
     {
       "id": "C03-L3-Q3",
       "status": "certified",
-      "rule": "hex_to_decimal",
+      "rule": "binary_pattern_count",
       "inputs": {
-        "hex": "0FF"
+        "bits": 8
       },
       "expected": {
-        "decimal": 255,
-        "terms": [
-          240,
-          15
-        ]
+        "bits": 8,
+        "distinctPatterns": 256
       },
-      "correctAnswer": "255",
-      "derivation": "Le zéro initial dans 0FFh ne modifie pas la valeur numérique. Les deux chiffres significatifs sont F et F : 15×16+15=255. Il faut distinguer cette valeur de 100h, qui vaut 256 et demande neuf bits non signés.",
+      "correctAnswer": "256",
+      "derivation": "Chaque bit peut prendre deux états indépendants, 0 ou 1. Pour huit bits, le nombre de motifs distincts est 2⁸=256 ; interprétés comme entiers non signés, ils couvrent 0 à 255.",
       "distractorRationales": [
         {
-          "choice": "15",
-          "reason": "15 est la valeur d'un seul chiffre F ; FFh contient deux chiffres F et vaut 255."
+          "choice": "128",
+          "reason": "128 est la moitié de 256 et ne compte pas tous les motifs possibles sur huit bits."
         },
         {
-          "choice": "256",
-          "reason": "256 vaut 100h ; 0FFh vaut 255."
+          "choice": "512",
+          "reason": "512=2⁹ correspond à neuf bits ; huit bits ne produisent que 2⁸=256 motifs."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
@@ -347,16 +345,16 @@
         "maximum": 255,
         "requiredBits": 9
       },
-      "correctAnswer": "100h nécessite neuf bits alors que AL en contient huit",
+      "correctAnswer": "100h vaut 256, au-dessus de FFh (255)",
       "derivation": "100h vaut 256. Un registre de 8 bits ne peut représenter que 0 à 255 ; 256 nécessite neuf bits et ne tient donc pas dans AL.",
       "distractorRationales": [
         {
-          "choice": "AL ne peut contenir que des nombres pairs",
-          "reason": "Un registre peut contenir des valeurs paires et impaires ; le problème est que 100h dépasse 8 bits."
+          "choice": "100h vaut 100 en décimal et tient dans AL",
+          "reason": "La notation 100h est hexadécimale : elle vaut 256, et non 100 en décimal."
         },
         {
-          "choice": "Les constantes hexadécimales sont interdites",
-          "reason": "Les constantes hexadécimales sont permises ; c'est la valeur 256 qui dépasse la plage d'AL."
+          "choice": "AL est un registre de 16 bits",
+          "reason": "AL est la moitié basse de AX et possède 8 bits ; AX, lui, est le registre de 16 bits."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."

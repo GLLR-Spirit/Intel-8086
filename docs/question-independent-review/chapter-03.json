@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue indépendante — chapitre 3",
+  "reviewDate": "2026-11-27",
+  "scope": "Contrôle individuel des 19 questions du chapitre 3 : conversions binaires et hexadécimales, poids positionnels, largeur des registres et qualité des distracteurs. Cette revue reste distincte du compteur officiel.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Macro Assembly Language Reference Manual",
+      "edition": "1979",
+      "url": "https://manuals.plus/m/3aa41c4d0f61cee77e606f5d25d65c409e33c472f7869184e8bf69d9a2c89b98"
+    },
+    {
+      "id": "independent-arithmetic",
+      "title": "Recalculs indépendants des conversions et cardinalités binaires",
+      "edition": "2026-11-27",
+      "url": ""
+    }
+  ],
+  "records": [
+    {"id":"C03-L1-Q1","result":"passed","finding":"00001010₂ = 8+2 = 10 ; les trois choix sont distincts et les distracteurs correspondent à une omission ou à un poids ajouté à tort.","basis":"Recalcul positionnel indépendant en base 2."},
+    {"id":"C03-L1-Q2","result":"passed","finding":"Le bit de poids faible occupe la position 0 et porte le poids 2⁰=1.","basis":"Définition des poids positionnels en base 2."},
+    {"id":"C03-L1-Q3","result":"corrected","finding":"Répétait le même motif 1010₂ et le même résultat 10 que L1-Q1. Remplacé par 1101₂ ; recalcul : 8+4+1=13, avec distracteurs basés sur les poids erronés.","basis":"Recalcul positionnel indépendant : 1101₂ = 13."},
+    {"id":"C03-L2-Q1","result":"passed","finding":"Un chiffre hexadécimal code 16 valeurs, donc 4 bits suffisent car 2⁴=16.","basis":"Correspondance entre base 16 et quartets binaires."},
+    {"id":"C03-L2-Q2","result":"passed","finding":"2Ah = 2×16+10 = 42 ; les distracteurs omettent ou altèrent la contribution du chiffre A.","basis":"Recalcul positionnel indépendant en base 16."},
+    {"id":"C03-L2-Q3","result":"passed","finding":"A₁₆ vaut 10 et s'écrit 1010₂ sur quatre bits.","basis":"Table de conversion hexadécimal/binaire."},
+    {"id":"C03-L3-Q1","result":"passed","finding":"FFh = 15×16+15 = 255 ; les choix 127 et 256 encadrent le résultat avec des erreurs identifiables.","basis":"Recalcul positionnel indépendant en base 16."},
+    {"id":"C03-L3-Q2","result":"passed","finding":"AL est un registre de 8 bits ; sa plage non signée est 00h à FFh, soit 0 à 255.","basis":"Intel 8086 Family User's Manual, registres généraux et largeur d'AL."},
+    {"id":"C03-L3-Q3","result":"corrected","finding":"Répétait la conversion de FFh/0FFh à 255 déjà évaluée par L3-Q1. Remplacé par le calcul de cardinalité : huit bits donnent 2⁸=256 motifs distincts.","basis":"Dénombrement indépendant des motifs binaires : 2 possibilités par bit, soit 2⁸."},
+    {"id":"C03-F-Q1","result":"passed","finding":"Chaque position binaire porte un poids 2ⁿ en partant de n=0 à droite.","basis":"Définition des systèmes positionnels."},
+    {"id":"C03-F-Q2","result":"passed","finding":"Deux chiffres hexadécimaux codent deux quartets, soit huit bits ou un octet.","basis":"2⁴=16 combinaisons par chiffre ; 2×4=8 bits."},
+    {"id":"C03-F-Q3","result":"passed","finding":"MOV AL,2Ah est une forme valide : 2Ah vaut 42 et tient dans le registre de 8 bits AL.","basis":"Intel MCS-86 Macro Assembly Language Reference Manual, constantes immédiates ; plage non signée 8 bits."},
+    {"id":"C03-F-Q4","result":"corrected","finding":"La réponse 100h=256 et dépasse FFh=255 est correcte. Les distracteurs vagues ont été remplacés par deux confusions réalistes : lecture décimale de 100h et confusion entre AL et AX.","basis":"Recalcul indépendant 100h=256 ; Intel 8086 Family User's Manual, AL=8 bits et AX=16 bits."},
+    {"id":"C03-F-Q5","result":"passed","finding":"3Ch = 3×16+12 = 60 ; le choix 48 omet C et 38 traduit mal C.","basis":"Recalcul positionnel indépendant en base 16."},
+    {"id":"C03-F-Q6","result":"passed","finding":"101101₂ = 32+8+4+1 = 45 ; les positions 4 et 1 sont nulles.","basis":"Recalcul positionnel indépendant en base 2."},
+    {"id":"C03-F-Q7","result":"passed","finding":"MOV AX,0FFh charge 00FFh : AH=00h et AL=FFh.","basis":"Intel 8086 Family User's Manual, décomposition AX/AH/AL."},
+    {"id":"C03-F-Q8","result":"passed","finding":"2Ah = 0010 1010₂ = 42 ; les deux distracteurs binaires correspondent à d'autres valeurs.","basis":"Conversion indépendante hexadécimal, binaire et décimal."},
+    {"id":"C03-F-Q9","result":"passed","finding":"La correction de 2Ah=32 consiste à ajouter A=10 à 2×16=32, donnant 42.","basis":"Recalcul positionnel indépendant en base 16."},
+    {"id":"C03-F-Q10","result":"passed","finding":"La conversion binaire vers hexadécimal se fait en groupant quatre bits depuis la droite, avec complément à gauche si nécessaire.","basis":"Correspondance exacte entre un quartet binaire et un chiffre hexadécimal."}
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 16,
+    "corrected": 3,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  }
+}

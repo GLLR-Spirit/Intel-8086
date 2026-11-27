@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue indépendante — chapitre 4",
+  "reviewDate": "2026-11-27",
+  "scope": "Contrôle individuel des 19 questions du chapitre 4 : mémoire adressée par octet, little-endian, plages signées/non signées et indicateurs CF/OF. Cette revue ne modifie pas le compteur officiel.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "independent-arithmetic",
+      "title": "Recalculs indépendants des opérations 8 bits et des indicateurs",
+      "edition": "2026-11-27",
+      "url": ""
+    }
+  ],
+  "records": [
+    {"id":"C04-L1-Q1","result":"passed","finding":"La mémoire 8086 est adressée par octet ; un mot de 16 bits occupe deux octets et deux adresses consécutives.","basis":"Intel 8086 Family User's Manual, organisation mémoire et transferts octet/mot."},
+    {"id":"C04-L1-Q2","result":"passed","finding":"1234h se décompose en 12h fort et 34h faible ; little-endian place 34h à l'adresse 0100h puis 12h à 0101h.","basis":"Intel 8086 Family User's Manual, organisation mémoire ; vérification indépendante des octets."},
+    {"id":"C04-L1-Q3","result":"passed","finding":"MOV AX,1234h charge un registre sans écriture mémoire ; cette instruction seule ne permet pas d'observer l'ordre little-endian en mémoire.","basis":"Intel MCS-86 Assembly Language Reference Manual, MOV et opérandes immédiats."},
+    {"id":"C04-L2-Q1","result":"passed","finding":"Un octet non signé représente 2⁸ valeurs, de 0 à 255 inclus.","basis":"Calcul indépendant de la plage non signée sur huit bits."},
+    {"id":"C04-L2-Q2","result":"passed","finding":"FFh+1=100h ; AL conserve 00h et CF=1. En interprétation signée, FFh vaut −1 ; −1+1 donne 0, donc OF=0, tandis que la retenue non signée active CF=1.","basis":"Intel 8086 Family User's Manual, ADD et FLAGS ; recalcul signé/non signé."},
+    {"id":"C04-L2-Q3","result":"passed","finding":"CF décrit la retenue/emprunt non signé ; OF décrit le débordement signé. Les deux indicateurs ne sont pas interchangeables.","basis":"Intel 8086 Family User's Manual, définitions CF et OF."},
+    {"id":"C04-L3-Q1","result":"passed","finding":"La plage signée en complément à deux sur huit bits est −2⁷ à 2⁷−1, soit −128 à +127.","basis":"Calcul indépendant du complément à deux."},
+    {"id":"C04-L3-Q2","result":"passed","finding":"80h vaut 128 non signé et 128−256=−128 en complément à deux sur huit bits.","basis":"Décodage indépendant du complément à deux."},
+    {"id":"C04-L3-Q3","result":"passed","finding":"7Fh+1 produit 80h ; +127+1 dépasse +127, donc OF=1, tandis que CF=0.","basis":"Recalcul indépendant de l'addition 8 bits et des indicateurs."},
+    {"id":"C04-F-Q1","result":"passed","finding":"Little-endian place l'octet faible d'un mot à l'adresse mémoire la plus basse ; il ne renverse pas les bits d'un octet.","basis":"Intel 8086 Family User's Manual, organisation des octets en mémoire."},
+    {"id":"C04-F-Q2","result":"passed","finding":"Un mot de 16 bits contient deux octets et occupe donc deux adresses, la mémoire étant adressée par octet.","basis":"Intel 8086 Family User's Manual, organisation mémoire."},
+    {"id":"C04-F-Q3","result":"passed","finding":"MOV [0100h],AX écrit le mot d'AX vers la mémoire ; la taille WORD est déduite du registre AX et la forme mémoire-registre est valide.","basis":"Intel MCS-86 Assembly Language Reference Manual, syntaxe MOV ; Intel 8086 Family User's Manual."},
+    {"id":"C04-F-Q4","result":"passed","finding":"Une somme mathématique 100h sur huit bits conserve 00h dans AL et signale la retenue par CF=1 ; l'explication distingue ce cas d'un immédiat trop large.","basis":"Intel 8086 Family User's Manual, ADD et CF ; oracle historique recalculé."},
+    {"id":"C04-F-Q5","result":"passed","finding":"7Fh+1 donne le motif 80h ; la valeur signée résultante est −128 et le résultat binaire est exact.","basis":"Recalcul indépendant de l'addition 8 bits."},
+    {"id":"C04-F-Q6","result":"passed","finding":"La plage signée 8 bits en complément à deux est −128 à +127 ; les distracteurs correspondent à une plage symétrique impossible ou à la plage non signée.","basis":"Calcul indépendant du complément à deux."},
+    {"id":"C04-F-Q7","result":"passed","finding":"Avec DS=0000h, MOV [0100h],AX et AX=1234h écrit 34h à 0100h puis 12h à 0101h.","basis":"Intel 8086 Family User's Manual, stockage little-endian ; trace mémoire indépendante."},
+    {"id":"C04-F-Q8","result":"corrected","finding":"Le scénario répété 7Fh+1 a été remplacé par 80h+80h pour tester le cas où CF et OF sont tous deux actifs. Recalcul : 128+128=256 donne CF=1 ; −128−128=−256 hors plage signée donne OF=1.","basis":"Recalcul indépendant des interprétations signée et non signée ; Intel 8086 Family User's Manual, CF/OF."},
+    {"id":"C04-F-Q9","result":"passed","finding":"Après FFh+1, AL contient 00h et CF=1 ; le total mathématique 256 n'est pas stocké intégralement dans AL.","basis":"Intel 8086 Family User's Manual, ADD et largeur des registres."},
+    {"id":"C04-F-Q10","result":"passed","finding":"CF est associé à la retenue/emprunt non signé ; OF à un résultat signé hors plage. Ils peuvent être différents ou simultanément actifs.","basis":"Intel 8086 Family User's Manual, définitions des indicateurs."}
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 18,
+    "corrected": 1,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  }
+}

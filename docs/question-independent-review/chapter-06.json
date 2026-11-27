@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue indépendante — chapitre 6",
+  "reviewDate": "2026-11-27",
+  "scope": "Contrôle individuel des 19 questions du chapitre 6 : source assembleur, symboles, opérandes MOV, XCHG, étiquettes et transferts de contrôle.",
+  "sources": [
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Macro Assembly Language Reference Manual",
+      "edition": "1979",
+      "url": "https://manuals.plus/m/3aa41c4d0f61cee77e606f5d25d65c409e33c472f7869184e8bf69d9a2c89b98"
+    },
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    }
+  ],
+  "records": [
+    {"id":"C06-L1-Q1","result":"passed","finding":"Un commentaire est ignoré par l'assembleur et ne devient pas un opcode exécutable.","basis":"Intel MCS-86 Macro Assembly Language Reference Manual, syntaxe source et commentaires."},
+    {"id":"C06-L1-Q2","result":"passed","finding":"L'assembleur traduit les mnémoniques/opérandes en octets machine et résout les symboles ; il n'exécute pas le matériel.","basis":"Intel MCS-86 Macro Assembly Language Reference Manual, assemblage et symboles."},
+    {"id":"C06-L1-Q3","result":"passed","finding":"Une étiquette seule associe un nom à un offset et ne modifie pas AX ou FLAGS.","basis":"Intel MCS-86 Macro Assembly Language Reference Manual, symboles et étiquettes."},
+    {"id":"C06-L2-Q1","result":"corrected","finding":"La question répétait exactement le test de destination de FQ3. Elle demande maintenant la source de MOV AX,BX : BX.","basis":"Intel MCS-86 Macro Assembly Language Reference Manual, ordre Intel destination,source."},
+    {"id":"C06-L2-Q2","result":"passed","finding":"XCHG échange les valeurs des deux opérandes, contrairement à MOV qui effectue une copie.","basis":"Intel 8086 Family User's Manual, instruction XCHG."},
+    {"id":"C06-L2-Q3","result":"passed","finding":"MOV [BX],[SI] est interdit car le 8086 n'encode pas de transfert direct mémoire-vers-mémoire ; un registre intermédiaire est nécessaire.","basis":"Intel MCS-86 Macro Assembly Language Reference Manual, formes MOV."},
+    {"id":"C06-L3-Q1","result":"passed","finding":"Une étiquette placée immédiatement avant HLT désigne l'offset de HLT.","basis":"Intel MCS-86 Macro Assembly Language Reference Manual, étiquettes et offsets."},
+    {"id":"C06-L3-Q2","result":"passed","finding":"JMP transfère le contrôle vers la cible et met à jour le flot d'exécution via IP (et CS pour les formes far).","basis":"Intel 8086 Family User's Manual, transferts de contrôle."},
+    {"id":"C06-L3-Q3","result":"passed","finding":"La vérification de cible permet de repérer un offset incorrect et une boucle inattendue en suivant l'instruction atteinte.","basis":"Intel MCS-86 Macro Assembly Language Reference Manual, symboles et références de saut."},
+    {"id":"C06-F-Q1","result":"passed","finding":"Le processeur décode les octets machine chargés ; les commentaires et noms d'étiquettes ne sont pas des instructions.","basis":"Intel 8086 Family User's Manual, récupération et exécution des instructions."},
+    {"id":"C06-F-Q2","result":"passed","finding":"Les symboles sont résolus à l'assemblage ou à l'édition de liens selon le type de référence ; pas pendant chaque addition exécutée.","basis":"Intel MCS-86 Macro Assembly Language Reference Manual, résolution des symboles."},
+    {"id":"C06-F-Q3","result":"passed","finding":"MOV AX,BX copie BX vers AX ; le premier opérande est la destination en syntaxe Intel.","basis":"Intel MCS-86 Macro Assembly Language Reference Manual, ordre des opérandes."},
+    {"id":"C06-F-Q4","result":"corrected","finding":"La question répétait le refus mémoire-vers-mémoire de L2-Q3. Elle teste maintenant la restriction segment-vers-segment : MOV DS,ES est invalide et doit passer par un registre général.","basis":"Intel MCS-86 Macro Assembly Language Reference Manual, formes MOV entre registres et registres de segment."},
+    {"id":"C06-F-Q5","result":"passed","finding":"XCHG AX,BX échange 1234h et 5678h ; AX reçoit 5678h.","basis":"Trace indépendante de l'instruction XCHG."},
+    {"id":"C06-F-Q6","result":"passed","finding":"Une étiquette seule n'émet pas d'octet d'opcode ; les octets proviennent des instructions ou données assemblées.","basis":"Intel MCS-86 Macro Assembly Language Reference Manual, symboles et génération de code."},
+    {"id":"C06-F-Q7","result":"corrected","finding":"La question générique sur JMP répétait L3-Q2. Elle est devenue une trace complète : JMP FIN saute MOV AX,5678h et AX reste 1234h à HLT.","basis":"Trace indépendante du flot de contrôle et des étiquettes ; Intel 8086 Family User's Manual, JMP."},
+    {"id":"C06-F-Q8","result":"passed","finding":"Une cible erronée peut envoyer l'exécution dans une zone imprévue ou provoquer une boucle inattendue.","basis":"Intel 8086 Family User's Manual, transferts de contrôle."},
+    {"id":"C06-F-Q9","result":"passed","finding":"La validation d'un saut compare l'offset résolu et l'instruction réellement atteinte ; les commentaires et CF seuls ne suffisent pas.","basis":"Intel MCS-86 Macro Assembly Language Reference Manual, résolution des étiquettes."},
+    {"id":"C06-F-Q10","result":"passed","finding":"Les directives guident l'assemblage ; les instructions produisent des encodages exécutés par le processeur.","basis":"Intel MCS-86 Macro Assembly Language Reference Manual, directives et instructions."}
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 16,
+    "corrected": 3,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  }
+}

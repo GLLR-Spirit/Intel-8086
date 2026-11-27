@@ -66,26 +66,27 @@
     {
       "id": "C07-L1-Q3",
       "status": "certified",
-      "rule": "mov_memory_read",
+      "rule": "mov_memory_write",
       "inputs": {
-        "instruction": "MOV AX,[BX]",
-        "source": "memory",
-        "destination": "register"
+        "instruction": "MOV [BX],AX",
+        "source": "register",
+        "destination": "memory"
       },
       "expected": {
-        "readsMemory": true,
-        "writesAX": true
+        "readsMemory": false,
+        "writesMemory": true,
+        "sourceRegister": "AX"
       },
       "correctAnswer": "Oui",
-      "derivation": "MOV AX,[BX] utilise l'opérande mémoire désigné par BX comme source. Le processeur lit le mot à cette adresse et le transfère dans AX ; ce n'est pas une simple addition de BX.",
+      "derivation": "Dans MOV [BX],AX, l'opérande mémoire est la destination et AX la source. Le processeur écrit le mot contenu dans AX à l'adresse effective désignée par BX avec DS comme segment par défaut ; il ne lit pas cette case comme source.",
       "distractorRationales": [
         {
           "choice": "Non, elle calcule seulement BX",
-          "reason": "MOV AX,[BX] lit l'opérande mémoire ; elle n'effectue pas seulement un calcul d'adresse."
+          "reason": "Cette description correspond à un calcul d'adresse de type LEA ; MOV [BX],AX écrit réellement le mot dans la mémoire."
         },
         {
           "choice": "Seulement si CF=1",
-          "reason": "CF n'est pas une condition nécessaire pour lire une opérande mémoire avec MOV."
+          "reason": "L'écriture mémoire ne dépend pas de CF ; MOV n'utilise pas ce drapeau comme condition."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
@@ -395,7 +396,7 @@
         "byteCount": 4
       },
       "correctAnswer": "Le mot segment",
-      "derivation": "Le format du pointeur far en mémoire place d'abord le mot offset, puis le mot segment. Le second mot contient donc le segment ; le pointeur complet occupe quatre octets.",
+      "derivation": "La structure architecturale d'un pointeur far 16:16 en mémoire place d'abord le mot offset, puis le mot segment. Le second mot est donc le segment. Little-endian décrit l'ordre des octets à l'intérieur de chaque mot, et non l'ordre des champs du pointeur.",
       "distractorRationales": [
         {
           "choice": "Le mot FLAGS",
@@ -406,7 +407,7 @@
           "reason": "FLAGS n'est pas un champ du pointeur far 16:16."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
+      "reference": "Intel 8086 Family User's Manual (1979), LDS/LES and far pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, pointer operands."
     },
     {
       "id": "C07-F-Q7",
@@ -488,26 +489,27 @@
     {
       "id": "C07-F-Q10",
       "status": "certified",
-      "rule": "lea_vs_mov_memory",
+      "rule": "mov_vs_xchg_memory_semantics",
       "inputs": {
-        "lea": "LEA AX,[BX+4]",
-        "mov": "MOV AX,[BX+4]"
+        "mov": "MOV AX,[BX]",
+        "xchg": "XCHG AX,[BX]"
       },
       "expected": {
-        "leaReadsMemory": false,
         "movReadsMemory": true,
-        "leaResult": "effective_offset"
+        "xchgReadsMemory": true,
+        "xchgWritesMemory": true,
+        "exchanges": true
       },
-      "correctAnswer": "Identifier si l'instruction calcule un offset ou lit le contenu mémoire",
-      "derivation": "Les crochets indiquent un opérande mémoire, mais l'effet dépend de l'instruction. LEA traite l'expression comme un calcul d'adresse ; MOV avec cet opérande lit ou écrit la donnée mémoire selon le sens des opérandes.",
+      "correctAnswer": "MOV lit la mémoire dans AX ; XCHG échange AX et la case mémoire",
+      "derivation": "MOV AX,[BX] lit le mot mémoire et copie sa valeur dans AX sans modifier la case source. XCHG AX,[BX] échange les deux valeurs : AX reçoit le mot mémoire et la case mémoire reçoit l'ancienne valeur d'AX.",
       "distractorRationales": [
         {
-          "choice": "Considérer tous les opérandes entre crochets comme des constantes",
-          "reason": "Les crochets indiquent un opérande mémoire, mais LEA traite l'expression comme une adresse à calculer."
+          "choice": "Les deux ne font qu'une lecture mémoire",
+          "reason": "XCHG réalise aussi une écriture de l'ancienne valeur d'AX dans la case mémoire ; ce n'est pas une simple lecture."
         },
         {
-          "choice": "Ignorer la taille de l'opérande",
-          "reason": "Ignorer la taille est dangereux pour les opérations mémoire ; il faut distinguer calcul d'adresse et transfert de donnée."
+          "choice": "XCHG calcule l'offset sans accéder à la mémoire",
+          "reason": "C'est LEA qui calcule un offset sans déréférencer ; XCHG avec [BX] lit et écrit réellement la case mémoire."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."

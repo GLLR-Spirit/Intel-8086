@@ -149,6 +149,10 @@ function independentlyCompute(oracle) {
       const sign = 2 ** (i.bits - 1);
       return { unsignedValue: i.value, signedValue: i.value >= sign ? i.value - (2 ** i.bits) : i.value };
     }
+    case "mov_segment_to_segment_invalid":
+      return { valid: false, reason: "no_segment_to_segment_form" };
+    case "mov_operand_size_compatibility":
+      return { valid: i.destinationBits === i.sourceBits, destinationBits: i.destinationBits, sourceBits: i.sourceBits };
     case "memory_register_mov_validity":
       return { valid: (i.destination === "memory" && i.source === "register") || (i.destination === "register" && i.source === "memory"), memoryToMemory: false };
     case "overflow_byte_conclusion":
@@ -157,6 +161,8 @@ function independentlyCompute(oracle) {
       return { bits: 16 };
     case "register_byte_parts":
       return { highByte: "AH", lowByte: "AL", bitsPerPart: 8 };
+    case "string_destination_index_default":
+      return { register: "DI", segment: "ES" };
     case "string_source_index_default":
       return { register: "SI", segment: "DS" };
     case "bp_default_segment":
@@ -219,6 +225,25 @@ function independentlyCompute(oracle) {
       const borrowFromLow = i.lowA < i.lowB ? 1 : 0;
       return { lowWordFirst: true, borrowFromLow, highWordIncludesBorrow: true, highResult: (i.highA - i.highB - borrowFromLow) & 0xffff };
     }
+    case "byte_carry_propagation": {
+      const lowSum = i.lowA + i.lowB;
+      const lowResult = lowSum & 0xff;
+      const carryFromLow = lowSum > 0xff ? 1 : 0;
+      const highResult = (i.highA + i.highB + carryFromLow) & 0xff;
+      return { lowResult, carryFromLow, highResult, combined: (highResult << 8) | lowResult };
+    }
+    case "inc_overflow_and_cf": {
+      const modulus = 2 ** i.width;
+      const mask = modulus - 1;
+      const sign = 2 ** (i.width - 1);
+      const signedInput = (i.initialAX & sign) ? i.initialAX - modulus : i.initialAX;
+      const signedResult = signedInput + 1;
+      const result = (i.initialAX + 1) & mask;
+      const OF = signedResult < -sign || signedResult > sign - 1 ? 1 : 0;
+      return { result, OF, CF: i.initialCF };
+    }
+    case "inc_flag_set":
+      return { updated: ["OF", "SF", "ZF", "AF", "PF"], preserved: ["CF"] };
     case "unsigned_subtract_flags": {
       const mask = (2 ** i.width) - 1;
       const difference = i.left - i.right;
@@ -254,12 +279,27 @@ function independentlyCompute(oracle) {
       return { result: (i.left | i.right) & ((2 ** i.width) - 1) };
     case "bitwise_xor":
       return { result: (i.left ^ i.right) & ((2 ** i.width) - 1) };
+    case "not_preserves_flags":
+      return { flagsModified: false, operandModified: true };
     case "not_instruction_semantics":
       return { invertsAllBits: true, modifiesOperand: true };
+    case "xor_vs_not_selective_toggle":
+      return { xorSelective: true, notInvertsAll: true };
     case "xor_mask_semantics":
       return { togglesMaskOneBits: true, unchangedMaskZeroBits: true };
+    case "test_trace_preserve_value":
+      return { finalAL: i.initialAL, logicalResult: i.initialAL & i.mask, destinationModified: false, flagsUpdated: true };
     case "test_preserves_destination":
       return { destinationModified: false, flagsUpdated: true };
+    case "test_undefined_af":
+      return { AF: "undefined", CF: 0, OF: 0 };
+    case "test_flags_trace": {
+      const logicalResult = i.AL & i.mask;
+      let bits = logicalResult & 0xff;
+      let ones = 0;
+      while (bits) { ones += bits & 1; bits >>>= 1; }
+      return { logicalResult, CF: 0, OF: 0, PF: ones % 2 === 0 ? 1 : 0, AF: "undefined" };
+    }
     case "test_zero_flag": {
       const logicalResult = (i.value & i.mask) & ((2 ** i.width) - 1);
       return { logicalResult, ZF: logicalResult === 0 ? 1 : 0 };
@@ -291,6 +331,8 @@ function independentlyCompute(oracle) {
       return { IF: 0 };
     case "pushf_stack_write":
       return { operation: "push", value: "FLAGS", stack: "SS:SP" };
+    case "popf_restore_cf":
+      return { restoredFLAGS: i.savedFLAGS, IF: (i.savedFLAGS >>> 9) & 1, CF: i.savedFLAGS & 1 };
     case "popf_restore_flags":
       return { restoredFLAGS: i.savedFLAGS, IF: (i.savedFLAGS >>> 9) & 1 };
     case "stack_segment_pointer":
@@ -317,6 +359,8 @@ function independentlyCompute(oracle) {
       return { recordsBeforeAfter: true, orderPreserved: true };
     case "first_divergence_diagnostic":
       return { locatesEarliestDivergence: true };
+    case "regression_test_purpose":
+      return { detectsRecurrence: i.previouslyFailingCaseRetained, retainsCase: i.previouslyFailingCaseRetained };
     case "first_divergence_and_isolate":
       return { locatesEarliestDivergence: true, isolatesCause: true };
     case "ip_instruction_offset":
@@ -329,6 +373,11 @@ function independentlyCompute(oracle) {
       return { isolatesEffect: true, reproducible: true };
     case "inc_preserves_cf_value":
       return { CFAfter: i.initialCF, CFModified: false };
+    case "conditional_branch_trace": {
+      const ZF = i.left === i.right ? 1 : 0;
+      const branchTaken = i.condition === "JZ" ? ZF === 1 : false;
+      return { ZF, branchTaken, next: branchTaken ? "target" : "fallthrough" };
+    }
     case "branch_paths_validation":
       return i.IPChecked ? { takenPathTested: true, notTakenPathTested: true, IPChecked: true } : { takenPathTested: true, notTakenPathTested: true };
     case "trace_order_causality":
@@ -343,6 +392,8 @@ function independentlyCompute(oracle) {
       return { operandsModified: false, flagsUpdated: true };
     case "zero_flag_on_equal":
       return { difference: i.left - i.right, ZF: i.left === i.right ? 1 : 0, equal: i.left === i.right };
+    case "signed_greater_equal_condition":
+      return { condition: i.SF === i.OF ? "SF==OF" : "SF!=OF", signed: true };
     case "signed_less_condition":
       return { condition: "SF!=OF", signed: true };
     case "test_logic_result_no_store": {
@@ -355,10 +406,24 @@ function independentlyCompute(oracle) {
       return { flagsProducedBeforeBranch: true, branchReadsFlags: true };
     case "relative_displacement_range":
       return { minimum: -(2 ** (i.bits - 1)), maximum: (2 ** (i.bits - 1)) - 1, unit: "bytes" };
+    case "relative_displacement_value": {
+      const displacement = i.target - i.ipAfter;
+      const min = -(2 ** (i.bits - 1));
+      const max = (2 ** (i.bits - 1)) - 1;
+      return { displacement, encoded: displacement & ((2 ** i.bits) - 1), fits: displacement >= min && displacement <= max };
+    }
+    case "relative_target_calculation":
+      return { target: (i.ipAfter + i.displacement) & 0xffff, base: "IP_after_instruction" };
     case "relative_displacement_base":
       return { base: "IP_after_instruction" };
+    case "jmp_register_target_state":
+      return { CS: i.CS, IP: i.BX, CSChanged: false, IPChanged: true };
     case "jmp_register_indirect":
       return { kind: "near_indirect", targetFrom: "BX", CSChanged: false };
+    case "jmp_far_direct_encoding":
+      return { opcode: "EA", kind: "far_direct", pointerBits: 32 };
+    case "jmp_indirect_far_encoding":
+      return { opcode: "FF", extension: 5, kind: "far_indirect" };
     case "jmp_near_encoding":
       return { opcode: "E9", displacementBits: 16, kind: "direct_relative_near" };
     case "jmp_indirect_near_encoding":
@@ -371,8 +436,50 @@ function independentlyCompute(oracle) {
       return { opcode: "EB", displacementBits: 8, kind: "direct_relative_short" };
     case "short_displacement_fits":
       return { fits: i.displacement >= -(2 ** (i.bits - 1)) && i.displacement <= (2 ** (i.bits - 1)) - 1, minimum: -(2 ** (i.bits - 1)), maximum: (2 ** (i.bits - 1)) - 1 };
+    case "jcc_compare_trace": {
+      const modulus = 2 ** i.bits;
+      const sign = 2 ** (i.bits - 1);
+      const signedValue = value => (value & sign) ? value - modulus : value;
+      const leftValue = i.signed ? signedValue(i.left) : i.left;
+      const rightValue = i.signed ? signedValue(i.right) : i.right;
+      const CF = i.left < i.right ? 1 : 0;
+      const ZF = i.left === i.right ? 1 : 0;
+      const branchTaken = i.condition === "JBE" ? (CF === 1 || ZF === 1) : i.condition === "JA" ? (CF === 0 && ZF === 0) : false;
+      return { leftValue, rightValue, CF, ZF, branchTaken };
+    }
+    case "jcc_signed_compare_trace": {
+      const modulus = 2 ** i.bits;
+      const sign = 2 ** (i.bits - 1);
+      const signedValue = value => (value & sign) ? value - modulus : value;
+      const leftValue = signedValue(i.left);
+      const rightValue = signedValue(i.right);
+      const difference = leftValue - rightValue;
+      const wrapped = difference & (modulus - 1);
+      const SF = (wrapped & sign) ? 1 : 0;
+      const ZF = wrapped === 0 ? 1 : 0;
+      const OF = difference < -sign || difference > sign - 1 ? 1 : 0;
+      const branchTaken = i.condition === "JG" ? (ZF === 0 && SF === OF) : i.condition === "JGE" ? (SF === OF) : false;
+      return { leftValue, rightValue, SF, OF, ZF, branchTaken };
+    }
+    case "jcc_parity_trace": {
+      const result = i.AL & i.mask;
+      let bits = result & 0xff;
+      let ones = 0;
+      while (bits) { ones += bits & 1; bits >>>= 1; }
+      const PF = ones % 2 === 0 ? 1 : 0;
+      return { result, PF, branchTaken: i.condition === "JP" && PF === 1 };
+    }
+    case "jcc_overflow_trace": {
+      const modulus = 2 ** i.width;
+      const sign = 2 ** (i.width - 1);
+      const signedInitial = (i.initialAL & sign) ? i.initialAL - modulus : i.initialAL;
+      const signedResult = signedInitial + i.addend;
+      const result = (i.initialAL + i.addend) & (modulus - 1);
+      const OF = signedResult < -sign || signedResult > sign - 1 ? 1 : 0;
+      return { result, OF, branchTaken: i.condition === "JO" && OF === 1 };
+    }
     case "jcc_condition": {
-      const conditions = { JE: "ZF=1", JB: "CF=1", JO: "OF=1", JL: "SF!=OF", JP: "PF=1", JNS: "SF=0", JA: "CF=0 && ZF=0", JBE: "CF=1 || ZF=1", JG: "ZF=0 && SF=OF", JNE: "ZF=0", JC: "CF=1", JS: "SF=1", JNO: "OF=0", JGE: "SF=OF" };
+      const conditions = { JE: "ZF=1", JB: "CF=1", JO: "OF=1", JL: "SF!=OF", JP: "PF=1", JNS: "SF=0", JA: "CF=0 && ZF=0", JAE: "CF=0", JBE: "CF=1 || ZF=1", JLE: "ZF=1 || SF!=OF", JG: "ZF=0 && SF=OF", JNE: "ZF=0", JC: "CF=1", JS: "SF=1", JNO: "OF=0", JGE: "SF=OF" };
       return { condition: conditions[i.mnemonic] };
     }
     case "jcc_alias":
@@ -406,6 +513,16 @@ function independentlyCompute(oracle) {
       return { requiresSignednessChoice: true, branchFamilies: "signed_and_unsigned" };
     case "signed_unsigned_branch_families":
       return { unsignedUsesCF: true, signedUsesSFandOF: true };
+    case "loop_operation_order":
+      return { sequence: ["decrement_CX", "test_CX_nonzero"], branchWhen: "CX!=0" };
+    case "loope_boundary_trace": {
+      const afterDecrementCX = (i.initialCX - 1) & 0xffff;
+      return { afterDecrementCX, branchTaken: afterDecrementCX !== 0 && i.ZF === 1 };
+    }
+    case "jcxz_preserves_flags":
+      return { flagsModified: false, FLAGSAfter: i.initialFLAGS };
+    case "loope_zf_source":
+      return { validProducers: ["CMP", "TEST"], loopeModifiesZF: false };
     case "loop_counter_register":
       return { register: "CX" };
     case "loope_condition":
@@ -430,6 +547,20 @@ function independentlyCompute(oracle) {
       return { flagsModified: false };
     case "jcxz_guard_before_loop":
       return { guard: "JCXZ", preventsZeroCounterUnderflow: true };
+    case "adc_syntax":
+      return { mnemonic: "ADC", destination: "AX", source: "BX", includesCarryIn: true };
+    case "word_add_carry_trace": {
+      const sum = i.initialAX + i.addend;
+      return { result: sum & 0xffff, CF: sum > 0xffff ? 1 : 0 };
+    }
+    case "search_index_trace": {
+      const index = i.values.indexOf(i.target);
+      return { found: index >= 0, index, checks: index >= 0 ? index + 1 : i.values.length };
+    }
+    case "last_valid_index":
+      return { arrayLength: i.arrayLength, lastValidIndex: i.arrayLength - 1 };
+    case "sequential_search_worst_case":
+      return { maxComparisons: i.length, complexity: "O(n)" };
     case "max_initialization":
       return { initialMaximum: i.values[0] };
     case "sum_accumulator_register":
@@ -1083,6 +1214,10 @@ function independentlyCompute(oracle) {
     case "xchg_form_validity":
       if (i.left === "memory" && i.right === "memory") return { valid: false, reason: "XCHG_does_not_allow_memory_to_memory" };
       return { valid: true, reason: "XCHG_register_memory_allowed" };
+    case "mov_vs_xchg_memory_semantics":
+      return { movReadsMemory: true, xchgReadsMemory: true, xchgWritesMemory: true, exchanges: true };
+    case "mov_memory_write":
+      return { readsMemory: false, writesMemory: true, sourceRegister: "AX" };
     case "mov_memory_read":
       return { readsMemory: true, writesAX: true };
     case "effective_address_form_validity":
@@ -1143,6 +1278,8 @@ function independentlyCompute(oracle) {
       const value = Number.parseInt(i.hex, 16);
       return { binary: value.toString(2).padStart(i.hex.length * 4, "0"), decimal: value };
     }
+    case "binary_pattern_count":
+      return { bits: i.bits, distinctPatterns: 2 ** i.bits };
     case "binary_nibble_grouping": {
       const padded = i.bits.padStart(Math.ceil(i.bits.length / 4) * 4, "0");
       const groups = padded.match(/.{4}/g);
@@ -1150,7 +1287,7 @@ function independentlyCompute(oracle) {
     }
     case "intel_operand_order":
       if (i.instruction) {
-        const operands = i.instruction.replace(/^MOV\s+/i, "").split(",");
+        const operands = i.instruction.replace(/^[A-Z]+\s+/i, "").split(",");
         return { destination: operands[0].trim(), source: operands[1].trim() };
       }
       return fact[oracle.rule];
@@ -1212,6 +1349,10 @@ function independentlyCompute(oracle) {
         requiredBits: Math.ceil(Math.log2(i.immediate + 1))
       };
     }
+    case "write_high_byte_preserve_low": {
+      const finalAX = (i.initialAX & 0x00ff) | ((i.newAH & 0xff) << 8);
+      return { finalAX, finalAH: (finalAX >>> 8) & 0xff, finalAL: finalAX & 0xff };
+    }
     case "write_low_byte_preserve_high": {
       const finalAX = (i.initialAX & 0xff00) | (i.newAL & 0xff);
       return { finalAX, finalAH: finalAX >>> 8, finalAL: finalAX & 0xff };
@@ -1257,9 +1398,36 @@ assert.deepEqual(independentlyCompute({ rule: "branch_prefetch_flush", inputs: {
 const keyMap = new Map(key.questions.map(q => [q.id, q]));
 assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23", "chapter-24", "chapter-25", "chapter-26", "chapter-27", "chapter-28", "chapter-29", "chapter-30", "chapter-31", "chapter-32", "chapter-33", "chapter-34", "chapter-35", "chapter-36"]);
 assert.deepEqual(batches.map(batch => batch.oracles.length), [19, 18, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19], "Chapters 2, 4 and 28 reuse one historical oracle outside their supplemental batch");
-const historicalChapterOracles = manifest.oracles.filter(oracle => ["C02-F-Q4", "C04-F-Q4", "C28-F-Q7"].includes(oracle.id)).map(oracle => ({ ...oracle, status: "certified" }));
+assert.equal(manifest.oracles.length, 684, "The manifest index must expose all 684 registered question IDs");
+assert.equal(new Set(manifest.oracles.map(item => item.id)).size, 684, "The manifest index must contain 684 unique question IDs");
+assert.equal(manifest.historicalOracles.length, 6, "The six detailed historical oracle objects must remain separately available");
+const historicalChapterOracles = manifest.historicalOracles.filter(oracle => ["C02-F-Q4", "C04-F-Q4", "C28-F-Q7"].includes(oracle.id)).map(oracle => ({ ...oracle, status: "certified" }));
 assert.equal(historicalChapterOracles.length, 3, "The historical chapter 2, chapter 4 and chapter 28 oracles not represented in supplemental batches must each be reused exactly once");
 const allOracleRecords = [...batches.flatMap(batch => batch.oracles), ...historicalChapterOracles];
+assert.deepEqual(manifest.oracles.map(item => item.id).sort(), [...batches.flatMap(batch => batch.oracles.map(oracle => oracle.id)), ...historicalChapterOracles.map(oracle => oracle.id)].sort(), "The manifest index must match all batch and historical-only oracle IDs");
+assert.equal(manifest.oracleCoverageSummary.registeredOracleRecords, 684, "Registered oracle count must match the complete index");
+assert.equal(manifest.oracleCoverageSummary.questionsWithoutOracle, 0, "No assessment question may be missing from the oracle index");
+assert.equal(manifest.oracleCoverageSummary.officialCertificationCount, 384, "Automated oracle coverage must not alter official individual certification");
+assert.equal(manifest.oracleCoverageSummary.remainingOfficialCertification, 300, "Official individual certification backlog remains separately tracked");
+
+const reviewedQuestionIds = [];
+for (const batch of manifest.independentReviewBatches) {
+  const review = JSON.parse(fs.readFileSync(batch.path, "utf8"));
+  const expectedChapterIds = key.questions.filter(question => question.chapter === batch.chapter).map(question => question.id).sort();
+  const actualChapterIds = review.records.map(record => record.id).sort();
+  assert.equal(review.summary.questionsReviewed, 19, "Each listed individual review must cover 19 questions: chapter " + batch.chapter);
+  assert.deepEqual(actualChapterIds, expectedChapterIds, "Individual review must cover each chapter question exactly once: chapter " + batch.chapter);
+  assert.equal(new Set(actualChapterIds).size, 19, "Individual review must not duplicate IDs: chapter " + batch.chapter);
+  assert.equal(review.summary.officialCertificationCountAfter, manifest.oracleCoverageSummary.officialCertificationCount,
+    "Individual review must not silently change the official certification ledger: chapter " + batch.chapter);
+  reviewedQuestionIds.push(...actualChapterIds);
+}
+assert.equal(new Set(reviewedQuestionIds).size, reviewedQuestionIds.length, "Individual review batches must not overlap question IDs");
+assert.equal(reviewedQuestionIds.length, manifest.oracleCoverageSummary.individuallyReviewedQuestions,
+  "Individual review total must match the actual records loaded from all listed chapter files");
+assert.equal(manifest.oracleCoverageSummary.individualReviewChapters.length, manifest.independentReviewBatches.length,
+  "Review chapter index and review batch list must stay aligned");
+
 const allIds = allOracleRecords.map(oracle => oracle.id);
 assert.equal(new Set(allIds).size, allIds.length, "Certified oracle IDs must be globally unique across supplemental batches and reused historical records");
 const seen = new Set();
@@ -1315,4 +1483,248 @@ for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17
   for (const id of expectedIds) assert.ok(allIds.includes(id), "Missing independent oracle for " + id);
 }
 assert.match(keyMap.get("C01-L1-Q2").explanation, /octets machine distincts/i, "Source assembly must be distinguished from its encoded machine bytes");
+
+const chapter2Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-02.json", "utf8"));
+const chapter2Ids = key.questions.filter(question => question.chapter === 2).map(question => question.id).sort();
+const reviewedChapter2Ids = chapter2Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter2Ids, chapter2Ids, "Chapter 2 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter2Ids).size, 19, "Chapter 2 review must not duplicate question IDs");
+assert.equal(chapter2Review.summary.questionsReviewed, 19, "Chapter 2 review count must match the complete question bank");
+assert.equal(chapter2Review.summary.passed, 18, "Chapter 2 review must report 18 technically and pedagogically passed items");
+assert.equal(chapter2Review.summary.blocked, 0, "Chapter 2 assessment blueprint blocker must be resolved");
+assert.equal(chapter2Review.summary.corrected, 1, "The second syntax item must be recorded as corrected");
+assert.equal(chapter2Review.summary.officialCertificationCountBefore, 384, "Chapter 2 review starts from the official 384-question ledger");
+assert.equal(chapter2Review.summary.officialCertificationCountAfter, 384, "A blocked chapter review must not advance official certification");
+assert.equal(chapter2Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+const chapter2Correction = chapter2Review.records.find(record => record.id === "C02-F-Q4");
+assert.equal(chapter2Correction?.result, "corrected", "C02-F-Q4 must record the syntax correction");
+assert.match(chapter2Correction.finding, /ADD AX,3/i, "The chapter 2 review must document the corrected Intel syntax item");
+const chapter2Final = key.questions.filter(question => question.chapter === 2 && question.kind === "final");
+const categoryCount = category => chapter2Final.filter(question => question.category === category).length;
+assert.equal(categoryCount("Définition"), 2, "Chapter 2 final assessment must contain two definition items");
+assert.equal(runtimeQuestions.get("C02-F-Q2")[4], "Définition", "Chapter 2 runtime bank must expose the corrected second definition item");
+assert.equal(runtimeQuestions.get("C02-F-Q4")[4], "Syntaxe", "Chapter 2 runtime bank must expose the corrected second syntax item");
+assert.equal(categoryCount("Syntaxe"), 2, "Chapter 2 final assessment must contain two syntax items");
+assert.equal(chapter2Final.filter(question => ["Prédiction", "Calcul / prédiction"].includes(question.category)).length, 2, "Chapter 2 final assessment must contain two calculation/prediction items");
+assert.equal(chapter2Final.filter(question => ["Analyse de programme", "Analyse de résultat"].includes(question.category)).length, 2, "Chapter 2 final assessment must contain two program-analysis items");
+assert.equal(chapter2Final.filter(question => ["Débogage", "Raisonnement"].includes(question.category)).length, 2, "Chapter 2 final assessment must contain two reasoning/debug items");
+
+const chapter3Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-03.json", "utf8"));
+const chapter3Ids = key.questions.filter(question => question.chapter === 3).map(question => question.id).sort();
+const reviewedChapter3Ids = chapter3Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter3Ids, chapter3Ids, "Chapter 3 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter3Ids).size, 19, "Chapter 3 review must not duplicate question IDs");
+assert.equal(chapter3Review.summary.questionsReviewed, 19, "Chapter 3 review count must match the complete question bank");
+assert.equal(chapter3Review.summary.passed, 16, "Chapter 3 review must report 16 passed questions");
+assert.equal(chapter3Review.summary.corrected, 3, "Chapter 3 review must record the two duplicate-item corrections and improved distractors");
+assert.equal(chapter3Review.summary.blocked, 0, "Chapter 3 review must have no unresolved blockers");
+assert.equal(chapter3Review.summary.officialCertificationCountBefore, 384, "Chapter 3 review starts from the official 384-question ledger");
+assert.equal(chapter3Review.summary.officialCertificationCountAfter, 384, "Chapter 3 review must not silently advance official certification");
+assert.equal(chapter3Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.notEqual(keyMap.get("C03-L1-Q1").stem, keyMap.get("C03-L1-Q3").stem, "Chapter 3 lesson 1 must not repeat the same binary conversion item");
+assert.notEqual(keyMap.get("C03-L3-Q1").stem, keyMap.get("C03-L3-Q3").stem, "Chapter 3 lesson 3 must not repeat the same FFh conversion item");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C03-L1-Q3").inputs, { bits: "1101" }, "The corrected binary-weight item must use a distinct binary pattern");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C03-L3-Q3").expected, { bits: 8, distinctPatterns: 256 }, "Eight-bit pattern cardinality must be independently recomputed");
+assert.equal(keyMap.get("C03-F-Q4").correctAnswer, "100h vaut 256, au-dessus de FFh (255)", "The AL-width item must use the corrected, unambiguous answer");
+
+
+const chapter4Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-04.json", "utf8"));
+const chapter4Ids = key.questions.filter(question => question.chapter === 4).map(question => question.id).sort();
+const reviewedChapter4Ids = chapter4Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter4Ids, chapter4Ids, "Chapter 4 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter4Ids).size, 19, "Chapter 4 review must not duplicate question IDs");
+assert.equal(chapter4Review.summary.questionsReviewed, 19, "Chapter 4 review count must match the complete question bank");
+assert.equal(chapter4Review.summary.passed, 18, "Chapter 4 review must report 18 passed questions");
+assert.equal(chapter4Review.summary.corrected, 1, "Chapter 4 review must record the simultaneous CF/OF scenario correction");
+assert.equal(chapter4Review.summary.blocked, 0, "Chapter 4 review must have no unresolved blockers");
+assert.equal(chapter4Review.summary.officialCertificationCountBefore, 384, "Chapter 4 review starts from the official 384-question ledger");
+assert.equal(chapter4Review.summary.officialCertificationCountAfter, 384, "Chapter 4 review must not silently advance official certification");
+assert.equal(chapter4Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C04-F-Q8").inputs, { left: 128, right: 128, width: 8 }, "Chapter 4 must exercise the case where CF and OF are both set");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C04-F-Q8").expected, { OF: 1, CF: 1 }, "80h+80h must set both CF and OF");
+
+
+const chapter5Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-05.json", "utf8"));
+const chapter5Ids = key.questions.filter(question => question.chapter === 5).map(question => question.id).sort();
+const reviewedChapter5Ids = chapter5Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter5Ids, chapter5Ids, "Chapter 5 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter5Ids).size, 19, "Chapter 5 review must not duplicate question IDs");
+assert.equal(chapter5Review.summary.questionsReviewed, 19, "Chapter 5 review count must match the complete question bank");
+assert.equal(chapter5Review.summary.passed, 16, "Chapter 5 review must report 16 passed questions");
+assert.equal(chapter5Review.summary.corrected, 3, "Chapter 5 review must record operand-width, high-byte, and string-destination corrections");
+assert.equal(chapter5Review.summary.blocked, 0, "Chapter 5 review must have no unresolved blockers");
+assert.equal(chapter5Review.summary.officialCertificationCountBefore, 384, "Chapter 5 review starts from the official 384-question ledger");
+assert.equal(chapter5Review.summary.officialCertificationCountAfter, 384, "Chapter 5 review must not silently advance official certification");
+assert.equal(chapter5Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C05-F-Q4").expected, { valid: false, destinationBits: 16, sourceBits: 8 }, "MOV AX,AL must be rejected for operand-width mismatch");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C05-F-Q7").expected, { finalAX: 22068, finalAH: 86, finalAL: 52 }, "Writing AH must preserve the low byte AL");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C05-F-Q9").expected, { register: "DI", segment: "ES" }, "MOVSB destination must use ES:DI by default");
+
+
+const chapter6Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-06.json", "utf8"));
+const chapter6Ids = key.questions.filter(question => question.chapter === 6).map(question => question.id).sort();
+const reviewedChapter6Ids = chapter6Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter6Ids, chapter6Ids, "Chapter 6 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter6Ids).size, 19, "Chapter 6 review must not duplicate question IDs");
+assert.equal(chapter6Review.summary.questionsReviewed, 19, "Chapter 6 review count must match the complete question bank");
+assert.equal(chapter6Review.summary.passed, 16, "Chapter 6 review must report 16 passed questions");
+assert.equal(chapter6Review.summary.corrected, 3, "Chapter 6 review must record the source/destination, segment MOV, and jump-trace improvements");
+assert.equal(chapter6Review.summary.blocked, 0, "Chapter 6 review must have no unresolved blockers");
+assert.equal(chapter6Review.summary.officialCertificationCountBefore, 384, "Chapter 6 review starts from the official 384-question ledger");
+assert.equal(chapter6Review.summary.officialCertificationCountAfter, 384, "Chapter 6 review must not silently advance official certification");
+assert.equal(chapter6Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C06-F-Q4").expected, { valid: false, reason: "no_segment_to_segment_form" }, "MOV DS,ES must be rejected as a direct segment-to-segment move");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C06-F-Q7").expected, { finalAX: 4660, halted: true, skippedInstruction: "MOV AX,22136" }, "The chapter 6 jump trace must skip the instruction after JMP");
+
+
+const chapter7Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-07.json", "utf8"));
+const chapter7Ids = key.questions.filter(question => question.chapter === 7).map(question => question.id).sort();
+const reviewedChapter7Ids = chapter7Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter7Ids, chapter7Ids, "Chapter 7 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter7Ids).size, 19, "Chapter 7 review must not duplicate question IDs");
+assert.equal(chapter7Review.summary.questionsReviewed, 19, "Chapter 7 review count must match the complete question bank");
+assert.equal(chapter7Review.summary.passed, 16, "Chapter 7 review must report 16 passed questions");
+assert.equal(chapter7Review.summary.corrected, 3, "Chapter 7 review must record the memory-write, far-pointer, and MOV/XCHG corrections");
+assert.equal(chapter7Review.summary.blocked, 0, "Chapter 7 review must have no unresolved blockers");
+assert.equal(chapter7Review.summary.officialCertificationCountBefore, 384, "Chapter 7 review starts from the official 384-question ledger");
+assert.equal(chapter7Review.summary.officialCertificationCountAfter, 384, "Chapter 7 review must not silently advance official certification");
+assert.equal(chapter7Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C07-L1-Q3").expected, { readsMemory: false, writesMemory: true, sourceRegister: "AX" }, "MOV [BX],AX must be validated as a memory write");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C07-F-Q10").expected, { movReadsMemory: true, xchgReadsMemory: true, xchgWritesMemory: true, exchanges: true }, "MOV and XCHG memory semantics must remain distinct");
+
+
+const chapter8Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-08.json", "utf8"));
+const chapter8Ids = key.questions.filter(question => question.chapter === 8).map(question => question.id).sort();
+const reviewedChapter8Ids = chapter8Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter8Ids, chapter8Ids, "Chapter 8 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter8Ids).size, 19, "Chapter 8 review must not duplicate question IDs");
+assert.equal(chapter8Review.summary.questionsReviewed, 19, "Chapter 8 review count must match the complete question bank");
+assert.equal(chapter8Review.summary.passed, 15, "Chapter 8 review must report 15 passed questions");
+assert.equal(chapter8Review.summary.corrected, 4, "Chapter 8 review must record carry propagation, borrow, NEG and INC flag corrections");
+assert.equal(chapter8Review.summary.blocked, 0, "Chapter 8 review must have no unresolved blockers");
+assert.equal(chapter8Review.summary.officialCertificationCountBefore, 384, "Chapter 8 review starts from the official 384-question ledger");
+assert.equal(chapter8Review.summary.officialCertificationCountAfter, 384, "Chapter 8 review must not silently advance official certification");
+assert.equal(chapter8Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C08-L1-Q3").expected, { lowResult: 0, carryFromLow: 1, highResult: 19, combined: 4864 }, "The 8-bit carry must propagate from AL to AH");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C08-L3-Q3").expected, { result: 255, OF: 0, CF: 1 }, "NEG 01h must yield FFh with CF=1 and OF=0");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C08-F-Q2").expected, { updated: ["OF", "SF", "ZF", "AF", "PF"], preserved: ["CF"] }, "INC must update arithmetic flags except CF");
+
+
+const chapter9Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-09.json", "utf8"));
+const chapter9Ids = key.questions.filter(question => question.chapter === 9).map(question => question.id).sort();
+const reviewedChapter9Ids = chapter9Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter9Ids, chapter9Ids, "Chapter 9 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter9Ids).size, 19, "Chapter 9 review must not duplicate question IDs");
+assert.equal(chapter9Review.summary.questionsReviewed, 19, "Chapter 9 review count must match the complete question bank");
+assert.equal(chapter9Review.summary.passed, 14, "Chapter 9 review must report 14 passed questions");
+assert.equal(chapter9Review.summary.corrected, 5, "Chapter 9 review must record OR, NOT flags, XOR comparison, XOR calculation and TEST trace corrections");
+assert.equal(chapter9Review.summary.blocked, 0, "Chapter 9 review must have no unresolved blockers");
+assert.equal(chapter9Review.summary.officialCertificationCountBefore, 384, "Chapter 9 review starts from the official 384-question ledger");
+assert.equal(chapter9Review.summary.officialCertificationCountAfter, 384, "Chapter 9 review must not silently advance official certification");
+assert.equal(chapter9Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C09-F-Q6").expected, { result: 5 }, "1110 XOR 1011 must produce 0101");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C09-F-Q7").expected, { finalAL: 165, logicalResult: 5, destinationModified: false, flagsUpdated: true }, "TEST must update FLAGS without overwriting AL");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C09-L2-Q2").expected, { flagsModified: false, operandModified: true }, "NOT must modify its operand without changing FLAGS");
+
+
+const chapter10Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-10.json", "utf8"));
+const chapter10Ids = key.questions.filter(question => question.chapter === 10).map(question => question.id).sort();
+const reviewedChapter10Ids = chapter10Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter10Ids, chapter10Ids, "Chapter 10 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter10Ids).size, 19, "Chapter 10 review must not duplicate question IDs");
+assert.equal(chapter10Review.summary.questionsReviewed, 19, "Chapter 10 review count must match the complete question bank");
+assert.equal(chapter10Review.summary.passed, 18, "Chapter 10 review must report 18 passed questions");
+assert.equal(chapter10Review.summary.corrected, 1, "Chapter 10 review must record the missing saved-CF oracle bit");
+assert.equal(chapter10Review.summary.blocked, 0, "Chapter 10 review must have no unresolved blockers");
+assert.equal(chapter10Review.summary.officialCertificationCountBefore, 384, "Chapter 10 review starts from the official 384-question ledger");
+assert.equal(chapter10Review.summary.officialCertificationCountAfter, 384, "Chapter 10 review must not silently advance official certification");
+assert.equal(chapter10Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C10-L3-Q2").inputs, { savedFLAGS: 513 }, "PUSHF must save CF=1 in the tested word");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C10-L3-Q2").expected, { restoredFLAGS: 513, IF: 1, CF: 1 }, "POPF must restore the saved CF and IF bits");
+
+
+const chapter11Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-11.json", "utf8"));
+const chapter11Ids = key.questions.filter(question => question.chapter === 11).map(question => question.id).sort();
+const reviewedChapter11Ids = chapter11Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter11Ids, chapter11Ids, "Chapter 11 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter11Ids).size, 19, "Chapter 11 review must not duplicate question IDs");
+assert.equal(chapter11Review.summary.questionsReviewed, 19, "Chapter 11 review count must match the complete question bank");
+assert.equal(chapter11Review.summary.passed, 16, "Chapter 11 review must report 16 passed questions");
+assert.equal(chapter11Review.summary.corrected, 3, "Chapter 11 review must record INC, conditional branch and regression-test improvements");
+assert.equal(chapter11Review.summary.blocked, 0, "Chapter 11 review must have no unresolved blockers");
+assert.equal(chapter11Review.summary.officialCertificationCountBefore, 384, "Chapter 11 review starts from the official 384-question ledger");
+assert.equal(chapter11Review.summary.officialCertificationCountAfter, 384, "Chapter 11 review must not silently advance official certification");
+assert.equal(chapter11Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C11-F-Q6").expected, { result: 32768, OF: 1, CF: 1 }, "INC 7FFFh must set OF and preserve CF=1");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C11-F-Q7").expected, { ZF: 0, branchTaken: false, next: "fallthrough" }, "JZ must not be taken after CMP 1,2");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C11-F-Q9").expected, { detectsRecurrence: true, retainsCase: true }, "A regression test must retain and replay the previously failing case");
+
+
+const chapter12Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-12.json", "utf8"));
+const chapter12Ids = key.questions.filter(question => question.chapter === 12).map(question => question.id).sort();
+const reviewedChapter12Ids = chapter12Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter12Ids, chapter12Ids, "Chapter 12 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter12Ids).size, 19, "Chapter 12 review must not duplicate question IDs");
+assert.equal(chapter12Review.summary.questionsReviewed, 19, "Chapter 12 review count must match the complete question bank");
+assert.equal(chapter12Review.summary.passed, 13, "Chapter 12 review must report 13 passed questions");
+assert.equal(chapter12Review.summary.corrected, 6, "Chapter 12 review must record six diversity and flag-semantics corrections");
+assert.equal(chapter12Review.summary.blocked, 0, "Chapter 12 review must have no unresolved blockers");
+assert.equal(chapter12Review.summary.officialCertificationCountBefore, 384, "Chapter 12 review starts from the official 384-question ledger");
+assert.equal(chapter12Review.summary.officialCertificationCountAfter, 384, "Chapter 12 review must not silently advance official certification");
+assert.equal(chapter12Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C12-L3-Q1").expected, { AF: "undefined", CF: 0, OF: 0 }, "TEST must leave AF undefined while clearing CF and OF");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C12-F-Q7").expected, { logicalResult: 3, CF: 0, OF: 0, PF: 1, AF: "undefined" }, "TEST 03h must set PF=1 and clear CF/OF");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C12-F-Q9").expected, { condition: "SF==OF", signed: true }, "Signed greater-or-equal must use SF=OF");
+
+
+const chapter13Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-13.json", "utf8"));
+const chapter13Ids = key.questions.filter(question => question.chapter === 13).map(question => question.id).sort();
+const reviewedChapter13Ids = chapter13Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter13Ids, chapter13Ids, "Chapter 13 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter13Ids).size, 19, "Chapter 13 review must not duplicate question IDs");
+assert.equal(chapter13Review.summary.questionsReviewed, 19, "Chapter 13 review count must match the complete question bank");
+assert.equal(chapter13Review.summary.passed, 12, "Chapter 13 review must report 12 passed questions");
+assert.equal(chapter13Review.summary.corrected, 7, "Chapter 13 review must record seven encoding and target-diversity corrections");
+assert.equal(chapter13Review.summary.blocked, 0, "Chapter 13 review must have no unresolved blockers");
+assert.equal(chapter13Review.summary.officialCertificationCountBefore, 384, "Chapter 13 review starts from the official 384-question ledger");
+assert.equal(chapter13Review.summary.officialCertificationCountAfter, 384, "Chapter 13 review must not silently advance official certification");
+assert.equal(chapter13Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C13-L1-Q1").expected, { displacement: -16, encoded: 240, fits: true }, "Backward rel8 displacement must encode as F0h");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C13-L2-Q1").expected, { opcode: "EA", kind: "far_direct", pointerBits: 32 }, "Direct far JMP must use EA ptr16:16");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C13-F-Q7").expected, { opcode: "FF", extension: 5, kind: "far_indirect" }, "Indirect far JMP must use FF /5");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C13-F-Q5").expected, { CS: 4096, IP: 4660, CSChanged: false, IPChanged: true }, "JMP BX must load IP and preserve CS");
+
+
+const chapter14Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-14.json", "utf8"));
+const chapter14Ids = key.questions.filter(question => question.chapter === 14).map(question => question.id).sort();
+const reviewedChapter14Ids = chapter14Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter14Ids, chapter14Ids, "Chapter 14 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter14Ids).size, 19, "Chapter 14 review must not duplicate question IDs");
+assert.equal(chapter14Review.summary.questionsReviewed, 19, "Chapter 14 review count must match the complete question bank");
+assert.equal(chapter14Review.summary.passed, 14, "Chapter 14 review must report 14 passed questions");
+assert.equal(chapter14Review.summary.corrected, 5, "Chapter 14 review must record five Jcc coverage improvements");
+assert.equal(chapter14Review.summary.blocked, 0, "Chapter 14 review must have no unresolved blockers");
+assert.equal(chapter14Review.summary.officialCertificationCountBefore, 384, "Chapter 14 review starts from the official 384-question ledger");
+assert.equal(chapter14Review.summary.officialCertificationCountAfter, 384, "Chapter 14 review must not silently advance official certification");
+assert.equal(chapter14Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C14-F-Q4").expected, { leftValue: 4, rightValue: 5, CF: 1, ZF: 0, branchTaken: true }, "JBE must branch after unsigned 4<5");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C14-F-Q7").expected, { result: 3, PF: 1, branchTaken: true }, "JP must branch for an even-parity TEST result");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C14-F-Q8").expected, { result: 128, OF: 1, branchTaken: true }, "JO must branch after signed 7Fh+1 overflow");
+
+
+const chapter15Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-15.json", "utf8"));
+const chapter15Ids = key.questions.filter(question => question.chapter === 15).map(question => question.id).sort();
+const reviewedChapter15Ids = chapter15Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter15Ids, chapter15Ids, "Chapter 15 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter15Ids).size, 19, "Chapter 15 review must not duplicate question IDs");
+assert.equal(chapter15Review.summary.questionsReviewed, 19, "Chapter 15 review count must match the complete question bank");
+assert.equal(chapter15Review.summary.passed, 12, "Chapter 15 review must report 12 passed questions");
+assert.equal(chapter15Review.summary.corrected, 7, "Chapter 15 review must record seven signedness and branch-diversity corrections");
+assert.equal(chapter15Review.summary.blocked, 0, "Chapter 15 review must have no unresolved blockers");
+assert.equal(chapter15Review.summary.officialCertificationCountBefore, 384, "Chapter 15 review starts from the official 384-question ledger");
+assert.equal(chapter15Review.summary.officialCertificationCountAfter, 384, "Chapter 15 review must not silently advance official certification");
+assert.equal(chapter15Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C15-F-Q7").expected, { leftValue: 255, rightValue: 1, CF: 0, ZF: 0, branchTaken: true }, "Unsigned 255>1 must take JA");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C15-F-Q8").expected, { leftValue: -1, rightValue: 1, SF: 1, OF: 0, ZF: 0, branchTaken: false }, "Signed −1>1 must not take JG");
+
 console.log("Question oracle evaluator: chapters 1–36 — " + oracleRecordsChecked + "/684 oracle records passed automated checks; official certification ledger remains " + manifest.oracleCoverageSummary.officialCertificationCount + "/684 (" + manifest.oracleCoverageSummary.remainingOfficialCertification + " pending); " + blocked + " blocked.");

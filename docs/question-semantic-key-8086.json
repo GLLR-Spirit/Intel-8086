@@ -487,7 +487,7 @@
       ],
       "correctAnswer": "La BIU gère les accès externes et la prélecture ; l'EU exécute les instructions",
       "explanation": "La BIU assure l'interface de bus ; l'EU traite les instructions et les données.",
-      "category": "Compréhension"
+      "category": "Définition"
     },
     {
       "id": "C02-F-Q3",
@@ -511,15 +511,15 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "Quelle affirmation est exacte au sujet de la file de prélecture du 8086 ?",
+      "stem": "Quelle écriture respecte la syntaxe Intel pour ajouter la valeur immédiate 3 à AX ?",
       "choices": [
-        "Elle contient six octets et n'implique pas une exécution superscalaire",
-        "Elle contient seize octets",
-        "Elle exécute plusieurs instructions simultanément"
+        "ADD AX,3",
+        "ADD 3,AX",
+        "AX ADD 3"
       ],
-      "correctAnswer": "Elle contient six octets et n'implique pas une exécution superscalaire",
-      "explanation": "La file du 8086 contient six octets ; elle chevauche la récupération et l'exécution sans exécution superscalaire.",
-      "category": "Restrictions"
+      "correctAnswer": "ADD AX,3",
+      "explanation": "En syntaxe Intel, l'opérande destination précède la source : ADD AX,3 ajoute la valeur immédiate 3 au registre AX.",
+      "category": "Syntaxe"
     },
     {
       "id": "C02-F-Q5",
@@ -655,14 +655,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 3,
-      "stem": "Dans 1010b, quels poids sont additionnés ?",
+      "stem": "Dans 1101b, quels poids sont additionnés ?",
       "choices": [
-        "8 + 2",
-        "4 + 1",
-        "8 + 4"
+        "8 + 4 + 1",
+        "8 + 2 + 1",
+        "4 + 2 + 1"
       ],
-      "correctAnswer": "8 + 2",
-      "explanation": "1010b vaut 2^3 + 2^1 = 8 + 2 = 10.",
+      "correctAnswer": "8 + 4 + 1",
+      "explanation": "1101b vaut 2^3 + 2^2 + 2^0 = 8 + 4 + 1 = 13.",
       "category": "Vérification"
     },
     {
@@ -751,14 +751,14 @@
       "kind": "intermediate",
       "lesson": 3,
       "number": 3,
-      "stem": "Combien vaut 0FFh en décimal ?",
+      "stem": "Combien de combinaisons binaires distinctes peut-on coder sur 8 bits ?",
       "choices": [
-        "15",
-        "255",
-        "256"
+        "128",
+        "256",
+        "512"
       ],
-      "correctAnswer": "255",
-      "explanation": "0FFh = 15 × 16 + 15 = 255.",
+      "correctAnswer": "256",
+      "explanation": "Huit bits offrent 2^8 combinaisons distinctes, soit 256 valeurs de 0 à 255.",
       "category": "Vérification"
     },
     {
@@ -817,12 +817,12 @@
       "number": 4,
       "stem": "Pourquoi MOV AL,100h dépasse-t-il la capacité de AL ?",
       "choices": [
-        "100h nécessite neuf bits alors que AL en contient huit",
-        "AL ne peut contenir que des nombres pairs",
-        "Les constantes hexadécimales sont interdites"
+        "100h vaut 256, au-dessus de FFh (255)",
+        "100h vaut 100 en décimal et tient dans AL",
+        "AL est un registre de 16 bits"
       ],
-      "correctAnswer": "100h nécessite neuf bits alors que AL en contient huit",
-      "explanation": "AL accepte au maximum FFh ; 100h vaut 256 et nécessite plus de huit bits.",
+      "correctAnswer": "100h vaut 256, au-dessus de FFh (255)",
+      "explanation": "100h vaut 256 ; un registre AL de 8 bits ne peut contenir que 00h à FFh, soit 0 à 255.",
       "category": "Restrictions"
     },
     {
@@ -1183,14 +1183,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Après 7Fh + 1 sur AL, quels indicateurs distinguent le cas signé du cas non signé ?",
+      "stem": "Après 80h + 80h sur AL, quels indicateurs sont activés ?",
       "choices": [
-        "OF=1 et CF=0",
+        "OF=1 et CF=1",
         "OF=0 et CF=1",
-        "OF=1 et CF=1"
+        "OF=1 et CF=0"
       ],
-      "correctAnswer": "OF=1 et CF=0",
-      "explanation": "La somme signée +127+1 déborde (OF=1), mais il n'y a pas de retenue hors de l'octet (CF=0).",
+      "correctAnswer": "OF=1 et CF=1",
+      "explanation": "80h+80h vaut 100h en non signé, donc CF=1 ; en signé, −128−128 sort de la plage −128 à +127, donc OF=1.",
       "category": "Analyse de résultat"
     },
     {
@@ -1423,14 +1423,14 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "Quel segment est utilisé par défaut pour une référence mémoire basée sur BP ?",
+      "stem": "Pourquoi MOV AX,AL est-il invalide sur le 8086 ?",
       "choices": [
-        "DS",
-        "SS",
-        "ES"
+        "AX est un registre 16 bits et AL un registre 8 bits : les tailles diffèrent",
+        "AX et AL ne peuvent jamais être utilisés dans la même instruction",
+        "AL est un registre de segment"
       ],
-      "correctAnswer": "SS",
-      "explanation": "Les formes d'adressage utilisant BP sélectionnent SS par défaut sur le 8086.",
+      "correctAnswer": "AX est un registre 16 bits et AL un registre 8 bits : les tailles diffèrent",
+      "explanation": "MOV exige des opérandes de même taille ; AX fait 16 bits et AL 8 bits. Une copie entre octets peut utiliser MOV AH,AL.",
       "category": "Restrictions"
     },
     {
@@ -1471,14 +1471,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Dans MOV AX,1234h / MOV AL,56h / HLT, quelle partie de AX est préservée ?",
+      "stem": "Dans MOV AX,1234h / MOV AH,56h / HLT, quelle partie de AX est préservée ?",
       "choices": [
-        "AH",
         "AL",
+        "AH",
         "Aucun octet"
       ],
-      "correctAnswer": "AH",
-      "explanation": "AL est remplacé par 56h tandis que AH conserve 12h.",
+      "correctAnswer": "AL",
+      "explanation": "AH est remplacé par 56h tandis que AL conserve 34h.",
       "category": "Analyse de programme"
     },
     {
@@ -1503,14 +1503,14 @@
       "kind": "final",
       "lesson": null,
       "number": 9,
-      "stem": "Quelle erreur faut-il corriger dans MOV CS,AX ?",
+      "stem": "Quelle erreur faut-il corriger dans l'analyse de MOVSB : « la source et la destination utilisent DS:SI » ?",
       "choices": [
-        "CS ne peut pas être destination de MOV sur le 8086",
-        "AX doit être un registre 8 bits",
-        "MOV ne peut pas copier entre registres"
+        "La source est DS:SI et la destination ES:DI",
+        "La source et la destination utilisent CS:IP",
+        "MOVSB n'accède pas à la mémoire"
       ],
-      "correctAnswer": "CS ne peut pas être destination de MOV sur le 8086",
-      "explanation": "Le chargement direct de CS par MOV est interdit ; les transferts de contrôle modifient CS:IP selon leur forme.",
+      "correctAnswer": "La source est DS:SI et la destination ES:DI",
+      "explanation": "Par défaut, MOVSB lit l'octet source via DS:SI et écrit l'octet destination via ES:DI.",
       "category": "Débogage"
     },
     {
@@ -1583,14 +1583,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 1,
-      "stem": "Dans MOV AX,BX, quelle est la destination ?",
+      "stem": "Dans MOV AX,BX, quelle est la source ?",
       "choices": [
         "AX",
         "BX",
         "Les deux"
       ],
-      "correctAnswer": "AX",
-      "explanation": "La première opérande est la destination.",
+      "correctAnswer": "BX",
+      "explanation": "BX est l'opérande source ; AX reçoit sa valeur.",
       "category": "Compréhension"
     },
     {
@@ -1711,14 +1711,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 3,
-      "stem": "MOV AX,[BX] effectue-t-elle une lecture mémoire ?",
+      "stem": "MOV [BX],AX effectue-t-elle une écriture mémoire ?",
       "choices": [
         "Oui",
         "Non, elle calcule seulement BX",
         "Seulement si CF=1"
       ],
       "correctAnswer": "Oui",
-      "explanation": "La source mémoire est lue et transférée dans AX.",
+      "explanation": "La destination mémoire reçoit le mot AX à l'adresse DS:BX.",
       "category": "Vérification"
     },
     {
@@ -1855,14 +1855,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 3,
-      "stem": "Après AL=FFh puis ADD AL,1, quel état obtient-on ?",
+      "stem": "Si AX=12FFh, puis ADD AL,1 / ADC AH,0, que vaut AX ?",
       "choices": [
-        "AL=00h et CF=1",
-        "AL=FFh et CF=0",
-        "AL=01h et CF=0"
+        "1300h",
+        "1200h",
+        "12FFh"
       ],
-      "correctAnswer": "AL=00h et CF=1",
-      "explanation": "Le résultat sur huit bits est nul avec retenue.",
+      "correctAnswer": "1300h",
+      "explanation": "ADD AL,1 donne AL=00h et CF=1 ; ADC AH,0 ajoute ensuite cette retenue à AH, qui passe de 12h à 13h.",
       "category": "Vérification"
     },
     {
@@ -1903,14 +1903,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 3,
-      "stem": "Après AL=00h puis SUB AL,1, quel état obtient-on ?",
+      "stem": "Après AL=10h, CF=1 puis SBB AL,1, quelle valeur obtient-on ?",
       "choices": [
-        "AL=FFh et CF=1",
-        "AL=00h et CF=0",
-        "AL=01h et CF=1"
+        "0Eh",
+        "0Fh",
+        "10h"
       ],
-      "correctAnswer": "AL=FFh et CF=1",
-      "explanation": "La soustraction emprunte et le résultat sur huit bits est FFh.",
+      "correctAnswer": "0Eh",
+      "explanation": "SBB calcule 10h−1−1=0Eh ; l'emprunt entrant CF est soustrait en plus de la source.",
       "category": "Vérification"
     },
     {
@@ -1951,14 +1951,14 @@
       "kind": "intermediate",
       "lesson": 3,
       "number": 3,
-      "stem": "Quel est le résultat de NEG 80h sur 8 bits ?",
+      "stem": "Quel est le résultat de NEG 01h sur 8 bits ?",
       "choices": [
-        "80h avec OF=1",
-        "7Fh avec OF=0",
-        "00h avec CF=0"
+        "FFh avec CF=1 et OF=0",
+        "01h avec CF=0",
+        "00h avec OF=1"
       ],
-      "correctAnswer": "80h avec OF=1",
-      "explanation": "−(−128) déborde la plage signée ; le motif reste 80h.",
+      "correctAnswer": "FFh avec CF=1 et OF=0",
+      "explanation": "NEG 01h calcule 00h−01h=FFh ; l'opérande n'étant pas nul, CF=1, et il n'y a pas de débordement signé, donc OF=0.",
       "category": "Vérification"
     },
     {
@@ -1999,14 +1999,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 3,
-      "stem": "Quelle opération active des bits selon un masque ?",
+      "stem": "Après AL=08h, OR AL,05h, quelle valeur obtient-on ?",
       "choices": [
-        "OR",
-        "AND",
-        "NOT"
+        "0Dh",
+        "05h",
+        "08h"
       ],
-      "correctAnswer": "OR",
-      "explanation": "OR active les bits présents dans le masque.",
+      "correctAnswer": "0Dh",
+      "explanation": "08h OR 05h active les bits des deux opérandes et donne 0Dh.",
       "category": "Vérification"
     },
     {
@@ -2031,14 +2031,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 2,
-      "stem": "Quelle instruction inverse tous les bits ?",
+      "stem": "NOT AL modifie-t-elle FLAGS ?",
       "choices": [
-        "NOT",
-        "TEST",
-        "OR"
+        "Oui",
+        "Non",
+        "Seulement CF"
       ],
-      "correctAnswer": "NOT",
-      "explanation": "NOT complète chaque bit de l'opérande.",
+      "correctAnswer": "Non",
+      "explanation": "NOT inverse l'opérande mais ne modifie aucun indicateur FLAGS sur le 8086.",
       "category": "Application"
     },
     {
@@ -2447,14 +2447,14 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "Pourquoi MOV [100h],[200h] est-il invalide ?",
+      "stem": "Pourquoi MOV DS,ES est-il invalide sur le 8086 ?",
       "choices": [
-        "La forme mémoire vers mémoire n'est pas autorisée",
-        "Les adresses doivent être paires",
-        "MOV exige toujours AX"
+        "Un transfert direct entre deux registres de segment n'est pas encodable ; passer par AX",
+        "Les registres de segment ne peuvent jamais être source de MOV",
+        "ES est un registre de 8 bits"
       ],
-      "correctAnswer": "La forme mémoire vers mémoire n'est pas autorisée",
-      "explanation": "Un registre intermédiaire est requis pour transférer entre deux cases mémoire.",
+      "correctAnswer": "Un transfert direct entre deux registres de segment n'est pas encodable ; passer par AX",
+      "explanation": "MOV ne permet pas un transfert direct segment-vers-segment ; on peut passer par un registre général, par exemple MOV AX,ES puis MOV DS,AX.",
       "category": "Restrictions"
     },
     {
@@ -2495,14 +2495,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Quel état change directement après JMP FIN ?",
+      "stem": "Après MOV AX,1234h / JMP FIN / MOV AX,5678h / FIN: HLT, que vaut AX ?",
       "choices": [
-        "Le flot de contrôle, via IP",
-        "La valeur de AX",
-        "Le contenu de FLAGS par une comparaison"
+        "1234h",
+        "5678h",
+        "0000h"
       ],
-      "correctAnswer": "Le flot de contrôle, via IP",
-      "explanation": "JMP transfère l'exécution à la cible.",
+      "correctAnswer": "1234h",
+      "explanation": "JMP FIN saute MOV AX,5678h ; AX conserve donc 1234h lorsque HLT est atteint.",
       "category": "Analyse de programme"
     },
     {
@@ -2639,14 +2639,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Dans un pointeur far stocké en little-endian, quel mot suit le mot offset ?",
+      "stem": "Dans la représentation mémoire d'un pointeur far 16:16 utilisé par LDS/LES, quel mot suit le mot offset ?",
       "choices": [
         "Le mot segment",
         "Le mot FLAGS",
         "Le mot opcode"
       ],
       "correctAnswer": "Le mot segment",
-      "explanation": "La représentation en mémoire est offset puis segment.",
+      "explanation": "La structure du pointeur far place le mot offset en premier, puis le mot segment ; little-endian décrit l'ordre des octets à l'intérieur de chaque mot.",
       "category": "Calcul / prédiction"
     },
     {
@@ -2703,14 +2703,14 @@
       "kind": "final",
       "lesson": null,
       "number": 10,
-      "stem": "Quelle règle évite de confondre adresse et donnée ?",
+      "stem": "Quelle distinction faut-il retenir entre MOV AX,[BX] et XCHG AX,[BX] ?",
       "choices": [
-        "Identifier si l'instruction calcule un offset ou lit le contenu mémoire",
-        "Considérer tous les opérandes entre crochets comme des constantes",
-        "Ignorer la taille de l'opérande"
+        "MOV lit la mémoire dans AX ; XCHG échange AX et la case mémoire",
+        "Les deux ne font qu'une lecture mémoire",
+        "XCHG calcule l'offset sans accéder à la mémoire"
       ],
-      "correctAnswer": "Identifier si l'instruction calcule un offset ou lit le contenu mémoire",
-      "explanation": "Les crochets désignent un accès mémoire ; LEA est l'exception de calcul d'adresse.",
+      "correctAnswer": "MOV lit la mémoire dans AX ; XCHG échange AX et la case mémoire",
+      "explanation": "MOV AX,[BX] copie le mot mémoire vers AX ; XCHG AX,[BX] échange la valeur d'AX avec le mot mémoire et écrit les deux nouvelles valeurs.",
       "category": "Raisonnement"
     },
     {
@@ -2735,14 +2735,14 @@
       "kind": "final",
       "lesson": null,
       "number": 2,
-      "stem": "Quel indicateur est préservé par INC ?",
+      "stem": "Quels indicateurs arithmétiques INC met-il à jour ?",
       "choices": [
-        "CF",
-        "OF",
-        "ZF"
+        "OF, SF, ZF, AF et PF ; CF est préservé",
+        "CF uniquement",
+        "Aucun indicateur"
       ],
-      "correctAnswer": "CF",
-      "explanation": "INC préserve CF, contrairement à ADD.",
+      "correctAnswer": "OF, SF, ZF, AF et PF ; CF est préservé",
+      "explanation": "INC met à jour OF, SF, ZF, AF et PF ; contrairement à ADD, il laisse CF inchangé.",
       "category": "Compréhension"
     },
     {
@@ -2927,14 +2927,14 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "Quelle instruction inverse uniquement les bits sélectionnés ?",
+      "stem": "Pourquoi XOR avec un masque est-il préférable à NOT pour basculer certains bits seulement ?",
       "choices": [
-        "XOR avec un masque",
-        "NOT",
-        "MOV"
+        "XOR ne bascule que les bits du masque à 1 ; NOT inverse tous les bits",
+        "XOR modifie uniquement FLAGS",
+        "NOT ne modifie aucun bit"
       ],
-      "correctAnswer": "XOR avec un masque",
-      "explanation": "XOR inverse les bits où le masque contient des uns.",
+      "correctAnswer": "XOR ne bascule que les bits du masque à 1 ; NOT inverse tous les bits",
+      "explanation": "XOR bascule uniquement les positions où le masque vaut 1 ; NOT inverse tous les bits de l'opérande.",
       "category": "Restrictions"
     },
     {
@@ -2959,14 +2959,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Quel résultat produit 1010b AND 1100b ?",
+      "stem": "Quel résultat produit 1110b XOR 1011b ?",
       "choices": [
-        "1000b",
-        "1110b",
-        "0110b"
+        "0101b",
+        "1111b",
+        "1010b"
       ],
-      "correctAnswer": "1000b",
-      "explanation": "Les bits communs à 1 sont seulement le bit de poids 3.",
+      "correctAnswer": "0101b",
+      "explanation": "1110b XOR 1011b donne 0101b : les bits différents valent 1.",
       "category": "Calcul / prédiction"
     },
     {
@@ -2975,14 +2975,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "TEST met-il le résultat logique dans l'opérande ?",
+      "stem": "Après MOV AL,A5h / TEST AL,0Fh / HLT, que vaut AL ?",
       "choices": [
-        "Non",
-        "Oui, toujours",
-        "Seulement si ZF=0"
+        "A5h",
+        "05h",
+        "00h"
       ],
-      "correctAnswer": "Non",
-      "explanation": "TEST actualise les indicateurs sans modifier la destination.",
+      "correctAnswer": "A5h",
+      "explanation": "TEST calcule A5h AND 0Fh pour FLAGS, mais ne stocke pas 05h dans AL ; AL reste A5h.",
       "category": "Analyse de programme"
     },
     {
@@ -3279,14 +3279,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Si CF=1 avant INC AL, que devient CF après INC ?",
+      "stem": "Si CF=1 et AX=7FFFh avant INC AX, que valent OF et CF après INC ?",
       "choices": [
-        "Il reste à 1",
-        "Il est remis à zéro",
-        "Il est inversé"
+        "OF=1 et CF=1",
+        "OF=0 et CF=0",
+        "OF=1 et CF=0"
       ],
-      "correctAnswer": "Il reste à 1",
-      "explanation": "INC préserve la valeur antérieure de CF sans la modifier.",
+      "correctAnswer": "OF=1 et CF=1",
+      "explanation": "INC 7FFFh produit 8000h et OF=1 ; INC préserve CF, qui reste à 1.",
       "category": "Calcul / prédiction"
     },
     {
@@ -3295,14 +3295,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Quel contrôle permet de valider un branchement ?",
+      "stem": "Après CMP AX,BX avec AX=1 et BX=2, puis JZ EGAL, quel chemin est suivi ?",
       "choices": [
-        "Tester les conditions vraie et fausse et relever IP",
-        "Lire uniquement le résultat final",
-        "Changer le registre source au hasard"
+        "Le chemin non pris : l'instruction qui suit JZ",
+        "La cible EGAL",
+        "Une interruption"
       ],
-      "correctAnswer": "Tester les conditions vraie et fausse et relever IP",
-      "explanation": "Les deux chemins doivent être testés et le flot vérifié.",
+      "correctAnswer": "Le chemin non pris : l'instruction qui suit JZ",
+      "explanation": "CMP établit ZF=0 car 1 n'est pas égal à 2 ; JZ n'est donc pas pris et l'exécution continue après le saut.",
       "category": "Analyse de programme"
     },
     {
@@ -3327,14 +3327,14 @@
       "kind": "final",
       "lesson": null,
       "number": 9,
-      "stem": "Quelle démarche convient après un échec reproductible ?",
+      "stem": "Pourquoi conserver un test de régression après une correction ?",
       "choices": [
-        "Comparer la première divergence et isoler une cause",
-        "Modifier plusieurs lignes au hasard",
-        "Supprimer le cas de test"
+        "Pour détecter la réapparition du défaut lors d'un changement ultérieur",
+        "Pour empêcher toute modification future",
+        "Pour remplacer l'analyse de la cause"
       ],
-      "correctAnswer": "Comparer la première divergence et isoler une cause",
-      "explanation": "Le diagnostic doit être progressif et reproductible.",
+      "correctAnswer": "Pour détecter la réapparition du défaut lors d'un changement ultérieur",
+      "explanation": "Le test de régression conserve le cas qui a échoué et détecte si une modification ultérieure réintroduit le défaut.",
       "category": "Débogage"
     },
     {
@@ -3391,14 +3391,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 3,
-      "stem": "TEST AL,04h avec AL=05h modifie-t-il AL ?",
+      "stem": "Avec AL=05h, que vaut ZF après TEST AL,04h ?",
       "choices": [
-        "Non, TEST ne stocke pas le ET logique",
-        "Oui, AL devient 04h",
-        "Oui, AL devient 00h"
+        "0",
+        "1",
+        "Indéfini"
       ],
-      "correctAnswer": "Non, TEST ne stocke pas le ET logique",
-      "explanation": "TEST met à jour les FLAGS mais conserve l'opérande.",
+      "correctAnswer": "0",
+      "explanation": "05h AND 04h vaut 04h, un résultat non nul ; ZF=0.",
       "category": "Vérification"
     },
     {
@@ -3439,14 +3439,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 3,
-      "stem": "Après CMP 3,5 sur 8 bits, quel est le résultat tronqué ?",
+      "stem": "Après CMP 5,3 sur 8 bits, quel est le résultat tronqué ?",
       "choices": [
+        "02h",
         "FEh",
-        "FDh",
-        "02h"
+        "00h"
       ],
-      "correctAnswer": "FEh",
-      "explanation": "03h−05h donne FEh sur 8 bits.",
+      "correctAnswer": "02h",
+      "explanation": "05h−03h donne 02h sur huit bits, sans emprunt non signé.",
       "category": "Vérification"
     },
     {
@@ -3455,14 +3455,14 @@
       "kind": "intermediate",
       "lesson": 3,
       "number": 1,
-      "stem": "Avec AL=05h, que calcule TEST AL,04h ?",
+      "stem": "Quel indicateur reste indéfini après TEST sur 8086 ?",
       "choices": [
-        "04h pour les indicateurs, sans modifier AL",
-        "04h stocké dans AL",
-        "00h stocké dans AL"
+        "AF",
+        "CF",
+        "OF"
       ],
-      "correctAnswer": "04h pour les indicateurs, sans modifier AL",
-      "explanation": "TEST calcule un AND logique uniquement pour les indicateurs.",
+      "correctAnswer": "AF",
+      "explanation": "TEST remet CF et OF à zéro ; AF reste indéfini sur le 8086.",
       "category": "Compréhension"
     },
     {
@@ -3503,14 +3503,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 1,
-      "stem": "Quelle plage de déplacement utilise JMP short ?",
+      "stem": "Si IP après JMP vaut 0100h et la cible 00F0h, quel déplacement rel8 faut-il encoder ?",
       "choices": [
-        "−128 à +127 octets",
-        "−32768 à +32767 octets",
-        "0 à 255 octets"
+        "−16 (F0h)",
+        "+16 (10h)",
+        "−128 (80h)"
       ],
-      "correctAnswer": "−128 à +127 octets",
-      "explanation": "Le déplacement relatif short est un entier signé sur 8 bits.",
+      "correctAnswer": "−16 (F0h)",
+      "explanation": "Le déplacement vaut cible moins IP après l'instruction : 00F0h−0100h=−0010h, encodé F0h sur huit bits.",
       "category": "Compréhension"
     },
     {
@@ -3551,14 +3551,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 1,
-      "stem": "Quel opcode encode JMP direct relatif near ?",
+      "stem": "Quel opcode encode JMP far direct avec pointeur immédiat 16:16 ?",
       "choices": [
-        "E9 rel16",
-        "EB rel8",
-        "FF /4"
+        "EA ptr16:16",
+        "FF /5",
+        "E9 rel16"
       ],
-      "correctAnswer": "E9 rel16",
-      "explanation": "E9 est le saut direct relatif avec déplacement 16 bits.",
+      "correctAnswer": "EA ptr16:16",
+      "explanation": "EA encode le saut far direct avec un offset et un segment immédiats.",
       "category": "Compréhension"
     },
     {
@@ -3583,14 +3583,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 3,
-      "stem": "Depuis quel offset calcule-t-on la cible relative ?",
+      "stem": "Si IP après l'instruction vaut 2000h et le déplacement rel16 vaut +0030h, quelle est la cible ?",
       "choices": [
-        "Depuis l'IP après l'instruction",
-        "Depuis le début de CS",
-        "Depuis l'adresse de l'étiquette précédente"
+        "2030h",
+        "1FD0h",
+        "0030h"
       ],
-      "correctAnswer": "Depuis l'IP après l'instruction",
-      "explanation": "Le déplacement est ajouté à l'IP suivant l'instruction.",
+      "correctAnswer": "2030h",
+      "explanation": "La cible relative est IP après l'instruction plus le déplacement : 2000h+0030h=2030h.",
       "category": "Vérification"
     },
     {
@@ -3695,14 +3695,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 1,
-      "stem": "JO branche lorsque…",
+      "stem": "JNO branche lorsque…",
       "choices": [
+        "OF=0",
         "OF=1",
-        "CF=1",
-        "ZF=1"
+        "ZF=0"
       ],
-      "correctAnswer": "OF=1",
-      "explanation": "JO teste le drapeau de débordement.",
+      "correctAnswer": "OF=0",
+      "explanation": "JNO branche lorsque OF=0, condition opposée à JO.",
       "category": "Compréhension"
     },
     {
@@ -3839,14 +3839,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 1,
-      "stem": "Quelle valeur signée représente FFh sur 8 bits ?",
+      "stem": "Quelle valeur signée représente 80h sur 8 bits ?",
       "choices": [
-        "−1",
-        "255",
-        "−128"
+        "−128",
+        "128",
+        "−127"
       ],
-      "correctAnswer": "−1",
-      "explanation": "FFh représente −1 en complément à deux.",
+      "correctAnswer": "−128",
+      "explanation": "80h représente −128 en complément à deux sur huit bits.",
       "category": "Compréhension"
     },
     {
@@ -3855,14 +3855,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 2,
-      "stem": "Quelle condition teste inférieur signé après CMP ?",
+      "stem": "Quelle condition teste supérieur ou égal signé après CMP ?",
       "choices": [
+        "JGE",
         "JL",
-        "JB",
-        "JA"
+        "JB"
       ],
-      "correctAnswer": "JL",
-      "explanation": "JL utilise SF≠OF.",
+      "correctAnswer": "JGE",
+      "explanation": "JGE utilise SF=OF et exprime supérieur ou égal signé.",
       "category": "Application"
     },
     {
@@ -3935,14 +3935,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 1,
-      "stem": "LOOP modifie quel registre ?",
+      "stem": "Dans quel ordre LOOP effectue-t-elle ses opérations ?",
       "choices": [
-        "CX",
-        "AX",
-        "IP uniquement"
+        "Elle décrémente CX puis teste si CX est non nul",
+        "Elle teste CX puis le décrémente",
+        "Elle compare AX et BX puis modifie CX"
       ],
-      "correctAnswer": "CX",
-      "explanation": "LOOP décrémente implicitement CX.",
+      "correctAnswer": "Elle décrémente CX puis teste si CX est non nul",
+      "explanation": "LOOP décrémente d’abord CX, puis branche si le résultat est non nul.",
       "category": "Compréhension"
     },
     {
@@ -3983,14 +3983,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 1,
-      "stem": "LOOPE branche si…",
+      "stem": "Si CX vaut 1 avant LOOPE et ZF=1, le branchement est-il pris ?",
       "choices": [
-        "CX après décrémentation est non nul et ZF=1",
-        "CX est nul",
-        "ZF=0 quel que soit CX"
+        "Non, CX devient 0 après décrémentation",
+        "Oui, car ZF=1 suffit",
+        "Oui, car CX initial était non nul"
       ],
-      "correctAnswer": "CX après décrémentation est non nul et ZF=1",
-      "explanation": "LOOPE combine le compteur et ZF.",
+      "correctAnswer": "Non, CX devient 0 après décrémentation",
+      "explanation": "LOOPE décrémente d’abord CX ; le résultat vaut zéro, donc le branchement n’est pas pris malgré ZF=1.",
       "category": "Compréhension"
     },
     {
@@ -4031,14 +4031,14 @@
       "kind": "intermediate",
       "lesson": 3,
       "number": 1,
-      "stem": "JCXZ décrémente-t-elle CX ?",
+      "stem": "JCXZ modifie-t-elle FLAGS ?",
       "choices": [
-        "Non",
-        "Oui, de 1",
-        "Oui, de 2"
+        "Non, FLAGS sont préservés",
+        "Oui, ZF devient 1",
+        "Oui, CF devient 0"
       ],
-      "correctAnswer": "Non",
-      "explanation": "JCXZ teste CX=0 sans modifier le compteur.",
+      "correctAnswer": "Non, FLAGS sont préservés",
+      "explanation": "JCXZ teste CX sans modifier FLAGS.",
       "category": "Compréhension"
     },
     {
@@ -4079,14 +4079,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 1,
-      "stem": "Pourquoi initialiser le maximum avec le premier élément ?",
+      "stem": "Dans le tableau [-5, -2, -8], quelle valeur est choisie comme maximum initial ?",
       "choices": [
-        "Pour éviter une sentinelle qui pourrait être incorrecte",
-        "Pour activer CF",
-        "Pour éviter CMP"
+        "−5",
+        "−2",
+        "0"
       ],
-      "correctAnswer": "Pour éviter une sentinelle qui pourrait être incorrecte",
-      "explanation": "L'initialisation depuis les données garantit une base valide.",
+      "correctAnswer": "−5",
+      "explanation": "Le maximum initial est pris dans les données : le premier élément vaut −5.",
       "category": "Compréhension"
     },
     {
@@ -4303,14 +4303,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Après TEST AL,01h avec AL=02h, ZF vaut…",
+      "stem": "Après TEST AL,80h avec AL=80h, ZF vaut…",
       "choices": [
-        "1",
         "0",
+        "1",
         "Toujours indéfini"
       ],
-      "correctAnswer": "1",
-      "explanation": "02h AND 01h vaut zéro.",
+      "correctAnswer": "0",
+      "explanation": "80h AND 80h vaut 80h, un résultat non nul ; ZF=0.",
       "category": "Calcul / prédiction"
     },
     {
@@ -4319,14 +4319,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Quel effet TEST a-t-elle sur CF et OF sur 8086 ?",
+      "stem": "Après MOV AL,03h / TEST AL,03h / HLT, quels indicateurs sont obtenus ?",
       "choices": [
-        "Les remet à zéro",
-        "Les inverse",
-        "Les préserve toujours"
+        "CF=0, OF=0, PF=1",
+        "CF=1, OF=0, PF=0",
+        "CF=0, OF=1, PF=0"
       ],
-      "correctAnswer": "Les remet à zéro",
-      "explanation": "TEST suit les effets des opérations logiques : CF et OF sont remis à zéro.",
+      "correctAnswer": "CF=0, OF=0, PF=1",
+      "explanation": "03h AND 03h vaut 03h : CF=0, OF=0 et l'octet faible contient deux bits à 1, donc PF=1.",
       "category": "Analyse de programme"
     },
     {
@@ -4351,14 +4351,14 @@
       "kind": "final",
       "lesson": null,
       "number": 9,
-      "stem": "SF seul suffit-il pour une comparaison signée ?",
+      "stem": "Après CMP signé, quelle condition exprime supérieur ou égal ?",
       "choices": [
-        "Non, il faut aussi OF",
-        "Oui dans tous les cas",
-        "Non, il faut CF uniquement"
+        "SF=OF",
+        "SF différent de OF",
+        "CF=0"
       ],
-      "correctAnswer": "Non, il faut aussi OF",
-      "explanation": "Les relations signées combinent SF et OF.",
+      "correctAnswer": "SF=OF",
+      "explanation": "La condition signée supérieur ou égal est vraie lorsque SF=OF ; inférieur signé utilise SF différent de OF.",
       "category": "Débogage"
     },
     {
@@ -4447,14 +4447,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Quel élément reste inchangé lors d'un JMP near ?",
+      "stem": "Avec CS=1000h, IP=0020h et BX=1234h, quels CS:IP obtient-on après JMP BX ?",
       "choices": [
-        "CS",
-        "IP",
-        "Le flot d'exécution"
+        "1000h:1234h",
+        "1234h:0020h",
+        "1000h:0020h"
       ],
-      "correctAnswer": "CS",
-      "explanation": "Un saut near change IP dans le segment courant.",
+      "correctAnswer": "1000h:1234h",
+      "explanation": "JMP BX charge IP depuis BX et conserve CS ; le couple devient 1000h:1234h.",
       "category": "Prédiction"
     },
     {
@@ -4463,14 +4463,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Quelle est la base du déplacement relatif ?",
+      "stem": "Si IP après JMP vaut 1000h et la cible 0FFCh, quel octet rel8 faut-il encoder ?",
       "choices": [
-        "L'adresse suivant l'instruction",
-        "Le début du segment",
-        "La cible elle-même"
+        "FCh",
+        "04h",
+        "ECh"
       ],
-      "correctAnswer": "L'adresse suivant l'instruction",
-      "explanation": "Le déplacement est relatif à l'IP après le saut.",
+      "correctAnswer": "FCh",
+      "explanation": "0FFCh−1000h vaut −4 ; le déplacement signé sur huit bits s'encode FCh.",
       "category": "Calcul / prédiction"
     },
     {
@@ -4479,14 +4479,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Quel encodage correspond à JMP r/m16 near ?",
+      "stem": "Quel opcode groupe encode JMP indirect far r/m16:16 ?",
       "choices": [
-        "FF /4",
         "FF /5",
-        "E8"
+        "FF /4",
+        "EA ptr16:16"
       ],
-      "correctAnswer": "FF /4",
-      "explanation": "Le groupe FF /4 est le saut indirect near.",
+      "correctAnswer": "FF /5",
+      "explanation": "FF /5 encode le saut indirect far à travers un pointeur mémoire 16:16.",
       "category": "Analyse de programme"
     },
     {
@@ -4527,14 +4527,14 @@
       "kind": "final",
       "lesson": null,
       "number": 10,
-      "stem": "Pourquoi l'exemple JMP BX ne prouve-t-il pas E9 ?",
+      "stem": "Pourquoi JMP BX n'est-il pas un saut far ?",
       "choices": [
-        "Parce que BX fournit une cible indirecte",
-        "Parce que BX est un registre 8 bits",
-        "Parce que JMP ne change pas IP"
+        "BX ne fournit qu'un offset ; un saut far doit charger aussi un segment",
+        "BX contient un registre de 8 bits",
+        "JMP ne modifie jamais IP"
       ],
-      "correctAnswer": "Parce que BX fournit une cible indirecte",
-      "explanation": "L'encodage indirect est différent du déplacement relatif direct.",
+      "correctAnswer": "BX ne fournit qu'un offset ; un saut far doit charger aussi un segment",
+      "explanation": "BX fournit un offset de 16 bits pour un saut near ; un saut far doit aussi obtenir et charger un nouveau segment CS.",
       "category": "Raisonnement"
     },
     {
@@ -4591,14 +4591,14 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "JBE teste quelle condition ?",
+      "stem": "Après CMP 4,5 en non signé, JBE branche-t-il ?",
       "choices": [
-        "CF=1 ou ZF=1",
-        "CF=0 et ZF=0",
-        "SF=OF"
+        "Oui, car CF=1",
+        "Non, car ZF=0",
+        "Non, car OF=0"
       ],
-      "correctAnswer": "CF=1 ou ZF=1",
-      "explanation": "JBE exprime inférieur ou égal non signé.",
+      "correctAnswer": "Oui, car CF=1",
+      "explanation": "4 est inférieur à 5 en non signé ; CMP produit CF=1, donc JBE est pris.",
       "category": "Restrictions"
     },
     {
@@ -4607,14 +4607,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "JA teste quelle condition ?",
+      "stem": "Après CMP 6,4 en non signé, JA branche-t-il ?",
       "choices": [
-        "CF=0 et ZF=0",
-        "CF=1 ou ZF=1",
-        "SF différent de OF"
+        "Oui, CF=0 et ZF=0",
+        "Non, CF=1",
+        "Non, ZF=1"
       ],
-      "correctAnswer": "CF=0 et ZF=0",
-      "explanation": "JA exprime strictement supérieur non signé.",
+      "correctAnswer": "Oui, CF=0 et ZF=0",
+      "explanation": "6 est supérieur à 4 en non signé ; CMP produit CF=0 et ZF=0, donc JA est pris.",
       "category": "Prédiction"
     },
     {
@@ -4639,14 +4639,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "JP teste quel indicateur ?",
+      "stem": "Après AND AL,03h avec AL=03h, JP branche-t-il ?",
       "choices": [
-        "PF=1",
-        "CF=1",
-        "ZF=0"
+        "Oui, PF=1",
+        "Non, PF=0",
+        "Seulement si CF=1"
       ],
-      "correctAnswer": "PF=1",
-      "explanation": "JP teste la parité paire.",
+      "correctAnswer": "Oui, PF=1",
+      "explanation": "03h AND 03h vaut 03h, qui contient deux bits à 1 ; PF=1 et JP est pris.",
       "category": "Analyse de programme"
     },
     {
@@ -4655,14 +4655,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "JNO saute lorsque…",
+      "stem": "Après ADD AL,1 avec AL=7Fh, JO branche-t-il ?",
       "choices": [
-        "OF=0",
-        "OF=1",
-        "ZF=0"
+        "Oui, OF=1",
+        "Non, OF=0",
+        "Seulement si ZF=1"
       ],
-      "correctAnswer": "OF=0",
-      "explanation": "JNO est la condition de non-débordement.",
+      "correctAnswer": "Oui, OF=1",
+      "explanation": "7Fh+1 donne 80h, déborde la plage signée 8 bits et met OF=1 ; JO est pris.",
       "category": "Analyse de résultat"
     },
     {
@@ -4735,14 +4735,14 @@
       "kind": "final",
       "lesson": null,
       "number": 3,
-      "stem": "Après CMP AL,BL, JB correspond à…",
+      "stem": "Après CMP AL,BL, JAE correspond à…",
       "choices": [
-        "AL inférieur à BL en non signé",
+        "AL supérieur ou égal à BL en non signé",
         "AL inférieur à BL en signé",
-        "AL égal à BL"
+        "AL égal à BL uniquement"
       ],
-      "correctAnswer": "AL inférieur à BL en non signé",
-      "explanation": "JB teste CF=1.",
+      "correctAnswer": "AL supérieur ou égal à BL en non signé",
+      "explanation": "JAE teste CF=0 et exprime supérieur ou égal non signé.",
       "category": "Syntaxe"
     },
     {
@@ -4751,14 +4751,14 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "JL correspond à…",
+      "stem": "JLE correspond à…",
       "choices": [
-        "Inférieur signé",
+        "Inférieur ou égal signé",
         "Inférieur non signé",
         "Supérieur non signé"
       ],
-      "correctAnswer": "Inférieur signé",
-      "explanation": "JL teste SF≠OF.",
+      "correctAnswer": "Inférieur ou égal signé",
+      "explanation": "JLE branche si ZF=1 ou SF≠OF, soit inférieur ou égal signé.",
       "category": "Restrictions"
     },
     {
@@ -4783,14 +4783,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "FFh interprété comme signé vaut…",
+      "stem": "7Fh interprété comme signé vaut…",
       "choices": [
+        "127",
         "−1",
-        "255",
         "−128"
       ],
-      "correctAnswer": "−1",
-      "explanation": "FFh vaut −1 en complément à deux.",
+      "correctAnswer": "127",
+      "explanation": "7Fh vaut +127 en complément à deux sur huit bits.",
       "category": "Calcul / prédiction"
     },
     {
@@ -4799,14 +4799,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Pour tester supérieur strict non signé, choisir…",
+      "stem": "Après CMP FFh,01h en non signé, JA branche-t-il ?",
       "choices": [
-        "JA",
-        "JG",
-        "JL"
+        "Oui, car 255 est supérieur à 1",
+        "Non, car FFh vaut −1",
+        "Non, car ZF=1"
       ],
-      "correctAnswer": "JA",
-      "explanation": "JA combine CF=0 et ZF=0.",
+      "correctAnswer": "Oui, car 255 est supérieur à 1",
+      "explanation": "En non signé, FFh vaut 255 et 01h vaut 1 ; CMP donne CF=0 et ZF=0, donc JA branche.",
       "category": "Analyse de programme"
     },
     {
@@ -4815,14 +4815,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Pour tester supérieur strict signé, choisir…",
+      "stem": "Après CMP FFh,01h en signé, JG branche-t-il ?",
       "choices": [
-        "JG",
-        "JA",
-        "JB"
+        "Non, car −1 n'est pas supérieur à 1",
+        "Oui, car FFh vaut 255",
+        "Oui, car CF=1"
       ],
-      "correctAnswer": "JG",
-      "explanation": "JG combine ZF=0 et SF=OF.",
+      "correctAnswer": "Non, car −1 n'est pas supérieur à 1",
+      "explanation": "En signé, FFh vaut −1 et 01h vaut +1 ; −1 n'est pas supérieur à 1, donc JG n'est pas pris.",
       "category": "Analyse de résultat"
     },
     {
@@ -4975,14 +4975,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "D'où provient le ZF lu par LOOPE ?",
+      "stem": "Quelle instruction peut établir ZF avant LOOPE ?",
       "choices": [
-        "De l'instruction précédente qui l'a défini",
-        "D'une comparaison implicite de CX",
-        "De l'instruction LOOP elle-même"
+        "CMP ou TEST",
+        "LOOPE elle-même",
+        "MOV qui modifie FLAGS"
       ],
-      "correctAnswer": "De l'instruction précédente qui l'a défini",
-      "explanation": "LOOPE teste le ZF déjà présent.",
+      "correctAnswer": "CMP ou TEST",
+      "explanation": "CMP et TEST peuvent établir ZF ; LOOPE lit cet indicateur sans le modifier.",
       "category": "Analyse de résultat"
     },
     {
@@ -5074,8 +5074,8 @@
       "stem": "Quel risque existe lors d'une somme 16 bits ?",
       "choices": [
         "Débordement de la capacité et perte de retenue si elle n'est pas propagée",
-        "La pile s'inverse",
-        "DF est toujours modifié"
+        "DF est toujours modifié",
+        "La pile s'inverse"
       ],
       "correctAnswer": "Débordement de la capacité et perte de retenue si elle n'est pas propagée",
       "explanation": "Une somme multi-mots doit traiter la retenue avec ADC.",
@@ -5122,8 +5122,8 @@
       "stem": "Quel résultat distingue une cible absente ?",
       "choices": [
         "Un état trouvé/non trouvé explicite",
-        "La valeur de DF",
-        "La valeur du segment CS"
+        "La valeur du segment CS",
+        "La valeur de DF"
       ],
       "correctAnswer": "Un état trouvé/non trouvé explicite",
       "explanation": "Le programme doit distinguer l'échec de recherche d'une position valide.",
@@ -5170,8 +5170,8 @@
       "stem": "Quel contrôle évite une lecture hors limites dans une recherche séquentielle ?",
       "choices": [
         "Vérifier le nombre d'éléments restants avant chaque lecture",
-        "Continuer après avoir trouvé la cible",
-        "Lire systématiquement une case supplémentaire"
+        "Lire systématiquement une case supplémentaire",
+        "Continuer après avoir trouvé la cible"
       ],
       "correctAnswer": "Vérifier le nombre d'éléments restants avant chaque lecture",
       "explanation": "Le compteur restant doit empêcher tout accès au-delà du dernier élément.",

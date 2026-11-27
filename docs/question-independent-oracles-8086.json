@@ -1,212 +1,3431 @@
 {
   "schemaVersion": 1,
-  "title": "Oracles automatisés — couverture des 684 questions",
-  "scope": "Les lots des chapitres 1 à 36 contiennent 681 enregistrements, dont trois identifiants historiques réutilisés, auxquels s'ajoutent trois oracles historiques hors lots : 684 identifiants uniques disposent ainsi d'un oracle enregistré. Le statut « certified » des lots décrit le contrôle automatisé de l'oracle (résultat attendu, dérivation, référence, évaluateur et alignement runtime/clé) ; il ne constitue pas la certification officielle de la question. Le registre officiel reste à 384/684 ; 300 questions restent à examiner et certifier indépendamment.",
+  "title": "Index des oracles enregistrés — 684 questions",
+  "scope": "Le tableau oracles est l'index nominatif des 684 questions disposant d'un oracle enregistré. Les objets d'oracle détaillés restent dans les fichiers de lots référencés ; historicalOracles conserve les six objets historiques détaillés. Un oracle enregistré ou un évaluateur automatisé réussi ne vaut pas certification pédagogique individuelle.",
   "referenceBasis": [
     "Intel 8086 Family User's Manual (October 1979), architecture EU/BIU, file de prélecture, arithmétique, instructions de décalage, instructions de chaîne et indicateurs.",
     "Intel MCS-86 Assembly Language Reference Manual, formes d'opérandes et syntaxe assembleur."
   ],
   "oracles": [
     {
+      "id": "C01-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-01.json"
+    },
+    {
+      "id": "C01-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-01.json"
+    },
+    {
+      "id": "C01-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-01.json"
+    },
+    {
+      "id": "C01-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-01.json"
+    },
+    {
+      "id": "C01-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-01.json"
+    },
+    {
+      "id": "C01-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-01.json"
+    },
+    {
+      "id": "C01-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-01.json"
+    },
+    {
+      "id": "C01-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-01.json"
+    },
+    {
+      "id": "C01-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-01.json"
+    },
+    {
+      "id": "C01-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-01.json"
+    },
+    {
+      "id": "C01-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-01.json"
+    },
+    {
+      "id": "C01-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-01.json"
+    },
+    {
+      "id": "C01-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-01.json"
+    },
+    {
+      "id": "C01-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-01.json"
+    },
+    {
+      "id": "C01-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-01.json"
+    },
+    {
+      "id": "C01-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-01.json"
+    },
+    {
+      "id": "C01-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-01.json"
+    },
+    {
+      "id": "C01-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-01.json"
+    },
+    {
+      "id": "C01-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-01.json"
+    },
+    {
+      "id": "C02-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-02.json"
+    },
+    {
+      "id": "C02-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-02.json"
+    },
+    {
+      "id": "C02-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-02.json"
+    },
+    {
+      "id": "C02-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-02.json"
+    },
+    {
+      "id": "C02-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-02.json"
+    },
+    {
+      "id": "C02-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-02.json"
+    },
+    {
+      "id": "C02-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-02.json"
+    },
+    {
+      "id": "C02-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-02.json"
+    },
+    {
+      "id": "C02-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-02.json"
+    },
+    {
+      "id": "C02-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-02.json"
+    },
+    {
+      "id": "C02-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-02.json"
+    },
+    {
+      "id": "C02-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-02.json"
+    },
+    {
       "id": "C02-F-Q4",
-      "rule": "prefetch_queue_8086",
-      "inputs": {
-        "processor": "8086"
-      },
-      "expected": {
-        "queueBytes": 6,
-        "overlap": true,
-        "superscalarExecution": false
-      },
-      "correctAnswer": "Elle contient six octets et n'implique pas une exécution superscalaire",
-      "derivation": "La file de prélecture du 8086 contient 6 octets. La BIU peut récupérer des octets pendant que l'EU exécute ; ce chevauchement ne signifie pas que plusieurs instructions sont exécutées simultanément.",
-      "distractorRationales": [
-        {
-          "choice": "Elle contient seize octets",
-          "reason": "Confond la capacité de la file 8086 avec une capacité plus grande non applicable à ce processeur."
-        },
-        {
-          "choice": "Elle exécute plusieurs instructions simultanément",
-          "reason": "Confond le chevauchement BIU/EU avec une exécution superscalaire."
-        }
-      ],
-      "reference": "Intel 8086 Family User's Manual — Bus Interface Unit and instruction queue.",
-      "explanationChecks": [
-        "six octets",
-        "sans exécution superscalaire"
-      ]
+      "source": "historical-oracle",
+      "path": "docs/question-independent-oracles-8086.json#historicalOracles"
+    },
+    {
+      "id": "C02-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-02.json"
+    },
+    {
+      "id": "C02-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-02.json"
+    },
+    {
+      "id": "C02-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-02.json"
+    },
+    {
+      "id": "C02-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-02.json"
+    },
+    {
+      "id": "C02-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-02.json"
+    },
+    {
+      "id": "C02-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-02.json"
+    },
+    {
+      "id": "C03-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-03.json"
+    },
+    {
+      "id": "C03-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-03.json"
+    },
+    {
+      "id": "C03-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-03.json"
+    },
+    {
+      "id": "C03-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-03.json"
+    },
+    {
+      "id": "C03-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-03.json"
+    },
+    {
+      "id": "C03-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-03.json"
+    },
+    {
+      "id": "C03-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-03.json"
+    },
+    {
+      "id": "C03-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-03.json"
+    },
+    {
+      "id": "C03-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-03.json"
+    },
+    {
+      "id": "C03-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-03.json"
+    },
+    {
+      "id": "C03-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-03.json"
+    },
+    {
+      "id": "C03-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-03.json"
+    },
+    {
+      "id": "C03-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-03.json"
+    },
+    {
+      "id": "C03-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-03.json"
+    },
+    {
+      "id": "C03-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-03.json"
+    },
+    {
+      "id": "C03-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-03.json"
+    },
+    {
+      "id": "C03-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-03.json"
+    },
+    {
+      "id": "C03-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-03.json"
+    },
+    {
+      "id": "C03-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-03.json"
+    },
+    {
+      "id": "C04-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-04.json"
+    },
+    {
+      "id": "C04-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-04.json"
+    },
+    {
+      "id": "C04-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-04.json"
+    },
+    {
+      "id": "C04-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-04.json"
+    },
+    {
+      "id": "C04-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-04.json"
+    },
+    {
+      "id": "C04-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-04.json"
+    },
+    {
+      "id": "C04-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-04.json"
+    },
+    {
+      "id": "C04-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-04.json"
+    },
+    {
+      "id": "C04-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-04.json"
+    },
+    {
+      "id": "C04-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-04.json"
+    },
+    {
+      "id": "C04-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-04.json"
+    },
+    {
+      "id": "C04-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-04.json"
     },
     {
       "id": "C04-F-Q4",
-      "rule": "unsigned_byte_add",
-      "inputs": {
-        "left": 255,
-        "right": 1,
-        "width": 8
-      },
-      "expected": {
-        "mathematicalSum": 256,
-        "result": 0,
-        "carry": 1
-      },
-      "correctAnswer": "AL=00h et CF=1",
-      "derivation": "255 + 1 = 256 (100h). Sur 8 bits, le résultat conservé est 256 modulo 256 = 0 ; le dépassement de la capacité non signée active CF.",
-      "distractorRationales": [
-        {
-          "choice": "AL=00h et CF=0",
-          "reason": "Le résultat octet est correct, mais cette proposition oublie la retenue sortante."
-        },
-        {
-          "choice": "AL=100h et CF=0",
-          "reason": "Ignore la largeur de 8 bits du registre AL et traite le résultat mathématique comme s'il pouvait y être stocké intégralement."
-        }
-      ],
-      "reference": "Intel 8086 Family User's Manual — ADD operation and CF definition.",
-      "explanationChecks": [
-        "00h",
-        "CF=1",
-        "opérande immédiat invalide"
-      ]
+      "source": "historical-oracle",
+      "path": "docs/question-independent-oracles-8086.json#historicalOracles"
+    },
+    {
+      "id": "C04-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-04.json"
+    },
+    {
+      "id": "C04-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-04.json"
+    },
+    {
+      "id": "C04-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-04.json"
+    },
+    {
+      "id": "C04-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-04.json"
+    },
+    {
+      "id": "C04-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-04.json"
+    },
+    {
+      "id": "C04-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-04.json"
+    },
+    {
+      "id": "C05-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-05.json"
+    },
+    {
+      "id": "C05-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-05.json"
+    },
+    {
+      "id": "C05-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-05.json"
+    },
+    {
+      "id": "C05-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-05.json"
+    },
+    {
+      "id": "C05-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-05.json"
+    },
+    {
+      "id": "C05-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-05.json"
+    },
+    {
+      "id": "C05-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-05.json"
+    },
+    {
+      "id": "C05-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-05.json"
+    },
+    {
+      "id": "C05-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-05.json"
+    },
+    {
+      "id": "C05-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-05.json"
+    },
+    {
+      "id": "C05-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-05.json"
+    },
+    {
+      "id": "C05-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-05.json"
+    },
+    {
+      "id": "C05-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-05.json"
+    },
+    {
+      "id": "C05-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-05.json"
+    },
+    {
+      "id": "C05-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-05.json"
+    },
+    {
+      "id": "C05-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-05.json"
+    },
+    {
+      "id": "C05-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-05.json"
+    },
+    {
+      "id": "C05-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-05.json"
+    },
+    {
+      "id": "C05-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-05.json"
+    },
+    {
+      "id": "C06-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-06.json"
+    },
+    {
+      "id": "C06-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-06.json"
+    },
+    {
+      "id": "C06-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-06.json"
+    },
+    {
+      "id": "C06-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-06.json"
+    },
+    {
+      "id": "C06-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-06.json"
+    },
+    {
+      "id": "C06-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-06.json"
+    },
+    {
+      "id": "C06-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-06.json"
+    },
+    {
+      "id": "C06-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-06.json"
+    },
+    {
+      "id": "C06-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-06.json"
+    },
+    {
+      "id": "C06-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-06.json"
+    },
+    {
+      "id": "C06-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-06.json"
+    },
+    {
+      "id": "C06-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-06.json"
+    },
+    {
+      "id": "C06-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-06.json"
+    },
+    {
+      "id": "C06-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-06.json"
+    },
+    {
+      "id": "C06-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-06.json"
+    },
+    {
+      "id": "C06-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-06.json"
+    },
+    {
+      "id": "C06-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-06.json"
+    },
+    {
+      "id": "C06-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-06.json"
+    },
+    {
+      "id": "C06-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-06.json"
+    },
+    {
+      "id": "C07-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-07.json"
+    },
+    {
+      "id": "C07-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-07.json"
+    },
+    {
+      "id": "C07-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-07.json"
+    },
+    {
+      "id": "C07-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-07.json"
+    },
+    {
+      "id": "C07-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-07.json"
+    },
+    {
+      "id": "C07-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-07.json"
+    },
+    {
+      "id": "C07-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-07.json"
+    },
+    {
+      "id": "C07-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-07.json"
+    },
+    {
+      "id": "C07-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-07.json"
+    },
+    {
+      "id": "C07-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-07.json"
+    },
+    {
+      "id": "C07-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-07.json"
+    },
+    {
+      "id": "C07-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-07.json"
+    },
+    {
+      "id": "C07-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-07.json"
+    },
+    {
+      "id": "C07-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-07.json"
+    },
+    {
+      "id": "C07-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-07.json"
+    },
+    {
+      "id": "C07-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-07.json"
+    },
+    {
+      "id": "C07-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-07.json"
+    },
+    {
+      "id": "C07-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-07.json"
+    },
+    {
+      "id": "C07-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-07.json"
+    },
+    {
+      "id": "C08-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-08.json"
+    },
+    {
+      "id": "C08-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-08.json"
+    },
+    {
+      "id": "C08-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-08.json"
+    },
+    {
+      "id": "C08-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-08.json"
+    },
+    {
+      "id": "C08-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-08.json"
+    },
+    {
+      "id": "C08-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-08.json"
+    },
+    {
+      "id": "C08-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-08.json"
+    },
+    {
+      "id": "C08-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-08.json"
+    },
+    {
+      "id": "C08-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-08.json"
+    },
+    {
+      "id": "C08-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-08.json"
+    },
+    {
+      "id": "C08-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-08.json"
+    },
+    {
+      "id": "C08-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-08.json"
+    },
+    {
+      "id": "C08-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-08.json"
+    },
+    {
+      "id": "C08-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-08.json"
+    },
+    {
+      "id": "C08-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-08.json"
+    },
+    {
+      "id": "C08-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-08.json"
+    },
+    {
+      "id": "C08-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-08.json"
+    },
+    {
+      "id": "C08-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-08.json"
+    },
+    {
+      "id": "C08-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-08.json"
+    },
+    {
+      "id": "C09-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-09.json"
+    },
+    {
+      "id": "C09-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-09.json"
+    },
+    {
+      "id": "C09-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-09.json"
+    },
+    {
+      "id": "C09-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-09.json"
+    },
+    {
+      "id": "C09-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-09.json"
+    },
+    {
+      "id": "C09-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-09.json"
+    },
+    {
+      "id": "C09-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-09.json"
+    },
+    {
+      "id": "C09-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-09.json"
+    },
+    {
+      "id": "C09-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-09.json"
+    },
+    {
+      "id": "C09-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-09.json"
+    },
+    {
+      "id": "C09-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-09.json"
+    },
+    {
+      "id": "C09-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-09.json"
+    },
+    {
+      "id": "C09-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-09.json"
+    },
+    {
+      "id": "C09-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-09.json"
+    },
+    {
+      "id": "C09-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-09.json"
+    },
+    {
+      "id": "C09-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-09.json"
+    },
+    {
+      "id": "C09-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-09.json"
+    },
+    {
+      "id": "C09-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-09.json"
+    },
+    {
+      "id": "C09-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-09.json"
+    },
+    {
+      "id": "C10-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-10.json"
+    },
+    {
+      "id": "C10-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-10.json"
+    },
+    {
+      "id": "C10-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-10.json"
+    },
+    {
+      "id": "C10-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-10.json"
+    },
+    {
+      "id": "C10-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-10.json"
+    },
+    {
+      "id": "C10-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-10.json"
+    },
+    {
+      "id": "C10-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-10.json"
+    },
+    {
+      "id": "C10-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-10.json"
+    },
+    {
+      "id": "C10-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-10.json"
+    },
+    {
+      "id": "C10-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-10.json"
+    },
+    {
+      "id": "C10-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-10.json"
+    },
+    {
+      "id": "C10-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-10.json"
+    },
+    {
+      "id": "C10-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-10.json"
+    },
+    {
+      "id": "C10-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-10.json"
+    },
+    {
+      "id": "C10-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-10.json"
+    },
+    {
+      "id": "C10-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-10.json"
+    },
+    {
+      "id": "C10-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-10.json"
+    },
+    {
+      "id": "C10-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-10.json"
+    },
+    {
+      "id": "C10-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-10.json"
+    },
+    {
+      "id": "C11-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-11.json"
+    },
+    {
+      "id": "C11-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-11.json"
+    },
+    {
+      "id": "C11-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-11.json"
+    },
+    {
+      "id": "C11-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-11.json"
+    },
+    {
+      "id": "C11-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-11.json"
+    },
+    {
+      "id": "C11-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-11.json"
+    },
+    {
+      "id": "C11-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-11.json"
+    },
+    {
+      "id": "C11-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-11.json"
+    },
+    {
+      "id": "C11-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-11.json"
+    },
+    {
+      "id": "C11-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-11.json"
+    },
+    {
+      "id": "C11-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-11.json"
+    },
+    {
+      "id": "C11-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-11.json"
+    },
+    {
+      "id": "C11-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-11.json"
+    },
+    {
+      "id": "C11-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-11.json"
+    },
+    {
+      "id": "C11-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-11.json"
+    },
+    {
+      "id": "C11-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-11.json"
+    },
+    {
+      "id": "C11-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-11.json"
+    },
+    {
+      "id": "C11-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-11.json"
+    },
+    {
+      "id": "C11-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-11.json"
+    },
+    {
+      "id": "C12-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-12.json"
+    },
+    {
+      "id": "C12-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-12.json"
+    },
+    {
+      "id": "C12-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-12.json"
+    },
+    {
+      "id": "C12-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-12.json"
+    },
+    {
+      "id": "C12-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-12.json"
+    },
+    {
+      "id": "C12-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-12.json"
+    },
+    {
+      "id": "C12-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-12.json"
+    },
+    {
+      "id": "C12-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-12.json"
+    },
+    {
+      "id": "C12-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-12.json"
+    },
+    {
+      "id": "C12-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-12.json"
+    },
+    {
+      "id": "C12-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-12.json"
+    },
+    {
+      "id": "C12-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-12.json"
+    },
+    {
+      "id": "C12-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-12.json"
+    },
+    {
+      "id": "C12-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-12.json"
+    },
+    {
+      "id": "C12-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-12.json"
+    },
+    {
+      "id": "C12-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-12.json"
+    },
+    {
+      "id": "C12-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-12.json"
+    },
+    {
+      "id": "C12-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-12.json"
+    },
+    {
+      "id": "C12-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-12.json"
+    },
+    {
+      "id": "C13-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-13.json"
+    },
+    {
+      "id": "C13-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-13.json"
+    },
+    {
+      "id": "C13-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-13.json"
+    },
+    {
+      "id": "C13-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-13.json"
+    },
+    {
+      "id": "C13-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-13.json"
+    },
+    {
+      "id": "C13-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-13.json"
+    },
+    {
+      "id": "C13-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-13.json"
+    },
+    {
+      "id": "C13-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-13.json"
+    },
+    {
+      "id": "C13-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-13.json"
+    },
+    {
+      "id": "C13-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-13.json"
+    },
+    {
+      "id": "C13-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-13.json"
+    },
+    {
+      "id": "C13-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-13.json"
+    },
+    {
+      "id": "C13-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-13.json"
+    },
+    {
+      "id": "C13-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-13.json"
+    },
+    {
+      "id": "C13-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-13.json"
+    },
+    {
+      "id": "C13-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-13.json"
+    },
+    {
+      "id": "C13-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-13.json"
+    },
+    {
+      "id": "C13-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-13.json"
+    },
+    {
+      "id": "C13-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-13.json"
+    },
+    {
+      "id": "C14-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-14.json"
+    },
+    {
+      "id": "C14-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-14.json"
+    },
+    {
+      "id": "C14-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-14.json"
+    },
+    {
+      "id": "C14-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-14.json"
+    },
+    {
+      "id": "C14-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-14.json"
+    },
+    {
+      "id": "C14-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-14.json"
+    },
+    {
+      "id": "C14-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-14.json"
+    },
+    {
+      "id": "C14-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-14.json"
+    },
+    {
+      "id": "C14-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-14.json"
+    },
+    {
+      "id": "C14-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-14.json"
+    },
+    {
+      "id": "C14-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-14.json"
+    },
+    {
+      "id": "C14-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-14.json"
+    },
+    {
+      "id": "C14-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-14.json"
+    },
+    {
+      "id": "C14-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-14.json"
+    },
+    {
+      "id": "C14-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-14.json"
+    },
+    {
+      "id": "C14-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-14.json"
+    },
+    {
+      "id": "C14-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-14.json"
+    },
+    {
+      "id": "C14-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-14.json"
+    },
+    {
+      "id": "C14-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-14.json"
+    },
+    {
+      "id": "C15-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-15.json"
+    },
+    {
+      "id": "C15-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-15.json"
+    },
+    {
+      "id": "C15-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-15.json"
+    },
+    {
+      "id": "C15-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-15.json"
+    },
+    {
+      "id": "C15-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-15.json"
+    },
+    {
+      "id": "C15-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-15.json"
+    },
+    {
+      "id": "C15-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-15.json"
+    },
+    {
+      "id": "C15-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-15.json"
+    },
+    {
+      "id": "C15-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-15.json"
+    },
+    {
+      "id": "C15-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-15.json"
+    },
+    {
+      "id": "C15-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-15.json"
+    },
+    {
+      "id": "C15-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-15.json"
+    },
+    {
+      "id": "C15-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-15.json"
+    },
+    {
+      "id": "C15-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-15.json"
+    },
+    {
+      "id": "C15-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-15.json"
+    },
+    {
+      "id": "C15-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-15.json"
+    },
+    {
+      "id": "C15-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-15.json"
+    },
+    {
+      "id": "C15-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-15.json"
+    },
+    {
+      "id": "C15-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-15.json"
+    },
+    {
+      "id": "C16-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-16.json"
+    },
+    {
+      "id": "C16-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-16.json"
+    },
+    {
+      "id": "C16-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-16.json"
+    },
+    {
+      "id": "C16-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-16.json"
+    },
+    {
+      "id": "C16-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-16.json"
+    },
+    {
+      "id": "C16-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-16.json"
+    },
+    {
+      "id": "C16-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-16.json"
+    },
+    {
+      "id": "C16-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-16.json"
+    },
+    {
+      "id": "C16-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-16.json"
+    },
+    {
+      "id": "C16-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-16.json"
+    },
+    {
+      "id": "C16-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-16.json"
+    },
+    {
+      "id": "C16-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-16.json"
+    },
+    {
+      "id": "C16-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-16.json"
+    },
+    {
+      "id": "C16-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-16.json"
+    },
+    {
+      "id": "C16-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-16.json"
+    },
+    {
+      "id": "C16-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-16.json"
+    },
+    {
+      "id": "C16-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-16.json"
+    },
+    {
+      "id": "C16-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-16.json"
+    },
+    {
+      "id": "C16-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-16.json"
+    },
+    {
+      "id": "C17-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-17.json"
+    },
+    {
+      "id": "C17-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-17.json"
+    },
+    {
+      "id": "C17-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-17.json"
+    },
+    {
+      "id": "C17-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-17.json"
+    },
+    {
+      "id": "C17-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-17.json"
+    },
+    {
+      "id": "C17-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-17.json"
+    },
+    {
+      "id": "C17-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-17.json"
+    },
+    {
+      "id": "C17-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-17.json"
+    },
+    {
+      "id": "C17-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-17.json"
+    },
+    {
+      "id": "C17-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-17.json"
     },
     {
       "id": "C17-F-Q2",
-      "rule": "unsigned_strict_greater",
-      "inputs": {
-        "candidate": 9,
-        "currentMaximum": 8,
-        "equalCase": {
-          "candidate": 8,
-          "currentMaximum": 8
-        }
-      },
-      "expected": {
-        "condition": "JA",
-        "strictComparison": true,
-        "equalityReplaces": false
-      },
-      "correctAnswer": "JA",
-      "derivation": "Après CMP candidate,currentMaximum, JA branche si CF=0 et ZF=0, donc si candidate est strictement supérieur en non signé. JAE inclut l'égalité.",
-      "distractorRationales": [
-        {
-          "choice": "JAE",
-          "reason": "Teste supérieur ou égal ; il remplace aussi le maximum lorsque les deux valeurs sont égales."
-        },
-        {
-          "choice": "JL",
-          "reason": "Teste une relation signée, alors que l'énoncé impose une comparaison non signée."
-        }
-      ],
-      "reference": "Intel 8086 Family User's Manual — conditional transfer instructions JA/JAE/JL.",
-      "explanationChecks": [
-        "strictement supérieure",
-        "CF=0",
-        "ZF=0",
-        "égalité"
-      ]
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-17.json"
+    },
+    {
+      "id": "C17-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-17.json"
+    },
+    {
+      "id": "C17-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-17.json"
+    },
+    {
+      "id": "C17-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-17.json"
+    },
+    {
+      "id": "C17-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-17.json"
+    },
+    {
+      "id": "C17-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-17.json"
+    },
+    {
+      "id": "C17-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-17.json"
+    },
+    {
+      "id": "C17-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-17.json"
+    },
+    {
+      "id": "C17-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-17.json"
+    },
+    {
+      "id": "C18-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-18.json"
+    },
+    {
+      "id": "C18-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-18.json"
+    },
+    {
+      "id": "C18-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-18.json"
+    },
+    {
+      "id": "C18-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-18.json"
+    },
+    {
+      "id": "C18-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-18.json"
+    },
+    {
+      "id": "C18-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-18.json"
+    },
+    {
+      "id": "C18-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-18.json"
+    },
+    {
+      "id": "C18-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-18.json"
+    },
+    {
+      "id": "C18-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-18.json"
+    },
+    {
+      "id": "C18-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-18.json"
+    },
+    {
+      "id": "C18-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-18.json"
+    },
+    {
+      "id": "C18-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-18.json"
+    },
+    {
+      "id": "C18-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-18.json"
+    },
+    {
+      "id": "C18-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-18.json"
+    },
+    {
+      "id": "C18-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-18.json"
+    },
+    {
+      "id": "C18-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-18.json"
+    },
+    {
+      "id": "C18-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-18.json"
+    },
+    {
+      "id": "C18-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-18.json"
+    },
+    {
+      "id": "C18-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-18.json"
+    },
+    {
+      "id": "C19-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-19.json"
+    },
+    {
+      "id": "C19-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-19.json"
+    },
+    {
+      "id": "C19-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-19.json"
+    },
+    {
+      "id": "C19-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-19.json"
+    },
+    {
+      "id": "C19-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-19.json"
+    },
+    {
+      "id": "C19-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-19.json"
+    },
+    {
+      "id": "C19-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-19.json"
+    },
+    {
+      "id": "C19-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-19.json"
+    },
+    {
+      "id": "C19-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-19.json"
+    },
+    {
+      "id": "C19-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-19.json"
+    },
+    {
+      "id": "C19-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-19.json"
+    },
+    {
+      "id": "C19-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-19.json"
+    },
+    {
+      "id": "C19-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-19.json"
+    },
+    {
+      "id": "C19-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-19.json"
+    },
+    {
+      "id": "C19-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-19.json"
+    },
+    {
+      "id": "C19-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-19.json"
+    },
+    {
+      "id": "C19-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-19.json"
+    },
+    {
+      "id": "C19-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-19.json"
+    },
+    {
+      "id": "C19-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-19.json"
+    },
+    {
+      "id": "C20-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-20.json"
+    },
+    {
+      "id": "C20-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-20.json"
+    },
+    {
+      "id": "C20-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-20.json"
+    },
+    {
+      "id": "C20-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-20.json"
+    },
+    {
+      "id": "C20-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-20.json"
+    },
+    {
+      "id": "C20-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-20.json"
+    },
+    {
+      "id": "C20-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-20.json"
+    },
+    {
+      "id": "C20-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-20.json"
+    },
+    {
+      "id": "C20-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-20.json"
+    },
+    {
+      "id": "C20-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-20.json"
+    },
+    {
+      "id": "C20-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-20.json"
+    },
+    {
+      "id": "C20-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-20.json"
+    },
+    {
+      "id": "C20-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-20.json"
+    },
+    {
+      "id": "C20-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-20.json"
+    },
+    {
+      "id": "C20-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-20.json"
+    },
+    {
+      "id": "C20-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-20.json"
+    },
+    {
+      "id": "C20-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-20.json"
+    },
+    {
+      "id": "C20-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-20.json"
+    },
+    {
+      "id": "C20-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-20.json"
+    },
+    {
+      "id": "C21-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-21.json"
+    },
+    {
+      "id": "C21-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-21.json"
+    },
+    {
+      "id": "C21-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-21.json"
+    },
+    {
+      "id": "C21-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-21.json"
+    },
+    {
+      "id": "C21-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-21.json"
+    },
+    {
+      "id": "C21-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-21.json"
+    },
+    {
+      "id": "C21-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-21.json"
+    },
+    {
+      "id": "C21-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-21.json"
+    },
+    {
+      "id": "C21-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-21.json"
+    },
+    {
+      "id": "C21-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-21.json"
+    },
+    {
+      "id": "C21-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-21.json"
+    },
+    {
+      "id": "C21-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-21.json"
+    },
+    {
+      "id": "C21-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-21.json"
+    },
+    {
+      "id": "C21-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-21.json"
+    },
+    {
+      "id": "C21-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-21.json"
+    },
+    {
+      "id": "C21-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-21.json"
+    },
+    {
+      "id": "C21-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-21.json"
+    },
+    {
+      "id": "C21-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-21.json"
+    },
+    {
+      "id": "C21-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-21.json"
+    },
+    {
+      "id": "C22-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-22.json"
+    },
+    {
+      "id": "C22-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-22.json"
+    },
+    {
+      "id": "C22-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-22.json"
+    },
+    {
+      "id": "C22-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-22.json"
+    },
+    {
+      "id": "C22-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-22.json"
+    },
+    {
+      "id": "C22-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-22.json"
+    },
+    {
+      "id": "C22-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-22.json"
+    },
+    {
+      "id": "C22-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-22.json"
+    },
+    {
+      "id": "C22-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-22.json"
+    },
+    {
+      "id": "C22-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-22.json"
+    },
+    {
+      "id": "C22-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-22.json"
+    },
+    {
+      "id": "C22-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-22.json"
+    },
+    {
+      "id": "C22-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-22.json"
+    },
+    {
+      "id": "C22-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-22.json"
+    },
+    {
+      "id": "C22-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-22.json"
+    },
+    {
+      "id": "C22-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-22.json"
+    },
+    {
+      "id": "C22-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-22.json"
+    },
+    {
+      "id": "C22-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-22.json"
+    },
+    {
+      "id": "C22-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-22.json"
+    },
+    {
+      "id": "C23-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-23.json"
+    },
+    {
+      "id": "C23-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-23.json"
+    },
+    {
+      "id": "C23-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-23.json"
+    },
+    {
+      "id": "C23-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-23.json"
+    },
+    {
+      "id": "C23-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-23.json"
+    },
+    {
+      "id": "C23-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-23.json"
+    },
+    {
+      "id": "C23-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-23.json"
+    },
+    {
+      "id": "C23-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-23.json"
+    },
+    {
+      "id": "C23-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-23.json"
+    },
+    {
+      "id": "C23-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-23.json"
+    },
+    {
+      "id": "C23-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-23.json"
+    },
+    {
+      "id": "C23-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-23.json"
+    },
+    {
+      "id": "C23-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-23.json"
+    },
+    {
+      "id": "C23-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-23.json"
+    },
+    {
+      "id": "C23-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-23.json"
+    },
+    {
+      "id": "C23-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-23.json"
+    },
+    {
+      "id": "C23-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-23.json"
+    },
+    {
+      "id": "C23-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-23.json"
+    },
+    {
+      "id": "C23-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-23.json"
+    },
+    {
+      "id": "C24-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-24.json"
+    },
+    {
+      "id": "C24-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-24.json"
+    },
+    {
+      "id": "C24-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-24.json"
+    },
+    {
+      "id": "C24-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-24.json"
+    },
+    {
+      "id": "C24-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-24.json"
+    },
+    {
+      "id": "C24-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-24.json"
+    },
+    {
+      "id": "C24-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-24.json"
+    },
+    {
+      "id": "C24-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-24.json"
+    },
+    {
+      "id": "C24-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-24.json"
+    },
+    {
+      "id": "C24-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-24.json"
+    },
+    {
+      "id": "C24-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-24.json"
+    },
+    {
+      "id": "C24-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-24.json"
+    },
+    {
+      "id": "C24-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-24.json"
+    },
+    {
+      "id": "C24-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-24.json"
+    },
+    {
+      "id": "C24-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-24.json"
+    },
+    {
+      "id": "C24-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-24.json"
+    },
+    {
+      "id": "C24-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-24.json"
+    },
+    {
+      "id": "C24-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-24.json"
+    },
+    {
+      "id": "C24-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-24.json"
+    },
+    {
+      "id": "C25-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-25.json"
+    },
+    {
+      "id": "C25-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-25.json"
+    },
+    {
+      "id": "C25-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-25.json"
+    },
+    {
+      "id": "C25-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-25.json"
+    },
+    {
+      "id": "C25-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-25.json"
+    },
+    {
+      "id": "C25-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-25.json"
+    },
+    {
+      "id": "C25-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-25.json"
+    },
+    {
+      "id": "C25-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-25.json"
+    },
+    {
+      "id": "C25-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-25.json"
+    },
+    {
+      "id": "C25-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-25.json"
+    },
+    {
+      "id": "C25-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-25.json"
+    },
+    {
+      "id": "C25-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-25.json"
+    },
+    {
+      "id": "C25-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-25.json"
+    },
+    {
+      "id": "C25-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-25.json"
+    },
+    {
+      "id": "C25-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-25.json"
+    },
+    {
+      "id": "C25-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-25.json"
+    },
+    {
+      "id": "C25-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-25.json"
+    },
+    {
+      "id": "C25-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-25.json"
+    },
+    {
+      "id": "C25-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-25.json"
+    },
+    {
+      "id": "C26-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-26.json"
+    },
+    {
+      "id": "C26-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-26.json"
+    },
+    {
+      "id": "C26-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-26.json"
+    },
+    {
+      "id": "C26-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-26.json"
+    },
+    {
+      "id": "C26-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-26.json"
+    },
+    {
+      "id": "C26-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-26.json"
+    },
+    {
+      "id": "C26-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-26.json"
+    },
+    {
+      "id": "C26-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-26.json"
+    },
+    {
+      "id": "C26-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-26.json"
+    },
+    {
+      "id": "C26-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-26.json"
+    },
+    {
+      "id": "C26-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-26.json"
+    },
+    {
+      "id": "C26-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-26.json"
+    },
+    {
+      "id": "C26-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-26.json"
     },
     {
       "id": "C26-F-Q5",
-      "rule": "logical_shift_right_8",
-      "inputs": {
-        "value": 129,
-        "width": 8,
-        "count": 1
-      },
-      "expected": {
-        "result": 64,
-        "carry": 1
-      },
-      "correctAnswer": "40h avec CF=1",
-      "derivation": "81h = 10000001b. SHR insère zéro à gauche : 01000000b = 40h ; le bit sortant de poids faible vaut 1 et est copié dans CF.",
-      "distractorRationales": [
-        {
-          "choice": "C0h avec CF=0",
-          "reason": "Ne correspond pas au décalage logique à droite d'un bit de 81h."
-        },
-        {
-          "choice": "02h avec CF=1",
-          "reason": "Ne correspond ni à la direction ni au résultat binaire du décalage demandé."
-        }
-      ],
-      "reference": "Intel 8086 Family User's Manual — SHR operation.",
-      "explanationChecks": [
-        "CF",
-        "40h"
-      ]
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-26.json"
     },
     {
       "id": "C26-F-Q6",
-      "rule": "arithmetic_shift_right_8",
-      "inputs": {
-        "value": 252,
-        "width": 8,
-        "count": 1
-      },
-      "expected": {
-        "result": 254,
-        "carry": 0
-      },
-      "correctAnswer": "FEh",
-      "derivation": "FCh représente 11111100b. SAR conserve le bit de signe à 1 et décale les autres bits vers la droite : 11111110b = FEh.",
-      "distractorRationales": [
-        {
-          "choice": "7Eh",
-          "reason": "Insère un zéro en tête, ce qui correspond au principe de SHR et non à la conservation du signe de SAR."
-        },
-        {
-          "choice": "F8h",
-          "reason": "Décale de deux positions au lieu d'une."
-        }
-      ],
-      "reference": "Intel 8086 Family User's Manual — SAR operation.",
-      "explanationChecks": [
-        "signe",
-        "FEh"
-      ]
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-26.json"
+    },
+    {
+      "id": "C26-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-26.json"
+    },
+    {
+      "id": "C26-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-26.json"
+    },
+    {
+      "id": "C26-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-26.json"
+    },
+    {
+      "id": "C26-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-26.json"
+    },
+    {
+      "id": "C27-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-27.json"
+    },
+    {
+      "id": "C27-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-27.json"
+    },
+    {
+      "id": "C27-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-27.json"
+    },
+    {
+      "id": "C27-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-27.json"
+    },
+    {
+      "id": "C27-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-27.json"
+    },
+    {
+      "id": "C27-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-27.json"
+    },
+    {
+      "id": "C27-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-27.json"
+    },
+    {
+      "id": "C27-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-27.json"
+    },
+    {
+      "id": "C27-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-27.json"
+    },
+    {
+      "id": "C27-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-27.json"
+    },
+    {
+      "id": "C27-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-27.json"
+    },
+    {
+      "id": "C27-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-27.json"
+    },
+    {
+      "id": "C27-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-27.json"
+    },
+    {
+      "id": "C27-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-27.json"
+    },
+    {
+      "id": "C27-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-27.json"
+    },
+    {
+      "id": "C27-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-27.json"
+    },
+    {
+      "id": "C27-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-27.json"
+    },
+    {
+      "id": "C27-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-27.json"
+    },
+    {
+      "id": "C27-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-27.json"
+    },
+    {
+      "id": "C28-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-28.json"
+    },
+    {
+      "id": "C28-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-28.json"
+    },
+    {
+      "id": "C28-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-28.json"
+    },
+    {
+      "id": "C28-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-28.json"
+    },
+    {
+      "id": "C28-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-28.json"
+    },
+    {
+      "id": "C28-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-28.json"
+    },
+    {
+      "id": "C28-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-28.json"
+    },
+    {
+      "id": "C28-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-28.json"
+    },
+    {
+      "id": "C28-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-28.json"
+    },
+    {
+      "id": "C28-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-28.json"
+    },
+    {
+      "id": "C28-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-28.json"
+    },
+    {
+      "id": "C28-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-28.json"
+    },
+    {
+      "id": "C28-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-28.json"
+    },
+    {
+      "id": "C28-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-28.json"
+    },
+    {
+      "id": "C28-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-28.json"
     },
     {
       "id": "C28-F-Q7",
-      "rule": "rep_stosb_forward",
-      "inputs": {
-        "al": 65,
-        "count": 2,
-        "directionFlag": 0,
-        "initialDI": 256
-      },
-      "expected": {
-        "writes": [
-          {
-            "segment": "ES",
-            "offset": 256,
-            "value": 65
-          },
-          {
-            "segment": "ES",
-            "offset": 257,
-            "value": 65
-          }
-        ],
-        "finalCX": 0,
-        "finalDI": 258
-      },
-      "correctAnswer": "Écrit 41h deux fois à ES:DI et ES:DI+1",
-      "derivation": "STOSB écrit AL à ES:DI. Avec DF=0, DI augmente de 1 après chaque stockage. REP répète CX=2 fois : deux octets 41h sont écrits, CX devient 0 et DI avance de 2.",
-      "distractorRationales": [
-        {
-          "choice": "Compare deux octets",
-          "reason": "SCASB compare AL avec l'octet en ES:DI et met à jour les indicateurs ; STOSB écrit AL en ES:DI sans effectuer de comparaison."
-        },
-        {
-          "choice": "Copie AX vers DS:SI",
-          "reason": "STOSB utilise AL comme source et ES:DI comme destination ; cette proposition confond registres, segment et direction du transfert."
-        }
-      ],
-      "reference": "Intel 8086 Family User's Manual — STOSB, REP and direction flag semantics.",
-      "explanationChecks": [
-        "DF=0",
-        "DI augmente",
-        "CX atteint zéro"
-      ]
+      "source": "historical-oracle",
+      "path": "docs/question-independent-oracles-8086.json#historicalOracles"
+    },
+    {
+      "id": "C28-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-28.json"
+    },
+    {
+      "id": "C28-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-28.json"
+    },
+    {
+      "id": "C28-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-28.json"
+    },
+    {
+      "id": "C29-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-29.json"
+    },
+    {
+      "id": "C29-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-29.json"
+    },
+    {
+      "id": "C29-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-29.json"
+    },
+    {
+      "id": "C29-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-29.json"
+    },
+    {
+      "id": "C29-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-29.json"
+    },
+    {
+      "id": "C29-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-29.json"
+    },
+    {
+      "id": "C29-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-29.json"
+    },
+    {
+      "id": "C29-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-29.json"
+    },
+    {
+      "id": "C29-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-29.json"
+    },
+    {
+      "id": "C29-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-29.json"
+    },
+    {
+      "id": "C29-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-29.json"
+    },
+    {
+      "id": "C29-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-29.json"
+    },
+    {
+      "id": "C29-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-29.json"
+    },
+    {
+      "id": "C29-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-29.json"
+    },
+    {
+      "id": "C29-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-29.json"
+    },
+    {
+      "id": "C29-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-29.json"
+    },
+    {
+      "id": "C29-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-29.json"
+    },
+    {
+      "id": "C29-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-29.json"
+    },
+    {
+      "id": "C29-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-29.json"
+    },
+    {
+      "id": "C30-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-30.json"
+    },
+    {
+      "id": "C30-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-30.json"
+    },
+    {
+      "id": "C30-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-30.json"
+    },
+    {
+      "id": "C30-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-30.json"
+    },
+    {
+      "id": "C30-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-30.json"
+    },
+    {
+      "id": "C30-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-30.json"
+    },
+    {
+      "id": "C30-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-30.json"
+    },
+    {
+      "id": "C30-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-30.json"
+    },
+    {
+      "id": "C30-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-30.json"
+    },
+    {
+      "id": "C30-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-30.json"
+    },
+    {
+      "id": "C30-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-30.json"
+    },
+    {
+      "id": "C30-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-30.json"
+    },
+    {
+      "id": "C30-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-30.json"
+    },
+    {
+      "id": "C30-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-30.json"
+    },
+    {
+      "id": "C30-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-30.json"
+    },
+    {
+      "id": "C30-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-30.json"
+    },
+    {
+      "id": "C30-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-30.json"
+    },
+    {
+      "id": "C30-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-30.json"
+    },
+    {
+      "id": "C30-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-30.json"
+    },
+    {
+      "id": "C31-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-31.json"
+    },
+    {
+      "id": "C31-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-31.json"
+    },
+    {
+      "id": "C31-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-31.json"
+    },
+    {
+      "id": "C31-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-31.json"
+    },
+    {
+      "id": "C31-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-31.json"
+    },
+    {
+      "id": "C31-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-31.json"
+    },
+    {
+      "id": "C31-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-31.json"
+    },
+    {
+      "id": "C31-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-31.json"
+    },
+    {
+      "id": "C31-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-31.json"
+    },
+    {
+      "id": "C31-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-31.json"
+    },
+    {
+      "id": "C31-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-31.json"
+    },
+    {
+      "id": "C31-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-31.json"
+    },
+    {
+      "id": "C31-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-31.json"
+    },
+    {
+      "id": "C31-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-31.json"
+    },
+    {
+      "id": "C31-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-31.json"
+    },
+    {
+      "id": "C31-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-31.json"
+    },
+    {
+      "id": "C31-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-31.json"
+    },
+    {
+      "id": "C31-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-31.json"
+    },
+    {
+      "id": "C31-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-31.json"
+    },
+    {
+      "id": "C32-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-32.json"
+    },
+    {
+      "id": "C32-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-32.json"
+    },
+    {
+      "id": "C32-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-32.json"
+    },
+    {
+      "id": "C32-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-32.json"
+    },
+    {
+      "id": "C32-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-32.json"
+    },
+    {
+      "id": "C32-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-32.json"
+    },
+    {
+      "id": "C32-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-32.json"
+    },
+    {
+      "id": "C32-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-32.json"
+    },
+    {
+      "id": "C32-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-32.json"
+    },
+    {
+      "id": "C32-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-32.json"
+    },
+    {
+      "id": "C32-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-32.json"
+    },
+    {
+      "id": "C32-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-32.json"
+    },
+    {
+      "id": "C32-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-32.json"
+    },
+    {
+      "id": "C32-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-32.json"
+    },
+    {
+      "id": "C32-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-32.json"
+    },
+    {
+      "id": "C32-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-32.json"
+    },
+    {
+      "id": "C32-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-32.json"
+    },
+    {
+      "id": "C32-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-32.json"
+    },
+    {
+      "id": "C32-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-32.json"
+    },
+    {
+      "id": "C33-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-33.json"
+    },
+    {
+      "id": "C33-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-33.json"
+    },
+    {
+      "id": "C33-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-33.json"
+    },
+    {
+      "id": "C33-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-33.json"
+    },
+    {
+      "id": "C33-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-33.json"
+    },
+    {
+      "id": "C33-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-33.json"
+    },
+    {
+      "id": "C33-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-33.json"
+    },
+    {
+      "id": "C33-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-33.json"
+    },
+    {
+      "id": "C33-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-33.json"
+    },
+    {
+      "id": "C33-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-33.json"
+    },
+    {
+      "id": "C33-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-33.json"
+    },
+    {
+      "id": "C33-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-33.json"
+    },
+    {
+      "id": "C33-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-33.json"
+    },
+    {
+      "id": "C33-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-33.json"
+    },
+    {
+      "id": "C33-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-33.json"
+    },
+    {
+      "id": "C33-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-33.json"
+    },
+    {
+      "id": "C33-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-33.json"
+    },
+    {
+      "id": "C33-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-33.json"
+    },
+    {
+      "id": "C33-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-33.json"
+    },
+    {
+      "id": "C34-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-34.json"
+    },
+    {
+      "id": "C34-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-34.json"
+    },
+    {
+      "id": "C34-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-34.json"
+    },
+    {
+      "id": "C34-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-34.json"
+    },
+    {
+      "id": "C34-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-34.json"
+    },
+    {
+      "id": "C34-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-34.json"
+    },
+    {
+      "id": "C34-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-34.json"
+    },
+    {
+      "id": "C34-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-34.json"
+    },
+    {
+      "id": "C34-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-34.json"
+    },
+    {
+      "id": "C34-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-34.json"
+    },
+    {
+      "id": "C34-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-34.json"
+    },
+    {
+      "id": "C34-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-34.json"
+    },
+    {
+      "id": "C34-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-34.json"
+    },
+    {
+      "id": "C34-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-34.json"
+    },
+    {
+      "id": "C34-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-34.json"
+    },
+    {
+      "id": "C34-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-34.json"
+    },
+    {
+      "id": "C34-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-34.json"
+    },
+    {
+      "id": "C34-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-34.json"
+    },
+    {
+      "id": "C34-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-34.json"
+    },
+    {
+      "id": "C35-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-35.json"
+    },
+    {
+      "id": "C35-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-35.json"
+    },
+    {
+      "id": "C35-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-35.json"
+    },
+    {
+      "id": "C35-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-35.json"
+    },
+    {
+      "id": "C35-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-35.json"
+    },
+    {
+      "id": "C35-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-35.json"
+    },
+    {
+      "id": "C35-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-35.json"
+    },
+    {
+      "id": "C35-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-35.json"
+    },
+    {
+      "id": "C35-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-35.json"
+    },
+    {
+      "id": "C35-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-35.json"
+    },
+    {
+      "id": "C35-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-35.json"
+    },
+    {
+      "id": "C35-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-35.json"
+    },
+    {
+      "id": "C35-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-35.json"
+    },
+    {
+      "id": "C35-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-35.json"
+    },
+    {
+      "id": "C35-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-35.json"
+    },
+    {
+      "id": "C35-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-35.json"
+    },
+    {
+      "id": "C35-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-35.json"
+    },
+    {
+      "id": "C35-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-35.json"
+    },
+    {
+      "id": "C35-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-35.json"
+    },
+    {
+      "id": "C36-L1-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-36.json"
+    },
+    {
+      "id": "C36-L1-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-36.json"
+    },
+    {
+      "id": "C36-L1-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-36.json"
+    },
+    {
+      "id": "C36-L2-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-36.json"
+    },
+    {
+      "id": "C36-L2-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-36.json"
+    },
+    {
+      "id": "C36-L2-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-36.json"
+    },
+    {
+      "id": "C36-L3-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-36.json"
+    },
+    {
+      "id": "C36-L3-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-36.json"
+    },
+    {
+      "id": "C36-L3-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-36.json"
+    },
+    {
+      "id": "C36-F-Q1",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-36.json"
+    },
+    {
+      "id": "C36-F-Q2",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-36.json"
+    },
+    {
+      "id": "C36-F-Q3",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-36.json"
+    },
+    {
+      "id": "C36-F-Q4",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-36.json"
+    },
+    {
+      "id": "C36-F-Q5",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-36.json"
+    },
+    {
+      "id": "C36-F-Q6",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-36.json"
+    },
+    {
+      "id": "C36-F-Q7",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-36.json"
+    },
+    {
+      "id": "C36-F-Q8",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-36.json"
+    },
+    {
+      "id": "C36-F-Q9",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-36.json"
+    },
+    {
+      "id": "C36-F-Q10",
+      "source": "supplemental-batch",
+      "path": "docs/question-oracle-batches/chapter-36.json"
     }
   ],
   "supplementalBatches": [
@@ -514,18 +3733,334 @@
     "questionsWithoutOracle": 0,
     "officialCertificationCount": 384,
     "remainingOfficialCertification": 300,
-    "calculation": "681 enregistrements de lots, dont 3 identifiants déjà historiques, plus 3 oracles historiques non présents dans les lots (C02-F-Q4, C04-F-Q4 et C28-F-Q7) = 684 identifiants uniques. Les 6 oracles historiques sont tous comptés une seule fois."
+    "calculation": "36 chapitres × 19 questions = 684 identifiants uniques. Les 681 enregistrements des lots sont complétés par trois oracles historiques hors lots ; trois autres oracles historiques sont réutilisés dans les lots. L'index oracles expose les 684 identifiants ; historicalOracles conserve les six objets historiques détaillés.",
+    "registeredOracleRecords": 684,
+    "individuallyReviewedQuestions": 323,
+    "individualReviewChapters": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ]
   },
   "independentReviewBatches": [
     {
       "path": "docs/question-independent-review/chapter-01.json",
       "chapter": 1,
       "reviewedQuestions": 19,
-      "correctedQuestions": 5,
-      "blockedQuestions": 0,
-      "officialCertificationCountBefore": 384,
-      "officialCertificationCountAfter": 384,
-      "note": "Revue indépendante enregistrée séparément ; aucun incrément du compteur officiel tant que le registre nominatif antérieur n'est pas réconcilié."
+      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-02.json",
+      "chapter": 2,
+      "reviewedQuestions": 19,
+      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-03.json",
+      "chapter": 3,
+      "reviewedQuestions": 19,
+      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-04.json",
+      "chapter": 4,
+      "reviewedQuestions": 19,
+      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-05.json",
+      "chapter": 5,
+      "reviewedQuestions": 19,
+      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-06.json",
+      "chapter": 6,
+      "reviewedQuestions": 19,
+      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-07.json",
+      "chapter": 7,
+      "reviewedQuestions": 19,
+      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-08.json",
+      "chapter": 8,
+      "reviewedQuestions": 19,
+      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-09.json",
+      "chapter": 9,
+      "reviewedQuestions": 19,
+      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-10.json",
+      "chapter": 10,
+      "reviewedQuestions": 19,
+      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-11.json",
+      "chapter": 11,
+      "reviewedQuestions": 19,
+      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-12.json",
+      "chapter": 12,
+      "reviewedQuestions": 19,
+      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-13.json",
+      "chapter": 13,
+      "reviewedQuestions": 19,
+      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-14.json",
+      "chapter": 14,
+      "reviewedQuestions": 19,
+      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-15.json",
+      "chapter": 15,
+      "reviewedQuestions": 19,
+      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-16.json",
+      "chapter": 16,
+      "reviewedQuestions": 19,
+      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-17.json",
+      "chapter": 17,
+      "reviewedQuestions": 19,
+      "note": "Revue individuelle enregistrée ; le point de conception des dix questions finales reste ouvert dans le rapport du chapitre 17 ; le compteur officiel ne progresse pas automatiquement."
+    }
+  ],
+  "historicalOracles": [
+    {
+      "id": "C02-F-Q4",
+      "rule": "intel_operand_order",
+      "inputs": {
+        "instruction": "ADD AX,3"
+      },
+      "expected": {
+        "destination": "AX",
+        "source": "3"
+      },
+      "correctAnswer": "ADD AX,3",
+      "derivation": "La syntaxe Intel place la destination en premier et la source en second. ADD AX,3 lit AX, ajoute l'immédiat 3 et écrit le résultat dans AX ; ADD 3,AX inverse les opérandes et n'est pas une forme valide de cette instruction.",
+      "distractorRationales": [
+        {
+          "choice": "ADD 3,AX",
+          "reason": "Inverse l'ordre destination/source : une constante immédiate ne peut pas être la destination de ADD."
+        },
+        {
+          "choice": "AX ADD 3",
+          "reason": "N'emploie pas la syntaxe mnémonique/opérandes Intel attendue ; l'instruction doit commencer par ADD."
+        }
+      ],
+      "reference": "Intel MCS-86 Macro Assembly Language Reference Manual, syntaxe des instructions ; Intel 8086 Family User's Manual, ADD.",
+      "explanationChecks": [
+        "destination",
+        "source",
+        "ADD AX,3"
+      ]
+    },
+    {
+      "id": "C04-F-Q4",
+      "rule": "unsigned_byte_add",
+      "inputs": {
+        "left": 255,
+        "right": 1,
+        "width": 8
+      },
+      "expected": {
+        "mathematicalSum": 256,
+        "result": 0,
+        "carry": 1
+      },
+      "correctAnswer": "AL=00h et CF=1",
+      "derivation": "255 + 1 = 256 (100h). Sur 8 bits, le résultat conservé est 256 modulo 256 = 0 ; le dépassement de la capacité non signée active CF.",
+      "distractorRationales": [
+        {
+          "choice": "AL=00h et CF=0",
+          "reason": "Le résultat octet est correct, mais cette proposition oublie la retenue sortante."
+        },
+        {
+          "choice": "AL=100h et CF=0",
+          "reason": "Ignore la largeur de 8 bits du registre AL et traite le résultat mathématique comme s'il pouvait y être stocké intégralement."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual — ADD operation and CF definition.",
+      "explanationChecks": [
+        "00h",
+        "CF=1",
+        "opérande immédiat invalide"
+      ]
+    },
+    {
+      "id": "C17-F-Q2",
+      "rule": "unsigned_strict_greater",
+      "inputs": {
+        "candidate": 9,
+        "currentMaximum": 8,
+        "equalCase": {
+          "candidate": 8,
+          "currentMaximum": 8
+        }
+      },
+      "expected": {
+        "condition": "JA",
+        "strictComparison": true,
+        "equalityReplaces": false
+      },
+      "correctAnswer": "JA",
+      "derivation": "Après CMP candidate,currentMaximum, JA branche si CF=0 et ZF=0, donc si candidate est strictement supérieur en non signé. JAE inclut l'égalité.",
+      "distractorRationales": [
+        {
+          "choice": "JAE",
+          "reason": "Teste supérieur ou égal ; il remplace aussi le maximum lorsque les deux valeurs sont égales."
+        },
+        {
+          "choice": "JL",
+          "reason": "Teste une relation signée, alors que l'énoncé impose une comparaison non signée."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual — conditional transfer instructions JA/JAE/JL.",
+      "explanationChecks": [
+        "strictement supérieure",
+        "CF=0",
+        "ZF=0",
+        "égalité"
+      ]
+    },
+    {
+      "id": "C26-F-Q5",
+      "rule": "logical_shift_right_8",
+      "inputs": {
+        "value": 129,
+        "width": 8,
+        "count": 1
+      },
+      "expected": {
+        "result": 64,
+        "carry": 1
+      },
+      "correctAnswer": "40h avec CF=1",
+      "derivation": "81h = 10000001b. SHR insère zéro à gauche : 01000000b = 40h ; le bit sortant de poids faible vaut 1 et est copié dans CF.",
+      "distractorRationales": [
+        {
+          "choice": "C0h avec CF=0",
+          "reason": "Ne correspond pas au décalage logique à droite d'un bit de 81h."
+        },
+        {
+          "choice": "02h avec CF=1",
+          "reason": "Ne correspond ni à la direction ni au résultat binaire du décalage demandé."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual — SHR operation.",
+      "explanationChecks": [
+        "CF",
+        "40h"
+      ]
+    },
+    {
+      "id": "C26-F-Q6",
+      "rule": "arithmetic_shift_right_8",
+      "inputs": {
+        "value": 252,
+        "width": 8,
+        "count": 1
+      },
+      "expected": {
+        "result": 254,
+        "carry": 0
+      },
+      "correctAnswer": "FEh",
+      "derivation": "FCh représente 11111100b. SAR conserve le bit de signe à 1 et décale les autres bits vers la droite : 11111110b = FEh.",
+      "distractorRationales": [
+        {
+          "choice": "7Eh",
+          "reason": "Insère un zéro en tête, ce qui correspond au principe de SHR et non à la conservation du signe de SAR."
+        },
+        {
+          "choice": "F8h",
+          "reason": "Décale de deux positions au lieu d'une."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual — SAR operation.",
+      "explanationChecks": [
+        "signe",
+        "FEh"
+      ]
+    },
+    {
+      "id": "C28-F-Q7",
+      "rule": "rep_stosb_forward",
+      "inputs": {
+        "al": 65,
+        "count": 2,
+        "directionFlag": 0,
+        "initialDI": 256
+      },
+      "expected": {
+        "writes": [
+          {
+            "segment": "ES",
+            "offset": 256,
+            "value": 65
+          },
+          {
+            "segment": "ES",
+            "offset": 257,
+            "value": 65
+          }
+        ],
+        "finalCX": 0,
+        "finalDI": 258
+      },
+      "correctAnswer": "Écrit 41h deux fois à ES:DI et ES:DI+1",
+      "derivation": "STOSB écrit AL à ES:DI. Avec DF=0, DI augmente de 1 après chaque stockage. REP répète CX=2 fois : deux octets 41h sont écrits, CX devient 0 et DI avance de 2.",
+      "distractorRationales": [
+        {
+          "choice": "Compare deux octets",
+          "reason": "SCASB compare AL avec l'octet en ES:DI et met à jour les indicateurs ; STOSB écrit AL en ES:DI sans effectuer de comparaison."
+        },
+        {
+          "choice": "Copie AX vers DS:SI",
+          "reason": "STOSB utilise AL comme source et ES:DI comme destination ; cette proposition confond registres, segment et direction du transfert."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual — STOSB, REP and direction flag semantics.",
+      "explanationChecks": [
+        "DF=0",
+        "DI augmente",
+        "CX atteint zéro"
+      ]
     }
   ]
 }

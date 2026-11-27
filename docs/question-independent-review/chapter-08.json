@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue indépendante — chapitre 8",
+  "reviewDate": "2026-11-27",
+  "scope": "Contrôle individuel des 19 questions du chapitre 8 : ADD/ADC, SUB/SBB, propagation de retenue et d'emprunt, INC, NEG et FLAGS.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Macro Assembly Language Reference Manual",
+      "edition": "1979",
+      "url": "https://manuals.plus/m/3aa41c4d0f61cee77e606f5d25d65c409e33c472f7869184e8bf69d9a2c89b98"
+    },
+    {
+      "id": "independent-arithmetic",
+      "title": "Recalculs indépendants 8 bits et multi-octets",
+      "edition": "2026-11-27",
+      "url": ""
+    }
+  ],
+  "records": [
+    {"id":"C08-L1-Q1","result":"passed","finding":"ADC calcule destination+source+CF entrant ; la retenue est une entrée supplémentaire.","basis":"Intel 8086 Family User's Manual, ADD/ADC."},
+    {"id":"C08-L1-Q2","result":"passed","finding":"Le mot faible est additionné en premier pour produire CF, ensuite consommé par ADC sur le mot fort.","basis":"Recalcul indépendant d'une addition multi-mots."},
+    {"id":"C08-L1-Q3","result":"corrected","finding":"Répétait le cas FFh+1 déjà testé au chapitre 4. Remplacé par AX=12FFh, ADD AL,1 puis ADC AH,0 ; résultat recalculé 1300h.","basis":"Trace indépendante : FFh+1 produit AL=00h, CF=1 ; 12h+0+1 produit AH=13h."},
+    {"id":"C08-L2-Q1","result":"passed","finding":"SBB calcule destination−source−CF entrant ; CF est l'emprunt à propager.","basis":"Intel 8086 Family User's Manual, SUB/SBB."},
+    {"id":"C08-L2-Q2","result":"passed","finding":"Le mot faible est soustrait en premier pour produire l'emprunt, ensuite consommé par SBB sur le mot fort.","basis":"Recalcul indépendant d'une soustraction multi-mots."},
+    {"id":"C08-L2-Q3","result":"corrected","finding":"Répétait le cas 00h−01h déjà présent dans la question finale. Remplacé par AL=10h, CF=1, SBB AL,1 ; le résultat est 0Eh.","basis":"Recalcul indépendant : 10h−1−1=0Eh."},
+    {"id":"C08-L3-Q1","result":"passed","finding":"INC préserve CF sur le 8086, même s'il met à jour les autres indicateurs arithmétiques concernés.","basis":"Intel 8086 Family User's Manual, INC et FLAGS."},
+    {"id":"C08-L3-Q2","result":"passed","finding":"NEG calcule zéro moins l'opérande, ce qui forme le complément à deux.","basis":"Intel 8086 Family User's Manual, NEG."},
+    {"id":"C08-L3-Q3","result":"corrected","finding":"Répétait le cas de débordement NEG 80h de la question finale. Remplacé par NEG 01h : FFh, CF=1, OF=0.","basis":"Recalcul indépendant du complément à deux et des indicateurs NEG."},
+    {"id":"C08-F-Q1","result":"passed","finding":"CF est l'entrée supplémentaire consommée par ADC ; ZF et DF ne remplissent pas ce rôle.","basis":"Intel 8086 Family User's Manual, ADC et FLAGS."},
+    {"id":"C08-F-Q2","result":"corrected","finding":"La question ne testait que la préservation de CF, déjà vérifiée par L3-Q1. Elle demande maintenant l'ensemble des indicateurs modifiés par INC : OF, SF, ZF, AF, PF ; CF est préservé.","basis":"Intel 8086 Family User's Manual, INC et FLAGS."},
+    {"id":"C08-F-Q3","result":"passed","finding":"ADC AX,BX est la forme d'addition avec retenue ; SBB soustrait l'emprunt et NEG calcule zéro moins l'opérande.","basis":"Intel MCS-86 Macro Assembly Language Reference Manual, instructions ADC/SBB/NEG."},
+    {"id":"C08-F-Q4","result":"passed","finding":"Le calcul multi-mots commence par le mot faible afin de propager sa retenue au mot fort.","basis":"Recalcul indépendant d'une addition multi-mots."},
+    {"id":"C08-F-Q5","result":"passed","finding":"00h−01h donne FFh modulo 256 avec CF=1 pour l'emprunt non signé.","basis":"Recalcul indépendant de la soustraction 8 bits."},
+    {"id":"C08-F-Q6","result":"passed","finding":"SBB BL,0 avec BL=5 et CF=1 donne 5−0−1=4.","basis":"Recalcul indépendant de SBB."},
+    {"id":"C08-F-Q7","result":"passed","finding":"NEG 80h est le cas extrême de complément à deux : −(−128) n'est pas représentable en signé 8 bits, donc OF=1.","basis":"Intel 8086 Family User's Manual, NEG et overflow."},
+    {"id":"C08-F-Q8","result":"passed","finding":"ADD AL,1 sur AL=FFh produit AL=00h et CF=1 ; AH reste inchangé et n'est pas automatiquement le réceptacle de CF.","basis":"Intel 8086 Family User's Manual, largeur d'opérande et FLAGS."},
+    {"id":"C08-F-Q9","result":"passed","finding":"Une instruction intermédiaire qui modifie CF peut détruire la retenue à consommer par ADC sur le mot fort.","basis":"Intel 8086 Family User's Manual, ADC et FLAGS."},
+    {"id":"C08-F-Q10","result":"passed","finding":"Les tests ADD/ADC doivent couvrir un chemin sans retenue et un chemin avec retenue, en contrôlant chaque mot.","basis":"Méthode de validation indépendante des additions multi-mots."}
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 15,
+    "corrected": 4,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  }
+}

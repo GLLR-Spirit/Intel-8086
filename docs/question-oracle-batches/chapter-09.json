@@ -71,21 +71,21 @@
       "inputs": {
         "left": 8,
         "right": 5,
-        "width": 4
+        "width": 8
       },
       "expected": {
         "result": 13
       },
-      "correctAnswer": "OR",
-      "derivation": "OR produit un bit 1 dès qu'au moins un des deux bits correspondants vaut 1. L'opération active donc les positions indiquées par le masque sans exiger que les deux opérandes soient à 1.",
+      "correctAnswer": "0Dh",
+      "derivation": "08h OR 05h réunit les bits actifs des deux opérandes : 00001000b OR 00000101b = 00001101b, soit 0Dh.",
       "distractorRationales": [
         {
-          "choice": "AND",
-          "reason": "OR active les bits si l'un des opérandes les porte ; AND exige deux bits à 1."
+          "choice": "05h",
+          "reason": "05h ne contient que les bits déjà actifs dans le masque ; OR conserve aussi le bit 3 présent dans AL=08h."
         },
         {
-          "choice": "NOT",
-          "reason": "NOT inverse tous les bits et ne réalise pas l'union sélective d'un masque."
+          "choice": "08h",
+          "reason": "08h est la valeur initiale ; OR ajoute les bits 2 et 0 du masque 05h pour obtenir 0Dh."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), AND/OR/XOR/NOT/TEST instruction semantics and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, logical instruction forms."
@@ -119,25 +119,24 @@
     {
       "id": "C09-L2-Q2",
       "status": "certified",
-      "rule": "not_instruction_semantics",
+      "rule": "not_preserves_flags",
       "inputs": {
-        "instruction": "NOT AL",
-        "width": 8
+        "instruction": "NOT AL"
       },
       "expected": {
-        "invertsAllBits": true,
-        "modifiesOperand": true
+        "flagsModified": false,
+        "operandModified": true
       },
-      "correctAnswer": "NOT",
-      "derivation": "NOT inverse chaque bit de l'opérande. Sur AL, les huit bits sont complétés ; ce n'est ni une simple comparaison ni une opération OR.",
+      "correctAnswer": "Non",
+      "derivation": "NOT inverse chaque bit de l'opérande destination, mais ne modifie aucun indicateur FLAGS sur le 8086. L'opérande change ; les indicateurs restent inchangés.",
       "distractorRationales": [
         {
-          "choice": "TEST",
-          "reason": "TEST met à jour FLAGS sans modifier l'opérande ; il n'inverse pas tous ses bits."
+          "choice": "Oui",
+          "reason": "NOT ne met pas à jour FLAGS ; l'inversion porte uniquement sur l'opérande."
         },
         {
-          "choice": "OR",
-          "reason": "OR combine les bits ; il ne réalise pas le complément bit à bit de NOT."
+          "choice": "Seulement CF",
+          "reason": "NOT préserve aussi CF ; aucun indicateur n'est modifié."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), AND/OR/XOR/NOT/TEST instruction semantics and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, logical instruction forms."
@@ -329,25 +328,25 @@
     {
       "id": "C09-F-Q4",
       "status": "certified",
-      "rule": "xor_mask_semantics",
+      "rule": "xor_vs_not_selective_toggle",
       "inputs": {
-        "mask": 15,
+        "mask": 5,
         "width": 8
       },
       "expected": {
-        "togglesMaskOneBits": true,
-        "unchangedMaskZeroBits": true
+        "xorSelective": true,
+        "notInvertsAll": true
       },
-      "correctAnswer": "XOR avec un masque",
-      "derivation": "XOR inverse les positions où le masque contient des uns et laisse inchangées les positions où il contient des zéros. Le masque sélectionne donc précisément les bits à basculer.",
+      "correctAnswer": "XOR ne bascule que les bits du masque à 1 ; NOT inverse tous les bits",
+      "derivation": "XOR avec un masque bascule les positions où le masque vaut 1 et laisse les autres inchangées. NOT inverse toutes les positions de l'opérande, sans sélection.",
       "distractorRationales": [
         {
-          "choice": "NOT",
-          "reason": "NOT inverse tous les bits, pas seulement les positions sélectionnées par le masque."
+          "choice": "XOR modifie uniquement FLAGS",
+          "reason": "XOR écrit le résultat dans l'opérande et met à jour les FLAGS ; il ne se limite pas à FLAGS."
         },
         {
-          "choice": "MOV",
-          "reason": "MOV copie une valeur ; il ne réalise pas un basculement sélectif de bits."
+          "choice": "NOT ne modifie aucun bit",
+          "reason": "NOT inverse tous les bits de l'opérande ; il ne les laisse pas inchangés."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), AND/OR/XOR/NOT/TEST instruction semantics and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, logical instruction forms."
@@ -381,25 +380,25 @@
     {
       "id": "C09-F-Q6",
       "status": "certified",
-      "rule": "bitwise_and",
+      "rule": "bitwise_xor",
       "inputs": {
-        "left": 10,
-        "right": 12,
+        "left": 14,
+        "right": 11,
         "width": 4
       },
       "expected": {
-        "result": 8
+        "result": 5
       },
-      "correctAnswer": "1000b",
-      "derivation": "1010b AND 1100b donne 1000b. Seul le bit de poids 3 vaut 1 dans les deux opérandes ; les autres positions produisent zéro.",
+      "correctAnswer": "0101b",
+      "derivation": "1110₂ XOR 1011₂ donne 0101₂ : les positions 2 et 0 diffèrent, tandis que les positions 3 et 1 sont identiques.",
       "distractorRationales": [
         {
-          "choice": "1110b",
-          "reason": "1110b inclut un bit qui n'est pas à 1 dans les deux opérandes."
+          "choice": "1111b",
+          "reason": "1111b serait le résultat d'un OR ; XOR met à 1 uniquement les positions différentes."
         },
         {
-          "choice": "0110b",
-          "reason": "0110b ne correspond pas à l'unique bit commun de poids 3."
+          "choice": "1010b",
+          "reason": "1010b ne correspond pas aux positions où 1110b et 1011b diffèrent."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), AND/OR/XOR/NOT/TEST instruction semantics and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, logical instruction forms."
@@ -407,25 +406,28 @@
     {
       "id": "C09-F-Q7",
       "status": "certified",
-      "rule": "test_preserves_destination",
+      "rule": "test_trace_preserve_value",
       "inputs": {
-        "instruction": "TEST AL,FFh",
-        "initialAL": 90
+        "initialAL": 165,
+        "mask": 15,
+        "instruction": "TEST AL,0Fh"
       },
       "expected": {
+        "finalAL": 165,
+        "logicalResult": 5,
         "destinationModified": false,
         "flagsUpdated": true
       },
-      "correctAnswer": "Non",
-      "derivation": "TEST met à jour les indicateurs à partir du résultat logique, mais ne réécrit pas la destination. AL reste donc inchangé même si les FLAGS sont modifiés.",
+      "correctAnswer": "A5h",
+      "derivation": "AL vaut A5h. TEST calcule A5h AND 0Fh = 05h pour mettre à jour FLAGS, mais ne stocke pas ce résultat dans AL. Le registre conserve donc A5h.",
       "distractorRationales": [
         {
-          "choice": "Oui, toujours",
-          "reason": "TEST met à jour FLAGS mais ne modifie pas la destination ; la réponse négative est correcte."
+          "choice": "05h",
+          "reason": "05h est le résultat temporaire du ET logique utilisé pour FLAGS ; TEST ne l'écrit pas dans AL."
         },
         {
-          "choice": "Seulement si ZF=0",
-          "reason": "ZF=0 n'autorise pas TEST à écrire dans AL ; l'instruction préserve la destination quel que soit le résultat."
+          "choice": "00h",
+          "reason": "TEST ne met pas AL à zéro ; la destination reste A5h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), AND/OR/XOR/NOT/TEST instruction semantics and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, logical instruction forms."
