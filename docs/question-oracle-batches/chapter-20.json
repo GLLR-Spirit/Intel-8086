@@ -503,8 +503,9 @@
     {
       "id": "C20-F-Q10",
       "status": "certified",
-      "rule": "stack_validation",
+      "rule": "audit_checklist_coverage",
       "inputs": {
+        "domain": "stack",
         "checks": [
           "LIFO_order",
           "word_values",
@@ -513,18 +514,25 @@
         ]
       },
       "expected": {
-        "checksAll": true
+        "requiredChecks": [
+          "LIFO_order",
+          "word_values",
+          "SP_before_after",
+          "memory_bounds"
+        ],
+        "missingChecks": [],
+        "complete": true
       },
       "correctAnswer": "Ordre LIFO, valeur des mots et SP aux frontières",
-      "derivation": "Un audit de pile doit vérifier le contenu de chaque mot, l'ordre LIFO, les variations de SP et les limites de mémoire. Contrôler uniquement AX ou la longueur du programme ne suffit pas à détecter une pile déséquilibrée.",
+      "derivation": "La pile 8086 est une structure LIFO adressée par SS:SP. Chaque PUSH/POP modifie SP par mots de deux octets ; l'ordre des valeurs empilées et dépilées détermine les données restaurées. Il faut comparer les valeurs réellement stockées, suivre SP avant et après chaque opération et vérifier que les accès restent dans la zone mémoire prévue. Le seul état d'AX ou le nombre de lignes du programme ne vérifie aucun de ces invariants.",
       "distractorRationales": [
         {
           "choice": "Seulement le registre AX",
-          "reason": "AX seul ne révèle pas l'ordre des mots, l'équilibre SP ou les limites mémoire."
+          "reason": "AX peut être inchangé alors que l'ordre LIFO, les mots stockés ou SP sont incorrects ; ce registre seul ne certifie pas la pile."
         },
         {
           "choice": "Uniquement le nombre de lignes",
-          "reason": "Le nombre de lignes du programme ne prouve pas que la pile est équilibrée ou que les mots sont dans le bon ordre."
+          "reason": "Le nombre de lignes du programme n'établit ni les valeurs dépilées, ni l'équilibre de SP, ni la validité des adresses."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
