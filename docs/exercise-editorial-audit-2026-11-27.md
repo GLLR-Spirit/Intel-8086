@@ -135,7 +135,8 @@ Les écarts de la première passe ont été corrigés sur cette branche :
 - **EX37** : l'oracle assemble puis désassemble le flux complet ; il vérifie les octets, les quatre frontières d'instructions et les tailles `2, 1, 3, 1`, y compris le NOP sauté à l'exécution.
 - **EX39** : l'interface recueille une justification écrite ; le contrôle refuse une réponse vide et exige les notions de cycles, BIU, prélecture, bus et limite de mesure du simulateur.
 - **EX41** : le validateur exige AX=10, SP restauré à FFFEh et pile logique vide.
-- **EX46** : le validateur exige AX=1234h, SP restauré à FFFEh et pile logique vide après IRET.
+- **EX43** : le validateur exige désormais CF=1, SP restauré à FFFEh et pile logique vide après PUSHF/POPF.
+- **EX46** : le validateur exige désormais AX=1234h, SP restauré à FFFEh, pile logique vide et IP final à 0006h. Cette valeur correspond à la reprise après INT, à l'exécution de HLT, puis à l'adresse immédiatement après HLT dans le programme de l'exercice.
 - **EX47 et EX48** : BX est initialisé à BEEFh, sauvegardé, modifié, puis restauré ; les validateurs vérifient BX=BEEFh, SP=FFFEh et la pile logique vide. Les corrections guidées ont été alignées sur les mêmes programmes.
 
 ### Preuves CI après corrections
@@ -150,3 +151,13 @@ Les écarts de la première passe ont été corrigés sur cette branche :
 ### Statut de certification
 
 Ces preuves lèvent les six familles d'écarts techniques de la première passe. Elles ne remplacent pas la revue éditoriale complète de chacun des 48 exercices sur les critères de progression, prérequis, erreurs typiques, précision des explications et adéquation du niveau. **Le statut global reste donc « certification pédagogique complète en cours »**, et non « 48/48 certifiés ». Aucun changement n'est fusionné dans `main` et aucun déploiement n'a été effectué.
+
+
+### Contrôle complémentaire des invariants de pile et de reprise
+
+Une seconde vérification du prédicat a relevé deux assertions encore trop faibles dans la première mise à jour :
+
+- **EX43** : une pile logique vide ne suffisait pas à démontrer que SP avait retrouvé sa valeur initiale. L'assertion SP=FFFEh est maintenant explicite.
+- **EX46** : l'état AX et la pile vide ne démontraient pas que le flot avait repris après INT. Le prédicat exige maintenant SP=FFFEh et IP=0006h après l'exécution de HLT. Le test sera considéré comme validé uniquement si le CI confirme cette valeur sur l'exécution réelle.
+
+La revue éditoriale des 48 fiches se poursuit séparément : la présence d'une correction et d'un oracle ne suffit pas à prouver que tous les chemins de branchement, toutes les consignes de méthode et toutes les réponses conceptuelles sont évalués.
