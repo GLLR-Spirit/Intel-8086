@@ -1,0 +1,503 @@
+{
+  "schemaVersion": 1,
+  "batch": "chapter-21",
+  "title": "Oracles indépendants — chapitre 21 : CALL/RET near et multiplication",
+  "reviewDate": "2026-11-27",
+  "statusLegend": {
+    "certified": "Sémantique des appels near, équilibre de pile et résultat MUL vérifiés indépendamment"
+  },
+  "referenceBasis": [
+    "Intel 8086 Family User's Manual (October 1979), near CALL/RET, stack operations and unsigned MUL result in DX:AX.",
+    "Intel MCS-86 Assembly Language Reference Manual, procedure calls, returns and multiplication."
+  ],
+  "oracles": [
+    {
+      "id": "C21-L1-Q1",
+      "status": "certified",
+      "rule": "near_call_stack",
+      "inputs": {
+        "instruction": "CALL ROUTINE"
+      },
+      "expected": {
+        "saved": "IP",
+        "CSChanged": false,
+        "SPDecrement": 2
+      },
+      "correctAnswer": "L'IP de retour",
+      "derivation": "CALL near empile l'offset de l'instruction qui suit l'appel. Il décrémente SP de deux octets et conserve CS ; il ne sauvegarde pas CS ni FLAGS comme le ferait un transfert far ou une interruption.",
+      "distractorRationales": [
+        {
+          "choice": "C",
+          "reason": "S"
+        },
+        {
+          "choice": "A",
+          "reason": "X"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
+    },
+    {
+      "id": "C21-L1-Q2",
+      "status": "certified",
+      "rule": "call_return_address",
+      "inputs": {
+        "instruction": "CALL ROUTINE"
+      },
+      "expected": {
+        "returnAddress": "IP_after_CALL"
+      },
+      "correctAnswer": "L'adresse de l'instruction qui suit CALL",
+      "derivation": "L'adresse de continuation est l'offset de l'instruction immédiatement après CALL. RET dépile ensuite cette valeur dans IP afin de reprendre l'exécution au bon endroit.",
+      "distractorRationales": [
+        {
+          "choice": "L",
+          "reason": "'"
+        },
+        {
+          "choice": "L",
+          "reason": "a"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
+    },
+    {
+      "id": "C21-L1-Q3",
+      "status": "certified",
+      "rule": "near_call_segment",
+      "inputs": {
+        "instruction": "CALL ROUTINE"
+      },
+      "expected": {
+        "CSChanged": false,
+        "IPChanged": true
+      },
+      "correctAnswer": "CS",
+      "derivation": "CALL near change IP vers la routine appelée mais reste dans le segment de code courant. CS n'est donc pas modifié ; un appel far chargerait un nouveau CS:IP.",
+      "distractorRationales": [
+        {
+          "choice": "S",
+          "reason": "S"
+        },
+        {
+          "choice": "D",
+          "reason": "S"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
+    },
+    {
+      "id": "C21-L2-Q1",
+      "status": "certified",
+      "rule": "ret_near",
+      "inputs": {
+        "instruction": "RET"
+      },
+      "expected": {
+        "operation": "pop",
+        "destination": "IP",
+        "restoresContinuation": true
+      },
+      "correctAnswer": "Dépiler l'IP de retour et reprendre l'exécution",
+      "derivation": "RET near dépile le mot de retour placé par CALL near et le charge dans IP. L'exécution reprend ainsi à l'instruction qui suivait l'appel ; la pile n'est pas effacée arbitrairement.",
+      "distractorRationales": [
+        {
+          "choice": "D",
+          "reason": "é"
+        },
+        {
+          "choice": "E",
+          "reason": "f"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
+    },
+    {
+      "id": "C21-L2-Q2",
+      "status": "certified",
+      "rule": "call_return_address",
+      "inputs": {
+        "instruction": "CALL ROUTINE"
+      },
+      "expected": {
+        "returnAddress": "IP_after_CALL"
+      },
+      "correctAnswer": "À l'instruction suivant CALL",
+      "derivation": "CALL sauvegarde l'offset de continuation avant de transférer le contrôle à la routine. RET récupère précisément cet offset pour reprendre après l'instruction CALL.",
+      "distractorRationales": [
+        {
+          "choice": "A",
+          "reason": "u"
+        },
+        {
+          "choice": "À",
+          "reason": " "
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
+    },
+    {
+      "id": "C21-L2-Q3",
+      "status": "certified",
+      "rule": "call_ret_balance",
+      "inputs": {
+        "callWords": 1,
+        "retWords": 1,
+        "initialSP": 4096
+      },
+      "expected": {
+        "IPRestored": true,
+        "finalSP": 4096,
+        "stackBalanced": true
+      },
+      "correctAnswer": "Le retour restaure IP et équilibre SP",
+      "derivation": "CALL near empile un mot de retour ; RET near le dépile. Si la routine n'ajoute pas de mots non dépilés, SP retrouve sa valeur initiale et IP reprend l'adresse de continuation.",
+      "distractorRationales": [
+        {
+          "choice": "L",
+          "reason": "e"
+        },
+        {
+          "choice": "L",
+          "reason": "a"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
+    },
+    {
+      "id": "C21-L3-Q1",
+      "status": "certified",
+      "rule": "mul_word_result_registers",
+      "inputs": {
+        "operandBits": 16,
+        "resultBits": 32
+      },
+      "expected": {
+        "lowWord": "AX",
+        "highWord": "DX"
+      },
+      "correctAnswer": "DX:AX",
+      "derivation": "La multiplication non signée de deux opérandes 16 bits produit un résultat de 32 bits. Le mot faible est placé dans AX et le mot fort dans DX, formant le couple DX:AX.",
+      "distractorRationales": [
+        {
+          "choice": "A",
+          "reason": "X"
+        },
+        {
+          "choice": "B",
+          "reason": "X"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
+    },
+    {
+      "id": "C21-L3-Q2",
+      "status": "certified",
+      "rule": "mul_word_trace",
+      "inputs": {
+        "left": 3,
+        "right": 3,
+        "width": 16
+      },
+      "expected": {
+        "DX": 0,
+        "AX": 9,
+        "product": 9
+      },
+      "correctAnswer": "0000:0009h",
+      "derivation": "3×3=9. Le produit tient entièrement dans le mot faible AX, donc AX=0009h et le mot haut DX=0000h ; le couple DX:AX vaut 0000:0009h.",
+      "distractorRationales": [
+        {
+          "choice": "0",
+          "reason": "0"
+        },
+        {
+          "choice": "0",
+          "reason": "0"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
+    },
+    {
+      "id": "C21-L3-Q3",
+      "status": "certified",
+      "rule": "mul_word_high_half",
+      "inputs": {
+        "operandBits": 16,
+        "resultBits": 32
+      },
+      "expected": {
+        "highWord": "DX",
+        "lowWord": "AX"
+      },
+      "correctAnswer": "Le produit complet peut dépasser 16 bits",
+      "derivation": "Le produit de deux mots non signés peut nécessiter jusqu'à 32 bits. AX ne contient que les 16 bits faibles ; DX reçoit les 16 bits forts lorsque le produit dépasse la capacité d'AX.",
+      "distractorRationales": [
+        {
+          "choice": "D",
+          "reason": "X"
+        },
+        {
+          "choice": "D",
+          "reason": "X"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
+    },
+    {
+      "id": "C21-F-Q1",
+      "status": "certified",
+      "rule": "call_near_semantics",
+      "inputs": {
+        "instruction": "CALL NEAR ROUTINE"
+      },
+      "expected": {
+        "IPChanged": true,
+        "CSChanged": false
+      },
+      "correctAnswer": "Un appel qui modifie IP sans changer CS",
+      "derivation": "CALL near sauvegarde IP puis transfère l'exécution vers une cible dans le même segment de code. CS reste inchangé ; le couple CS:IP ne change donc que par son offset.",
+      "distractorRationales": [
+        {
+          "choice": "U",
+          "reason": "n"
+        },
+        {
+          "choice": "U",
+          "reason": "n"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
+    },
+    {
+      "id": "C21-F-Q2",
+      "status": "certified",
+      "rule": "call_return_purpose",
+      "inputs": {
+        "instruction": "CALL"
+      },
+      "expected": {
+        "savedValue": "return_IP",
+        "purpose": "resume_after_call"
+      },
+      "correctAnswer": "Pour que RET reprenne après l'appel",
+      "derivation": "L'IP de retour est nécessaire pour retrouver l'instruction de continuation après l'exécution de la procédure. Sans cette sauvegarde, RET ne pourrait pas savoir où reprendre.",
+      "distractorRationales": [
+        {
+          "choice": "P",
+          "reason": "o"
+        },
+        {
+          "choice": "P",
+          "reason": "o"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
+    },
+    {
+      "id": "C21-F-Q3",
+      "status": "certified",
+      "rule": "ret_near",
+      "inputs": {
+        "instruction": "RET"
+      },
+      "expected": {
+        "operation": "pop",
+        "destination": "IP",
+        "restoresContinuation": true
+      },
+      "correctAnswer": "RET",
+      "derivation": "RET dépile l'offset de retour d'un appel near et le charge dans IP. IRET restaure aussi FLAGS et CS pour les interruptions ; RETF dépile un pointeur far.",
+      "distractorRationales": [
+        {
+          "choice": "I",
+          "reason": "R"
+        },
+        {
+          "choice": "R",
+          "reason": "E"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
+    },
+    {
+      "id": "C21-F-Q4",
+      "status": "certified",
+      "rule": "stack_parasite_error",
+      "inputs": {
+        "unmatchedPushWords": 1
+      },
+      "expected": {
+        "wrongReturnAddressPossible": true,
+        "SPUnbalanced": true
+      },
+      "correctAnswer": "Laisser un mot parasite au sommet de pile",
+      "derivation": "Un PUSH non compensé laisse un mot supplémentaire au sommet. RET dépile alors ce mot comme s'il s'agissait de l'IP de retour, ce qui provoque une reprise incorrecte et un SP déséquilibré.",
+      "distractorRationales": [
+        {
+          "choice": "M",
+          "reason": "o"
+        },
+        {
+          "choice": "U",
+          "reason": "t"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
+    },
+    {
+      "id": "C21-F-Q5",
+      "status": "certified",
+      "rule": "procedure_double",
+      "inputs": {
+        "initialAX": 5
+      },
+      "expected": {
+        "finalAX": 10
+      },
+      "correctAnswer": "10",
+      "derivation": "La routine double AX : 5×2=10. Le résultat attendu est calculé à partir de la valeur d'entrée, sans dépendre d'un changement de segment ou d'une restauration de FLAGS.",
+      "distractorRationales": [
+        {
+          "choice": "5"
+        },
+        {
+          "choice": "2",
+          "reason": "5"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
+    },
+    {
+      "id": "C21-F-Q6",
+      "status": "certified",
+      "rule": "call_stack_pointer",
+      "inputs": {
+        "initialSP": 65534,
+        "returnIP": 4660,
+        "width": 16
+      },
+      "expected": {
+        "finalSP": 65532,
+        "storedReturnIP": 4660
+      },
+      "correctAnswer": "FFFCh",
+      "derivation": "CALL near empile un mot de retour de 16 bits. SP est donc décrémenté de deux octets : FFFEh−2=FFFCh, puis l'IP de retour est écrit à SS:SP.",
+      "distractorRationales": [
+        {
+          "choice": "F",
+          "reason": "F"
+        },
+        {
+          "choice": "F",
+          "reason": "F"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
+    },
+    {
+      "id": "C21-F-Q7",
+      "status": "certified",
+      "rule": "procedure_double_and_return",
+      "inputs": {
+        "initialAX": 5
+      },
+      "expected": {
+        "finalAX": 10,
+        "returnsAfterCall": true
+      },
+      "correctAnswer": "Double AX puis reprend après CALL",
+      "derivation": "La procédure double la valeur d'entrée AX, puis RET utilise l'IP empilé par CALL pour reprendre à l'instruction suivante. Le résultat AX=10 et le retour sont deux propriétés à vérifier.",
+      "distractorRationales": [
+        {
+          "choice": "S",
+          "reason": "a"
+        },
+        {
+          "choice": "R",
+          "reason": "e"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
+    },
+    {
+      "id": "C21-F-Q8",
+      "status": "certified",
+      "rule": "near_return_state",
+      "inputs": {
+        "initialSP": 4096,
+        "returnIP": 261
+      },
+      "expected": {
+        "IPRestored": true,
+        "finalSP": 4096,
+        "CSChanged": false
+      },
+      "correctAnswer": "IP de reprise et SP équilibré",
+      "derivation": "Un retour near correct restaure l'IP de continuation et retire le mot empilé par CALL, de sorte que SP retrouve son état antérieur. CS reste le même segment de code.",
+      "distractorRationales": [
+        {
+          "choice": "C",
+          "reason": "S"
+        },
+        {
+          "choice": "C",
+          "reason": "X"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
+    },
+    {
+      "id": "C21-F-Q9",
+      "status": "certified",
+      "rule": "stack_procedure_audit",
+      "inputs": {
+        "procedureHasPushPop": true
+      },
+      "expected": {
+        "verifyPushPopOrder": true,
+        "verifySPBalance": true
+      },
+      "correctAnswer": "Vérifier les PUSH/POP effectués dans la procédure et l'ordre de pile",
+      "derivation": "Pour diagnostiquer un mauvais retour, il faut suivre chaque PUSH et POP, vérifier l'ordre LIFO et comparer SP avant l'appel et après le retour. Un mot parasite peut être interprété comme IP.",
+      "distractorRationales": [
+        {
+          "choice": "M",
+          "reason": "o"
+        },
+        {
+          "choice": "R",
+          "reason": "e"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
+    },
+    {
+      "id": "C21-F-Q10",
+      "status": "certified",
+      "rule": "procedure_contract",
+      "inputs": {
+        "inputsDocumented": true,
+        "outputsDocumented": true,
+        "stackBalanced": true
+      },
+      "expected": {
+        "interfaceExplicit": true,
+        "stackDisciplineExplicit": true
+      },
+      "correctAnswer": "Contrat d'entrée/sortie et discipline de pile explicites",
+      "derivation": "Une procédure réutilisable doit documenter ses paramètres, ses résultats, les registres qu'elle modifie et l'équilibre de pile attendu. Dépendre de valeurs résiduelles non documentées rend les appels imprévisibles.",
+      "distractorRationales": [
+        {
+          "choice": "E",
+          "reason": "l"
+        },
+        {
+          "choice": "E",
+          "reason": "l"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
+    }
+  ]
+}
