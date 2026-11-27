@@ -696,6 +696,14 @@ function independentlyCompute(oracle) {
       return { copies: "CX_bytes", source: "DS:SI", destination: "ES:DI" };
     case "string_word_index_update":
       return { SIIncrement: i.DF ? -2 : 2, DIIncrement: i.DF ? -2 : 2 };
+    case "rep_stosb_forward": {
+      const writes = Array.from({ length: i.count }, (_, index) => ({
+        segment: "ES",
+        offset: (i.initialDI + index) & 0xffff,
+        value: i.al
+      }));
+      return { writes, finalCX: 0, finalDI: (i.initialDI + i.count) & 0xffff };
+    }
     case "rep_iteration_count":
       return { iterations: i.initialCX };
     case "rep_semantics":
