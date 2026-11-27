@@ -27,12 +27,12 @@
       "derivation": "L'espace mémoire du 8086 est adressé par octet. Un mot de 16 bits contient deux octets de 8 bits et occupe donc deux adresses mémoire consécutives.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le bit",
+          "reason": "La mémoire du 8086 est adressée à l'octet ; le bit n'est pas l'unité d'adresse et le mot occupe deux octets."
         },
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le mot de 16 bits uniquement",
+          "reason": "Un mot de 16 bits contient deux octets ; il n'est pas une unité de stockage indivisible à adresse unique."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), memory organization, byte/word transfers and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
@@ -55,12 +55,12 @@
       "derivation": "1234h se décompose en octet fort 12h et octet faible 34h. En little-endian, l'octet faible est stocké à l'adresse de départ 0100h ; l'octet fort suit à 0101h.",
       "distractorRationales": [
         {
-          "choice": "1",
-          "reason": "2"
+          "choice": "12h est à l'adresse la plus basse",
+          "reason": "Cette proposition place l'octet fort à l'adresse la plus basse, ce qui inverse l'ordre little-endian."
         },
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Les deux octets partagent la même adresse",
+          "reason": "Deux octets d'un mot sont stockés à deux adresses consécutives, pas à une adresse identique."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), memory organization, byte/word transfers and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
@@ -80,12 +80,12 @@
       "derivation": "MOV AX,1234h charge une valeur immédiate dans le registre AX. Aucun opérande mémoire n'est présent ; l'ordre little-endian ne s'applique qu'à la représentation des mots en mémoire.",
       "distractorRationales": [
         {
-          "choice": "P",
-          "reason": "a"
+          "choice": "Parce qu'AX est un registre 8 bits",
+          "reason": "MOV AX,1234h écrit une constante dans AX ; aucun opérande mémoire n'est ciblé."
         },
         {
-          "choice": "P",
-          "reason": "a"
+          "choice": "Parce que 1234h est décimal",
+          "reason": "AX est un registre 16 bits et 1234h est une constante hexadécimale, pas une constante décimale."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), memory organization, byte/word transfers and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
@@ -106,12 +106,12 @@
       "derivation": "Avec huit bits non signés, les 2⁸ motifs représentent les entiers de 0 à 2⁸−1, donc de 0 à 255 inclus.",
       "distractorRationales": [
         {
-          "choice": "0",
-          "reason": " "
+          "choice": "0 à 127",
+          "reason": "Cette plage ne couvre que 128 valeurs, alors qu'un octet non signé en représente 256."
         },
         {
-          "choice": "−",
-          "reason": "1"
+          "choice": "−128 à +127",
+          "reason": "Cette plage est celle d'un octet signé en complément à deux, pas d'un octet non signé."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), memory organization, byte/word transfers and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
@@ -135,12 +135,12 @@
       "derivation": "255 vaut FFh. FFh+1 donne mathématiquement 100h ; sur huit bits, AL conserve les huit bits faibles 00h et la retenue sortante met CF à 1. L'interprétation signée ne déborde pas ici.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "L"
+          "choice": "AL=FFh, CF=0",
+          "reason": "Après FFh+1, les huit bits faibles sont 00h ; AL ne reste pas à FFh."
         },
         {
-          "choice": "A",
-          "reason": "L"
+          "choice": "AL=00h, OF=1 et CF=0",
+          "reason": "OF=1 décrit un débordement signé ; ici la somme non signée produit une retenue CF=1 et OF reste nul."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), memory organization, byte/word transfers and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
@@ -163,12 +163,12 @@
       "derivation": "CF et OF interprètent différemment le résultat binaire. CF signale une retenue hors de la largeur non signée ; OF signale que le résultat signé sort de la plage représentable. Ils ne sont pas interchangeables.",
       "distractorRationales": [
         {
-          "choice": "O",
-          "reason": "u"
+          "choice": "Oui",
+          "reason": "CF et OF peuvent avoir des valeurs différentes ; ils ne sont donc pas toujours égaux."
         },
         {
-          "choice": "O",
-          "reason": "F"
+          "choice": "OF est le bit de direction",
+          "reason": "DF est le drapeau de direction des chaînes, pas le drapeau de débordement signé."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), memory organization, byte/word transfers and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
@@ -188,12 +188,12 @@
       "derivation": "En complément à deux sur huit bits, la plage signée est −2⁷ à 2⁷−1. Les bornes sont donc −128 et +127.",
       "distractorRationales": [
         {
-          "choice": "−",
-          "reason": "1"
+          "choice": "−127 à +128",
+          "reason": "Cette plage décale incorrectement les bornes du complément à deux sur huit bits."
         },
         {
-          "choice": "0",
-          "reason": " "
+          "choice": "0 à 255",
+          "reason": "Cette plage est non signée ; elle ne représente pas les valeurs négatives."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), memory organization, byte/word transfers and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
@@ -214,12 +214,12 @@
       "derivation": "Le motif 80h vaut 128 en non signé. En complément à deux sur huit bits, son bit de poids fort indique une valeur négative ; 128−256 donne −128.",
       "distractorRationales": [
         {
-          "choice": "+",
-          "reason": "1"
+          "choice": "+128",
+          "reason": "80h vaut 128 en non signé, mais en complément à deux sur huit bits le motif représente −128."
         },
         {
-          "choice": "−",
-          "reason": "8"
+          "choice": "−80",
+          "reason": "−80 n'est pas la valeur du motif 80h ; la conversion donne 128−256=−128."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), memory organization, byte/word transfers and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
@@ -244,12 +244,12 @@
       "derivation": "La somme 7Fh+1 donne 80h. Il n'y a pas de retenue hors du bit 7, donc CF=0 ; en signé, +128 dépasse la borne +127 et le motif obtenu représente −128, donc OF=1.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "F"
+          "choice": "CF",
+          "reason": "CF indique la retenue non signée ; +127+1 déclenche le débordement signé OF."
         },
         {
-          "choice": "D",
-          "reason": "F"
+          "choice": "DF",
+          "reason": "DF contrôle la direction des instructions de chaîne et n'indique pas un débordement arithmétique."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), memory organization, byte/word transfers and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
@@ -272,12 +272,12 @@
       "derivation": "Little-endian décrit l'ordre des octets d'un mot en mémoire. Pour 1234h, l'octet faible 34h précède l'octet fort 12h aux adresses croissantes.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "'"
+          "choice": "L'octet fort est toujours stocké en premier",
+          "reason": "Le 8086 stocke l'octet faible en premier ; l'octet fort n'est donc pas toujours à l'adresse la plus basse."
         },
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Les bits d'un octet sont inversés",
+          "reason": "Little-endian inverse l'ordre des octets, pas l'ordre des bits à l'intérieur d'un octet."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), memory organization, byte/word transfers and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
@@ -298,12 +298,12 @@
       "derivation": "Le 8086 adresse la mémoire à l'octet. Un mot de 16 bits est composé de deux octets contigus ; il occupe donc deux adresses successives, pas deux copies.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "h"
+          "choice": "Chaque mot doit être stocké deux fois",
+          "reason": "Un mot de deux octets est stocké une seule fois sur deux adresses contiguës ; il n'est pas dupliqué."
         },
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le bus d'adresses est limité à 8 bits",
+          "reason": "Le 8086 possède un bus d'adresses de 20 bits ; la mémoire n'est pas limitée à 8 bits d'adresse."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), memory organization, byte/word transfers and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
@@ -325,12 +325,12 @@
       "derivation": "La destination est une case mémoire et la source est le registre AX. Cette forme mémoire-registre est valide ; la taille du transfert est déterminée par AX, soit un mot de 16 bits.",
       "distractorRationales": [
         {
-          "choice": "M",
-          "reason": "O"
+          "choice": "MOV AX,[0100h]",
+          "reason": "Cette instruction lit la mémoire dans AX au lieu d'écrire AX vers la mémoire."
         },
         {
-          "choice": "M",
-          "reason": "O"
+          "choice": "MOV [0100h],[AX]",
+          "reason": "Cette forme place deux opérandes mémoire dans MOV, ce qui n'est pas une forme générale valide du 8086."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), memory organization, byte/word transfers and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
@@ -355,12 +355,12 @@
       "derivation": "7Fh représente +127. L'addition de 1 produit le motif 80h sur huit bits. Ce motif représente −128 en signé, ce qui établit le débordement signé.",
       "distractorRationales": [
         {
-          "choice": "7",
-          "reason": "E"
+          "choice": "7Eh",
+          "reason": "7Fh+1 donne 80h ; 7Eh ne correspond pas à la somme sur huit bits."
         },
         {
-          "choice": "0",
-          "reason": "0"
+          "choice": "00h",
+          "reason": "00h serait le résultat d'une autre opération ; l'addition donne le motif 80h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), memory organization, byte/word transfers and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
@@ -380,12 +380,12 @@
       "derivation": "Le complément à deux sur n=8 bits donne la plage −2⁷ à 2⁷−1. On obtient −128 à +127, et non une plage symétrique ni la plage non signée.",
       "distractorRationales": [
         {
-          "choice": "−",
-          "reason": "2"
+          "choice": "−255 à +255",
+          "reason": "La plage signée 8 bits est asymétrique en complément à deux ; −255 à +255 dépasse la capacité."
         },
         {
-          "choice": "0",
-          "reason": " "
+          "choice": "0 à 255",
+          "reason": "0 à 255 est la plage non signée ; la plage signée inclut des valeurs négatives."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), memory organization, byte/word transfers and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
@@ -408,12 +408,12 @@
       "derivation": "AX contient 1234h. Le stockage d'un mot en little-endian place le byte faible 34h à 0100h, puis le byte fort 12h à 0101h ; les deux adresses sont distinctes.",
       "distractorRationales": [
         {
-          "choice": "É",
-          "reason": "c"
+          "choice": "Écrit 12h à 0100h puis 34h à 0101h",
+          "reason": "Cette séquence place l'octet fort en premier et contredit le stockage little-endian."
         },
         {
-          "choice": "É",
-          "reason": "c"
+          "choice": "Écrit 1234h dans un seul octet",
+          "reason": "Un mot de 16 bits occupe deux octets ; 1234h ne peut pas être stocké dans un seul octet."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), memory organization, byte/word transfers and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
@@ -435,12 +435,12 @@
       "derivation": "7Fh+1 produit 80h. Le résultat sort de la plage signée, donc OF=1. Il n'y a pas de retenue non signée au-delà de huit bits, donc CF=0.",
       "distractorRationales": [
         {
-          "choice": "O",
-          "reason": "F"
+          "choice": "OF=0 et CF=1",
+          "reason": "Pour +127+1, OF vaut 1 mais CF vaut 0 ; cette option inverse les deux indicateurs."
         },
         {
-          "choice": "O",
-          "reason": "F"
+          "choice": "OF=1 et CF=1",
+          "reason": "Il n'y a pas de retenue non signée hors de l'octet pour 7Fh+1 ; CF ne vaut donc pas 1."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), memory organization, byte/word transfers and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
@@ -464,12 +464,12 @@
       "derivation": "FFh+1 vaut 100h mathématiquement, mais AL ne contient que huit bits. Il conserve 00h et CF=1 ; le résultat complet 256 n'est pas stocké dans AL. L'erreur consiste à confondre la somme mathématique et le contenu du registre.",
       "distractorRationales": [
         {
-          "choice": "D",
-          "reason": "i"
+          "choice": "Dire que AL contient 00h",
+          "reason": "AL contient les huit bits faibles 00h ; c'est une conclusion correcte, pas l'erreur à éviter."
         },
         {
-          "choice": "D",
-          "reason": "i"
+          "choice": "Dire que CF vaut 1",
+          "reason": "CF vaut 1 pour la retenue hors de l'octet ; c'est exact, pas l'erreur de raisonnement demandée."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), memory organization, byte/word transfers and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
@@ -492,12 +492,12 @@
       "derivation": "CF est associé à la retenue ou à l'emprunt dans l'interprétation non signée. OF indique un résultat hors plage dans l'interprétation signée. Les deux indicateurs peuvent différer pour une même opération.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "F"
+          "choice": "CF est le signe et OF la direction",
+          "reason": "CF n'est pas un indicateur de signe et OF ne représente pas la direction des chaînes."
         },
         {
-          "choice": "C",
-          "reason": "F"
+          "choice": "CF et OF sont toujours égaux",
+          "reason": "CF et OF peuvent différer ; ils ne sont pas toujours égaux."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), memory organization, byte/word transfers and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
