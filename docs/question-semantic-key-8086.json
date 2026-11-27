@@ -87,7 +87,7 @@
       ],
       "correctAnswer": "Un octet",
       "explanation": "La mémoire du 8086 est adressée par octet : une adresse identifie un octet de 8 bits. Un mot de 16 bits occupe deux octets à des adresses consécutives.",
-      "category": "Compréhension"
+      "category": "Application"
     },
     {
       "id": "C01-L2-Q3",
