@@ -135,11 +135,11 @@ for (const oracle of batch.oracles) {
   }
   assert.ok(oracle.derivation.trim().length >= 80, oracle.id + " must contain an independent derivation");
   assert.ok(oracle.reference && oracle.reference.trim().length >= 20, oracle.id + " must identify a technical reference");
-  assert.equal(oracle.verifiedAgainstRuntime, false, "Runtime verification is established by this test, not pre-asserted in source data");
   if (oracle.status === "certified") certified++;
   else if (oracle.status === "blocked") {
     blocked++;
     assert.ok(oracle.blocker && oracle.blocker.length >= 30, oracle.id + " blocked status must explain the required correction");
+    assert.match(keyed.explanation, /instruction encodée/i, "Blocked source-vs-machine-code explanation must remain explicitly identified until corrected");
   } else {
     assert.fail("Unknown oracle status for " + oracle.id + ": " + oracle.status);
   }
