@@ -3,7 +3,7 @@ const vm = require("node:vm");
 const assert = require("node:assert/strict");
 
 const key = JSON.parse(fs.readFileSync("docs/question-semantic-key-8086.json", "utf8"));
-const batch = JSON.parse(fs.readFileSync("docs/question-oracle-batches/chapter-01.json", "utf8"));
+const batches = ["chapter-01", "chapter-02"].map(name => JSON.parse(fs.readFileSync("docs/question-oracle-batches/" + name + ".json", "utf8")));
 const html = fs.readFileSync("index.html", "utf8");
 const match = html.match(/<script>([\s\S]*?)<\/script>/);
 assert.ok(match, "Inline application script must exist");
@@ -43,7 +43,14 @@ const fact = {
   lab_scope: "pedagogical_software_model",
   intel_operand_order: { destination: "AX", source: "1234h" },
   separate_register_and_address_width: { registerBits: 16, addressBits: 20 },
-  "8086_widths_tuple": { generalRegisters: 16, dataBus: 16, addressBus: 20 }
+  "8086_widths_tuple": { generalRegisters: 16, dataBus: 16, addressBus: 20 },
+  eu_function: "decode_and_execute",
+  alu_function: "arithmetic_and_logic",
+  eu_biu_responsibility: "biu_manages_bus",
+  biu_function: "bus_and_prefetch",
+  control_transfer_prefetch: "flush_and_refill",
+  "prefetch_queue_capacity": { bytes: 6 },
+  eu_biu_work_split: { biu: "external_bus_and_prefetch", eu: "instruction_decode_and_execution" }
 };
 
 function independentlyCompute(oracle) {
@@ -59,6 +66,41 @@ function independentlyCompute(oracle) {
       return fact[oracle.rule];
     case "source_instruction_vs_data":
       return "assembly_statement_is_instruction";
+    case "intel_operand_order_generic": {
+      const operands = i.instruction.replace(/^MOV\\s+/i, "").split(",");
+      return { destination: operands[0].trim(), source: operands[1].trim() };
+    }
+    case "segment_offset_address": {
+      const linear = i.segment * (2 ** i.shift) + i.offset;
+      return { linear, physical: linear % (2 ** i.addressBits) };
+    }
+    case "prefetch_overlap":
+      return { overlap: Boolean(i.euExecution && i.biuFetch), superscalar: false };
+    case "alu_add_trace": {
+      const sum = i.left + i.right;
+      return { sum, result: sum % (2 ** i.width) };
+    }
+    case "jump_program_trace": {
+      let ax = i.initialAX;
+      let pc = 0;
+      let halted = false;
+      const labels = new Map();
+      i.program.forEach((instruction, index) => {
+        if (instruction[0] === "LABEL") labels.set(instruction[1], index);
+      });
+      let skippedInstruction = null;
+      for (let steps = 0; pc < i.program.length && steps < 20; steps++) {
+        const instruction = i.program[pc];
+        if (instruction[0] === "MOV" && instruction[1] === "AX") { ax = instruction[2]; pc++; }
+        else if (instruction[0] === "JMP") {
+          skippedInstruction = i.program[pc + 1]?.slice(0, 2).join(" ");
+          pc = labels.get(instruction[1]);
+        } else if (instruction[0] === "LABEL") pc++;
+        else if (instruction[0] === "HLT") { halted = true; break; }
+        else throw new Error("Unsupported jump trace instruction: " + instruction[0]);
+      }
+      return { finalAX: ax, halted, skippedInstruction };
+    }
     case "8086_address_bus_width":
       return { addressBits: i.processor === "8086" ? 20 : null };
     case "address_space_capacity": {
@@ -106,13 +148,13 @@ function independentlyCompute(oracle) {
 }
 
 const keyMap = new Map(key.questions.map(q => [q.id, q]));
-assert.equal(batch.batch, "chapter-01");
-assert.equal(batch.oracles.length, 19, "Chapter 1 must have 19 individually identified oracle records");
+assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02"]);
+assert.ok(batches.every(batch => batch.oracles.length === 19), "Each certified chapter batch must contain 19 oracle records");
 const seen = new Set();
 let certified = 0;
 let blocked = 0;
 
-for (const oracle of batch.oracles) {
+for (const oracle of batches.flatMap(batch => batch.oracles)) {
   assert.ok(!seen.has(oracle.id), "Duplicate oracle ID: " + oracle.id);
   seen.add(oracle.id);
   const keyed = keyMap.get(oracle.id);
@@ -144,7 +186,7 @@ for (const oracle of batch.oracles) {
     assert.fail("Unknown oracle status for " + oracle.id + ": " + oracle.status);
   }
 }
-assert.equal(certified, 19, "All 19 Chapter 1 items are certified");
-assert.equal(blocked, 0, "No Chapter 1 item remains blocked");
+assert.equal(certified, 38, "All 38 questions in chapters 1 and 2 are certified");
+assert.equal(blocked, 0, "No question in the certified batches remains blocked");
 assert.match(keyMap.get("C01-L1-Q2").explanation, /octets machine distincts/i, "Source assembly must be distinguished from its encoded machine bytes");
-console.log("Question oracle certification: chapter 1 — " + certified + "/19 certified; " + blocked + " blocked; runtime/key alignment and independent evaluators passed.");
+console.log("Question oracle certification: chapters 1–2 — " + certified + "/38 certified; " + blocked + " blocked; runtime/key alignment and independent evaluators passed.");
