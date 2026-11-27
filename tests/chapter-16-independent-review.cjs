@@ -10,7 +10,7 @@ assert.equal(new Set(reviewedIds).size, 19, "Chapter 16 review IDs must be uniqu
 assert.equal(review.summary.questionsReviewed, 19);
 assert.equal(review.summary.passed, 15);
 assert.equal(review.summary.needsRevision, 0);
-assert.equal(review.summary.corrected, 0, "No repetition may be marked corrected without a runtime change");
+assert.equal(review.summary.corrected, 4, "All four repetition corrections must be recorded after runtime/key/oracle changes");
 assert.equal(review.summary.blocked, 0);
 assert.equal(review.summary.officialCertificationCountBefore, 384);
 assert.equal(review.summary.officialCertificationCountAfter, 384);
