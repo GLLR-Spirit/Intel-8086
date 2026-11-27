@@ -164,6 +164,42 @@ const assert = require("node:assert/strict");
   assert.ok(await keyboardPage.evaluate(() => document.activeElement.classList.contains("skip-link")),"The first keyboard stop must be the skip link.");
   assert.equal(await keyboardPage.locator(".skip-link").evaluate(el => getComputedStyle(el).top),"12px","Skip link must become visible on focus.");
 
+  // Memory lookup edge cases: empty prefix/suffix payloads must be rejected.
+  await keyboardPage.locator('[data-view="editor"]').click();
+  await keyboardPage.locator("#code").fill("MOV AX, 1000h\nMOV DS, AX\nMOV BYTE PTR [0020h], 5Ah\nHLT");
+  await keyboardPage.locator("#run").click();
+  for (const [value,valid,label] of [
+    ["10020",true,"plain address"],["0x10020",true,"0x prefix"],["10020h",true,"h suffix"],["FFFFF",true,"20-bit upper boundary"],
+    ["0x",false,"empty 0x payload"],["h",false,"empty h payload"],["100000",false,"above 20 bits"],["12G4",false,"non-hex digit"]
+  ]) {
+    await keyboardPage.locator("#memoryAddress").fill(value);
+    await keyboardPage.locator("#showMemory").click();
+    const status=(await keyboardPage.locator("#memoryStatus").textContent()).trim();
+    if(valid) assert.doesNotMatch(status,/Adresse invalide/i,label+" must be accepted: "+status);
+    else assert.match(status,/Adresse invalide/i,label+" must be rejected: "+status);
+  }
+  await keyboardPage.locator("#memoryAddress").fill("");
+  await keyboardPage.locator("#showMemory").click();
+  assert.match(await keyboardPage.locator("#memoryStatus").textContent(),/premiers octets/i,"Empty field must retain default listing.");
+
+  // Verify the actual header action, its keyboard activation, focus destination and responsive visibility.
+  await keyboardPage.locator('[data-view="learn"]').click();
+  await keyboardPage.locator("#openLab").click();
+  assert.equal(await keyboardPage.locator("#view-editor").evaluate(el=>el.classList.contains("active")),true,"Header action must open editor.");
+  assert.equal(await keyboardPage.evaluate(()=>document.activeElement.textContent.trim()),"Atelier de programmation","Header action must focus editor heading.");
+  await keyboardPage.locator('[data-view="learn"]').click();
+  await keyboardPage.locator("#openLab").focus();
+  await keyboardPage.keyboard.press("Enter");
+  assert.equal(await keyboardPage.locator("#view-editor").evaluate(el=>el.classList.contains("active")),true,"Keyboard activation must open editor.");
+  assert.equal(await keyboardPage.evaluate(()=>document.activeElement.textContent.trim()),"Atelier de programmation","Keyboard activation must focus editor heading.");
+  for(const width of [320,390,768,1280]) {
+    await keyboardPage.setViewportSize({width,height:900});
+    await keyboardPage.locator('[data-view="learn"]').click();
+    const m=await keyboardPage.locator("#openLab").evaluate(el=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return {visible:r.width>0&&r.height>0&&s.visibility!=="hidden"&&s.display!=="none",left:r.left,right:r.right,viewport:innerWidth};});
+    assert.equal(m.visible,true,"Header button visible at "+width+"px.");
+    assert.ok(m.left>=-1&&m.right<=width+1,"Header button fits at "+width+"px: "+JSON.stringify(m));
+  }
+  console.log("Memory lookup edge cases and header workshop focus/responsive checks PASS.");
   const editorNavigation=keyboardPage.locator('[data-view="editor"]');
   await editorNavigation.focus();
   await keyboardPage.keyboard.press("Enter");
