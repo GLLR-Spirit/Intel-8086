@@ -660,6 +660,56 @@ var exerciseEditorialNotes=[
 {prerequisites:"REP MOVSB, segments, CMP, PUSH/POP et INT/IRET.",pitfall:"Sauvegarder une valeur sentinelle non nulle dans BX, transmettre le statut dans DX, puis restaurer BX avant INT."},
 {prerequisites:"REP MOVSW, STD/CLD, segments, pile et INT/IRET.",pitfall:"Commencer au dernier mot en parcours décroissant, restaurer DF avec CLD et vérifier BX après POP."}
 ];
+var exerciseDifficultyRationales=[
+"Débutant : une addition à deux opérandes et un seul résultat à contrôler.",
+"Débutant : trois transferts MOV suffisent à échanger deux valeurs sans branchement.",
+"Intermédiaire : nécessite une boucle comptée et la compréhension de CX/LOOP.",
+"Intermédiaire : introduit CMP, ZF et deux chemins de contrôle.",
+"Intermédiaire : combine accumulateur, compteur, incrément et boucle.",
+"Débutant : transfert direct entre deux registres 16 bits.",
+"Débutant : conversion hexadécimale simple suivie d’une addition sur octet.",
+"Débutant : met en pratique la relation entre AX, AH et AL.",
+"Débutant : vérifie uniquement l’ordre destination/source de MOV.",
+"Intermédiaire : introduit la pile, SP et la récupération LIFO.",
+"Intermédiaire : exige de comprendre un masque logique bit à bit.",
+"Intermédiaire : demande de transférer une valeur vers un registre de segment avec une étape intermédiaire.",
+"Intermédiaire : combine SUB et lecture de ZF après calcul.",
+"Avancé : exige de distinguer interprétation signée et non signée sur 8 bits.",
+"Intermédiaire : combine accumulation, incrément et compteur de boucle.",
+"Intermédiaire : demande de raisonner sur l’ordre LIFO de deux mots.",
+"Intermédiaire : nécessite un calcul XOR bit à bit et sa conversion hexadécimale.",
+"Avancé : associe SS, BP et la règle du segment par défaut pour l’adressage basé.",
+"Avancé : demande d’analyser le chemin pris et le bloc alternatif dans un flot conditionnel.",
+"Intermédiaire : applique le complément à deux et un branchement signé simple.",
+"Facile : sélectionne le maximum avec une comparaison et deux chemins courts.",
+"Avancé : diagnostique une boucle qui ne termine pas à cause d’une mise à jour contradictoire du compteur.",
+"Intermédiaire : identifie une perte de donnée causée par l’ordre incorrect de transferts.",
+"Expert : combine TEST, branchement conditionnel, accumulation et boucle comptée.",
+"Expert : combine segments distincts, DF, REP MOVSW et parcours mémoire décroissant.",
+"Intermédiaire : vérifie la cible d’un saut direct et l’instruction ignorée.",
+"Avancé : introduit CALL/RET, adresse de retour et équilibre de pile.",
+"Expert : exige de reconstruire un cadre BP et de comprendre RET avec nettoyage du paramètre.",
+"Avancé : orchestre deux routines et leurs conventions de retour.",
+"Avancé : combine multiplication implicite sur 8 bits et interprétation de CF/OF.",
+"Avancé : exige de connaître le dividende, le quotient et le reste implicites de DIV 8 bits.",
+"Avancé : combine décalage, représentation binaire et indicateur de retenue.",
+"Expert : met en jeu le vecteur logiciel, le cadre d’interruption et IRET.",
+"Avancé : distingue espace d’E/S, registre DX et lecture de port.",
+"Expert : demande de relier syntaxe assembleur, opcode et ordre little-endian.",
+"Expert : exige le calcul d’adresse effective, le codage ModR/M et la mémoire little-endian.",
+"Expert : combine résolution de symbole, déplacement relatif et frontières de désassemblage.",
+"Expert : compare deux segments logiques et vérifie les préfixes d’override.",
+"Expert : demande un raisonnement critique sur la différence entre résultat fonctionnel et performance matérielle.",
+"Expert : combine initialisation de segment, parcours indexé d’un tableau de mots, boucle et écriture du résultat.",
+"Avancé : combine appel de procédure, retour et invariants de pile.",
+"Avancé : combine MUL et DIV 8 bits avec leurs registres implicites différents.",
+"Avancé : combine sauvegarde/restauration de FLAGS et invariants de pile.",
+"Avancé : combine segments, index, direction et répétition de chaîne.",
+"Avancé : combine comparaison mémoire, répétition conditionnelle et interprétation de ZF/CX/DI.",
+"Avancé : combine gestionnaire logiciel, sauvegarde de contexte et reprise après IRET.",
+"Avancé : intègre copie de chaîne, contrôle mémoire, préservation d’un registre et interruption.",
+"Expert : intègre copie de mots inversée, gestion de DF, validation mémoire, pile et interruption."
+];
 function exerciseMetadata(x,i){
  var chapters=(exerciseChapterAssignments[i]||[]).map(function(n){return n-1;});
  var g=x[4]||{},type=x[5]&&x[5].type;
@@ -672,7 +722,7 @@ function exerciseMetadata(x,i){
  }
  var difficulty=(x[5]&&x[5].difficulty)||g.level||(i<5?"Débutant":"Intermédiaire");
  if(!["Débutant","Facile","Intermédiaire","Avancé","Expert"].includes(difficulty))difficulty="Intermédiaire";
- return {chapters:chapters,type:type,difficulty:difficulty,editorial:exerciseEditorialNotes[i]||null};
+ return {chapters:chapters,type:type,difficulty:difficulty,editorial:exerciseEditorialNotes[i]||null,levelRationale:exerciseDifficultyRationales[i]||null};
 }
 function exerciseTypeLabel(type){return {application:"Application directe",raisonnement:"Raisonnement",completion:"Programme à compléter",debug:"Débogage / correction",probleme:"Problème complet",challenge:"Défi expert"}[type]||"Application directe";}
 function initExerciseFilters(){
@@ -698,7 +748,7 @@ function renderExercises(){
  $("exerciseCount").textContent=visible.length+" exercice(s) affiché(s) sur "+exercises.length;
  $("exerciseList").innerHTML=visible.length?visible.map(function(v){
   var x=v.x,i=v.i,g=v.g,guide=v.g,m=v.m;
-  return '<article class="exercise"><div class="eyebrow">'+m.difficulty+' · '+exerciseTypeLabel(m.type)+'</div><b>'+(i+1)+'. '+x[0]+'</b> '+(passed.has(i)?"<span class='success'>✓ Réussi</span>":"")+'<p class="muted">'+x[1]+'</p><p class="muted"><b>Chapitres :</b> '+m.chapters.map(function(n){return (n+1)+". "+lessons[n][0];}).join(" · ")+'</p>'+(i===38?'<label class="muted" for="exerciseResponse-38">Justification écrite</label><textarea id="exerciseResponse-38" rows="4" placeholder="Explique pourquoi le résultat fonctionnel ne suffit pas à conclure sur les cycles du 8086 physique."></textarea>':"")+'<button class="btn" data-load="'+i+'">Charger l’énoncé</button> <button class="btn primary" data-check="'+i+'">Vérifier ma solution</button><details class="exercise-guide"><summary>Prérequis, piège fréquent, indice et correction expliquée</summary><p><b>Prérequis :</b> '+(m.editorial?m.editorial.prerequisites:"Notions du chapitre associé.")+'</p><p><b>Piège fréquent :</b> '+(m.editorial?m.editorial.pitfall:"Vérifier les registres et les effets de chaque instruction.")+'</p><p><b>Indice :</b> '+g.hint+'</p><details><summary>Afficher les étapes de raisonnement</summary><ol>'+guide.steps.map(function(step){return '<li>'+step+'</li>';}).join("")+'</ol></details><button class="btn" data-solution="'+i+'">Charger la solution complète dans l’atelier</button></details></article>';
+  return '<article class="exercise"><div class="eyebrow">'+m.difficulty+' · '+exerciseTypeLabel(m.type)+'</div><b>'+(i+1)+'. '+x[0]+'</b> '+(passed.has(i)?"<span class='success'>✓ Réussi</span>":"")+'<p class="muted">'+x[1]+'</p><p class="muted"><b>Chapitres :</b> '+m.chapters.map(function(n){return (n+1)+". "+lessons[n][0];}).join(" · ")+'</p>'+(i===38?'<label class="muted" for="exerciseResponse-38">Justification écrite</label><textarea id="exerciseResponse-38" rows="4" placeholder="Explique pourquoi le résultat fonctionnel ne suffit pas à conclure sur les cycles du 8086 physique."></textarea>':"")+'<button class="btn" data-load="'+i+'">Charger l’énoncé</button> <button class="btn primary" data-check="'+i+'">Vérifier ma solution</button><details class="exercise-guide"><summary>Prérequis, piège fréquent, indice et correction expliquée</summary><p><b>Prérequis :</b> '+(m.editorial?m.editorial.prerequisites:"Notions du chapitre associé.")+'</p><p><b>Piège fréquent :</b> '+(m.editorial?m.editorial.pitfall:"Vérifier les registres et les effets de chaque instruction.")+'</p><p><b>Pourquoi ce niveau :</b> '+(m.levelRationale||"Niveau à réévaluer.")+'</p><p><b>Indice :</b> '+g.hint+'</p><details><summary>Afficher les étapes de raisonnement</summary><ol>'+guide.steps.map(function(step){return '<li>'+step+'</li>';}).join("")+'</ol></details><button class="btn" data-solution="'+i+'">Charger la solution complète dans l’atelier</button></details></article>';
  }).join(""):'<div class="panel"><b>Aucun exercice ne correspond à ces filtres.</b><p class="muted">Élargis la recherche ou réinitialise les filtres.</p></div>';
  document.querySelectorAll("#exerciseList [data-load]").forEach(function(b){b.onclick=function(){$("code").value=exercises[+b.dataset.load][2];navigate("editor");resetCPU();};});
  document.querySelectorAll("#exerciseList [data-solution]").forEach(function(b){b.onclick=function(){var x=exercises[+b.dataset.solution];$("code").value=(x[4]&&x[4].solution)||x[2];navigate("editor");resetCPU();status("Correction chargée dans l’atelier. Exécute-la pas à pas pour vérifier chaque étape.",false);};});
