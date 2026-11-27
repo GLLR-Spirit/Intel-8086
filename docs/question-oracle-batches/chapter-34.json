@@ -120,7 +120,7 @@
         "mode": "maximum"
       },
       "correctAnswer": "L'assertion du signal LOCK du bus pendant l'instruction suivante en mode maximum",
-      "derivation": "En mode maximum du 8086, le préfixe LOCK demande l'assertion du signal de verrouillage pendant l'exécution de l'instruction suivante. Le mécanisme est destiné à protéger une opération mémoire modifiant une ressource partagée ; le laboratoire n'en reproduit pas le signal électrique.",
+      "derivation": "En mode maximum, LOCK active le signal pendant toute l'exécution de l'instruction suivante, indépendamment du type d'opérande. Pour protéger une ressource partagée, on l'emploie avec une opération de lecture-modification-écriture qui vise effectivement un opérande mémoire.",
       "distractorRationales": [
         {
           "choice": "Le verrouillage permanent d'un registre",
@@ -177,7 +177,7 @@
         "physicalBusSignalsSimulated": false
       },
       "correctAnswer": "L'atomicité et les signaux physiques du bus ne sont pas simulés",
-      "derivation": "Le laboratoire peut reconnaître le préfixe et vérifier l'effet fonctionnel de l'instruction, mais il ne modélise pas l'arbitrage du bus, l'assertion électrique de LOCK ni l'atomicité matérielle face à un autre maître de bus.",
+      "derivation": "Le laboratoire peut reconnaître le préfixe et vérifier l'effet fonctionnel de l'instruction, mais ne modélise pas le signal électrique LOCK, l'arbitrage du bus ni l'atomicité face à un autre maître de bus.",
       "distractorRationales": [
         {
           "choice": "LOCK ne possède aucun opcode",
@@ -271,54 +271,51 @@
     {
       "id": "C34-F-Q1",
       "status": "certified",
-      "rule": "segment_override_semantics",
+      "rule": "default_segment_by_addressing_form",
       "inputs": {
-        "defaultSegment": "DS",
-        "overrideSegment": "CS",
-        "operandKind": "memory"
+        "containsBP": true
       },
       "expected": {
-        "selectedSegment": "CS",
-        "affectsMemoryReference": true
+        "segment": "SS"
       },
-      "correctAnswer": "Choisir un segment explicite pour un accès mémoire",
-      "derivation": "Le préfixe de segment remplace le segment par défaut de l'opérande mémoire concernée. Il ne réécrit pas toutes les adresses de code et n'altère pas les FLAGS.",
+      "correctAnswer": "SS",
+      "derivation": "Sur le 8086, les formes d'adressage dont l'adresse effective contient BP utilisent SS par défaut. Un préfixe de segment peut remplacer ce choix, mais aucun override n'est présent dans l'énoncé.",
       "distractorRationales": [
         {
-          "choice": "Modifier toutes les adresses de code",
-          "reason": "Le préfixe agit sur la référence mémoire de l'instruction suivante, pas sur toutes les adresses du programme."
+          "choice": "DS",
+          "reason": "DS est le segment par défaut des formes basées sur BX, SI ou DI et de l'adressage direct ; une adresse effective contenant BP utilise SS."
         },
         {
-          "choice": "Changer les FLAGS",
-          "reason": "Le choix du segment n'est pas une opération arithmétique et ne modifie pas les indicateurs FLAGS."
+          "choice": "ES",
+          "reason": "ES est notamment le segment de destination implicite des instructions de chaîne, mais ce n'est pas le segment par défaut d'une adresse basée sur BP."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
+      "reference": "Intel 8086 Family User's Manual (October 1979), §2.8 Memory Addressing: BP-based effective addresses default to SS; segment override rules."
     },
     {
       "id": "C34-F-Q2",
       "status": "certified",
       "rule": "segment_prefix_opcode",
       "inputs": {
-        "segment": "CS"
+        "segment": "SS"
       },
       "expected": {
-        "prefix": 46,
-        "hex": "2Eh"
+        "prefix": 54,
+        "hex": "36h"
       },
-      "correctAnswer": "2Eh",
-      "derivation": "Le code du préfixe CS est 2Eh. 26h désigne ES et 3Eh désigne DS ; les préfixes sont des octets ajoutés avant l'instruction concernée.",
+      "correctAnswer": "36h",
+      "derivation": "Le préfixe de surcharge SS du 8086 est 36h. Les autres préfixes sont 26h pour ES, 2Eh pour CS et 3Eh pour DS.",
       "distractorRationales": [
         {
           "choice": "26h",
-          "reason": "26h sélectionne ES, pas CS."
+          "reason": "26h sélectionne ES, pas SS."
         },
         {
           "choice": "3Eh",
-          "reason": "3Eh sélectionne DS, pas CS."
+          "reason": "3Eh sélectionne DS, pas SS."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
+      "reference": "Intel 8086 Family User's Manual (October 1979), Table 4-12, segment override prefix encodings: SS = 36h."
     },
     {
       "id": "C34-F-Q3",
@@ -403,7 +400,7 @@
         "finalDI": 8194
       },
       "correctAnswer": "Copie deux octets et incrémente SI/DI de deux",
-      "derivation": "REP exécute MOVSB deux fois puisque CX=2. Avec DF=0, chaque transfert d'octet incrémente SI et DI de un ; après deux itérations, CX=0, SI=1002h et DI=2002h, et les deux octets source sont copiés.",
+      "derivation": "REP exécute MOVSB deux fois puisque CX=2. Avec DF=0, chaque transfert d'octet incrémente SI et DI de un ; deux octets sont copiés, les deux index avancent de deux et CX atteint zéro.",
       "distractorRationales": [
         {
           "choice": "Copie un mot et décrémente SI/DI",
@@ -429,7 +426,7 @@
         "direction": "increment"
       },
       "correctAnswer": "DF",
-      "derivation": "DF détermine le sens d'évolution des index des instructions de chaîne. DF=0 incrémente SI/DI de la taille de l'élément ; DF=1 les décrémente.",
+      "derivation": "DF est le Direction Flag, un indicateur du registre FLAGS. DF=0 fait progresser SI et DI vers les offsets croissants ; DF=1 les fait progresser vers les offsets décroissants.",
       "distractorRationales": [
         {
           "choice": "IF",
