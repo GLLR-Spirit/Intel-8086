@@ -156,19 +156,80 @@ const assert = require("node:assert/strict");
   await page.locator('[data-view="learn"]').click();
 
 
-  // Keyboard and assistive-technology navigation semantics on a fresh page.
+  // Keyboard navigation must preserve focus when dynamic lesson content is replaced
+  // and transfer focus when an action hides the view containing its source control.
   const keyboardPage = await browser.newPage();
-  await keyboardPage.goto("http://127.0.0.1:4173/",{waitUntil:"networkidle"});
+  await keyboardPage.goto("http://127.0.0.1:4173/?audit=1",{waitUntil:"networkidle"});
   await keyboardPage.keyboard.press("Tab");
   assert.ok(await keyboardPage.evaluate(() => document.activeElement.classList.contains("skip-link")),"The first keyboard stop must be the skip link.");
   assert.equal(await keyboardPage.locator(".skip-link").evaluate(el => getComputedStyle(el).top),"12px","Skip link must become visible on focus.");
-  await keyboardPage.locator('[data-view="editor"]').click();
+
+  const editorNavigation=keyboardPage.locator('[data-view="editor"]');
+  await editorNavigation.focus();
+  await keyboardPage.keyboard.press("Enter");
   assert.equal(await keyboardPage.locator('[data-view="editor"]').getAttribute("aria-current"),"page");
-  await keyboardPage.locator('[data-mode="guided"]').click();
-  assert.equal(await keyboardPage.locator('[data-mode="guided"]').getAttribute("aria-pressed"),"true");
+  assert.equal(await keyboardPage.evaluate(() => document.activeElement.dataset.view),"editor",
+    "Activating a navigation button with Enter must retain focus on that button.");
+
+  const guidedMode=keyboardPage.locator('[data-mode="guided"]');
+  await guidedMode.focus();
+  await keyboardPage.keyboard.press("Space");
+  assert.equal(await guidedMode.getAttribute("aria-pressed"),"true");
   assert.equal(await keyboardPage.locator('[data-mode="free"]').getAttribute("aria-pressed"),"false");
+
+  const learnNavigation=keyboardPage.locator('[data-view="learn"]');
+  await learnNavigation.focus();
+  await keyboardPage.keyboard.press("Enter");
+  const chapterButton=keyboardPage.locator('[data-lesson="1"]');
+  await chapterButton.focus();
+  await keyboardPage.keyboard.press("Enter");
+  assert.equal(await chapterButton.getAttribute("aria-current"),"step");
+  assert.equal(await keyboardPage.evaluate(() => document.activeElement.dataset.lesson),"1",
+    "Selecting a chapter by keyboard must not discard focus.");
+
+  const sublessonButton=keyboardPage.locator('[data-sublesson="1"]');
+  await sublessonButton.focus();
+  await keyboardPage.keyboard.press("Enter");
+  assert.equal(await keyboardPage.locator('[data-sublesson="1"]').getAttribute("aria-current"),"step");
+  assert.equal(await keyboardPage.evaluate(() => document.activeElement.getAttribute("data-sublesson")),"1",
+    "Changing sublessons must restore focus to the equivalent newly rendered tab.");
+
+  const markLesson=keyboardPage.locator("#markLesson");
+  await markLesson.focus();
+  await keyboardPage.keyboard.press("Enter");
+  assert.equal(await keyboardPage.evaluate(() => document.activeElement.id),"markLesson",
+    "Marking a chapter must preserve focus after the chapter list and lesson detail rerender.");
+
+  const exampleSource=await keyboardPage.evaluate(() => window.__8086Audit.curriculum[1][5][1][2]);
+  const loadExample=keyboardPage.locator("#lessonExample");
+  await loadExample.focus();
+  await keyboardPage.keyboard.press("Enter");
+  assert.equal(await keyboardPage.locator("#view-editor").evaluate(el=>el.classList.contains("active")),true);
+  assert.equal(await keyboardPage.locator("#code").inputValue(),exampleSource);
+  assert.equal(await keyboardPage.evaluate(() => document.activeElement.textContent.trim()),"Atelier de programmation",
+    "Loading a lesson example must move focus into the newly opened view heading.");
+
+  const exercisesNavigation=keyboardPage.locator('[data-view="exercises"]');
+  await exercisesNavigation.focus();
+  await keyboardPage.keyboard.press("Enter");
+  const difficulty=keyboardPage.locator("#exerciseDifficulty");
+  await difficulty.focus();
+  await keyboardPage.keyboard.press("ArrowDown");
+  await keyboardPage.keyboard.press("Enter");
+  assert.equal(await difficulty.inputValue(),"Débutant",
+    "The exercise difficulty filter must be operable with native keyboard selection.");
+
+  const editorAgain=keyboardPage.locator('[data-view="editor"]');
+  await editorAgain.focus();
+  await keyboardPage.keyboard.press("Enter");
+  await keyboardPage.locator("#code").fill("MOV AX, 5\nMOV BX, 7\nADD AX, BX\nHLT");
+  await keyboardPage.locator("#run").focus();
+  await keyboardPage.keyboard.press("Enter");
+  assert.ok((await keyboardPage.locator("#regs").textContent()).includes("000Ch"),
+    "The editor Run action must execute using the keyboard.");
+
   await keyboardPage.close();
-  console.log("Keyboard skip navigation, visible focus, aria-current and aria-pressed PASS.");
+  console.log("Keyboard navigation, focus retention/transfer, course, exercise filter and editor activation PASS.");
 
   // Course example hand-off must load the selected lesson's exact source into the editor.
   await page.locator('[data-lesson="0"]').click();
