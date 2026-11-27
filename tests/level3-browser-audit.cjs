@@ -646,6 +646,24 @@ const assert = require("node:assert/strict");
     "The exercise verification action must run the editor source against that exercise's validator.");
   await page.locator("#resetExerciseFilters").click();
   assert.equal((await page.locator("#exerciseCount").textContent()).trim(),allExerciseText,"Reset must restore the full exercise list.");
+
+  // Exercise the actual UI hand-off and validator action for every guided correction.
+  const allExerciseSolutions=await page.evaluate(()=>window.__8086Audit.exercises.map((exercise,index)=>({
+    index, title:exercise[0], solution:(exercise[4]&&exercise[4].solution)||exercise[2]
+  })));
+  assert.equal(allExerciseSolutions.length,48,"The browser audit must cover all 48 exercise correction interactions.");
+  for(const exercise of allExerciseSolutions){
+    const card=page.locator("#exerciseList .exercise").nth(exercise.index);
+    await card.locator("details.exercise-guide summary").click();
+    await card.locator("[data-solution]").click();
+    assert.equal(await page.locator("#code").inputValue(),exercise.solution,
+      "Exercise "+(exercise.index+1)+" must load its complete correction into the editor.");
+    await page.locator('[data-view="exercises"]').click();
+    await page.locator("#exerciseList [data-check]").nth(exercise.index).click();
+    assert.match(await page.locator("#exerciseList .exercise").nth(exercise.index).textContent(),/Réussi/,
+      "Exercise "+(exercise.index+1)+" correction must pass its own UI validator.");
+  }
+  console.log("Guided correction hand-off and UI validation: 48/48 exercises PASS.");
   await page.locator('[data-view="editor"]').click();
   assert.equal(await page.locator("#view-editor").isVisible(),true,"Atelier must be a distinct view.");
   await page.locator('[data-view="learn"]').click();
