@@ -1,0 +1,511 @@
+{
+  "schemaVersion": 1,
+  "batch": "chapter-23",
+  "title": "Oracles indépendants — chapitre 23 : modularité et tests de procédures",
+  "reviewDate": "2026-11-27",
+  "statusLegend": {
+    "certified": "Contrats d'interface, modularité, cas limites et tests de routines contrôlés indépendamment"
+  },
+  "referenceBasis": [
+    "Intel 8086 Family User's Manual (October 1979), CALL/RET and stack behavior.",
+    "Intel MCS-86 Assembly Language Reference Manual, procedure calls and register conventions; general software-engineering principles for modular interfaces and tests."
+  ],
+  "oracles": [
+    {
+      "id": "C23-L1-Q1",
+      "status": "certified",
+      "rule": "modular_program_decomposition",
+      "inputs": {
+        "tasks": [
+          "initialiser",
+          "traiter",
+          "terminer"
+        ]
+      },
+      "expected": {
+        "separateResponsibilities": true
+      },
+      "correctAnswer": "Séparer un programme en routines à responsabilité définie",
+      "derivation": "La modularité découpe le programme en unités dont chacune possède une responsabilité identifiable. Les interfaces entre routines rendent les entrées, sorties et effets de bord plus faciles à comprendre et à tester.",
+      "distractorRationales": [
+        {
+          "choice": "R",
+          "reason": "e"
+        },
+        {
+          "choice": "É",
+          "reason": "v"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
+    },
+    {
+      "id": "C23-L1-Q2",
+      "status": "certified",
+      "rule": "routine_call_sequence",
+      "inputs": {
+        "sequence": [
+          "INITIALISER",
+          "TRAITER",
+          "TERMINER"
+        ]
+      },
+      "expected": {
+        "calls": [
+          "CALL INITIALISER",
+          "CALL TRAITER",
+          "CALL TERMINER"
+        ],
+        "returnsToCaller": true
+      },
+      "correctAnswer": "CALL INITIALISER, CALL TRAITER, CALL TERMINER",
+      "derivation": "Chaque CALL transfère le contrôle vers la routine correspondante et empile l'adresse de continuation. Après RET, l'appelant reprend et peut appeler la routine suivante.",
+      "distractorRationales": [
+        {
+          "choice": "M",
+          "reason": "O"
+        },
+        {
+          "choice": "R",
+          "reason": "E"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
+    },
+    {
+      "id": "C23-L1-Q3",
+      "status": "certified",
+      "rule": "routine_stack_contract",
+      "inputs": {
+        "routineHasNoDataOutput": true
+      },
+      "expected": {
+        "returnsCorrectly": true,
+        "SPRestored": true
+      },
+      "correctAnswer": "Elle retourne correctement et restaure SP",
+      "derivation": "Une routine peut ne pas modifier les données et doit tout de même respecter le contrat de contrôle : revenir à l'appelant et restaurer l'équilibre de pile. Un retour incorrect peut corrompre le flot même si AX n'a pas changé.",
+      "distractorRationales": [
+        {
+          "choice": "E",
+          "reason": "l"
+        },
+        {
+          "choice": "E",
+          "reason": "l"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
+    },
+    {
+      "id": "C23-L2-Q1",
+      "status": "certified",
+      "rule": "procedure_parameter_register_contract",
+      "inputs": {
+        "inputRegister": "AX",
+        "outputRegister": "AX"
+      },
+      "expected": {
+        "AXRole": "input_then_result"
+      },
+      "correctAnswer": "AX contient le paramètre d'entrée puis le résultat",
+      "derivation": "La convention peut définir AX comme registre d'entrée au moment de l'appel puis comme registre de résultat au retour. Le sens de AX dépend du contrat de la routine, pas d'une propriété d'adresse physique.",
+      "distractorRationales": [
+        {
+          "choice": "A",
+          "reason": "X"
+        },
+        {
+          "choice": "A",
+          "reason": "X"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
+    },
+    {
+      "id": "C23-L2-Q2",
+      "status": "certified",
+      "rule": "procedure_double",
+      "inputs": {
+        "initialAX": 6
+      },
+      "expected": {
+        "finalAX": 12
+      },
+      "correctAnswer": "12",
+      "derivation": "La routine double la valeur d'entrée : 6+6=12. Le résultat attendu dans AX est donc 000Ch, pas 6 inchangé ni 36.",
+      "distractorRationales": [
+        {
+          "choice": "6"
+        },
+        {
+          "choice": "3",
+          "reason": "6"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
+    },
+    {
+      "id": "C23-L2-Q3",
+      "status": "certified",
+      "rule": "procedure_interface_documentation",
+      "inputs": {
+        "items": [
+          "modified_registers",
+          "inputs",
+          "outputs",
+          "stack_rules"
+        ]
+      },
+      "expected": {
+        "documented": true
+      },
+      "correctAnswer": "Registres modifiés, entrées, sorties et règles de pile",
+      "derivation": "Une interface documente les paramètres, le résultat, les registres modifiés ou préservés et la responsabilité de la pile. Ces informations permettent à l'appelant d'utiliser la routine sans deviner ses effets de bord.",
+      "distractorRationales": [
+        {
+          "choice": "L",
+          "reason": "a"
+        },
+        {
+          "choice": "L",
+          "reason": "e"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
+    },
+    {
+      "id": "C23-L3-Q1",
+      "status": "certified",
+      "rule": "zero_double",
+      "inputs": {
+        "initialValue": 0
+      },
+      "expected": {
+        "result": 0
+      },
+      "correctAnswer": "0",
+      "derivation": "L'addition de zéro avec lui-même donne zéro : 0+0=0. Le cas nul est une frontière importante car il doit être traité sans supposer que l'entrée est strictement positive.",
+      "distractorRationales": [
+        {
+          "choice": "1"
+        },
+        {
+          "choice": "F",
+          "reason": "F"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
+    },
+    {
+      "id": "C23-L3-Q2",
+      "status": "certified",
+      "rule": "zero_boundary_case",
+      "inputs": {
+        "input": 0
+      },
+      "expected": {
+        "handlesZero": true
+      },
+      "correctAnswer": "La routine respecte le cas limite nul",
+      "derivation": "Un traitement correct doit accepter zéro comme entrée et produire le résultat mathématique attendu. Le cas nul permet de détecter les hypothèses implicites sur une valeur strictement positive ou une boucle exécutée au moins une fois.",
+      "distractorRationales": [
+        {
+          "choice": "L",
+          "reason": "a"
+        },
+        {
+          "choice": "L",
+          "reason": "a"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
+    },
+    {
+      "id": "C23-L3-Q3",
+      "status": "certified",
+      "rule": "routine_boundary_test",
+      "inputs": {
+        "cases": [
+          "zero",
+          "minimum",
+          "typical",
+          "maximum"
+        ]
+      },
+      "expected": {
+        "checksGeneralRule": true,
+        "checksBoundaryCases": true
+      },
+      "correctAnswer": "Pour vérifier sa règle générale et ses cas limites",
+      "derivation": "Tester plusieurs classes d'entrée vérifie la règle sur les valeurs ordinaires et sur les frontières du domaine. Un seul exemple ne démontre pas que la routine fonctionne pour zéro, minimum ou maximum.",
+      "distractorRationales": [
+        {
+          "choice": "V",
+          "reason": "é"
+        },
+        {
+          "choice": "É",
+          "reason": "v"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
+    },
+    {
+      "id": "C23-F-Q1",
+      "status": "certified",
+      "rule": "modular_program_decomposition",
+      "inputs": {
+        "tasks": [
+          "functional_units"
+        ]
+      },
+      "expected": {
+        "separateResponsibilities": true
+      },
+      "correctAnswer": "Décomposer le programme en unités fonctionnelles",
+      "derivation": "Des unités fonctionnelles séparées isolent les responsabilités et permettent de tester chaque tâche indépendamment. Une routine unique trop volumineuse rend les interactions et les régressions plus difficiles à localiser.",
+      "distractorRationales": [
+        {
+          "choice": "R",
+          "reason": "e"
+        },
+        {
+          "choice": "S",
+          "reason": "u"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
+    },
+    {
+      "id": "C23-F-Q2",
+      "status": "certified",
+      "rule": "separate_routine_responsibilities",
+      "inputs": {
+        "routines": [
+          "INITIALISER",
+          "TRAITER"
+        ]
+      },
+      "expected": {
+        "responsibilitiesDifferent": true
+      },
+      "correctAnswer": "Leurs responsabilités sont différentes",
+      "derivation": "Une routine d'initialisation prépare l'état tandis qu'une routine de traitement réalise le travail principal. Les distinguer clarifie le flot et permet de vérifier séparément les contrats.",
+      "distractorRationales": [
+        {
+          "choice": "L",
+          "reason": "e"
+        },
+        {
+          "choice": "C",
+          "reason": "A"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
+    },
+    {
+      "id": "C23-F-Q3",
+      "status": "certified",
+      "rule": "call_saves_return",
+      "inputs": {
+        "instruction": "CALL TRAITER"
+      },
+      "expected": {
+        "savesReturnAddress": true,
+        "transfersControl": true
+      },
+      "correctAnswer": "CALL TRAITER",
+      "derivation": "CALL transfère le contrôle vers TRAITER tout en empilant l'adresse de continuation. JMP ne sauvegarde pas d'adresse de retour et PUSH TRAITER n'est pas un appel de procédure.",
+      "distractorRationales": [
+        {
+          "choice": "J",
+          "reason": "M"
+        },
+        {
+          "choice": "P",
+          "reason": "U"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
+    },
+    {
+      "id": "C23-F-Q4",
+      "status": "certified",
+      "rule": "routine_side_effect_documentation",
+      "inputs": {
+        "registerEffectsDocumented": false
+      },
+      "expected": {
+        "interfaceIncomplete": true
+      },
+      "correctAnswer": "Ne pas documenter les registres modifiés",
+      "derivation": "L'appelant doit connaître les registres qu'une routine modifie ou préserve. Sans cette information, une valeur utile peut être écrasée sans que l'appelant puisse l'anticiper.",
+      "distractorRationales": [
+        {
+          "choice": "D",
+          "reason": "o"
+        },
+        {
+          "choice": "R",
+          "reason": "e"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
+    },
+    {
+      "id": "C23-F-Q5",
+      "status": "certified",
+      "rule": "procedure_double",
+      "inputs": {
+        "initialAX": 6
+      },
+      "expected": {
+        "finalAX": 12
+      },
+      "correctAnswer": "12",
+      "derivation": "La routine additionne AX à lui-même : 6+6=12. La valeur 12 est le résultat calculé, alors que 6 est l'entrée et 36 correspondrait à une autre opération.",
+      "distractorRationales": [
+        {
+          "choice": "6"
+        },
+        {
+          "choice": "3",
+          "reason": "6"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
+    },
+    {
+      "id": "C23-F-Q6",
+      "status": "certified",
+      "rule": "zero_double",
+      "inputs": {
+        "initialValue": 0
+      },
+      "expected": {
+        "result": 0
+      },
+      "correctAnswer": "0",
+      "derivation": "Le double de zéro reste zéro, car 0+0=0. Une routine correcte doit conserver ce résultat au cas limite et ne pas fabriquer une valeur non nulle.",
+      "distractorRationales": [
+        {
+          "choice": "1"
+        },
+        {
+          "choice": "F",
+          "reason": "F"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
+    },
+    {
+      "id": "C23-F-Q7",
+      "status": "certified",
+      "rule": "call_return_sequence",
+      "inputs": {
+        "calls": 3
+      },
+      "expected": {
+        "returnsToCallerAfterEach": true,
+        "sequential": true
+      },
+      "correctAnswer": "Le contrôle revient après chaque CALL",
+      "derivation": "Chaque CALL empile son adresse de continuation et chaque RET restaure le flot dans l'appelant. Les routines successives sont donc exécutées séquentiellement, pas en parallèle.",
+      "distractorRationales": [
+        {
+          "choice": "L",
+          "reason": "e"
+        },
+        {
+          "choice": "S",
+          "reason": "P"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
+    },
+    {
+      "id": "C23-F-Q8",
+      "status": "certified",
+      "rule": "balanced_stack_sp",
+      "inputs": {
+        "pushWords": 1,
+        "popWords": 1,
+        "initialSP": 4096
+      },
+      "expected": {
+        "finalSP": 4096,
+        "netChange": 0
+      },
+      "correctAnswer": "SP reprend sa valeur initiale",
+      "derivation": "Un CALL/RET équilibré empile puis dépile un mot de retour. Si aucune autre opération ne laisse de données sur la pile, SP retrouve la valeur qu'il avait avant l'appel.",
+      "distractorRationales": [
+        {
+          "choice": "C",
+          "reason": "S"
+        },
+        {
+          "choice": "F",
+          "reason": "L"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
+    },
+    {
+      "id": "C23-F-Q9",
+      "status": "certified",
+      "rule": "preserve_register_contract",
+      "inputs": {
+        "register": "AX",
+        "incomingValue": 6,
+        "needsValueAfterCall": true
+      },
+      "expected": {
+        "mustRestoreIncomingValue": true,
+        "mechanism": "PUSH_POP"
+      },
+      "correctAnswer": "Respecter le contrat et sauvegarder AX si sa valeur doit survivre",
+      "derivation": "Si l'appelant a encore besoin de l'ancienne valeur d'AX après l'appel, la routine doit la préserver selon le contrat, par exemple avec PUSH AX puis POP AX, ou utiliser un registre de sortie documenté.",
+      "distractorRationales": [
+        {
+          "choice": "R",
+          "reason": "e"
+        },
+        {
+          "choice": "S",
+          "reason": "u"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
+    },
+    {
+      "id": "C23-F-Q10",
+      "status": "certified",
+      "rule": "routine_isolation_tests",
+      "inputs": {
+        "routines": [
+          "INITIALISER",
+          "TRAITER",
+          "TERMINER"
+        ]
+      },
+      "expected": {
+        "eachRoutineTestedSeparately": true,
+        "interfacesSpecified": true
+      },
+      "correctAnswer": "Spécifier chaque interface et tester chaque routine séparément",
+      "derivation": "Des interfaces stables définissent les paramètres, sorties et registres préservés. Des tests isolés par routine permettent de localiser les défauts avant de tester l'intégration complète.",
+      "distractorRationales": [
+        {
+          "choice": "M",
+          "reason": "o"
+        },
+        {
+          "choice": "M",
+          "reason": "a"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
+    }
+  ]
+}
