@@ -1398,9 +1398,17 @@ assert.deepEqual(independentlyCompute({ rule: "branch_prefetch_flush", inputs: {
 const keyMap = new Map(key.questions.map(q => [q.id, q]));
 assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23", "chapter-24", "chapter-25", "chapter-26", "chapter-27", "chapter-28", "chapter-29", "chapter-30", "chapter-31", "chapter-32", "chapter-33", "chapter-34", "chapter-35", "chapter-36"]);
 assert.deepEqual(batches.map(batch => batch.oracles.length), [19, 18, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19], "Chapters 2, 4 and 28 reuse one historical oracle outside their supplemental batch");
-const historicalChapterOracles = manifest.oracles.filter(oracle => ["C02-F-Q4", "C04-F-Q4", "C28-F-Q7"].includes(oracle.id)).map(oracle => ({ ...oracle, status: "certified" }));
+assert.equal(manifest.oracles.length, 684, "The manifest index must expose all 684 registered question IDs");
+assert.equal(new Set(manifest.oracles.map(item => item.id)).size, 684, "The manifest index must contain 684 unique question IDs");
+assert.equal(manifest.historicalOracles.length, 6, "The six detailed historical oracle objects must remain separately available");
+const historicalChapterOracles = manifest.historicalOracles.filter(oracle => ["C02-F-Q4", "C04-F-Q4", "C28-F-Q7"].includes(oracle.id)).map(oracle => ({ ...oracle, status: "certified" }));
 assert.equal(historicalChapterOracles.length, 3, "The historical chapter 2, chapter 4 and chapter 28 oracles not represented in supplemental batches must each be reused exactly once");
 const allOracleRecords = [...batches.flatMap(batch => batch.oracles), ...historicalChapterOracles];
+assert.deepEqual(manifest.oracles.map(item => item.id).sort(), [...batches.flatMap(batch => batch.oracles.map(oracle => oracle.id)), ...historicalChapterOracles.map(oracle => oracle.id)].sort(), "The manifest index must match all batch and historical-only oracle IDs");
+assert.equal(manifest.oracleCoverageSummary.registeredOracleRecords, 684, "Registered oracle count must match the complete index");
+assert.equal(manifest.oracleCoverageSummary.questionsWithoutOracle, 0, "No assessment question may be missing from the oracle index");
+assert.equal(manifest.oracleCoverageSummary.officialCertificationCount, 384, "Automated oracle coverage must not alter official individual certification");
+assert.equal(manifest.oracleCoverageSummary.remainingOfficialCertification, 300, "Official individual certification backlog remains separately tracked");
 const allIds = allOracleRecords.map(oracle => oracle.id);
 assert.equal(new Set(allIds).size, allIds.length, "Certified oracle IDs must be globally unique across supplemental batches and reused historical records");
 const seen = new Set();
