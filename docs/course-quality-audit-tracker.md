@@ -185,3 +185,12 @@ The mission remains in progress. Passing automated suites is evidence for the te
   - C09-F-Q7 now uses a MOV/TEST trace to verify that AL remains A5h while TEST computes 05h for FLAGS.
 - Updated runtime bank, semantic key and chapter-09 oracle batch; added independent evaluators and CI assertions for NOT flags and TEST destination preservation.
 - Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
+
+
+### Independent question review — chapter 10
+
+- Reviewed all 19 questions individually against the Intel 8086 Family User's Manual and MCS-86 assembly reference.
+- 18 items passed; one oracle mismatch was corrected.
+- C10-L3-Q2 described STC/PUSHF/CLC/POPF and expected CF=1, but its oracle used saved FLAGS=0200h, where CF=0. The oracle now uses 0201h, and a dedicated evaluator verifies both restored IF=1 and CF=1.
+- Added `docs/question-independent-review/chapter-10.json` and CI assertions for the 19-question review and exact restored flags.
+- Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
