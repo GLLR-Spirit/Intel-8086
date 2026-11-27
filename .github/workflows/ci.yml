@@ -30,6 +30,8 @@ jobs:
           node-version: 22
       - name: Run simulator smoke tests
         run: node tests/smoke.cjs
+      - name: Run local backup and restore tests
+        run: node tests/local-backup-restore.cjs
       - name: Validate site structure and accessibility baseline
         run: node tests/site-structure.cjs
       - name: Validate audit report consistency and certification wording
