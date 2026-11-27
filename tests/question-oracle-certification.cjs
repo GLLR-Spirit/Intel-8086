@@ -312,6 +312,8 @@ function independentlyCompute(oracle) {
       return { IF: 0 };
     case "pushf_stack_write":
       return { operation: "push", value: "FLAGS", stack: "SS:SP" };
+    case "popf_restore_cf":
+      return { restoredFLAGS: i.savedFLAGS, IF: (i.savedFLAGS >>> 9) & 1, CF: i.savedFLAGS & 1 };
     case "popf_restore_flags":
       return { restoredFLAGS: i.savedFLAGS, IF: (i.savedFLAGS >>> 9) & 1 };
     case "stack_segment_pointer":
@@ -1488,5 +1490,21 @@ assert.equal(chapter9Review.summary.remainingOfficialCertification, 300, "The of
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C09-F-Q6").expected, { result: 5 }, "1110 XOR 1011 must produce 0101");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C09-F-Q7").expected, { finalAL: 165, logicalResult: 5, destinationModified: false, flagsUpdated: true }, "TEST must update FLAGS without overwriting AL");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C09-L2-Q2").expected, { flagsModified: false, operandModified: true }, "NOT must modify its operand without changing FLAGS");
+
+
+const chapter10Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-10.json", "utf8"));
+const chapter10Ids = key.questions.filter(question => question.chapter === 10).map(question => question.id).sort();
+const reviewedChapter10Ids = chapter10Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter10Ids, chapter10Ids, "Chapter 10 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter10Ids).size, 19, "Chapter 10 review must not duplicate question IDs");
+assert.equal(chapter10Review.summary.questionsReviewed, 19, "Chapter 10 review count must match the complete question bank");
+assert.equal(chapter10Review.summary.passed, 18, "Chapter 10 review must report 18 passed questions");
+assert.equal(chapter10Review.summary.corrected, 1, "Chapter 10 review must record the missing saved-CF oracle bit");
+assert.equal(chapter10Review.summary.blocked, 0, "Chapter 10 review must have no unresolved blockers");
+assert.equal(chapter10Review.summary.officialCertificationCountBefore, 384, "Chapter 10 review starts from the official 384-question ledger");
+assert.equal(chapter10Review.summary.officialCertificationCountAfter, 384, "Chapter 10 review must not silently advance official certification");
+assert.equal(chapter10Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C10-L3-Q2").inputs, { savedFLAGS: 513 }, "PUSHF must save CF=1 in the tested word");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C10-L3-Q2").expected, { restoredFLAGS: 513, IF: 1, CF: 1 }, "POPF must restore the saved CF and IF bits");
 
 console.log("Question oracle evaluator: chapters 1–36 — " + oracleRecordsChecked + "/684 oracle records passed automated checks; official certification ledger remains " + manifest.oracleCoverageSummary.officialCertificationCount + "/684 (" + manifest.oracleCoverageSummary.remainingOfficialCertification + " pending); " + blocked + " blocked.");
