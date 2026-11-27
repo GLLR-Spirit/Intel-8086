@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "title": "Oracles sémantiques indépendants — couverture progressive des 684 questions",
-  "scope": "Les lots des chapitres 1 à 31 contiennent 586 enregistrements. Trois identifiants historiques (C17-F-Q2, C26-F-Q5 et C26-F-Q6) sont réutilisés dans ces lots sans être ajoutés une seconde fois au décompte ; trois autres oracles historiques (C02-F-Q4, C04-F-Q4 et C28-F-Q7) complètent les lots. Le total unique enregistré est de 589 questions, sous réserve de réussite du test de certification et de la revue sémantique.",
+  "scope": "Les lots des chapitres 1 à 32 contiennent 605 enregistrements. Trois identifiants historiques (C17-F-Q2, C26-F-Q5 et C26-F-Q6) sont réutilisés dans ces lots sans être ajoutés une seconde fois au décompte ; trois autres oracles historiques (C02-F-Q4, C04-F-Q4 et C28-F-Q7) complètent les lots. Le total unique enregistré est de 608 questions, sous réserve de réussite du test de certification et de la revue sémantique.",
   "referenceBasis": [
     "Intel 8086 Family User's Manual (October 1979), architecture EU/BIU, file de prélecture, arithmétique, instructions de décalage, instructions de chaîne et indicateurs.",
     "Intel MCS-86 Assembly Language Reference Manual, formes d'opérandes et syntaxe assembleur."
@@ -462,15 +462,23 @@
       "newlyAdded": 19,
       "blocked": 0,
       "pending": 0
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-32.json",
+      "scope": "Chapitre 32 — 19 questions couvertes",
+      "certified": 19,
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0
     }
   ],
   "certificationSummary": {
     "questionCount": 684,
     "historicalOracles": 6,
-    "supplementalBatchRecords": 586,
-    "newSupplementalOracles": 583,
-    "uniqueCertifiedQuestions": 589,
-    "remainingUncertified": 95,
-    "calculation": "586 enregistrements de lots, dont 3 identifiants déjà historiques, plus 3 oracles historiques non présents dans les lots (C02-F-Q4, C04-F-Q4 et C28-F-Q7) = 589 identifiants uniques. Les 6 oracles historiques sont tous comptés une seule fois."
+    "supplementalBatchRecords": 605,
+    "newSupplementalOracles": 602,
+    "uniqueCertifiedQuestions": 608,
+    "remainingUncertified": 76,
+    "calculation": "605 enregistrements de lots, dont 3 identifiants déjà historiques, plus 3 oracles historiques non présents dans les lots (C02-F-Q4, C04-F-Q4 et C28-F-Q7) = 608 identifiants uniques. Les 6 oracles historiques sont tous comptés une seule fois."
   }
 }
