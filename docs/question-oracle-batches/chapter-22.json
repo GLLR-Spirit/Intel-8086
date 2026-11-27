@@ -377,7 +377,7 @@
         },
         {
           "choice": "AX=1",
-          "reason": "4+5 vaut 9 ; 1 n'est pas la somme des paramètres."
+          "reason": "La somme des deux paramètres est 4+5=9 ; 1 ne correspond ni à leur addition ni au résultat attendu dans AX."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
