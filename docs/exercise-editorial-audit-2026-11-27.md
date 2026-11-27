@@ -199,3 +199,14 @@ Cette passe améliore l'explicitation des prérequis et l'apprentissage par l'er
 ### Justification individuelle des niveaux
 
 Un troisième champ éditorial a été ajouté à chacune des 48 fiches : une justification courte du niveau attribué (Débutant, Facile, Intermédiaire, Avancé ou Expert). Elle explicite la charge technique attendue — nombre de notions combinées, complexité du flot de contrôle, adressage, pile, encodage ou raisonnement architectural. Le guide affiche maintenant les prérequis, le piège fréquent et la justification du niveau. Le test navigateur exige 48/48 justifications non vides.
+
+
+### Couverture des branches et des méthodes demandées
+
+Le test navigateur indépendant inclut maintenant des variantes de données pour vérifier les chemins alternatifs :
+
+- EX04 : cas différent (AX≠BX), en complément du cas égal de l'énoncé.
+- EX19 : branche signée prise vers le cas AX≤BX, en complément du chemin AX>BX.
+- EX21 : cas AX>BX et cas AX=BX, en complément du cas AX<BX de l'énoncé.
+
+Il vérifie aussi explicitement la présence des méthodes demandées dans les corrections EX02, EX03, EX05, EX25, EX33, EX34, EX43, EX45, EX46, EX47 et EX48 (registre temporaire, CX/LOOP, direction des chaînes, E/S, FLAGS et interruptions). Ces contrôles empêchent qu'un résultat final isolé soit pris pour la preuve d'une méthode qui n'aurait pas été utilisée.
