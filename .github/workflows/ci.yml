@@ -4,12 +4,10 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - "docs/**"
       - "**/*.md"
   pull_request:
     branches: [main]
     paths-ignore:
-      - "docs/**"
       - "**/*.md"
   workflow_dispatch:
 
@@ -36,7 +34,7 @@ jobs:
         run: node tests/site-structure.cjs
       - name: Validate learning path and guided exercises
         run: node tests/learning-quality.cjs
-      - name: Independently certify chapter 1 assessment questions
+      - name: Certify all independently audited assessment questions
         run: node tests/question-oracle-certification.cjs
       - name: Compare 108 course examples and 48 corrections across source and binary execution
         run: node tests/course-example-differential.cjs
