@@ -986,7 +986,7 @@ function independentlyCompute(oracle) {
 }
 
 const keyMap = new Map(key.questions.map(q => [q.id, q]));
-assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23", "chapter-24", "chapter-25", "chapter-26", "chapter-27", "chapter-28"]);
+assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23", "chapter-24", "chapter-25", "chapter-26", "chapter-27", "chapter-28", "chapter-29"]);
 assert.deepEqual(batches.map(batch => batch.oracles.length), [19, 18, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 18, 19], "Chapters 2, 4 and 28 reuse one historical oracle outside their supplemental batch");
 const historicalChapterOracles = manifest.oracles.filter(oracle => ["C02-F-Q4", "C04-F-Q4", "C28-F-Q7"].includes(oracle.id)).map(oracle => ({ ...oracle, status: "certified" }));
 assert.equal(historicalChapterOracles.length, 3, "The historical chapter 2, chapter 4 and chapter 28 oracles not represented in supplemental batches must each be reused exactly once");
