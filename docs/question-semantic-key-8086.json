@@ -6911,14 +6911,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Quel résultat produit DOUBLE avec AX=6 ?",
+      "stem": "Quel résultat AX produit DOUBLE si AX=FFFFh et que la routine exécute ADD AX,AX ?",
       "choices": [
-        "12",
-        "6",
-        "36"
+        "FFFEh",
+        "FFFFh",
+        "0000h"
       ],
-      "correctAnswer": "12",
-      "explanation": "La routine ajoute AX à lui-même.",
+      "correctAnswer": "FFFEh",
+      "explanation": "FFFFh+FFFFh=1FFFEh ; AX conserve les 16 bits faibles, soit FFFEh.",
       "category": "Prédiction"
     },
     {
@@ -6927,14 +6927,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Quel résultat produit DOUBLE avec AX=0 ?",
+      "stem": "Une routine ADDITION reçoit AX=0006h et BX=0004h puis exécute ADD AX,BX. Quelle valeur retourne-t-elle dans AX ?",
       "choices": [
-        "0",
-        "1",
-        "FFFFh"
+        "000Ah",
+        "0002h",
+        "0018h"
       ],
-      "correctAnswer": "0",
-      "explanation": "Le double de zéro reste zéro.",
+      "correctAnswer": "000Ah",
+      "explanation": "0006h+0004h=000Ah ; la convention de sortie place le résultat dans AX.",
       "category": "Calcul / prédiction"
     },
     {
