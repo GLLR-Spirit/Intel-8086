@@ -88,6 +88,17 @@ function independentlyCompute(oracle) {
       if (oracle.rule === "unsigned_byte_add") return { mathematicalSum: sum, result, carry: CF };
       return { mathematicalSum: sum, result, CF, OF };
     }
+    case "signed_add_flag_pair": {
+      const mask = (2 ** i.width) - 1;
+      const sum = i.left + i.right;
+      const result = sum & mask;
+      const sign = 2 ** (i.width - 1);
+      const signedValue = value => value >= sign ? value - (2 ** i.width) : value;
+      const signedSum = signedValue(i.left & mask) + signedValue(i.right & mask);
+      const minimum = -(2 ** (i.width - 1));
+      const maximum = (2 ** (i.width - 1)) - 1;
+      return { OF: signedSum < minimum || signedSum > maximum ? 1 : 0, CF: sum > mask ? 1 : 0 };
+    }
     case "signed_add_flags": {
       const mask = (2 ** i.width) - 1;
       const sum = i.left + i.right;
