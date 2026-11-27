@@ -6607,14 +6607,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Si AX=4 et BX=5, quelle sortie donne ADD AX,BX ?",
+      "stem": "Si l'appelant empile le paramètre A puis le paramètre B, quel ordre la routine doit-elle utiliser pour les dépiler ?",
       "choices": [
-        "AX=9",
-        "AX=20",
-        "AX=1"
+        "B puis A",
+        "A puis B",
+        "A et B simultanément"
       ],
-      "correctAnswer": "AX=9",
-      "explanation": "L'addition produit 9 dans AX.",
+      "correctAnswer": "B puis A",
+      "explanation": "La pile suit LIFO : le dernier paramètre empilé, B, doit être dépilé en premier.",
       "category": "Prédiction"
     },
     {
@@ -6623,14 +6623,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Après PUSH AX, MOV AX,0, POP AX avec AX=1234h, quelle valeur revient ?",
+      "stem": "Après l'empilement de deux paramètres mots, SP=0FFCh juste avant CALL near. Quelle valeur SP a-t-il à l'entrée de la routine ?",
       "choices": [
-        "1234h",
-        "0000h",
-        "FFFFh"
+        "0FFAh",
+        "0FFCh",
+        "0FF8h"
       ],
-      "correctAnswer": "1234h",
-      "explanation": "Le mot sauvegardé est restauré par POP AX.",
+      "correctAnswer": "0FFAh",
+      "explanation": "CALL near empile un mot contenant l'IP de retour : SP est décrémenté de deux octets, de 0FFCh à 0FFAh.",
       "category": "Calcul / prédiction"
     },
     {
