@@ -447,25 +447,29 @@
       "status": "certified",
       "rule": "io_state_after_out",
       "inputs": {
-        "operation": "OUT",
-        "port": 16,
-        "value": 85
+        "operation": "OUT DX,AL",
+        "DX": 32,
+        "AL": 165,
+        "port": 32,
+        "value": 165
       },
       "expected": {
-        "portState": 85,
-        "writtenValue": 85,
-        "observable": true
+        "portState": 165,
+        "writtenValue": 165,
+        "observable": true,
+        "portHex": "20h",
+        "valueHex": "A5h"
       },
-      "correctAnswer": "L'état du port et la valeur écrite",
-      "derivation": "Après OUT, l'audit doit vérifier le port ciblé et la valeur effectivement écrite dans l'état d'E/S du simulateur. Contrôler DS ou CS ne prouve pas qu'une sortie a été dirigée vers le bon port.",
+      "correctAnswer": "A5h",
+      "derivation": "MOV DX,20h sélectionne le port 20h ; MOV AL,A5h fournit l'octet A5h ; OUT DX,AL écrit cet octet dans le port sélectionné. L'état observable attendu pour le port 20h est donc A5h.",
       "distractorRationales": [
         {
-          "choice": "Une adresse mémoire DS",
-          "reason": "DS sélectionne un segment mémoire ; il ne valide pas l'état d'un port d'E/S."
+          "choice": "20h",
+          "reason": "20h est le numéro du port sélectionné dans DX, pas la donnée contenue dans AL."
         },
         {
-          "choice": "Le contenu de CS",
-          "reason": "CS contient le segment de code et n'indique ni le port sélectionné ni la valeur transmise."
+          "choice": "00h",
+          "reason": "Aucune instruction ne met AL à zéro ; la valeur transmise est A5h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
