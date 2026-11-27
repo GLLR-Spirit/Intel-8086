@@ -396,7 +396,7 @@ const assert = require("node:assert/strict");
   });
   const readExerciseCount=async()=>{
     const value=(await page.locator("#exerciseCount").textContent()).trim();
-    const parsed=value.match(/^(\\d+)/);
+    const parsed=value.match(/^(\d+)/);
     assert.ok(parsed,"Filtered exercise count must remain readable: "+value);
     return Number(parsed[1]);
   };
