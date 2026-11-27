@@ -107,3 +107,13 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - Updated runtime bank, semantic key, historical oracle, independent review record, and both oracle evaluators. Added assertions for category balance and runtime/key/oracle concordance.
 - PR CI run [1789](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46025557122) passed; separate browser audit [1152](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46025557121) passed.
 - The automated question-oracle suite reports 684/684 evaluator records passing. Official individual certification remains 384/684; 300 questions remain. This chapter review does not automatically advance that official ledger.
+
+
+### Independent question review — chapter 3
+
+- Reviewed all 19 questions individually; 16 passed and three were corrected.
+- Removed a repeated binary conversion: L1-Q1 and L1-Q3 both asked for the value/weights of 1010₂. L1-Q3 now uses 1101₂, independently recalculated as 8+4+1=13.
+- Removed a repeated hexadecimal conversion: L3-Q1 and L3-Q3 both asked for FFh/0FFh=255. L3-Q3 now tests the number of distinct patterns on eight bits: 2⁸=256.
+- Improved C03-F-Q4 distractors. The incorrect options now represent realistic misunderstandings of hexadecimal notation and the AL/AX width distinction.
+- Updated the runtime bank, semantic key and chapter-03 oracle batch. Added an independent `binary_pattern_count` evaluator and CI assertions for all 19 review records and the two removed repetitions.
+- Official individual certification remains 384/684; 300 questions remain. The review does not advance the official ledger.
