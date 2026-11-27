@@ -1420,20 +1420,4 @@ assert.equal(chapter6Review.summary.remainingOfficialCertification, 300, "The of
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C06-F-Q4").expected, { valid: false, reason: "no_segment_to_segment_form" }, "MOV DS,ES must be rejected as a direct segment-to-segment move");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C06-F-Q7").expected, { finalAX: 4660, halted: true, skippedInstruction: "MOV AX,22136" }, "The chapter 6 jump trace must skip the instruction after JMP");
 
-
-const chapter6Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-06.json", "utf8"));
-const chapter6Ids = key.questions.filter(question => question.chapter === 6).map(question => question.id).sort();
-const reviewedChapter6Ids = chapter6Review.records.map(record => record.id).sort();
-assert.deepEqual(reviewedChapter6Ids, chapter6Ids, "Chapter 6 independent review must cover all 19 questions exactly once");
-assert.equal(new Set(reviewedChapter6Ids).size, 19, "Chapter 6 review must not duplicate question IDs");
-assert.equal(chapter6Review.summary.questionsReviewed, 19, "Chapter 6 review count must match the complete question bank");
-assert.equal(chapter6Review.summary.passed, 16, "Chapter 6 review must report 16 passed questions");
-assert.equal(chapter6Review.summary.corrected, 3, "Chapter 6 review must record the source/destination, segment MOV, and jump-trace improvements");
-assert.equal(chapter6Review.summary.blocked, 0, "Chapter 6 review must have no unresolved blockers");
-assert.equal(chapter6Review.summary.officialCertificationCountBefore, 384, "Chapter 6 review starts from the official 384-question ledger");
-assert.equal(chapter6Review.summary.officialCertificationCountAfter, 384, "Chapter 6 review must not silently advance official certification");
-assert.equal(chapter6Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
-assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C06-F-Q4").expected, { valid: false, reason: "no_segment_to_segment_form" }, "MOV DS,ES must be rejected as a direct segment-to-segment move");
-assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C06-F-Q7").expected, { finalAX: 4660, halted: true, skippedInstruction: "MOV AX,22136" }, "The chapter 6 jump trace must skip the instruction after JMP");
-
 console.log("Question oracle evaluator: chapters 1–36 — " + oracleRecordsChecked + "/684 oracle records passed automated checks; official certification ledger remains " + manifest.oracleCoverageSummary.officialCertificationCount + "/684 (" + manifest.oracleCoverageSummary.remainingOfficialCertification + " pending); " + blocked + " blocked.");
