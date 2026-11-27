@@ -46,6 +46,8 @@ jobs:
         run: node tests/chapter-19-independent-review.cjs
       - name: Validate chapter 20 independent review and stack semantics
         run: node tests/chapter-20-independent-review.cjs
+      - name: Validate chapter 21 independent review and near CALL RET semantics
+        run: node tests/chapter-21-independent-review.cjs
       - name: Validate question oracle evaluators (automated; not independent certification)
         run: node tests/question-oracle-certification.cjs
       - name: Compare 108 course examples and 48 corrections across source and binary execution
