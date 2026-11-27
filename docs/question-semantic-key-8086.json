@@ -214,7 +214,7 @@
         "MOV ne permet jamais de constante immédiate"
       ],
       "correctAnswer": "La constante dépasse la capacité de 8 bits de AL",
-      "explanation": "AL accepte une valeur immédiate de 8 bits au maximum, soit FFh ; 1234h exige 16 bits.",
+      "explanation": "AL accepte une valeur immédiate de 8 bits au maximum, soit FFh ; 1234h vaut 4660 et nécessite 13 bits, donc ne peut pas être encodé dans AL.",
       "category": "Syntaxe"
     },
     {
