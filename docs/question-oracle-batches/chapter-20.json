@@ -29,12 +29,12 @@
       "derivation": "Une pile suit LIFO : le dernier mot ajouté se trouve au sommet et sera retiré en premier. Ainsi, après PUSH AX puis PUSH BX, le premier POP récupère BX.",
       "distractorRationales": [
         {
-          "choice": "F",
-          "reason": "I"
+          "choice": "FIFO : premier empilé, premier dépilé",
+          "reason": "FIFO retire le premier élément empilé, contrairement à la pile 8086 qui retire le dernier élément ajouté."
         },
         {
-          "choice": "A",
-          "reason": "c"
+          "choice": "Accès aléatoire sans ordre",
+          "reason": "Une pile n'autorise pas un accès arbitraire sans respecter le sommet ; elle suit l'ordre LIFO."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -57,12 +57,12 @@
       "derivation": "PUSH d'un mot réserve deux octets sur la pile en décrémentant SP de deux avant l'écriture. La valeur est ensuite stockée à l'adresse logique SS:SP nouvellement calculée.",
       "distractorRationales": [
         {
-          "choice": "S",
-          "reason": "P"
+          "choice": "SP augmente de 2 puis AX est stocké",
+          "reason": "PUSH décrémente SP avant l'écriture ; il n'augmente pas SP."
         },
         {
-          "choice": "A",
-          "reason": "X"
+          "choice": "AX est copié dans IP",
+          "reason": "IP est le pointeur d'instruction et n'est pas la destination d'un PUSH de mot."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -82,12 +82,12 @@
       "derivation": "La pile est adressée par le segment SS et l'offset SP. Les opérations PUSH/POP utilisent ce couple pour localiser le sommet de pile.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "S"
+          "choice": "CS:IP",
+          "reason": "CS:IP désigne le flot d'instructions, pas le sommet de pile."
         },
         {
-          "choice": "D",
-          "reason": "S"
+          "choice": "DS:SI",
+          "reason": "DS:SI sert à des références de données/chaînes, pas à la pile."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -111,12 +111,12 @@
       "derivation": "BX a été empilé après AX et se trouve donc au sommet de la pile. POP CX retire ce dernier mot et le copie dans CX.",
       "distractorRationales": [
         {
-          "choice": "D",
-          "reason": "X"
+          "choice": "DX",
+          "reason": "DX n'est pas la destination du POP décrit ; le mot au sommet est BX et la destination donnée est CX."
         },
         {
-          "choice": "A",
-          "reason": "X"
+          "choice": "AX",
+          "reason": "AX a été empilé avant BX ; il se trouve plus bas dans la pile et sera dépilé ensuite."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -142,12 +142,12 @@
       "derivation": "Après PUSH AX puis PUSH BX, le sommet contient BX. POP CX récupère BX ; le mot suivant est AX, récupéré par POP DX. L'ordre respecte LIFO et restaure SP.",
       "distractorRationales": [
         {
-          "choice": "P",
-          "reason": "O"
+          "choice": "POP DX puis POP CX",
+          "reason": "LIFO impose de dépiler d'abord BX avec POP CX, puis AX avec POP DX."
         },
         {
-          "choice": "D",
-          "reason": "e"
+          "choice": "Deux POP AX",
+          "reason": "Deux POP AX écraseraient la même destination et ne restaureraient pas les deux valeurs dans les registres attendus."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -169,12 +169,12 @@
       "derivation": "Chaque PUSH de mot décrémente SP de deux et chaque POP l'incrémente de deux. Deux opérations de chaque type produisent une variation nette nulle si aucun autre accès à la pile n'intervient.",
       "distractorRationales": [
         {
-          "choice": "I",
-          "reason": "P"
+          "choice": "IP devient zéro",
+          "reason": "IP n'est pas mis à zéro par l'équilibrage de pile ; l'effet recherché concerne SP."
         },
         {
-          "choice": "F",
-          "reason": "L"
+          "choice": "FLAGS sont tous effacés",
+          "reason": "POPF n'efface pas tous les indicateurs ; l'équilibre de pile se vérifie par la restauration de SP."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -195,12 +195,12 @@
       "derivation": "PUSHF empile une copie du mot FLAGS sur la pile, en utilisant SS:SP et en décrémentant SP de deux octets avant l'écriture.",
       "distractorRationales": [
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Uniquement CF",
+          "reason": "PUSHF empile le mot FLAGS entier, pas seulement CF."
         },
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le registre CS",
+          "reason": "CS est un registre de segment et n'est pas la donnée empilée par PUSHF."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -220,12 +220,12 @@
       "derivation": "POPF lit le mot au sommet de pile et le charge dans FLAGS. Le contenu restauré dépend donc du mot réellement présent à SS:SP.",
       "distractorRationales": [
         {
-          "choice": "E",
-          "reason": "f"
+          "choice": "Efface tous les indicateurs",
+          "reason": "POPF restaure le mot FLAGS dépilé ; il ne l'efface pas entièrement."
         },
         {
-          "choice": "R",
-          "reason": "e"
+          "choice": "Restaure AX",
+          "reason": "POPF écrit dans FLAGS et non dans AX."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -246,12 +246,12 @@
       "derivation": "POPF consomme le mot présent au sommet de pile et l'interprète comme FLAGS, qu'il s'agisse ou non du mot précédemment sauvegardé. Un PUSH manquant ou un mauvais SP peut donc restaurer un état arbitraire et déséquilibrer la pile.",
       "distractorRationales": [
         {
-          "choice": "I",
-          "reason": "l"
+          "choice": "Il ne fait rien dans tous les cas",
+          "reason": "POPF consomme toujours le mot au sommet ; si la pile est incorrecte, l'instruction ne devient pas un no-op."
         },
         {
-          "choice": "I",
-          "reason": "l"
+          "choice": "Il incrémente CX",
+          "reason": "POPF ne modifie pas CX ; il restaure FLAGS depuis le mot lu à SS:SP."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -274,12 +274,12 @@
       "derivation": "Le sommet de pile correspond au dernier élément empilé. Le dépilage suit donc l'ordre inverse de l'empilage, sans tri ni FIFO.",
       "distractorRationales": [
         {
-          "choice": "F",
-          "reason": "I"
+          "choice": "FIFO",
+          "reason": "FIFO restitue le premier élément ajouté, alors que la pile restitue le dernier."
         },
         {
-          "choice": "A",
-          "reason": "c"
+          "choice": "Accès trié",
+          "reason": "L'ordre de pile est LIFO et non un tri par valeur."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -300,12 +300,12 @@
       "derivation": "Sur le 8086, PUSH décrémente SP avant d'écrire le mot. L'adresse du sommet se déplace donc vers les offsets décroissants au fur et à mesure que la pile grandit.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "a"
+          "choice": "La pile croît vers les offsets croissants",
+          "reason": "PUSH décrémente SP ; la pile grandit vers les offsets décroissants."
         },
         {
-          "choice": "S",
-          "reason": "P"
+          "choice": "SP est un registre de segment",
+          "reason": "SP est un registre pointeur 16 bits, pas un registre de segment."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -328,12 +328,12 @@
       "derivation": "POP BX lit le mot situé au sommet de pile, le copie dans BX, puis incrémente SP de deux. PUSH BX ferait l'opération inverse et MOV BX,SP ne dépilerait aucune donnée.",
       "distractorRationales": [
         {
-          "choice": "P",
-          "reason": "U"
+          "choice": "PUSH BX",
+          "reason": "PUSH BX empile le contenu de BX au lieu de le retirer du sommet."
         },
         {
-          "choice": "M",
-          "reason": "O"
+          "choice": "MOV BX,SP",
+          "reason": "MOV BX,SP copie SP dans BX mais ne dépile pas le mot mémoire."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -358,12 +358,12 @@
       "derivation": "Si les valeurs sont dépilées dans un ordre différent de celui attendu, elles sont associées aux mauvais registres. Le nombre de PUSH/POP peut être équilibré tout en conservant une erreur de correspondance.",
       "distractorRationales": [
         {
-          "choice": "U",
-          "reason": "t"
+          "choice": "Utiliser plusieurs registres",
+          "reason": "Utiliser plusieurs registres est normal ; l'erreur est de dépiler dans un ordre qui associe les valeurs aux mauvais registres."
         },
         {
-          "choice": "E",
-          "reason": "m"
+          "choice": "Empiler un mot",
+          "reason": "Empiler un mot est une opération valide ; l'erreur décrite vient du dépilage hors ordre LIFO."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -387,12 +387,12 @@
       "derivation": "BX a été empilé en dernier ; il se trouve au sommet et doit être récupéré par POP CX. POP DX ou POP AX attribuerait la valeur au mauvais registre.",
       "distractorRationales": [
         {
-          "choice": "D",
-          "reason": "X"
+          "choice": "DX avec POP DX",
+          "reason": "Le dernier mot empilé est BX ; POP DX récupérerait la valeur dans le mauvais registre si CX est attendu."
         },
         {
-          "choice": "A",
-          "reason": "X"
+          "choice": "AX avec POP AX",
+          "reason": "AX a été empilé en premier et ne se trouve pas au sommet immédiatement après PUSH BX."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -412,12 +412,12 @@
       "derivation": "Deux PUSH de mots font diminuer SP de quatre octets au total. Deux POP de mots le font remonter de quatre octets ; la variation nette est donc zéro si l'ordre est correctement équilibré.",
       "distractorRationales": [
         {
-          "choice": "+",
-          "reason": "4"
+          "choice": "+4 octets",
+          "reason": "Deux PUSH puis deux POP de mots donnent −4+4=0 octet de variation nette."
         },
         {
-          "choice": "−",
-          "reason": "4"
+          "choice": "-4 octets",
+          "reason": "La séquence équilibrée ne laisse pas SP quatre octets plus bas."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -437,12 +437,12 @@
       "derivation": "PUSHF place une copie de FLAGS sur la pile et POPF la recharge depuis le sommet. POPF ne remet pas CF à zéro arbitrairement et ne restaure pas AX.",
       "distractorRationales": [
         {
-          "choice": "E",
-          "reason": "f"
+          "choice": "Efface CF définitivement",
+          "reason": "POPF restaure FLAGS ; il ne force pas CF à zéro indépendamment du mot sauvegardé."
         },
         {
-          "choice": "R",
-          "reason": "e"
+          "choice": "Restaure AX",
+          "reason": "POPF ne restaure pas AX ; sa destination est le registre FLAGS."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -464,12 +464,12 @@
       "derivation": "Une séquence équilibrée de deux PUSH et deux POP de mots doit restaurer SP à sa valeur initiale, à condition qu'aucune autre opération ne modifie la pile entre-temps.",
       "distractorRationales": [
         {
-          "choice": "S",
-          "reason": "P"
+          "choice": "SP final égale zéro",
+          "reason": "SP doit revenir à sa valeur initiale, pas à zéro ; sa valeur initiale peut être n'importe quel offset valide."
         },
         {
-          "choice": "I",
-          "reason": "P"
+          "choice": "IP final égale SP initial",
+          "reason": "IP est indépendant du pointeur de pile ; l'équilibre concerne SP, pas IP."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -490,12 +490,12 @@
       "derivation": "Un PUSH sans POP correspondant laisse un mot supplémentaire au sommet de pile. Le POP approprié doit être ajouté au point logique correct pour restaurer l'équilibre et préserver l'ordre des données.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "j"
+          "choice": "Ajouter INC AX",
+          "reason": "INC AX modifie AX et certains indicateurs, mais ne retire pas le mot resté sur la pile."
         },
         {
-          "choice": "E",
-          "reason": "f"
+          "choice": "Effacer CF",
+          "reason": "Effacer CF ne change pas SP et ne corrige pas le mot supplémentaire."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -519,12 +519,12 @@
       "derivation": "Un audit de pile doit vérifier le contenu de chaque mot, l'ordre LIFO, les variations de SP et les limites de mémoire. Contrôler uniquement AX ou la longueur du programme ne suffit pas à détecter une pile déséquilibrée.",
       "distractorRationales": [
         {
-          "choice": "S",
-          "reason": "e"
+          "choice": "Seulement le registre AX",
+          "reason": "AX seul ne révèle pas l'ordre des mots, l'équilibre SP ou les limites mémoire."
         },
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Uniquement le nombre de lignes",
+          "reason": "Le nombre de lignes du programme ne prouve pas que la pile est équilibrée ou que les mots sont dans le bon ordre."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
