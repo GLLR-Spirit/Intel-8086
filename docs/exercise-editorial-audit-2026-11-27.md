@@ -147,7 +147,7 @@ Les écarts de la première passe ont été corrigés sur cette branche :
 - Audit navigateur de niveau 3 : **réussi**.
 - Corrections guidées : **48/48** chargées, exécutées et acceptées par leur validateur dans l'interface.
 - Comparaison source/binaire : **48/48** corrections comparées.
-- Oracles complémentaires : **9/9** corrections avancées acceptées (EX33, EX35, EX37, EX39, EX41, EX43, EX46, EX47, EX48) ; trois contrôles négatifs rejettent une réponse écrite absente, un encodage différent mais fonctionnel et une pile déséquilibrée.
+- Oracles complémentaires : **9/9** corrections avancées acceptées (EX33, EX35, EX37, EX39, EX41, EX43, EX46, EX47, EX48) ; quatre contrôles négatifs rejettent une réponse écrite absente, une justification contradictoire riche en mots-clés, un encodage différent mais fonctionnel et une pile déséquilibrée.
 - Filtres : **1 554/1 554** combinaisons, recherche dans le code, recherche combinée et réinitialisation réussies.
 
 ### Statut de certification
@@ -213,3 +213,8 @@ Le test navigateur indépendant inclut maintenant neuf variantes de données pou
 - EX47 et EX48 : cas où la vérification mémoire échoue et le statut transmis au gestionnaire devient zéro.
 
 Il vérifie aussi explicitement la présence des méthodes demandées dans les corrections EX02, EX03, EX05, EX25, EX33, EX34, EX43, EX45, EX46, EX47 et EX48 (registre temporaire, CX/LOOP, direction des chaînes, E/S, FLAGS et interruptions). Ces contrôles empêchent qu'un résultat final isolé soit pris pour la preuve d'une méthode qui n'aurait pas été utilisée.
+
+
+### EX39 — contrôle de justification plus discriminant
+
+Le contrôle ne se contente plus de rechercher cinq mots isolés. Il exige des groupes de notions reliés dans la réponse : résultat fonctionnel/équivalence, effet sur les cycles, BIU avec prélecture, bus avec accès mémoire, et limite explicite du simulateur. Un contrôle négatif fournit volontairement tous les termes tout en affirmant le contraire ; il doit être rejeté. Cette règle améliore la détection des réponses incohérentes, mais reste une grille lexicale structurée et ne remplace pas une correction sémantique humaine.
