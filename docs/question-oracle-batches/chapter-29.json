@@ -30,12 +30,12 @@
       "derivation": "L'IVT commence à l'adresse physique 00000h. Chaque vecteur occupe quatre octets, soit deux mots : offset du gestionnaire puis segment. L'entrée du vecteur n commence donc à l'adresse physique 0+4×n ; le calcul donne l'adresse de l'entrée, pas directement l'adresse du gestionnaire.",
       "distractorRationales": [
         {
-          "choice": "À",
-          "reason": " "
+          "choice": "À 16×n",
+          "reason": "Le facteur 16 correspond à la taille d'un segment en octets dans le calcul segment:offset ; il ne représente pas la taille de quatre octets d'une entrée IVT."
         },
         {
-          "choice": "À",
-          "reason": " "
+          "choice": "À n+20h",
+          "reason": "L'IVT commence à l'adresse physique zéro et chaque entrée mesure quatre octets ; il n'y a pas d'addition fixe de 20h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Interrupt Operations and Interrupt Vector Table; Intel MCS-86 Assembly Language Reference Manual, interrupt handling. VECTOR is a laboratory directive, not an 8086 machine instruction."
@@ -58,12 +58,12 @@
       "derivation": "Le numéro de vecteur 30h vaut 48 en décimal. Une entrée IVT mesure quatre octets : 30h×4= C0h. Comme la table commence à l'adresse physique zéro, l'entrée est à 000C0h.",
       "distractorRationales": [
         {
-          "choice": "0",
-          "reason": "0"
+          "choice": "0030h",
+          "reason": "0030h est le numéro du vecteur lui-même, pas l'adresse de son entrée ; il faut multiplier 30h par quatre."
         },
         {
-          "choice": "0",
-          "reason": "3"
+          "choice": "0300h",
+          "reason": "La multiplication correcte est 30h×4=C0h ; 0300h est une valeur décalée d'un facteur incorrect."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Interrupt Operations and Interrupt Vector Table; Intel MCS-86 Assembly Language Reference Manual, interrupt handling. VECTOR is a laboratory directive, not an 8086 machine instruction."
@@ -95,12 +95,12 @@
       "derivation": "Une entrée IVT contient un pointeur far 16:16. Le premier mot stocke l'offset du gestionnaire et le second son segment ; deux mots de 16 bits forment quatre octets. Un registre général ou FLAGS seul ne peut pas identifier l'adresse complète du gestionnaire.",
       "distractorRationales": [
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Un seul registre général",
+          "reason": "Une entrée IVT ne contient pas un registre général ; elle stocke deux mots qui forment un pointeur far vers le gestionnaire."
         },
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Un mot FLAGS",
+          "reason": "FLAGS décrit l'état des indicateurs du processeur et ne peut pas fournir à lui seul le segment et l'offset du gestionnaire."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Interrupt Operations and Interrupt Vector Table; Intel MCS-86 Assembly Language Reference Manual, interrupt handling. VECTOR is a laboratory directive, not an 8086 machine instruction."
@@ -134,12 +134,12 @@
       "derivation": "Sur une interruption 8086, le processeur empile d'abord FLAGS, puis CS, puis l'IP de continuation. Comme la pile croît vers les offsets décroissants, le dernier mot empilé, IP, se retrouve au sommet. Trois mots de deux octets représentent six octets de contexte.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "X"
+          "choice": "AX, BX et CX",
+          "reason": "INT ne sauvegarde pas automatiquement tous les registres généraux ; son cadre architectural contient FLAGS, CS et l'IP de continuation."
         },
         {
-          "choice": "D",
-          "reason": "S"
+          "choice": "DS et ES uniquement",
+          "reason": "DS et ES ne constituent pas le cadre de retour automatique d'une interruption ; INT sauvegarde FLAGS, CS et IP."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Interrupt Operations and Interrupt Vector Table; Intel MCS-86 Assembly Language Reference Manual, interrupt handling. VECTOR is a laboratory directive, not an 8086 machine instruction."
@@ -167,12 +167,12 @@
       "derivation": "L'ordre d'empilement est FLAGS, CS, puis IP. Le dernier mot empilé occupe le sommet de pile ; l'IP de retour est donc le premier mot que le gestionnaire peut lire au sommet, avant CS puis FLAGS.",
       "distractorRationales": [
         {
-          "choice": "F",
-          "reason": "L"
+          "choice": "FLAGS",
+          "reason": "FLAGS est empilé avant CS et IP ; comme IP est le dernier mot empilé, c'est lui qui se trouve au sommet."
         },
         {
-          "choice": "C",
-          "reason": "S"
+          "choice": "CS",
+          "reason": "CS est empilé après FLAGS mais avant IP ; il se trouve sous IP au sommet de la pile."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Interrupt Operations and Interrupt Vector Table; Intel MCS-86 Assembly Language Reference Manual, interrupt handling. VECTOR is a laboratory directive, not an 8086 machine instruction."
@@ -202,12 +202,12 @@
       "derivation": "IRET dépile le cadre d'interruption dans l'ordre IP, CS, FLAGS. Il restaure ainsi l'offset de reprise, le segment de code et les indicateurs sauvegardés par INT ; POP AX ne rétablit pas ce contexte et HLT ne constitue pas un retour d'interruption.",
       "distractorRationales": [
         {
-          "choice": "P",
-          "reason": "o"
+          "choice": "Pour dépiler seulement AX",
+          "reason": "IRET dépile le cadre de retour IP, CS et FLAGS ; POP AX ne restaure ni le segment de code ni les indicateurs."
         },
         {
-          "choice": "P",
-          "reason": "o"
+          "choice": "Pour arrêter le processeur",
+          "reason": "L'arrêt du processeur relève de HLT ; IRET restaure le contexte d'exécution interrompu."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Interrupt Operations and Interrupt Vector Table; Intel MCS-86 Assembly Language Reference Manual, interrupt handling. VECTOR is a laboratory directive, not an 8086 machine instruction."
@@ -237,12 +237,12 @@
       "derivation": "Le sommet de pile contient IP, suivi de CS puis FLAGS. IRET dépile ces trois mots dans cet ordre, ce qui restaure l'adresse logique de reprise et les indicateurs sauvegardés. Un ordre différent mélangerait les valeurs de registres.",
       "distractorRationales": [
         {
-          "choice": "F",
-          "reason": "L"
+          "choice": "FLAGS, IP, AX",
+          "reason": "IRET dépile IP puis CS puis FLAGS ; AX ne fait pas partie du cadre de retour d'interruption standard."
         },
         {
-          "choice": "C",
-          "reason": "S"
+          "choice": "CS, DS, SS",
+          "reason": "DS et SS ne font pas partie du cadre empilé automatiquement par INT ; le cadre contient IP, CS et FLAGS."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Interrupt Operations and Interrupt Vector Table; Intel MCS-86 Assembly Language Reference Manual, interrupt handling. VECTOR is a laboratory directive, not an 8086 machine instruction."
@@ -263,12 +263,12 @@
       "derivation": "INT sauvegarde l'IP de continuation et le CS courant avant de transférer le contrôle au gestionnaire. IRET restaure ces deux valeurs ; l'exécution reprend donc après l'instruction INT, dans le segment de code initial.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "u"
+          "choice": "Au début du programme",
+          "reason": "INT sauvegarde l'adresse de continuation, pas l'adresse initiale du programme ; IRET reprend après INT."
         },
         {
-          "choice": "A",
-          "reason": "u"
+          "choice": "Au début du gestionnaire",
+          "reason": "Le gestionnaire est la destination de l'interruption ; IRET quitte le gestionnaire et restaure l'adresse sauvegardée."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Interrupt Operations and Interrupt Vector Table; Intel MCS-86 Assembly Language Reference Manual, interrupt handling. VECTOR is a laboratory directive, not an 8086 machine instruction."
@@ -292,12 +292,12 @@
       "derivation": "INT empile trois mots, donc SP diminue de six octets. Si le gestionnaire n'ajoute aucun déséquilibre net, IRET dépile exactement ces trois mots et augmente SP de six octets. SP retrouve alors sa valeur d'entrée, ici 1000h.",
       "distractorRationales": [
         {
-          "choice": "S",
-          "reason": "P"
+          "choice": "SP reste diminué de six octets",
+          "reason": "INT diminue SP de six octets, mais IRET dépile les trois mots et doit annuler cette variation si le gestionnaire a équilibré sa pile."
         },
         {
-          "choice": "C",
-          "reason": "S"
+          "choice": "CS doit être nul",
+          "reason": "CS doit être restauré à sa valeur sauvegardée ; il n'a aucune obligation de devenir zéro."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Interrupt Operations and Interrupt Vector Table; Intel MCS-86 Assembly Language Reference Manual, interrupt handling. VECTOR is a laboratory directive, not an 8086 machine instruction."
@@ -320,12 +320,12 @@
       "derivation": "L'IVT du 8086 occupe les 1024 premiers octets de l'espace physique, de 00000h à 003FFh. Elle contient 256 entrées de quatre octets chacune, une par numéro de vecteur. Elle n'est ni la file de prélecture ni une table de registres généraux.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "a"
+          "choice": "La file de prélecture",
+          "reason": "La file de prélecture est un tampon d'instructions de la BIU, pas la table qui associe les numéros d'interruption aux gestionnaires."
         },
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Une table de registres généraux",
+          "reason": "Les registres généraux sont des registres internes ; l'IVT est une table mémoire contenant des pointeurs far."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Interrupt Operations and Interrupt Vector Table; Intel MCS-86 Assembly Language Reference Manual, interrupt handling. VECTOR is a laboratory directive, not an 8086 machine instruction."
@@ -353,12 +353,12 @@
       "derivation": "Un pointeur far 16:16 contient deux champs de 16 bits : l'offset et le segment. Chaque champ occupe deux octets, donc chaque entrée IVT totalise quatre octets. Quatre registres 8 bits ou un opcode et FLAGS ne constituent pas ce format.",
       "distractorRationales": [
         {
-          "choice": "Q",
-          "reason": "u"
+          "choice": "Quatre registres 8 bits",
+          "reason": "L'entrée est structurée en deux mots de 16 bits, offset et segment ; ce n'est pas une collection de quatre registres 8 bits."
         },
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Un opcode et trois FLAGS",
+          "reason": "L'entrée IVT ne contient pas d'opcode ; elle stocke le pointeur far du gestionnaire."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Interrupt Operations and Interrupt Vector Table; Intel MCS-86 Assembly Language Reference Manual, interrupt handling. VECTOR is a laboratory directive, not an 8086 machine instruction."
@@ -383,12 +383,12 @@
       "derivation": "Dans ce laboratoire, VECTOR associe le numéro de vecteur 30h à la routine HANDLER dans le modèle pédagogique. C'est une directive interprétée par le simulateur ; elle n'est pas un opcode 8086 et ne doit pas être confondue avec DB ou un préfixe LOCK.",
       "distractorRationales": [
         {
-          "choice": "D",
-          "reason": "B"
+          "choice": "DB HANDLER",
+          "reason": "DB définit ou émet des données en assembleur ; elle n'associe pas un numéro de vecteur à un gestionnaire dans le modèle du laboratoire."
         },
         {
-          "choice": "L",
-          "reason": "O"
+          "choice": "LOCK HANDLER",
+          "reason": "LOCK est un préfixe d'instruction lié à l'accès mémoire atomique ; ce n'est pas une directive d'association de vecteur."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Interrupt Operations and Interrupt Vector Table; Intel MCS-86 Assembly Language Reference Manual, interrupt handling. VECTOR is a laboratory directive, not an 8086 machine instruction."
@@ -419,12 +419,12 @@
       "derivation": "IRET suppose que le sommet contient l'IP sauvegardé, suivi de CS puis FLAGS. Un mot parasite ou un POP non compensé décale ce cadre : IRET restaure alors des valeurs incorrectes. Le gestionnaire doit équilibrer ses propres opérations de pile et préserver le cadre de retour.",
       "distractorRationales": [
         {
-          "choice": "M",
-          "reason": "o"
+          "choice": "Modifier AX obligatoirement",
+          "reason": "Le cadre d'interruption ne demande pas de modifier AX ; la condition essentielle est de préserver l'ordre IP, CS, FLAGS et l'équilibre de pile."
         },
         {
-          "choice": "E",
-          "reason": "f"
+          "choice": "Effacer DS avant le retour",
+          "reason": "Effacer DS n'est pas requis par IRET et pourrait altérer l'état attendu par le programme interrompu."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Interrupt Operations and Interrupt Vector Table; Intel MCS-86 Assembly Language Reference Manual, interrupt handling. VECTOR is a laboratory directive, not an 8086 machine instruction."
@@ -447,12 +447,12 @@
       "derivation": "L'adresse de l'entrée est le numéro de vecteur multiplié par la taille d'une entrée. Pour 30h, 30h×4=C0h ; l'offset physique de l'entrée est donc 00C0h.",
       "distractorRationales": [
         {
-          "choice": "0",
-          "reason": "0"
+          "choice": "0030h",
+          "reason": "0030h désigne le numéro du vecteur ; l'entrée commence à l'adresse 30h×4, soit 00C0h."
         },
         {
-          "choice": "0",
-          "reason": "3"
+          "choice": "0300h",
+          "reason": "0300h ne résulte pas de 30h×4 ; la multiplication hexadécimale donne C0h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Interrupt Operations and Interrupt Vector Table; Intel MCS-86 Assembly Language Reference Manual, interrupt handling. VECTOR is a laboratory directive, not an 8086 machine instruction."
@@ -486,12 +486,12 @@
       "derivation": "INT sauvegarde trois registres de 16 bits : FLAGS, CS et IP. Chaque mot occupe deux octets, donc 3×2=6 octets sont empilés. Deux octets ne couvriraient qu'un mot et quatre octets seulement deux mots.",
       "distractorRationales": [
         {
-          "choice": "2",
-          "reason": " "
+          "choice": "2 octets",
+          "reason": "Deux octets correspondent à un seul mot de 16 bits, alors qu'INT empile trois mots."
         },
         {
-          "choice": "4",
-          "reason": " "
+          "choice": "4 octets",
+          "reason": "Quatre octets ne couvrent que deux mots ; FLAGS, CS et IP occupent trois mots, soit six octets."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Interrupt Operations and Interrupt Vector Table; Intel MCS-86 Assembly Language Reference Manual, interrupt handling. VECTOR is a laboratory directive, not an 8086 machine instruction."
@@ -522,12 +522,12 @@
       "derivation": "Après l'association pédagogique du vecteur 30h à HANDLER, INT 30h utilise le vecteur pour obtenir le pointeur far du gestionnaire. Le processeur sauvegarde FLAGS, CS et l'IP de continuation sur la pile avant de transférer le contrôle. Il ne s'agit ni d'un simple saut sans retour ni d'une écriture sur un port d'E/S.",
       "distractorRationales": [
         {
-          "choice": "S",
-          "reason": "a"
+          "choice": "Saute sans sauvegarder IP",
+          "reason": "INT sauvegarde l'IP de continuation dans le cadre de pile ; un simple saut ne fournirait pas ce mécanisme de retour."
         },
         {
-          "choice": "É",
-          "reason": "c"
+          "choice": "Écrit dans le port 30h",
+          "reason": "INT 30h sélectionne un vecteur d'interruption ; l'accès aux ports d'E/S utilise des instructions dédiées comme IN et OUT."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Interrupt Operations and Interrupt Vector Table; Intel MCS-86 Assembly Language Reference Manual, interrupt handling. VECTOR is a laboratory directive, not an 8086 machine instruction."
@@ -559,12 +559,12 @@
       "derivation": "Le retour correct restaure les trois mots sauvegardés par INT via IRET. Si le gestionnaire équilibre ses opérations de pile, SP revient également à sa valeur initiale. AX seul ne représente pas le contexte de contrôle et CX/DX ne doivent pas être forcés à zéro par principe.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "X"
+          "choice": "AX uniquement",
+          "reason": "AX n'est pas le cadre de retour d'INT ; le contrôle doit restaurer IP, CS, FLAGS et l'équilibre de SP."
         },
         {
-          "choice": "C",
-          "reason": "X"
+          "choice": "CX et DX obligatoirement nuls",
+          "reason": "INT/IRET ne définissent pas CX et DX à zéro ; ils doivent simplement respecter le contrat de préservation du gestionnaire."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Interrupt Operations and Interrupt Vector Table; Intel MCS-86 Assembly Language Reference Manual, interrupt handling. VECTOR is a laboratory directive, not an 8086 machine instruction."
@@ -599,12 +599,12 @@
       "derivation": "Un IRET incorrect doit être diagnostiqué en contrôlant le cadre réellement présent au sommet : IP, CS, FLAGS, puis la valeur de SP avant le retour et les PUSH/POP effectués par le gestionnaire. Remplacer IRET par POP AX ou effacer CS ne restaure pas le contexte d'interruption.",
       "distractorRationales": [
         {
-          "choice": "R",
-          "reason": "e"
+          "choice": "Remplacer IRET par POP AX",
+          "reason": "POP AX retire un seul mot dans AX et laisse le reste du cadre incorrect ; il ne restaure pas IP, CS et FLAGS."
         },
         {
-          "choice": "E",
-          "reason": "f"
+          "choice": "Effacer CS",
+          "reason": "Effacer CS détruirait le segment de reprise au lieu de restaurer l'adresse logique sauvegardée."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Interrupt Operations and Interrupt Vector Table; Intel MCS-86 Assembly Language Reference Manual, interrupt handling. VECTOR is a laboratory directive, not an 8086 machine instruction."
@@ -634,12 +634,12 @@
       "derivation": "La directive VECTOR est une abstraction pédagogique qui permet d'associer un vecteur logiciel à un gestionnaire et de tester le cadre de retour. Elle ne simule pas les lignes électriques d'interruption, l'arbitrage matériel, un contrôleur externe ni tous les cycles et accès physiques de l'IVT. Prétendre reproduire ces éléments serait dépasser le périmètre du laboratoire.",
       "distractorRationales": [
         {
-          "choice": "I",
-          "reason": "l"
+          "choice": "Il simule les signaux électriques exacts",
+          "reason": "VECTOR est une abstraction logicielle du laboratoire ; elle ne modélise pas les lignes électriques ou le chronométrage des interruptions matérielles."
         },
         {
-          "choice": "I",
-          "reason": "l"
+          "choice": "Il reproduit le contrôleur externe",
+          "reason": "Le laboratoire n'émule pas un contrôleur d'interruptions externe ni son arbitrage matériel."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Interrupt Operations and Interrupt Vector Table; Intel MCS-86 Assembly Language Reference Manual, interrupt handling. VECTOR is a laboratory directive, not an 8086 machine instruction."
