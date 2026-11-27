@@ -462,8 +462,9 @@
     {
       "id": "C28-F-Q10",
       "status": "certified",
-      "rule": "rep_audit",
+      "rule": "audit_checklist_coverage",
       "inputs": {
+        "domain": "repeated_string",
         "checks": [
           "copied_data",
           "CX",
@@ -474,18 +475,27 @@
         ]
       },
       "expected": {
-        "checksAll": true
+        "requiredChecks": [
+          "copied_data",
+          "CX",
+          "SI",
+          "DI",
+          "DF",
+          "FLAGS"
+        ],
+        "missingChecks": [],
+        "complete": true
       },
       "correctAnswer": "Données copiées, CX, SI, DI, DF et FLAGS pertinents",
-      "derivation": "Une validation de REP doit vérifier le contenu transféré, le compteur restant, les index après répétition, la direction choisie par DF et les indicateurs pertinents. Le seul opcode ne suffit pas.",
+      "derivation": "Une chaîne répétée combine l'effet de l'instruction de chaîne et le contrôle par préfixe REP/REPE/REPNE. Il faut vérifier les données effectivement copiées ou traitées, la décrémentation de CX, l'évolution de SI/DI selon DF, et les indicateurs utilisés par les variantes conditionnelles. L'usage de CX=0 comme état final après une répétition terminée doit être distingué des cas où une condition ZF arrête REPE/REPNE. AX seul ou l'octet opcode ne suffit pas.",
       "distractorRationales": [
         {
           "choice": "AX uniquement",
-          "reason": "AX seul ne permet pas de contrôler le nombre d'itérations, les index et les données copiées."
+          "reason": "AX seul ne permet pas de savoir quelles données ont été traitées, combien d'itérations ont eu lieu ni comment SI, DI et CX ont évolué."
         },
         {
           "choice": "Le seul octet opcode",
-          "reason": "L'octet opcode ne prouve pas que les données, les index et les indicateurs ont évolué correctement."
+          "reason": "L'octet opcode seul ne représente pas l'effet du préfixe de répétition, la condition ZF, les données transférées ni l'état final des index et du compteur."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
