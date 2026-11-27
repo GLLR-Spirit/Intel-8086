@@ -50,6 +50,8 @@ jobs:
         run: node tests/chapter-21-independent-review.cjs
       - name: Validate chapter 22 independent review and parameter passing
         run: node tests/chapter-22-independent-review.cjs
+      - name: Validate chapter 23 independent review and modular routines
+        run: node tests/chapter-23-independent-review.cjs
       - name: Validate question oracle evaluators (automated; not independent certification)
         run: node tests/question-oracle-certification.cjs
       - name: Compare 108 course examples and 48 corrections across source and binary execution
