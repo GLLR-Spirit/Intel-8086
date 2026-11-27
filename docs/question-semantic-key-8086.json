@@ -1999,14 +1999,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 3,
-      "stem": "Quelle opération active des bits selon un masque ?",
+      "stem": "Après AL=08h, OR AL,05h, quelle valeur obtient-on ?",
       "choices": [
-        "OR",
-        "AND",
-        "NOT"
+        "0Dh",
+        "05h",
+        "08h"
       ],
-      "correctAnswer": "OR",
-      "explanation": "OR active les bits présents dans le masque.",
+      "correctAnswer": "0Dh",
+      "explanation": "08h OR 05h active les bits des deux opérandes et donne 0Dh.",
       "category": "Vérification"
     },
     {
@@ -2031,14 +2031,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 2,
-      "stem": "Quelle instruction inverse tous les bits ?",
+      "stem": "NOT AL modifie-t-elle FLAGS ?",
       "choices": [
-        "NOT",
-        "TEST",
-        "OR"
+        "Oui",
+        "Non",
+        "Seulement CF"
       ],
-      "correctAnswer": "NOT",
-      "explanation": "NOT complète chaque bit de l'opérande.",
+      "correctAnswer": "Non",
+      "explanation": "NOT inverse l'opérande mais ne modifie aucun indicateur FLAGS sur le 8086.",
       "category": "Application"
     },
     {
@@ -2927,14 +2927,14 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "Quelle instruction inverse uniquement les bits sélectionnés ?",
+      "stem": "Pourquoi XOR avec un masque est-il préférable à NOT pour basculer certains bits seulement ?",
       "choices": [
-        "XOR avec un masque",
-        "NOT",
-        "MOV"
+        "XOR ne bascule que les bits du masque à 1 ; NOT inverse tous les bits",
+        "XOR modifie uniquement FLAGS",
+        "NOT ne modifie aucun bit"
       ],
-      "correctAnswer": "XOR avec un masque",
-      "explanation": "XOR inverse les bits où le masque contient des uns.",
+      "correctAnswer": "XOR ne bascule que les bits du masque à 1 ; NOT inverse tous les bits",
+      "explanation": "XOR bascule uniquement les positions où le masque vaut 1 ; NOT inverse tous les bits de l'opérande.",
       "category": "Restrictions"
     },
     {
@@ -2959,14 +2959,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Quel résultat produit 1010b AND 1100b ?",
+      "stem": "Quel résultat produit 1110b XOR 1011b ?",
       "choices": [
-        "1000b",
-        "1110b",
-        "0110b"
+        "0101b",
+        "1111b",
+        "1010b"
       ],
-      "correctAnswer": "1000b",
-      "explanation": "Les bits communs à 1 sont seulement le bit de poids 3.",
+      "correctAnswer": "0101b",
+      "explanation": "1110b XOR 1011b donne 0101b : les bits différents valent 1.",
       "category": "Calcul / prédiction"
     },
     {
@@ -2975,14 +2975,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "TEST met-il le résultat logique dans l'opérande ?",
+      "stem": "Après MOV AL,A5h / TEST AL,0Fh / HLT, que vaut AL ?",
       "choices": [
-        "Non",
-        "Oui, toujours",
-        "Seulement si ZF=0"
+        "A5h",
+        "05h",
+        "00h"
       ],
-      "correctAnswer": "Non",
-      "explanation": "TEST actualise les indicateurs sans modifier la destination.",
+      "correctAnswer": "A5h",
+      "explanation": "TEST calcule A5h AND 0Fh pour FLAGS, mais ne stocke pas 05h dans AL ; AL reste A5h.",
       "category": "Analyse de programme"
     },
     {
