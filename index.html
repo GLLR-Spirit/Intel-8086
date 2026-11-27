@@ -166,7 +166,7 @@ function storageJSON(key,fallback){try{var raw=storageGet(key,null);return raw==
 function storageList(key){var value=storageJSON(key,[]);return Array.isArray(value)?value:[];}
 function storageSet(key,value){try{window.localStorage.setItem(key,value);return true;}catch(error){return false;}}
 function storageRemove(key){try{window.localStorage.removeItem(key);return true;}catch(error){return false;}}
-var BACKUP_VERSION=1,BACKUP_MAX_BYTES=2097152;
+var BACKUP_VERSION=1,BACKUP_MAX_BYTES=10485760;
 var BACKUP_KEYS=["i86-lessons-v2","i86-exercises","i86-chapter-scores-v2","i86-lesson-scores-v2","i86-title","i86-idea","i86-code"];
 var pendingBackup=null;
 function isBackupObject(value){return !!value&&typeof value==="object"&&!Array.isArray(value)&&Object.getPrototypeOf(value)===Object.prototype;}
@@ -231,7 +231,7 @@ function describeBackup(doc){
 $("exportBackup").onclick=function(){
  try{
   var doc=createBackupDocument(),json=JSON.stringify(doc,null,2),blob=new Blob([json],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");
-  a.href=url;a.download="intel-8086-lab-backup-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+  a.href=url;a.download="intel-8086-lab-backup-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);
   $("backupStatus").textContent="Sauvegarde JSON exportée. Conserve ce fichier dans un emplacement sûr.";
   $("backupPreview").textContent=describeBackup(doc);
  }catch(error){$("backupStatus").textContent="Export impossible : "+error.message;}
