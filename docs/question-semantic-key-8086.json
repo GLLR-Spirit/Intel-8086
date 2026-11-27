@@ -7379,7 +7379,7 @@
       "choices": [
         "FFFCh",
         "00FCh",
-        "F C00h"
+        "FC00h"
       ],
       "correctAnswer": "FFFCh",
       "explanation": "FCh représente -4 ; son extension signée sur 16 bits est FFFCh.",
@@ -7519,14 +7519,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Quel résultat donne 42/5 en DIV byte ?",
+      "stem": "Que donne DIV BL avec AX=00FFh et BL=02h ?",
       "choices": [
-        "AL=8, AH=2",
-        "AL=2, AH=8",
-        "AL=5, AH=42"
+        "AL=7Fh, AH=01h",
+        "AL=01h, AH=7Fh",
+        "AL=FFh, AH=00h"
       ],
-      "correctAnswer": "AL=8, AH=2",
-      "explanation": "42=8×5+2, donc quotient 8 et reste 2.",
+      "correctAnswer": "AL=7Fh, AH=01h",
+      "explanation": "255/2 donne quotient 127 (7Fh) et reste 1 ; AL reçoit le quotient et AH le reste.",
       "category": "Prédiction"
     },
     {
@@ -7535,14 +7535,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Pourquoi 0100h/1 déborde-t-il en DIV byte ?",
+      "stem": "Quel quotient et reste donne IDIV BL avec AX=FFF9h (−7) et BL=03h ?",
       "choices": [
-        "256 ne tient pas dans AL",
-        "Le reste vaut zéro",
-        "Le diviseur est non signé"
+        "AL=FEh, AH=FFh",
+        "AL=FDh, AH=00h",
+        "AL=02h, AH=01h"
       ],
-      "correctAnswer": "256 ne tient pas dans AL",
-      "explanation": "AL ne peut représenter que 0 à 255.",
+      "correctAnswer": "AL=FEh, AH=FFh",
+      "explanation": "−7/3 donne un quotient tronqué vers zéro de −2 et un reste de −1 ; AL=FEh et AH=FFh.",
       "category": "Calcul / prédiction"
     },
     {
@@ -7551,14 +7551,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Que fait CBW avant IDIV BL avec AL=FCh ?",
+      "stem": "Après MOV AL,80h puis CBW, quelle valeur obtient-on dans AX ?",
       "choices": [
-        "Étend FCh en FFFCh dans AX",
-        "Efface AH",
-        "Copie BL dans AH"
+        "FF80h",
+        "0080h",
+        "8000h"
       ],
-      "correctAnswer": "Étend FCh en FFFCh dans AX",
-      "explanation": "CBW étend le signe négatif de l'octet vers le mot AX.",
+      "correctAnswer": "FF80h",
+      "explanation": "80h représente −128 sur huit bits ; CBW propage le bit de signe dans AH et forme FF80h.",
       "category": "Analyse de programme"
     },
     {
