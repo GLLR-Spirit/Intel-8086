@@ -1,0 +1,522 @@
+{
+  "schemaVersion": 1,
+  "batch": "chapter-19",
+  "title": "Oracles indépendants — chapitre 19 : modes d'adressage et opérandes mémoire",
+  "reviewDate": "2026-11-27",
+  "statusLegend": {
+    "certified": "Formes d'opérandes, EA, segments et tailles mémoire contrôlés indépendamment"
+  },
+  "referenceBasis": [
+    "Intel 8086 Family User's Manual (October 1979), effective-address calculation, segment selection, ModR/M direct addressing and memory widths.",
+    "Intel MCS-86 Assembly Language Reference Manual, MOV operand types, direct memory and size qualifiers."
+  ],
+  "oracles": [
+    {
+      "id": "C19-L1-Q1",
+      "status": "certified",
+      "rule": "immediate_vs_direct_memory",
+      "inputs": {
+        "immediate": "0100h",
+        "directAddress": 256
+      },
+      "expected": {
+        "immediateIsValue": true,
+        "directIsAddress": true
+      },
+      "correctAnswer": "L'immédiat contient la donnée ; le direct désigne une adresse mémoire",
+      "derivation": "Une constante immédiate est la valeur intégrée à l'instruction, tandis qu'un opérande mémoire direct identifie une adresse à lire ou écrire. Les deux formes peuvent contenir les mêmes chiffres sans avoir le même rôle.",
+      "distractorRationales": [
+        {
+          "choice": "L",
+          "reason": "e"
+        },
+        {
+          "choice": "L",
+          "reason": "e"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
+    },
+    {
+      "id": "C19-L1-Q2",
+      "status": "certified",
+      "rule": "mov_register_register",
+      "inputs": {
+        "instruction": "MOV AX,BX"
+      },
+      "expected": {
+        "operandKinds": [
+          "register",
+          "register"
+        ]
+      },
+      "correctAnswer": "Registre",
+      "derivation": "MOV AX,BX lit la valeur du registre source BX et la copie dans le registre destination AX. Aucun opérande mémoire ni constante immédiate n'est utilisé.",
+      "distractorRationales": [
+        {
+          "choice": "I",
+          "reason": "m"
+        },
+        {
+          "choice": "M",
+          "reason": "é"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
+    },
+    {
+      "id": "C19-L1-Q3",
+      "status": "certified",
+      "rule": "mov_direct_memory_word",
+      "inputs": {
+        "instruction": "MOV AX, WORD PTR [0100h]",
+        "address": 256,
+        "width": 16
+      },
+      "expected": {
+        "valid": true,
+        "memory": true,
+        "width": 16,
+        "directAddress": 256
+      },
+      "correctAnswer": "MOV AX, WORD PTR [0100h]",
+      "derivation": "Les crochets désignent l'emplacement mémoire direct 0100h. WORD PTR précise que l'opérande mémoire est un mot de 16 bits, compatible avec AX comme destination.",
+      "distractorRationales": [
+        {
+          "choice": "M",
+          "reason": "O"
+        },
+        {
+          "choice": "M",
+          "reason": "O"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
+    },
+    {
+      "id": "C19-L2-Q1",
+      "status": "certified",
+      "rule": "effective_address_base_index",
+      "inputs": {
+        "BX": 256,
+        "SI": 32,
+        "width": 16
+      },
+      "expected": {
+        "offsetExpression": "BX+SI",
+        "modulus": 65536
+      },
+      "correctAnswer": "Un offset effectif par addition de BX et SI",
+      "derivation": "Le 8086 additionne le registre de base et le registre d'index pour former l'offset effectif. L'addition est limitée à 16 bits avant l'application du segment ; elle ne produit pas directement l'adresse physique.",
+      "distractorRationales": [
+        {
+          "choice": "U",
+          "reason": "n"
+        },
+        {
+          "choice": "L",
+          "reason": "e"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
+    },
+    {
+      "id": "C19-L2-Q2",
+      "status": "certified",
+      "rule": "effective_address_sum",
+      "inputs": {
+        "base": 256,
+        "index": 2,
+        "displacement": 0,
+        "width": 16
+      },
+      "expected": {
+        "offset": 258
+      },
+      "correctAnswer": "0102h",
+      "derivation": "L'offset effectif est la somme de la base 0100h et de l'index 0002h, soit 0102h. Aucun déplacement supplémentaire n'est présent dans cette forme.",
+      "distractorRationales": [
+        {
+          "choice": "0",
+          "reason": "1"
+        },
+        {
+          "choice": "0",
+          "reason": "0"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
+    },
+    {
+      "id": "C19-L2-Q3",
+      "status": "certified",
+      "rule": "segment_required_for_physical_address",
+      "inputs": {
+        "offset": 258
+      },
+      "expected": {
+        "requiresSegment": true
+      },
+      "correctAnswer": "Le segment sélectionné",
+      "derivation": "L'offset effectif ne suffit pas à former une adresse physique. Le segment par défaut ou le segment explicitement substitué par un préfixe doit être connu pour calculer segment×16+offset.",
+      "distractorRationales": [
+        {
+          "choice": "L",
+          "reason": "e"
+        },
+        {
+          "choice": "L",
+          "reason": "e"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
+    },
+    {
+      "id": "C19-L3-Q1",
+      "status": "certified",
+      "rule": "bp_default_segment",
+      "inputs": {
+        "effectiveAddress": "[BP+4]"
+      },
+      "expected": {
+        "segment": "SS"
+      },
+      "correctAnswer": "SS",
+      "derivation": "Lorsqu'une adresse effective contient BP, le 8086 sélectionne SS par défaut. Cette règle reflète l'utilisation de BP pour accéder aux données de pile ; un préfixe de segment peut la remplacer.",
+      "distractorRationales": [
+        {
+          "choice": "D",
+          "reason": "S"
+        },
+        {
+          "choice": "E",
+          "reason": "S"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
+    },
+    {
+      "id": "C19-L3-Q2",
+      "status": "certified",
+      "rule": "effective_address_segment",
+      "inputs": {
+        "BP": 256,
+        "displacement": 4,
+        "defaultSegment": "SS",
+        "width": 16
+      },
+      "expected": {
+        "segment": "SS",
+        "offset": 260
+      },
+      "correctAnswer": "SS:0104h",
+      "derivation": "BP=0100h et le déplacement 4 donnent l'offset 0104h. Comme BP apparaît dans l'adresse effective, le segment par défaut est SS ; l'adresse logique est SS:0104h.",
+      "distractorRationales": [
+        {
+          "choice": "D",
+          "reason": "S"
+        },
+        {
+          "choice": "S",
+          "reason": "S"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
+    },
+    {
+      "id": "C19-L3-Q3",
+      "status": "certified",
+      "rule": "segment_override",
+      "inputs": {
+        "defaultSegment": "SS",
+        "override": "DS"
+      },
+      "expected": {
+        "selectedSegment": "DS"
+      },
+      "correctAnswer": "Ajouter un préfixe DS:",
+      "derivation": "L'adresse utilisant BP sélectionnerait SS par défaut. Un préfixe DS explicite remplace cette sélection pour l'accès mémoire concerné ; il ne faut ni remplacer BP par IP ni ajouter REP.",
+      "distractorRationales": [
+        {
+          "choice": "R",
+          "reason": "e"
+        },
+        {
+          "choice": "A",
+          "reason": "j"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
+    },
+    {
+      "id": "C19-F-Q1",
+      "status": "certified",
+      "rule": "effective_address_base_index",
+      "inputs": {
+        "BX": 256,
+        "SI": 32,
+        "width": 16
+      },
+      "expected": {
+        "offsetExpression": "base_index_displacement_sum",
+        "physicalAddressRequiresSegment": true
+      },
+      "correctAnswer": "L'offset calculé à partir des registres de base/index et déplacement",
+      "derivation": "L'adresse effective est un offset 16 bits calculé à partir des registres de base/index et d'un éventuel déplacement. Le segment est appliqué ensuite pour former l'adresse physique ; l'EA n'est pas le contenu mémoire.",
+      "distractorRationales": [
+        {
+          "choice": "L",
+          "reason": "'"
+        },
+        {
+          "choice": "L",
+          "reason": "e"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
+    },
+    {
+      "id": "C19-F-Q2",
+      "status": "certified",
+      "rule": "bp_default_segment",
+      "inputs": {
+        "effectiveAddress": "[BP+SI]"
+      },
+      "expected": {
+        "segment": "SS"
+      },
+      "correctAnswer": "BP est associé au segment de pile dans les règles d'adressage 8086",
+      "derivation": "La présence de BP dans l'adresse effective sélectionne SS par défaut, même si SI participe aussi au calcul de l'offset. BP n'est pas lui-même un registre de segment et DS reste autorisé avec override.",
+      "distractorRationales": [
+        {
+          "choice": "B",
+          "reason": "P"
+        },
+        {
+          "choice": "D",
+          "reason": "S"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
+    },
+    {
+      "id": "C19-F-Q3",
+      "status": "certified",
+      "rule": "mov_direct_memory_word",
+      "inputs": {
+        "instruction": "MOV AX, WORD PTR [BX+SI+4]",
+        "base": 256,
+        "index": 2,
+        "displacement": 4,
+        "width": 16
+      },
+      "expected": {
+        "valid": true,
+        "memory": true,
+        "width": 16,
+        "offset": 262
+      },
+      "correctAnswer": "MOV AX, WORD PTR [BX+SI+4]",
+      "derivation": "Les crochets indiquent un opérande mémoire calculé à partir de BX+SI+4. WORD PTR précise une largeur de 16 bits, et AX reçoit le mot lu à l'adresse effective.",
+      "distractorRationales": [
+        {
+          "choice": "M",
+          "reason": "O"
+        },
+        {
+          "choice": "M",
+          "reason": "O"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
+    },
+    {
+      "id": "C19-F-Q4",
+      "status": "certified",
+      "rule": "mov_memory_to_memory_validity",
+      "inputs": {
+        "destination": "memory",
+        "source": "memory"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "MOV_does_not_encode_memory_to_memory"
+      },
+      "correctAnswer": "MOV [BX],[SI]",
+      "derivation": "MOV ne possède pas de forme directe mémoire-vers-mémoire sur le 8086. Un registre intermédiaire est nécessaire pour lire une case puis écrire l'autre.",
+      "distractorRationales": [
+        {
+          "choice": "M",
+          "reason": "O"
+        },
+        {
+          "choice": "M",
+          "reason": "O"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
+    },
+    {
+      "id": "C19-F-Q5",
+      "status": "certified",
+      "rule": "effective_address_sum",
+      "inputs": {
+        "base": 256,
+        "index": 2,
+        "displacement": 4,
+        "width": 16
+      },
+      "expected": {
+        "offset": 262
+      },
+      "correctAnswer": "0106h",
+      "derivation": "L'adresse effective vaut 0100h+0002h+0004h=0106h. Les composantes sont additionnées pour obtenir l'offset ; le segment est appliqué séparément.",
+      "distractorRationales": [
+        {
+          "choice": "0",
+          "reason": "1"
+        },
+        {
+          "choice": "0",
+          "reason": "1"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
+    },
+    {
+      "id": "C19-F-Q6",
+      "status": "certified",
+      "rule": "direct_address_encoding",
+      "inputs": {
+        "mode": "direct_memory",
+        "address": 4660,
+        "width": 16
+      },
+      "expected": {
+        "mod": 0,
+        "rm": 6,
+        "displacementBits": 16,
+        "displacement": 4660
+      },
+      "correctAnswer": "disp16=1234h",
+      "derivation": "L'adressage direct 16 bits du 8086 utilise Mod=00 et r/m=110 dans le ModR/M, suivis d'un déplacement de 16 bits. Ce champ contient donc 1234h, pas un disp8 ni zéro déplacement.",
+      "distractorRationales": [
+        {
+          "choice": "d",
+          "reason": "i"
+        },
+        {
+          "choice": "a",
+          "reason": "u"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
+    },
+    {
+      "id": "C19-F-Q7",
+      "status": "certified",
+      "rule": "mov_memory_read_value",
+      "inputs": {
+        "address": 258,
+        "memoryWord": 43981,
+        "destination": "AX"
+      },
+      "expected": {
+        "memoryRead": true,
+        "destination": "AX",
+        "value": 43981
+      },
+      "correctAnswer": "AX reçoit ABCDh",
+      "derivation": "MOV AX,[EA] lit le mot stocké à l'adresse effective et le copie dans AX. L'adresse effective désigne l'emplacement mémoire ; la valeur lue est ABCDh dans le cas donné.",
+      "distractorRationales": [
+        {
+          "choice": "A",
+          "reason": "X"
+        },
+        {
+          "choice": "B",
+          "reason": "X"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
+    },
+    {
+      "id": "C19-F-Q8",
+      "status": "certified",
+      "rule": "bp_default_segment",
+      "inputs": {
+        "effectiveAddress": "[BP+4]"
+      },
+      "expected": {
+        "segment": "SS"
+      },
+      "correctAnswer": "SS",
+      "derivation": "BP sélectionne SS comme segment par défaut pour les formes d'adressage qui l'utilisent. DS et ES peuvent être sélectionnés explicitement par un préfixe, mais ne sont pas le choix implicite.",
+      "distractorRationales": [
+        {
+          "choice": "D",
+          "reason": "S"
+        },
+        {
+          "choice": "E",
+          "reason": "S"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
+    },
+    {
+      "id": "C19-F-Q9",
+      "status": "certified",
+      "rule": "segment_override",
+      "inputs": {
+        "defaultSegment": "SS",
+        "override": "DS"
+      },
+      "expected": {
+        "selectedSegment": "DS"
+      },
+      "correctAnswer": "MOV AX, DS:[BP+4]",
+      "derivation": "BP sélectionnerait SS par défaut, mais le préfixe DS: remplace ce segment pour cette référence mémoire. MOV DS,CS est une opération registre-segment, et CS:IP n'est pas un opérande mémoire direct valide sous cette forme.",
+      "distractorRationales": [
+        {
+          "choice": "M",
+          "reason": "O"
+        },
+        {
+          "choice": "M",
+          "reason": "O"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
+    },
+    {
+      "id": "C19-F-Q10",
+      "status": "certified",
+      "rule": "memory_address_components",
+      "inputs": {
+        "components": [
+          "effective_address",
+          "default_segment",
+          "segment_override",
+          "operand_width"
+        ]
+      },
+      "expected": {
+        "checksAll": true
+      },
+      "correctAnswer": "Vérifier EA, segment par défaut, override et largeur",
+      "derivation": "Une référence mémoire correcte dépend du calcul de l'offset effectif, du segment sélectionné par défaut, d'un éventuel override et de la largeur de l'opérande. Vérifier seulement BX ou ignorer le déplacement laisse des causes d'erreur importantes non contrôlées.",
+      "distractorRationales": [
+        {
+          "choice": "V",
+          "reason": "é"
+        },
+        {
+          "choice": "I",
+          "reason": "g"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
+    }
+  ]
+}
