@@ -29,12 +29,12 @@
       "derivation": "Initialiser le maximum avec le premier élément garantit que la valeur de départ appartient au domaine réel du tableau. Une sentinelle fixe comme zéro ou FFFFh peut échouer si toutes les valeurs sont négatives ou si le domaine est différent.",
       "distractorRationales": [
         {
-          "choice": "P",
-          "reason": "o"
+          "choice": "Pour activer CF",
+          "reason": "L'initialisation à zéro échoue si toutes les valeurs sont négatives ; une sentinelle fixe peut être hors du domaine réel."
         },
         {
-          "choice": "P",
-          "reason": "o"
+          "choice": "Pour éviter CMP",
+          "reason": "CMP sert à comparer les valeurs ; il n'est pas supprimé par le choix d'initialisation du maximum."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
@@ -53,12 +53,12 @@
       "derivation": "Dans l'exemple pédagogique, AX sert d'accumulateur pour additionner successivement les mots du tableau. IP et CS contrôlent l'exécution et le segment de code ; ils ne servent pas d'accumulateur arithmétique.",
       "distractorRationales": [
         {
-          "choice": "I",
-          "reason": "P"
+          "choice": "IP",
+          "reason": "IP est le pointeur d'instruction et ne sert pas d'accumulateur de données."
         },
         {
-          "choice": "C",
-          "reason": "S"
+          "choice": "CS",
+          "reason": "CS est un registre de segment et ne reçoit pas les sommes successives des éléments."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
@@ -82,12 +82,12 @@
       "derivation": "Ces quatre situations couvrent les branches essentielles : succès immédiat, succès après plusieurs éléments, échec après parcours et absence totale d'éléments. Un seul cas positif ne valide pas les limites.",
       "distractorRationales": [
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Uniquement cible au début",
+          "reason": "Tester uniquement le premier élément ne vérifie ni la recherche après plusieurs positions ni l'absence de cible."
         },
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Uniquement tableau de taille paire",
+          "reason": "La parité du nombre d'éléments ne couvre pas les cas de recherche essentiels, notamment tableau vide et cible absente."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
@@ -113,10 +113,12 @@
       "derivation": "La somme indépendante est 0+2+2+2=6. Chaque élément est ajouté une fois à l'accumulateur ; le résultat attendu est donc 6 et non 3 ou 9.",
       "distractorRationales": [
         {
-          "choice": "3"
+          "choice": "3",
+          "reason": "La somme 0+2+2+2 vaut 6 ; 3 est inférieur au total calculé."
         },
         {
-          "choice": "9"
+          "choice": "9",
+          "reason": "La somme arithmétique des quatre éléments vaut 6, pas 9."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
@@ -135,12 +137,12 @@
       "derivation": "Dans l'exemple, DX sert de compteur explicite du nombre d'éléments traités et est incrémenté à chaque itération. CS et IP ne sont pas des compteurs de données.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "S"
+          "choice": "CS",
+          "reason": "CS est le segment de code et ne sert pas à compter les éléments parcourus."
         },
         {
-          "choice": "I",
-          "reason": "P"
+          "choice": "IP",
+          "reason": "IP suit le flot d'instructions et n'est pas incrémenté comme compteur de données de l'algorithme."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
@@ -160,12 +162,12 @@
       "derivation": "Une addition multi-mots peut produire une retenue lors du calcul du mot faible. Le mot haut doit incorporer cette retenue avec ADC ; l'ignorer perd une unité dans le résultat final.",
       "distractorRationales": [
         {
-          "choice": "I",
-          "reason": "g"
+          "choice": "Ignorer CF",
+          "reason": "Ignorer CF perd la retenue produite par le mot faible et fausse le mot haut."
         },
         {
-          "choice": "R",
-          "reason": "é"
+          "choice": "Réinitialiser AX à chaque passage",
+          "reason": "Réinitialiser AX à chaque passage détruit l'accumulation au lieu de propager la retenue."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
@@ -194,12 +196,12 @@
       "derivation": "La recherche séquentielle examine les éléments dans l'ordre et s'arrête dès que la cible est trouvée ou que la fin du tableau est atteinte. Elle ne trie pas les données à chaque lecture.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "o"
+          "choice": "Comparer uniquement le premier et le dernier élément",
+          "reason": "Comparer seulement le premier et le dernier élément peut manquer une cible située au milieu."
         },
         {
-          "choice": "T",
-          "reason": "r"
+          "choice": "Trier le tableau à chaque lecture",
+          "reason": "Trier le tableau à chaque lecture change inutilement l'ordre et ne décrit pas une recherche séquentielle."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
@@ -220,12 +222,12 @@
       "derivation": "L'index doit être comparé à la limite avant de lire l'élément. Avec longueur 3, les indices valides sont 0, 1 et 2 ; lire l'index 3 dépasserait le tableau.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "p"
+          "choice": "Après avoir lu une case supplémentaire",
+          "reason": "Lire une case supplémentaire avant le contrôle peut déjà dépasser la limite mémoire."
         },
         {
-          "choice": "S",
-          "reason": "e"
+          "choice": "Seulement si la cible est trouvée",
+          "reason": "Vérifier seulement lorsque la cible est trouvée ne protège pas les lectures effectuées avant ce point."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
@@ -245,12 +247,12 @@
       "derivation": "Une recherche doit distinguer une absence de cible d'un index valide. Un état ou code de résultat explicite évite d'interpréter une adresse arbitraire comme une position trouvée.",
       "distractorRationales": [
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Une adresse mémoire arbitraire",
+          "reason": "Une adresse arbitraire peut être confondue avec un index valide et ne signale pas explicitement l'échec."
         },
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Un saut inconditionnel sans sortie",
+          "reason": "Un saut inconditionnel sans état de sortie ne distingue pas proprement la recherche infructueuse."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
@@ -273,12 +275,12 @@
       "derivation": "Le premier élément est une valeur réelle du tableau et fournit un maximum initial valide. Une sentinelle arbitraire peut être supérieure à toutes les valeurs ou inférieure à toutes selon le domaine.",
       "distractorRationales": [
         {
-          "choice": "I",
-          "reason": "n"
+          "choice": "Initialiser toujours à zéro",
+          "reason": "Zéro peut être supérieur à toutes les valeurs si elles sont négatives ; ce n'est pas une initialisation générale valide."
         },
         {
-          "choice": "I",
-          "reason": "n"
+          "choice": "Initialiser toujours à FFFFh",
+          "reason": "FFFFh peut être une sentinelle inadaptée selon le domaine et la représentation des données."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
@@ -297,12 +299,12 @@
       "derivation": "JA branche si CF=0 et ZF=0, ce qui exprime strictement supérieur en non signé. JAE inclurait l'égalité et JL correspondrait à une comparaison signée.",
       "distractorRationales": [
         {
-          "choice": "J",
-          "reason": "A"
+          "choice": "JAE",
+          "reason": "JAE inclut l'égalité, alors que la question demande strictement supérieur non signé."
         },
         {
-          "choice": "J",
-          "reason": "L"
+          "choice": "JL",
+          "reason": "JL compare en signé avec SF/OF, alors que JA compare en non signé avec CF/ZF."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
@@ -321,12 +323,12 @@
       "derivation": "AX est l'accumulateur qui reçoit les additions successives dans cet exemple. CS est un segment et IP un offset d'instruction ; aucun des deux n'est l'accumulateur de données.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "S"
+          "choice": "CS",
+          "reason": "CS identifie le segment de code et ne reçoit pas l'accumulation arithmétique."
         },
         {
-          "choice": "I",
-          "reason": "P"
+          "choice": "IP",
+          "reason": "IP désigne l'offset d'instruction et ne sert pas d'accumulateur."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
@@ -346,12 +348,12 @@
       "derivation": "Si la somme dépasse la largeur du mot faible, CF contient la retenue sortante. Sans propagation vers le mot haut avec ADC, le résultat multi-mots est incorrect ; il ne s'agit pas d'un effet de DF ou de pile.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "a"
+          "choice": "La pile s'inverse",
+          "reason": "Une somme multi-mots ne renverse pas la pile ; l'erreur est la perte de retenue si elle n'est pas propagée."
         },
         {
-          "choice": "D",
-          "reason": "F"
+          "choice": "DF est toujours modifié",
+          "reason": "DF contrôle le sens des chaînes et n'est pas systématiquement modifié par une addition multi-mots."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
@@ -370,12 +372,12 @@
       "derivation": "LOOP décrémente implicitement CX et branche si le compteur reste non nul. AX sert souvent d'accumulateur et SI d'index, mais ils ne remplacent pas le compteur implicite de LOOP.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "X"
+          "choice": "AX",
+          "reason": "AX peut accumuler une somme, mais LOOP utilise implicitement CX comme compteur."
         },
         {
-          "choice": "S",
-          "reason": "I"
+          "choice": "SI",
+          "reason": "SI peut indexer des éléments, mais LOOP décrémente CX."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
@@ -396,12 +398,12 @@
       "derivation": "Avec une longueur nulle, aucun index n'est valide. L'algorithme doit détecter ce cas avant toute lecture mémoire et retourner immédiatement un résultat non trouvé ou vide.",
       "distractorRationales": [
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Uniquement tableau impair",
+          "reason": "Un tableau impair peut être parcouru normalement ; le cas qui exige zéro lecture est le tableau de longueur nulle."
         },
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Uniquement cible au dernier élément",
+          "reason": "Une cible au dernier élément reste un cas valide et nécessite une lecture protégée par la borne."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
@@ -421,12 +423,12 @@
       "derivation": "Un booléen ou code de statut séparé indique clairement si la recherche a réussi. Une valeur de registre ou un segment ne constitue pas à lui seul un état fiable de succès.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "a"
+          "choice": "La valeur de DF",
+          "reason": "DF contrôle la direction des chaînes et ne représente pas le succès d'une recherche."
         },
         {
-          "choice": "L",
-          "reason": "a"
+          "choice": "La valeur du segment CS",
+          "reason": "CS est le segment de code ; sa valeur ne constitue pas un statut trouvé/non trouvé."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
@@ -447,12 +449,12 @@
       "derivation": "Pour une longueur de trois éléments, le dernier index valide est 2. L'index 3 est égal à la longueur et doit être rejeté avant l'accès mémoire ; sinon le programme lit hors limites.",
       "distractorRationales": [
         {
-          "choice": "U",
-          "reason": "t"
+          "choice": "Utiliser CMP",
+          "reason": "CMP est une comparaison, pas une lecture hors limites ; l'erreur est l'accès à l'index égal à la longueur."
         },
         {
-          "choice": "I",
-          "reason": "n"
+          "choice": "Initialiser un index",
+          "reason": "Initialiser un index est nécessaire, mais ne remplace pas le contrôle de la borne avant lecture."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
@@ -471,12 +473,12 @@
       "derivation": "Les branchements de comparaison diffèrent selon que les données sont signées ou non signées. Le même motif binaire peut représenter −1 ou 255 ; le choix de Jcc doit suivre le type logique des valeurs.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "a"
+          "choice": "La couleur du registre",
+          "reason": "La couleur d'un registre n'a aucune relation avec le choix d'une comparaison signée ou non signée."
         },
         {
-          "choice": "L",
-          "reason": "a"
+          "choice": "La vitesse du clavier",
+          "reason": "La vitesse du clavier n'affecte pas la sémantique des données ni le choix de Jcc."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
@@ -496,12 +498,12 @@
       "derivation": "Avant chaque lecture, le programme doit vérifier que le compteur d'éléments restants est non nul. Une lecture supplémentaire après épuisement du tableau dépasse la dernière case et peut accéder à une zone mémoire étrangère.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "o"
+          "choice": "Continuer après avoir trouvé la cible",
+          "reason": "Continuer après avoir trouvé la cible peut effectuer des lectures inutiles ou hors limites ; il faut arrêter le parcours."
         },
         {
-          "choice": "L",
-          "reason": "i"
+          "choice": "Lire systématiquement une case supplémentaire",
+          "reason": "Lire une case supplémentaire après que le nombre restant est nul viole la borne du tableau."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
