@@ -655,14 +655,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 3,
-      "stem": "Dans 1010b, quels poids sont additionnés ?",
+      "stem": "Dans 1101b, quels poids sont additionnés ?",
       "choices": [
-        "8 + 2",
-        "4 + 1",
-        "8 + 4"
+        "8 + 4 + 1",
+        "8 + 2 + 1",
+        "4 + 2 + 1"
       ],
-      "correctAnswer": "8 + 2",
-      "explanation": "1010b vaut 2^3 + 2^1 = 8 + 2 = 10.",
+      "correctAnswer": "8 + 4 + 1",
+      "explanation": "1101b vaut 2^3 + 2^2 + 2^0 = 8 + 4 + 1 = 13.",
       "category": "Vérification"
     },
     {
@@ -751,14 +751,14 @@
       "kind": "intermediate",
       "lesson": 3,
       "number": 3,
-      "stem": "Combien vaut 0FFh en décimal ?",
+      "stem": "Combien de combinaisons binaires distinctes peut-on coder sur 8 bits ?",
       "choices": [
-        "15",
-        "255",
-        "256"
+        "128",
+        "256",
+        "512"
       ],
-      "correctAnswer": "255",
-      "explanation": "0FFh = 15 × 16 + 15 = 255.",
+      "correctAnswer": "256",
+      "explanation": "Huit bits offrent 2^8 combinaisons distinctes, soit 256 valeurs de 0 à 255.",
       "category": "Vérification"
     },
     {
@@ -817,12 +817,12 @@
       "number": 4,
       "stem": "Pourquoi MOV AL,100h dépasse-t-il la capacité de AL ?",
       "choices": [
-        "100h nécessite neuf bits alors que AL en contient huit",
-        "AL ne peut contenir que des nombres pairs",
-        "Les constantes hexadécimales sont interdites"
+        "100h vaut 256, au-dessus de FFh (255)",
+        "100h vaut 100 en décimal et tient dans AL",
+        "AL est un registre de 16 bits"
       ],
-      "correctAnswer": "100h nécessite neuf bits alors que AL en contient huit",
-      "explanation": "AL accepte au maximum FFh ; 100h vaut 256 et nécessite plus de huit bits.",
+      "correctAnswer": "100h vaut 256, au-dessus de FFh (255)",
+      "explanation": "100h vaut 256 ; un registre AL de 8 bits ne peut contenir que 00h à FFh, soit 0 à 255.",
       "category": "Restrictions"
     },
     {
