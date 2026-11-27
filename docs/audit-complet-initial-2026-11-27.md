@@ -32,7 +32,7 @@ Ce document consigne une vérification reproductible du dépôt et des résultat
 
 - CI et audit navigateur : [run 1884](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46035262824), commit de branche `2d117da7ce17bbf861efdd39c43436a55c2906d6`, conclusion `success`.
 - Les deux jobs ont réussi : `simulator-smoke-tests` et `course-browser-audit` (Playwright desktop/mobile).
-- Le journal confirme notamment 684/684 questions concordantes runtime/clé, 684/684 évaluateurs d'oracles automatisés réussis, 323 revues individuelles enregistrées sur 17 chapitres, 108/108 exemples source/binaire comparés, ainsi que les suites d'instructions et matrices configurées.
+- Le journal confirme notamment 684/684 questions concordantes runtime/clé, 684/684 évaluateurs d'oracles automatisés réussis, 361 revues individuelles enregistrées sur 19 chapitres, 108/108 exemples source/binaire comparés, ainsi que les suites d'instructions et matrices configurées.
 - Les journaux contiennent un avertissement de dépréciation Node.js concernant `punycode` et un avertissement de compatibilité Node 20 de certaines actions GitHub ; ils n'ont pas fait échouer les workflows.
 
 ## Anomalies documentaires corrigées dans cette branche
@@ -45,7 +45,7 @@ Cause commune : les documents de suivi n'avaient pas été réconciliés après 
 
 ## Points qui restent ouverts — aucune clôture fictive
 
-1. **Questions :** les 684 évaluateurs automatisés réussissent, mais le registre officiel reste 384/684. Le registre officiel conserve 300 questions non certifiées. Des revues individuelles distinctes documentent déjà 361 questions des chapitres 1 à 19 (289 passées, 72 corrigées, 0 bloquée), mais ces fichiers ne sont pas automatiquement réconciliés avec le registre officiel. Les 300 entrées restantes doivent être rapprochées des preuves existantes avant toute modification du compteur ; les chapitres 18 à 36 restent à examiner individuellement.
+1. **Questions :** les 684 évaluateurs automatisés réussissent, mais le registre officiel reste 384/684. Le registre officiel conserve 300 questions non certifiées. Des revues individuelles distinctes documentent déjà 361 questions des chapitres 1 à 19 (289 passées, 72 corrigées, 0 bloquée), mais ces fichiers ne sont pas automatiquement réconciliés avec le registre officiel. Les 300 entrées restantes doivent être rapprochées des preuves existantes avant toute modification du compteur ; les chapitres 20 à 36 restent à examiner individuellement.
 2. **Cours :** la présence de 108 explications de longueur minimale et la réussite des tests structurels ne remplacent pas une relecture experte de chaque notion, prérequis, progression et exemple.
 3. **Exemples :** la comparaison source/binaire couvre 108/108 ; les quatre exemples conceptuels sont explicitement conservés. Les résultats du moteur logiciel ne constituent pas une comparaison avec un 8086 physique.
 4. **Simulateur, assembleur, désassembleur :** les matrices et vecteurs ciblés sont étendus, mais le balayage structurel des opcodes ne certifie pas la sémantique de chaque opcode ni toutes les combinaisons de préfixes, états indéfinis, interruptions matérielles et signaux de bus.
@@ -54,7 +54,7 @@ Cause commune : les documents de suivi n'avaient pas été réconciliés après 
 
 ## Conclusion de cette tranche
 
-Les deux jobs du CI correctif run 1884 sont réussis sur la branche d'audit. L'index des 684 oracles, les 17 fichiers de revue, la clé sémantique et les évaluateurs ont été réconciliés. La mission globale reste en cours tant que les revues des chapitres 18 à 36 et les contrôles manuels listés ci-dessus ne sont pas terminés. La mission globale reste **en cours** tant que les revues individuelles restantes et les contrôles manuels listés ci-dessus ne sont pas terminés.
+Les deux jobs du CI correctif run 1884 sont réussis sur la branche d'audit. L'index des 684 oracles, les 19 fichiers de revue, la clé sémantique et les évaluateurs ont été réconciliés. La mission globale reste en cours tant que les revues des chapitres 20 à 36 et les contrôles manuels listés ci-dessus ne sont pas terminés. La mission globale reste **en cours** tant que les revues individuelles restantes et les contrôles manuels listés ci-dessus ne sont pas terminés.
 
 
 ## Mise à jour — revue individuelle du chapitre 18
