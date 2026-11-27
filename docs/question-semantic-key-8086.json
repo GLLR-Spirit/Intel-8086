@@ -494,14 +494,14 @@
       "kind": "final",
       "lesson": null,
       "number": 3,
-      "stem": "Quel composant est associé à l'interface de bus ?",
+      "stem": "Dans MOV AX,4, quel opérande est la destination selon la syntaxe Intel ?",
       "choices": [
-        "EU",
-        "BIU",
-        "ALU"
+        "AX",
+        "4",
+        "BIU"
       ],
-      "correctAnswer": "BIU",
-      "explanation": "BIU signifie Bus Interface Unit : elle gère les accès mémoire/ports et la prélecture.",
+      "correctAnswer": "AX",
+      "explanation": "La destination est le premier opérande ; AX reçoit la constante 4.",
       "category": "Syntaxe"
     },
     {
@@ -510,14 +510,14 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "Quelle capacité de file de prélecture correspond au 8086 ?",
+      "stem": "Quelle affirmation faut-il éviter au sujet de la file de prélecture du 8086 ?",
       "choices": [
-        "4 octets",
-        "6 octets",
-        "8 octets"
+        "Elle contient six octets et n'implique pas une exécution superscalaire",
+        "Elle contient seize octets",
+        "Elle exécute plusieurs instructions simultanément"
       ],
-      "correctAnswer": "6 octets",
-      "explanation": "La file du 8086 contient six octets ; ne pas la confondre avec celle du 8088, qui en contient quatre.",
+      "correctAnswer": "Elle contient six octets et n'implique pas une exécution superscalaire",
+      "explanation": "La file du 8086 contient six octets ; elle chevauche la récupération et l'exécution sans exécution superscalaire.",
       "category": "Restrictions"
     },
     {
@@ -1118,14 +1118,14 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "Quelle interprétation est correcte pour AL après FFh + 1 ?",
+      "stem": "Quelle limite explique pourquoi AL ne peut pas contenir 100h ?",
       "choices": [
-        "Le résultat stocké est 00h et CF signale la retenue",
-        "Le résultat stocké est 100h dans AL",
-        "AL devient 01h et CF reste toujours nul"
+        "AL est limité à 8 bits et ne conserve que les 8 bits faibles",
+        "AL est un registre de segment",
+        "ADD refuse les valeurs hexadécimales"
       ],
-      "correctAnswer": "Le résultat stocké est 00h et CF signale la retenue",
-      "explanation": "Un octet conserve les huit bits faibles : 100h devient 00h, avec CF=1.",
+      "correctAnswer": "AL est limité à 8 bits et ne conserve que les 8 bits faibles",
+      "explanation": "AL ne contient que huit bits ; 100h est tronqué à 00h et la retenue est signalée par CF.",
       "category": "Restrictions"
     },
     {
@@ -5854,14 +5854,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 2,
-      "stem": "Quel ordre restitue les valeurs initiales après PUSH AX puis PUSH BX ?",
+      "stem": "Quel ordre récupère d'abord la valeur de BX puis celle de AX après PUSH AX puis PUSH BX ?",
       "choices": [
         "POP CX puis POP DX",
         "POP DX puis POP CX",
         "Deux POP AX"
       ],
       "correctAnswer": "POP CX puis POP DX",
-      "explanation": "Le premier POP récupère BX, le second récupère AX.",
+      "explanation": "BX est empilé en dernier : POP CX récupère BX, puis POP DX récupère AX.",
       "category": "Application"
     },
     {
@@ -6318,14 +6318,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Quelle paire décrit un appel near ?",
+      "stem": "Avec SP=FFFEh, que vaut SP après un CALL near qui empile un mot ?",
       "choices": [
-        "IP empilé, CS conservé",
-        "CS puis IP empilés, CS changé",
-        "FLAGS seuls empilés"
+        "FFFCh",
+        "FFFEh",
+        "FFFAh"
       ],
-      "correctAnswer": "IP empilé, CS conservé",
-      "explanation": "CALL near sauvegarde uniquement IP et conserve CS.",
+      "correctAnswer": "FFFCh",
+      "explanation": "CALL near empile l'IP de retour sur deux octets, donc SP passe de FFFEh à FFFCh.",
       "category": "Calcul / prédiction"
     },
     {
@@ -7486,14 +7486,14 @@
       "kind": "final",
       "lesson": null,
       "number": 3,
-      "stem": "Où sont placés quotient et reste pour DIV byte ?",
+      "stem": "Quelle instruction effectue une division non signée de AX par BL ?",
       "choices": [
-        "AL quotient, AH reste",
-        "AH quotient, AL reste",
-        "DX quotient, AX reste"
+        "DIV BL",
+        "IDIV BL",
+        "MUL BL"
       ],
-      "correctAnswer": "AL quotient, AH reste",
-      "explanation": "Le quotient va dans AL et le reste dans AH.",
+      "correctAnswer": "DIV BL",
+      "explanation": "DIV BL divise AX par l'opérande BL ; le quotient va dans AL et le reste dans AH.",
       "category": "Syntaxe"
     },
     {
@@ -8366,14 +8366,14 @@
       "kind": "final",
       "lesson": null,
       "number": 1,
-      "stem": "À quoi sert REP ?",
+      "stem": "À quoi servent les préfixes de répétition REP, REPE et REPNE ?",
       "choices": [
-        "Répéter une instruction de chaîne selon CX et les conditions",
+        "Répéter une instruction de chaîne selon CX et, pour REPE/REPNE, selon ZF",
         "Répéter n'importe quelle instruction arithmétique",
         "Changer le segment de code"
       ],
-      "correctAnswer": "Répéter une instruction de chaîne selon CX et les conditions",
-      "explanation": "REP et ses variantes pilotent les répétitions des instructions de chaîne.",
+      "correctAnswer": "Répéter une instruction de chaîne selon CX et, pour REPE/REPNE, selon ZF",
+      "explanation": "REP répète selon CX ; REPE et REPNE ajoutent une condition sur ZF.",
       "category": "Définition"
     },
     {
@@ -8718,14 +8718,14 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "Quel registre est restauré par IRET après IP et CS ?",
+      "stem": "Quelle contrainte doit respecter un gestionnaire avant IRET ?",
       "choices": [
-        "FLAGS",
-        "AX",
-        "DS"
+        "Ne pas laisser de mot parasite au sommet et conserver le cadre IP, CS, FLAGS dans l'ordre attendu",
+        "Modifier AX obligatoirement",
+        "Effacer DS avant le retour"
       ],
-      "correctAnswer": "FLAGS",
-      "explanation": "IRET dépile IP, CS puis FLAGS.",
+      "correctAnswer": "Ne pas laisser de mot parasite au sommet et conserver le cadre IP, CS, FLAGS dans l'ordre attendu",
+      "explanation": "IRET attend le cadre d'interruption avec IP au sommet, puis CS et FLAGS ; la pile doit être intacte.",
       "category": "Restrictions"
     },
     {
@@ -9326,14 +9326,14 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "Quelle longueur a MOV AX,imm16 ?",
+      "stem": "Quelle contrainte s'applique à l'immédiat de MOV AX,imm16 ?",
       "choices": [
-        "3 octets",
-        "2 octets",
-        "5 octets"
+        "Il doit tenir sur 16 bits et occupe deux octets après l'opcode",
+        "Il doit tenir sur 8 bits",
+        "Il est stocké en big-endian"
       ],
-      "correctAnswer": "3 octets",
-      "explanation": "L'opcode occupe un octet et l'immédiat mot deux octets.",
+      "correctAnswer": "Il doit tenir sur 16 bits et occupe deux octets après l'opcode",
+      "explanation": "AX accepte un immédiat 16 bits ; l'encodage contient deux octets little-endian après l'opcode.",
       "category": "Restrictions"
     },
     {
@@ -10078,14 +10078,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 3,
-      "stem": "Pourquoi utiliser MOV AX,CS avant MOV ES,AX dans l'exemple ?",
+      "stem": "Pourquoi initialise-t-on DS, ES et CS avec des valeurs distinctes dans l'exemple ?",
       "choices": [
-        "Pour initialiser ES avec le segment courant de code",
-        "Pour charger CS comme destination de MOV",
-        "Pour effacer DS"
+        "Pour vérifier que chaque override sélectionne réellement le segment demandé",
+        "Pour modifier CS avec MOV",
+        "Pour éviter d'utiliser BX"
       ],
-      "correctAnswer": "Pour initialiser ES avec le segment courant de code",
-      "explanation": "CS peut être lu vers AX puis recopié dans ES ; MOV CS comme destination est interdit.",
+      "correctAnswer": "Pour vérifier que chaque override sélectionne réellement le segment demandé",
+      "explanation": "Des valeurs distinctes aux mêmes offsets permettent d'observer quel segment est effectivement utilisé.",
       "category": "Vérification"
     },
     {
@@ -10094,14 +10094,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 1,
-      "stem": "À quoi sert LOCK sur le 8086 ?",
+      "stem": "Quel effet le préfixe LOCK demande-t-il sur le 8086 ?",
       "choices": [
-        "À demander un verrouillage du bus pour une opération mémoire autorisée",
-        "À verrouiller un registre contre MOV",
-        "À répéter CX fois"
+        "L'assertion du signal de verrouillage du bus pendant l'instruction suivante",
+        "Le verrouillage permanent d'un registre",
+        "La répétition de CX fois"
       ],
-      "correctAnswer": "À demander un verrouillage du bus pour une opération mémoire autorisée",
-      "explanation": "LOCK concerne certaines opérations mémoire read-modify-write.",
+      "correctAnswer": "L'assertion du signal de verrouillage du bus pendant l'instruction suivante",
+      "explanation": "Le préfixe demande l'activation du signal LOCK pendant l'opération de l'instruction suivante ; il est utile lorsque celle-ci accède à une ressource partagée.",
       "category": "Compréhension"
     },
     {
@@ -10526,14 +10526,14 @@
       "kind": "final",
       "lesson": null,
       "number": 3,
-      "stem": "Où trouver les temps d'exécution matériels ?",
+      "stem": "Quelle syntaxe demande un décalage gauche d'un bit sur AX ?",
       "choices": [
-        "Dans les tables de temporisation Intel pour le 8086",
-        "Dans le nombre de lignes du programme",
-        "Dans les commentaires"
+        "SHL AX,1",
+        "SHL 1,AX",
+        "SHL AX,BX"
       ],
-      "correctAnswer": "Dans les tables de temporisation Intel pour le 8086",
-      "explanation": "Les cycles exacts doivent provenir de la documentation technique du processeur.",
+      "correctAnswer": "SHL AX,1",
+      "explanation": "La destination est AX et le compte immédiat 1 est une forme valide sur 8086.",
       "category": "Syntaxe"
     },
     {
