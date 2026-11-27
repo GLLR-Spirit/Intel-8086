@@ -82,6 +82,58 @@ function assertSameArchitecturalState(sourceState, binaryState, label, vectorAdd
   }
 }
 
+function findRejectedValidatorMutation(state, validator) {
+  function rejects(label, mutate) {
+    const candidate = plain(state);
+    mutate(candidate);
+    try { return validator(candidate) === false ? label : null; }
+    catch { return null; }
+  }
+  for (const [register, value] of Object.entries(state.reg || {})) {
+    for (const replacement of [0, 1, 65535, (value ^ 65535) & 65535]) {
+      if (replacement === value) continue;
+      const result = rejects("reg." + register, candidate => { candidate.reg[register] = replacement; });
+      if (result) return result;
+    }
+  }
+  for (const [flag, value] of Object.entries(state.flags || {})) {
+    const result = rejects("FLAGS." + flag, candidate => { candidate.flags[flag] = value ? 0 : 1; });
+    if (result) return result;
+  }
+  for (const [address, value] of Object.entries(state.mem || {})) {
+    for (const replacement of [0, 255, value ^ 255]) {
+      if (replacement === value) continue;
+      const result = rejects("memory[" + address + "]", candidate => { candidate.mem[address] = replacement; });
+      if (result) return result;
+    }
+  }
+  for (const [port, value] of Object.entries(state.io || {})) {
+    for (const replacement of [0, 1, 65535, value ^ 65535]) {
+      if (replacement === value) continue;
+      const result = rejects("io[" + port + "]", candidate => { candidate.io[port] = replacement; });
+      if (result) return result;
+    }
+  }
+  for (const steps of [0, (state.steps || 0) + 10000]) {
+    if (steps === state.steps) continue;
+    const result = rejects("steps", candidate => { candidate.steps = steps; });
+    if (result) return result;
+  }
+  for (const output of ["", "__INVALID_AUDIT_OUTPUT__"]) {
+    if (output === state.output) continue;
+    const result = rejects("output", candidate => { candidate.output = output; });
+    if (result) return result;
+  }
+  const emptyStack = rejects("stack emptied", candidate => { candidate.stack = []; });
+  if (emptyStack) return emptyStack;
+  const alteredStack = rejects("stack altered", candidate => {
+    if (candidate.stack.length) candidate.stack[0].value = (candidate.stack[0].value + 1) & 65535;
+    else candidate.stack.push({ value: 1, kind: "audit", address: 0, segment: 0 });
+  });
+  if (alteredStack) return alteredStack;
+  return null;
+}
+
 const failures = [];
 let compared = 0;
 let conceptual = 0;
@@ -179,6 +231,8 @@ for (let index = 0; index < api.exercises.length; index++) {
     assertSameArchitecturalState(sourceState, binaryState, id, Object.keys(parsed.vectors || {}).map(Number).map(vector => vector * 4));
     assert.ok(exercise[3](sourceState), id + " source correction must satisfy its exercise validator.");
     assert.ok(exercise[3](binaryState), id + " binary correction must satisfy its exercise validator.");
+    const rejectedField = findRejectedValidatorMutation(sourceState, exercise[3]);
+    assert.ok(rejectedField, id + " validator must reject at least one deliberately corrupted architectural state.");
     exercisesCompared++;
   } catch (error) {
     exerciseFailures.push(id + " (" + exercise[0] + "): " + error.message);
