@@ -390,26 +390,25 @@
     {
       "id": "C32-F-Q5",
       "status": "certified",
-      "rule": "effective_address_sum",
+      "rule": "segment_offset_to_physical_address",
       "inputs": {
-        "base": 256,
-        "index": 2,
-        "displacement": 4,
-        "width": 16
+        "DS": 8192,
+        "EA": 262
       },
       "expected": {
-        "offset": 262
+        "physicalAddress": 131334,
+        "hex": "20106h"
       },
-      "correctAnswer": "0106h",
-      "derivation": "L'offset effectif se calcule par addition : 0100h+0002h+0004h=0106h. Il s'agit de l'EA 16 bits, avant l'ajout du segment pour former l'adresse physique.",
+      "correctAnswer": "20106h",
+      "derivation": "L'adresse physique est DS×16+EA. 2000h×10h=20000h ; 20000h+0106h=20106h.",
       "distractorRationales": [
         {
-          "choice": "0102h",
-          "reason": "Cette somme oublie disp8=4 et ne prend que BX+SI."
+          "choice": "200106h",
+          "reason": "Le calcul de base segmentée ajoute EA à DS décalé de quatre bits, sans concaténer les chiffres."
         },
         {
-          "choice": "0104h",
-          "reason": "Cette somme oublie SI=2 ; les trois termes doivent être ajoutés."
+          "choice": "0106h",
+          "reason": "0106h est seulement l'offset effectif, pas l'adresse physique."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
@@ -417,27 +416,34 @@
     {
       "id": "C32-F-Q6",
       "status": "certified",
-      "rule": "modrm_decode_byte",
+      "rule": "modrm_disp8_encode_negative",
       "inputs": {
-        "byte": 64,
+        "mod": 1,
+        "reg": 0,
+        "rm": 0,
+        "displacement": -2,
         "width": 8
       },
       "expected": {
-        "binary": "01000000",
-        "mod": 1,
-        "reg": 0,
-        "rm": 0
+        "modrm": 64,
+        "modrmHex": "40h",
+        "displacement": 254,
+        "displacementHex": "FEh",
+        "bytes": [
+          "40h",
+          "FEh"
+        ]
       },
-      "correctAnswer": "01000000b",
-      "derivation": "40h se convertit en binaire 01000000. Les deux bits de poids fort sont 01, les trois bits suivants 000 et les trois bits faibles 000.",
+      "correctAnswer": "40h FEh",
+      "derivation": "Mod=01 sélectionne disp8 ; Reg=000 désigne AX ; R/M=000 désigne [BX+SI]. Les champs 01|000|000 forment 01000000b=40h. Le déplacement signé −2 est représenté en complément à deux sur huit bits par FEh.",
       "distractorRationales": [
         {
-          "choice": "10000000b",
-          "reason": "10000000b représente 80h, pas 40h ; le bit de poids fort y est actif."
+          "choice": "40h 02h",
+          "reason": "02h représente +2 et non −2."
         },
         {
-          "choice": "00000100b",
-          "reason": "00000100b représente 04h, pas 40h ; les bits ne sont pas ceux du byte ModR/M donné."
+          "choice": "80h FEh",
+          "reason": "80h encode Mod=10, donc un déplacement de 16 bits, et non disp8."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
@@ -495,30 +501,30 @@
     {
       "id": "C32-F-Q9",
       "status": "certified",
-      "rule": "bp_zero_displacement_encoding",
+      "rule": "modrm_decode_bp_disp8_zero",
       "inputs": {
-        "base": "BP",
-        "modWithoutDisplacement": 0,
-        "rm": 6,
-        "displacementBytes": 8
+        "opcode": 139,
+        "modrm": 70,
+        "displacement": 0
       },
       "expected": {
         "mod": 1,
+        "reg": 0,
         "rm": 6,
-        "disp8": 0,
-        "usesBP": true,
-        "directAddress": false
+        "base": "BP",
+        "effectiveAddressExpression": "BP+0",
+        "operand": "[BP+0]"
       },
-      "correctAnswer": "Mod=01,R/M=110,disp8=00h",
-      "derivation": "Mod=00,R/M=110 est réservé à l'adresse directe disp16. Pour coder [BP] sans déplacement, on utilise Mod=01,R/M=110 et un disp8 nul ; le résultat de l'addition reste BP.",
+      "correctAnswer": "[BP+0]",
+      "derivation": "46h vaut 01000110b, soit Mod=01, Reg=000, R/M=110. Mod=01 impose un disp8 ; R/M=110 sélectionne BP dans ce mode. L'octet de déplacement 00h donne BP+0.",
       "distractorRationales": [
         {
-          "choice": "Mod=00,R/M=110",
-          "reason": "Cette combinaison serait interprétée comme une adresse directe suivie de disp16, pas comme [BP]."
+          "choice": "[disp16]",
+          "reason": "L'adressage direct disp16 utilise Mod=00 et R/M=110, sans disp8."
         },
         {
-          "choice": "Mod=11,R/M=110",
-          "reason": "Mod=11 sélectionne un registre direct ; il n'exprime pas un opérande mémoire [BP]."
+          "choice": "[SI+0]",
+          "reason": "R/M=100 sélectionne SI comme index seul dans la table 16 bits ; R/M=110 avec Mod=01 sélectionne BP."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
