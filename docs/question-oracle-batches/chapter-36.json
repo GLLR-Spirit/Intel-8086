@@ -274,37 +274,31 @@
     {
       "id": "C36-F-Q1",
       "status": "certified",
-      "rule": "program_specification_contract",
+      "rule": "procedure_interface_documentation",
       "inputs": {
         "fields": [
           "inputs",
           "outputs",
-          "constraints",
-          "boundary_cases"
+          "side_effects",
+          "preserved_registers"
         ]
       },
       "expected": {
-        "requiredFields": [
-          "inputs",
-          "outputs",
-          "constraints",
-          "boundary_cases"
-        ],
-        "complete": true
+        "documented": true
       },
-      "correctAnswer": "Entrées, sorties, contraintes et cas limites",
-      "derivation": "Une spécification utile définit les entrées acceptées, les sorties attendues, les contraintes et les frontières du domaine. Ces éléments deviennent des critères vérifiables pendant les tests.",
+      "correctAnswer": "Ses paramètres d'entrée, ses résultats de sortie et les registres qu'elle préserve",
+      "derivation": "Un contrat d'interface précise les paramètres reçus, les résultats produits, les effets de bord et les registres que la procédure doit préserver. Il permet à l'appelant d'utiliser la procédure sans supposer des effets non documentés.",
       "distractorRationales": [
         {
-          "choice": "Seulement le nom de l'algorithme",
-          "reason": "Le nom ne précise pas le comportement, les limites ou les résultats attendus."
+          "choice": "La fréquence du processeur",
+          "reason": "La fréquence d'horloge est une caractéristique du système matériel et ne décrit pas l'interface fonctionnelle d'une procédure."
         },
         {
-          "choice": "Seulement le registre AX",
-          "reason": "Un registre peut être un détail d'implémentation ; il ne remplace pas la spécification du problème."
+          "choice": "L'adresse physique de tous les segments",
+          "reason": "Les adresses physiques ne définissent pas les paramètres, les résultats ni les registres préservés par une procédure."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, procedure interfaces, parameters, return values and register conventions."
     },
     {
       "id": "C36-F-Q2",
@@ -395,57 +389,54 @@
     {
       "id": "C36-F-Q5",
       "status": "certified",
-      "rule": "unsigned_word_add",
+      "rule": "call_return_address",
       "inputs": {
-        "left": 7,
-        "right": 5,
-        "width": 16
+        "instruction": "CALL NEAR",
+        "nextIP": "IP_after_CALL"
       },
       "expected": {
-        "result": 12,
-        "CF": 0
+        "returnAddress": "IP_after_CALL"
       },
-      "correctAnswer": "12",
-      "derivation": "L'addition de 7 et 5 vaut 12. Le résultat tient dans AX sur 16 bits, sans retenue sortante.",
+      "correctAnswer": "L'offset de l'instruction qui suit CALL",
+      "derivation": "CALL NEAR empile l'offset IP de l'instruction qui suit l'appel. RET dépile ensuite ce mot dans IP pour reprendre l'exécution à l'adresse de retour, sans modifier CS.",
       "distractorRationales": [
         {
-          "choice": "35",
-          "reason": "35 est le produit et non la somme des deux opérandes."
+          "choice": "Le registre AX",
+          "reason": "AX n'est pas empilé automatiquement par CALL NEAR ; l'instruction sauvegarde l'adresse de retour IP."
         },
         {
-          "choice": "2",
-          "reason": "2 est la différence 7−5 et non le résultat de ADD."
+          "choice": "Le segment DS",
+          "reason": "CALL NEAR reste dans le segment de code courant et sauvegarde IP, pas le registre de segment DS."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+      "reference": "Intel 8086 Family User's Manual (October 1979), CALL and RET near control-transfer semantics."
     },
     {
       "id": "C36-F-Q6",
       "status": "certified",
-      "rule": "unsigned_byte_add_flags",
+      "rule": "unsigned_word_add",
       "inputs": {
-        "left": 255,
+        "left": 65535,
         "right": 1,
-        "width": 8
+        "width": 16
       },
       "expected": {
         "result": 0,
-        "AL": 0,
         "CF": 1
       },
-      "correctAnswer": "00h",
-      "derivation": "Sur huit bits, 100h est tronqué à son octet faible 00h. La retenue au-delà du bit 7 est signalée séparément par CF=1.",
+      "correctAnswer": "AX=0000h et CF=1",
+      "derivation": "FFFFh + 0001h = 10000h. Le résultat conservé dans AX est le mot faible 0000h, tandis que CF=1 signale la retenue au-delà des seize bits.",
       "distractorRationales": [
         {
-          "choice": "100h",
-          "reason": "100h est la somme mathématique sur neuf bits ; AL ne peut conserver que huit bits et contient 00h."
+          "choice": "AX=FFFFh et CF=0",
+          "reason": "Cette proposition ignore l'incrémentation et la retenue produite par l'addition de un à FFFFh."
         },
         {
-          "choice": "FFh",
-          "reason": "FFh est la valeur initiale ; l'addition d'un fait reboucler AL à 00h."
+          "choice": "AX=0001h et CF=1",
+          "reason": "Le mot faible de 10000h est 0000h, pas 0001h ; la retenue est bien CF=1."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD operation and Carry Flag definition for 16-bit operands."
     },
     {
       "id": "C36-F-Q7",
@@ -492,19 +483,19 @@
         "AL": 0,
         "CF": 1
       },
-      "correctAnswer": "AL=00h et CF=1",
-      "derivation": "La somme 100h dépasse la capacité d'AL. Les huit bits faibles donnent 00h et le neuvième bit est représenté par CF=1 ; les deux éléments doivent être vérifiés ensemble.",
+      "correctAnswer": "Parce que AL=00h seul ne prouve pas que la retenue a été correctement calculée",
+      "derivation": "Après FFh + 1, le résultat octet conservé dans AL vaut 00h et CF doit être égal à 1. Un test qui vérifie uniquement AL peut laisser passer une erreur de calcul de la retenue ; les deux effets doivent être contrôlés.",
       "distractorRationales": [
         {
-          "choice": "AL=FFh et CF=0",
-          "reason": "Cette paire décrit l'absence de changement et de retenue, alors que FFh+1 dépasse la plage 8 bits."
+          "choice": "Parce que CF contient le résultat complet",
+          "reason": "CF ne contient pas le résultat complet ; il signale la retenue sortante alors que le résultat tronqué reste dans AL."
         },
         {
-          "choice": "AL=01h et CF=1",
-          "reason": "Le modulo 256 de 100h est 00h ; 01h n'est pas le résultat stocké dans AL."
+          "choice": "Parce que CF remplace AL",
+          "reason": "CF et AL ont des rôles distincts : AL conserve le résultat sur huit bits et CF indique le dépassement non signé."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD operation, 8-bit result truncation and CF semantics."
     },
     {
       "id": "C36-F-Q9",
