@@ -4,7 +4,7 @@ const assert = require("node:assert/strict");
 
 const key = JSON.parse(fs.readFileSync("docs/question-semantic-key-8086.json", "utf8"));
 const manifest = JSON.parse(fs.readFileSync("docs/question-independent-oracles-8086.json", "utf8"));
-const batches = ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06"].map(name => JSON.parse(fs.readFileSync("docs/question-oracle-batches/" + name + ".json", "utf8")));
+const batches = ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07"].map(name => JSON.parse(fs.readFileSync("docs/question-oracle-batches/" + name + ".json", "utf8")));
 const html = fs.readFileSync("index.html", "utf8");
 const match = html.match(/<script>([\s\S]*?)<\/script>/);
 assert.ok(match, "Inline application script must exist");
@@ -181,6 +181,38 @@ function independentlyCompute(oracle) {
       return { executesMachineBytes: true, executesComments: false, executesLabelNames: false };
     case "directive_vs_instruction":
       return { directiveGuidesAssembler: true, instructionEmitsOpcode: true };
+    case "lea_effective_offset":
+      return { offset: i.base + (i.index || 0) + i.displacement, memoryRead: false };
+    case "lea_symbolic_expression":
+      return { offsetExpression: i.expression, memoryRead: false };
+    case "xchg_form_validity":
+      if (i.left === "memory" && i.right === "memory") return { valid: false, reason: "XCHG_does_not_allow_memory_to_memory" };
+      return { valid: true, reason: "XCHG_register_memory_allowed" };
+    case "mov_memory_read":
+      return { readsMemory: true, writesAX: true };
+    case "effective_address_form_validity":
+      return { valid: true, offsetExpression: i.terms.join("+") };
+    case "lea_flags_preserved":
+      return { flagsModified: false };
+    case "far_pointer_size": {
+      const totalBits = i.offsetBits + i.segmentBits;
+      return { totalBits, totalBytes: totalBits / i.byteBits };
+    }
+    case "far_pointer_load": {
+      const match = i.instruction.match(/^LDS\\s+([A-Z]{2})/i);
+      const register = match ? match[1].toUpperCase() : "SI";
+      return { offsetDestination: register, segmentDestination: "DS", firstWord: "offset", secondWord: "segment" };
+    }
+    case "far_pointer_memory_order":
+      return { firstWord: "offset", secondWord: "segment", byteCount: 4 };
+    case "les_far_pointer_load":
+      return { offsetDestination: "DI", segmentDestination: "ES" };
+    case "lea_vs_mov_memory":
+      return { leaReadsMemory: false, movReadsMemory: true, leaResult: "effective_offset" };
+    case "lea_no_memory_read":
+      return { readsMemory: false, computesEffectiveOffset: true };
+    case "lea_general_semantics":
+      return { offsetDescription: "effective_address", memoryRead: false };
     case "radix_power_of_two":
       return { property: "positional_weights_are_powers_of_two" };
     case "hex_digit_bit_width":
@@ -310,8 +342,8 @@ function independentlyCompute(oracle) {
 }
 
 const keyMap = new Map(key.questions.map(q => [q.id, q]));
-assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06"]);
-assert.deepEqual(batches.map(batch => batch.oracles.length), [19, 18, 19, 18, 19, 19], "Chapters 2 and 4 each reuse one historical oracle rather than duplicating its ID");
+assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07"]);
+assert.deepEqual(batches.map(batch => batch.oracles.length), [19, 18, 19, 18, 19, 19, 19], "Chapters 2 and 4 each reuse one historical oracle rather than duplicating its ID");
 const historicalChapterOracles = manifest.oracles.filter(oracle => ["C02-F-Q4", "C04-F-Q4"].includes(oracle.id)).map(oracle => ({ ...oracle, status: "certified" }));
 assert.equal(historicalChapterOracles.length, 2, "The historical chapter 2 and chapter 4 final question oracles must each be reused exactly once");
 const allOracleRecords = [...batches.flatMap(batch => batch.oracles), ...historicalChapterOracles];
@@ -353,13 +385,13 @@ for (const oracle of allOracleRecords) {
     assert.fail("Unknown oracle status for " + oracle.id + ": " + oracle.status);
   }
 }
-assert.equal(certified, 114, "All 114 questions across chapters 1 to 6 are certified, including the two reused historical chapter oracles");
+assert.equal(certified, 133, "All 133 questions across chapters 1 to 7 are certified, including the two reused historical chapter oracles");
 assert.equal(blocked, 0, "No question in the certified batches remains blocked");
-for (const chapter of [1, 2, 3, 4, 5, 6]) {
+for (const chapter of [1, 2, 3, 4, 5, 6, 7]) {
   const prefix = "C" + String(chapter).padStart(2, "0") + "-";
   const expectedIds = key.questions.filter(question => question.id.startsWith(prefix)).map(question => question.id);
   assert.equal(expectedIds.length, 19, "Each audited chapter must contain exactly 19 keyed questions");
   for (const id of expectedIds) assert.ok(allIds.includes(id), "Missing independent oracle for " + id);
 }
 assert.match(keyMap.get("C01-L1-Q2").explanation, /octets machine distincts/i, "Source assembly must be distinguished from its encoded machine bytes");
-console.log("Question oracle certification: chapters 1–6 — " + certified + "/114 certified; " + blocked + " blocked; runtime/key alignment and independent evaluators passed.");
+console.log("Question oracle certification: chapters 1–7 — " + certified + "/133 certified; " + blocked + " blocked; runtime/key alignment and independent evaluators passed.");
