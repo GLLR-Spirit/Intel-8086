@@ -428,8 +428,8 @@
           "reason": "CS identifie le segment de code et n'indique pas si la cible a été trouvée dans le tableau."
         },
         {
-          "choice": "IP",
-          "reason": "IP suit le flot d'instructions ; sa valeur ne représente pas un état de recherche trouvé/non trouvé."
+          "choice": "La valeur de DF",
+          "reason": "DF contrôle le sens de progression des instructions de chaîne ; sa valeur ne représente pas le résultat d'une recherche."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), register roles, arithmetic/ADC and CMP/Jcc semantics; independent algorithm trace and array-bound calculations."
