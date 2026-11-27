@@ -53,7 +53,7 @@ for (const spec of [
   },
   {
     title: "Programmation modulaire : deux routines",
-    bypass: "MOV AX, 10\nHLT"
+    bypass: "MOV AX, 14\nHLT"
   }
 ]) {
   const { index, exercise } = exerciseByTitle(spec.title);
