@@ -1,0 +1,1035 @@
+{
+  "schema": "intel-8086-course-example-oracles-v1",
+  "description": "Independent expected end-state checks for all 108 published course examples. Conceptual-only examples are explicitly marked and do not claim a CPU calculation.",
+  "examples": [
+    {
+      "chapter": 1,
+      "lesson": 1,
+      "registers": {
+        "AX": 4660
+      }
+    },
+    {
+      "chapter": 1,
+      "lesson": 2,
+      "steps": 1,
+      "kind": "conceptual",
+      "note": "Le programme n'effectue aucun calcul du Mio ; le HLT illustre uniquement la fin d'exécution."
+    },
+    {
+      "chapter": 1,
+      "lesson": 3,
+      "registers": {
+        "AX": 32902
+      }
+    },
+    {
+      "chapter": 2,
+      "lesson": 1,
+      "registers": {
+        "AX": 7
+      }
+    },
+    {
+      "chapter": 2,
+      "lesson": 2,
+      "registers": {
+        "DS": 4096
+      }
+    },
+    {
+      "chapter": 2,
+      "lesson": 3,
+      "registers": {
+        "AX": 1
+      }
+    },
+    {
+      "chapter": 3,
+      "lesson": 1,
+      "registers": {
+        "AX": 10
+      }
+    },
+    {
+      "chapter": 3,
+      "lesson": 2,
+      "registers": {
+        "AX": 42
+      }
+    },
+    {
+      "chapter": 3,
+      "lesson": 3,
+      "registers": {
+        "AX": 255
+      }
+    },
+    {
+      "chapter": 4,
+      "lesson": 1,
+      "registers": {
+        "AX": 4660
+      },
+      "memory": {
+        "256": 52,
+        "257": 18
+      }
+    },
+    {
+      "chapter": 4,
+      "lesson": 2,
+      "registers": {
+        "AX": 0
+      },
+      "flags": {
+        "CF": 1,
+        "ZF": 1,
+        "OF": 0,
+        "PF": 1,
+        "AF": 1
+      }
+    },
+    {
+      "chapter": 4,
+      "lesson": 3,
+      "registers": {
+        "AX": 128
+      },
+      "flags": {
+        "OF": 1,
+        "CF": 0,
+        "SF": 1,
+        "ZF": 0,
+        "PF": 0,
+        "AF": 1
+      }
+    },
+    {
+      "chapter": 5,
+      "lesson": 1,
+      "registers": {
+        "AX": 4694
+      }
+    },
+    {
+      "chapter": 5,
+      "lesson": 2,
+      "registers": {
+        "SI": 256,
+        "DI": 512,
+        "BP": 768,
+        "SP": 1024
+      }
+    },
+    {
+      "chapter": 5,
+      "lesson": 3,
+      "registers": {
+        "DS": 4096
+      }
+    },
+    {
+      "chapter": 6,
+      "lesson": 1,
+      "registers": {
+        "AX": 5
+      }
+    },
+    {
+      "chapter": 6,
+      "lesson": 2,
+      "registers": {
+        "AX": 1
+      }
+    },
+    {
+      "chapter": 6,
+      "lesson": 3,
+      "registers": {
+        "AX": 1
+      }
+    },
+    {
+      "chapter": 7,
+      "lesson": 1,
+      "registers": {
+        "AX": 22136,
+        "BX": 4660
+      }
+    },
+    {
+      "chapter": 7,
+      "lesson": 2,
+      "registers": {
+        "SI": 260
+      }
+    },
+    {
+      "chapter": 7,
+      "lesson": 3,
+      "registers": {
+        "SI": 512,
+        "DS": 4096
+      },
+      "memory": {
+        "256": 0,
+        "257": 2,
+        "258": 0,
+        "259": 16
+      }
+    },
+    {
+      "chapter": 8,
+      "lesson": 1,
+      "registers": {
+        "AX": 0,
+        "BX": 2
+      },
+      "flags": {
+        "CF": 0
+      }
+    },
+    {
+      "chapter": 8,
+      "lesson": 2,
+      "registers": {
+        "AX": 255,
+        "BX": 4
+      },
+      "flags": {
+        "CF": 0
+      }
+    },
+    {
+      "chapter": 8,
+      "lesson": 3,
+      "registers": {
+        "AX": 128
+      },
+      "flags": {
+        "OF": 1,
+        "CF": 1
+      }
+    },
+    {
+      "chapter": 9,
+      "lesson": 1,
+      "registers": {
+        "AX": 12
+      }
+    },
+    {
+      "chapter": 9,
+      "lesson": 2,
+      "registers": {
+        "AX": 15
+      }
+    },
+    {
+      "chapter": 9,
+      "lesson": 3,
+      "registers": {
+        "AX": 8
+      },
+      "flags": {
+        "ZF": 1,
+        "CF": 0,
+        "OF": 0
+      }
+    },
+    {
+      "chapter": 10,
+      "lesson": 1,
+      "registers": {
+        "AX": 0
+      },
+      "flags": {
+        "ZF": 1,
+        "CF": 1
+      }
+    },
+    {
+      "chapter": 10,
+      "lesson": 2,
+      "flags": {
+        "DF": 0
+      }
+    },
+    {
+      "chapter": 10,
+      "lesson": 3,
+      "flags": {
+        "CF": 1
+      },
+      "registers": {
+        "SP": 65534
+      },
+      "stackDepth": 0
+    },
+    {
+      "chapter": 11,
+      "lesson": 1,
+      "registers": {
+        "AX": 5
+      }
+    },
+    {
+      "chapter": 11,
+      "lesson": 2,
+      "registers": {
+        "AX": 7
+      }
+    },
+    {
+      "chapter": 11,
+      "lesson": 3,
+      "registers": {
+        "AX": 0
+      },
+      "flags": {
+        "CF": 1
+      }
+    },
+    {
+      "chapter": 12,
+      "lesson": 1,
+      "registers": {
+        "AX": 7,
+        "BX": 9
+      },
+      "flags": {
+        "CF": 1,
+        "ZF": 0,
+        "SF": 1
+      }
+    },
+    {
+      "chapter": 12,
+      "lesson": 2,
+      "registers": {
+        "AX": 3
+      },
+      "flags": {
+        "CF": 1,
+        "ZF": 0,
+        "SF": 1
+      }
+    },
+    {
+      "chapter": 12,
+      "lesson": 3,
+      "registers": {
+        "AX": 5
+      },
+      "flags": {
+        "ZF": 0,
+        "CF": 0,
+        "OF": 0
+      }
+    },
+    {
+      "chapter": 13,
+      "lesson": 1,
+      "registers": {
+        "AX": 0,
+        "BX": 2
+      },
+      "bytesPrefix": "EB 03"
+    },
+    {
+      "chapter": 13,
+      "lesson": 2,
+      "registers": {
+        "AX": 9
+      },
+      "bytesPrefix": "E9 82 00"
+    },
+    {
+      "chapter": 13,
+      "lesson": 3,
+      "registers": {
+        "AX": 9,
+        "BX": 8
+      },
+      "bytesAt": {
+        "3": "FF",
+        "4": "E3"
+      }
+    },
+    {
+      "chapter": 14,
+      "lesson": 1,
+      "registers": {
+        "BX": 1
+      }
+    },
+    {
+      "chapter": 14,
+      "lesson": 2,
+      "registers": {
+        "AX": 128,
+        "BX": 1
+      },
+      "flags": {
+        "OF": 1
+      }
+    },
+    {
+      "chapter": 14,
+      "lesson": 3,
+      "registers": {
+        "BX": 1
+      },
+      "flags": {
+        "CF": 1
+      }
+    },
+    {
+      "chapter": 15,
+      "lesson": 1,
+      "registers": {
+        "BX": 1
+      }
+    },
+    {
+      "chapter": 15,
+      "lesson": 2,
+      "registers": {
+        "BX": 1
+      }
+    },
+    {
+      "chapter": 15,
+      "lesson": 3,
+      "registers": {
+        "BX": 1
+      }
+    },
+    {
+      "chapter": 16,
+      "lesson": 1,
+      "registers": {
+        "AX": 3,
+        "CX": 0
+      }
+    },
+    {
+      "chapter": 16,
+      "lesson": 2,
+      "registers": {
+        "BX": 1,
+        "CX": 1
+      },
+      "flags": {
+        "ZF": 1
+      }
+    },
+    {
+      "chapter": 16,
+      "lesson": 3,
+      "registers": {
+        "AX": 7,
+        "CX": 0
+      }
+    },
+    {
+      "chapter": 17,
+      "lesson": 1,
+      "registers": {
+        "AX": 10,
+        "CX": 6
+      }
+    },
+    {
+      "chapter": 17,
+      "lesson": 2,
+      "registers": {
+        "AX": 6,
+        "DX": 3,
+        "CX": 0
+      }
+    },
+    {
+      "chapter": 17,
+      "lesson": 3,
+      "registers": {
+        "BX": 1,
+        "SI": 257,
+        "CX": 2
+      },
+      "memory": {
+        "256": 17,
+        "257": 34,
+        "258": 51
+      }
+    },
+    {
+      "chapter": 18,
+      "lesson": 1,
+      "registers": {
+        "DS": 4096,
+        "BX": 32
+      }
+    },
+    {
+      "chapter": 18,
+      "lesson": 2,
+      "registers": {
+        "DS": 4096
+      },
+      "kind": "conceptual",
+      "physicalAddress": 65568,
+      "note": "L'adresse physique 10020h est expliquée dans le commentaire ; le programme ne la calcule pas."
+    },
+    {
+      "chapter": 18,
+      "lesson": 3,
+      "steps": 1,
+      "kind": "conceptual",
+      "note": "L'alias logique est décrit dans les commentaires ; le programme ne réalise qu'un HLT."
+    },
+    {
+      "chapter": 19,
+      "lesson": 1,
+      "registers": {
+        "AX": 22136,
+        "BX": 4660
+      },
+      "memory": {
+        "256": 120,
+        "257": 86
+      }
+    },
+    {
+      "chapter": 19,
+      "lesson": 2,
+      "registers": {
+        "AX": 43981,
+        "BX": 256,
+        "SI": 2
+      },
+      "memory": {
+        "258": 205,
+        "259": 171
+      }
+    },
+    {
+      "chapter": 19,
+      "lesson": 3,
+      "registers": {
+        "AX": 22136,
+        "SS": 8192,
+        "BP": 256
+      },
+      "memory": {
+        "131332": 120,
+        "131333": 86
+      }
+    },
+    {
+      "chapter": 20,
+      "lesson": 1,
+      "registers": {
+        "BX": 4660,
+        "SP": 65534
+      },
+      "stackDepth": 0
+    },
+    {
+      "chapter": 20,
+      "lesson": 2,
+      "registers": {
+        "CX": 8738,
+        "DX": 4369,
+        "SP": 65534
+      },
+      "stackDepth": 0
+    },
+    {
+      "chapter": 20,
+      "lesson": 3,
+      "registers": {
+        "SP": 65534
+      },
+      "flags": {
+        "CF": 1
+      },
+      "stackDepth": 0
+    },
+    {
+      "chapter": 21,
+      "lesson": 1,
+      "registers": {
+        "AX": 10,
+        "SP": 65534
+      },
+      "stackDepth": 0
+    },
+    {
+      "chapter": 21,
+      "lesson": 2,
+      "registers": {
+        "AX": 2,
+        "SP": 65534
+      },
+      "stackDepth": 0
+    },
+    {
+      "chapter": 21,
+      "lesson": 3,
+      "registers": {
+        "AX": 9,
+        "DX": 0,
+        "SP": 65534
+      },
+      "stackDepth": 0
+    },
+    {
+      "chapter": 22,
+      "lesson": 1,
+      "registers": {
+        "AX": 9,
+        "SP": 65534
+      },
+      "stackDepth": 0
+    },
+    {
+      "chapter": 22,
+      "lesson": 2,
+      "registers": {
+        "AX": 4660,
+        "SP": 65534
+      },
+      "stackDepth": 0
+    },
+    {
+      "chapter": 22,
+      "lesson": 3,
+      "registers": {
+        "AX": 7,
+        "SP": 65534
+      },
+      "stackDepth": 0
+    },
+    {
+      "chapter": 23,
+      "lesson": 1,
+      "registers": {
+        "SP": 65534
+      },
+      "stackDepth": 0,
+      "steps": 7
+    },
+    {
+      "chapter": 23,
+      "lesson": 2,
+      "registers": {
+        "AX": 12,
+        "SP": 65534
+      },
+      "stackDepth": 0
+    },
+    {
+      "chapter": 23,
+      "lesson": 3,
+      "registers": {
+        "AX": 0,
+        "SP": 65534
+      },
+      "stackDepth": 0
+    },
+    {
+      "chapter": 24,
+      "lesson": 1,
+      "registers": {
+        "AX": 42
+      }
+    },
+    {
+      "chapter": 24,
+      "lesson": 2,
+      "registers": {
+        "AX": 65532
+      }
+    },
+    {
+      "chapter": 24,
+      "lesson": 3,
+      "registers": {
+        "AX": 510
+      },
+      "flags": {
+        "CF": 1,
+        "OF": 1
+      }
+    },
+    {
+      "chapter": 25,
+      "lesson": 1,
+      "registers": {
+        "AX": 520
+      }
+    },
+    {
+      "chapter": 25,
+      "lesson": 2,
+      "registers": {
+        "AX": 254
+      }
+    },
+    {
+      "chapter": 25,
+      "lesson": 3,
+      "registers": {
+        "AX": 255
+      }
+    },
+    {
+      "chapter": 26,
+      "lesson": 1,
+      "registers": {
+        "AX": 64
+      },
+      "flags": {
+        "CF": 1
+      }
+    },
+    {
+      "chapter": 26,
+      "lesson": 2,
+      "registers": {
+        "AX": 254
+      }
+    },
+    {
+      "chapter": 26,
+      "lesson": 3,
+      "registers": {
+        "AX": 3
+      },
+      "flags": {
+        "CF": 1
+      }
+    },
+    {
+      "chapter": 27,
+      "lesson": 1,
+      "registers": {
+        "DS": 4096,
+        "ES": 8192,
+        "SI": 257,
+        "DI": 513
+      },
+      "memory": {
+        "65792": 65,
+        "131584": 65
+      }
+    },
+    {
+      "chapter": 27,
+      "lesson": 2,
+      "registers": {
+        "ES": 8192,
+        "DI": 257,
+        "AX": 65
+      },
+      "memory": {
+        "131328": 65
+      }
+    },
+    {
+      "chapter": 27,
+      "lesson": 3,
+      "registers": {
+        "ES": 8192,
+        "DI": 257,
+        "AX": 65
+      },
+      "flags": {
+        "ZF": 1
+      },
+      "memory": {
+        "131328": 65
+      }
+    },
+    {
+      "chapter": 28,
+      "lesson": 1,
+      "registers": {
+        "ES": 8192,
+        "DI": 258,
+        "CX": 0
+      },
+      "memory": {
+        "131328": 65,
+        "131329": 65
+      }
+    },
+    {
+      "chapter": 28,
+      "lesson": 2,
+      "registers": {
+        "ES": 8192,
+        "DI": 257,
+        "CX": 0,
+        "AX": 65
+      },
+      "flags": {
+        "ZF": 1
+      },
+      "memory": {
+        "131328": 65
+      }
+    },
+    {
+      "chapter": 28,
+      "lesson": 3,
+      "registers": {
+        "DS": 4096,
+        "ES": 8192,
+        "SI": 258,
+        "DI": 514,
+        "CX": 0
+      },
+      "memory": {
+        "131584": 49,
+        "131585": 50
+      }
+    },
+    {
+      "chapter": 29,
+      "lesson": 1,
+      "registers": {
+        "AX": 192,
+        "DX": 0
+      }
+    },
+    {
+      "chapter": 29,
+      "lesson": 2,
+      "registers": {
+        "BX": 4660,
+        "SP": 65534
+      },
+      "stackDepth": 0
+    },
+    {
+      "chapter": 29,
+      "lesson": 3,
+      "registers": {
+        "SP": 65534
+      },
+      "stackDepth": 0
+    },
+    {
+      "chapter": 30,
+      "lesson": 1,
+      "registers": {
+        "DX": 1016
+      }
+    },
+    {
+      "chapter": 30,
+      "lesson": 2,
+      "registers": {
+        "DX": 16,
+        "AX": 85
+      },
+      "ports": {
+        "16": 85
+      }
+    },
+    {
+      "chapter": 30,
+      "lesson": 3,
+      "flags": {
+        "IF": 1
+      }
+    },
+    {
+      "chapter": 31,
+      "lesson": 1,
+      "registers": {
+        "AX": 4660
+      },
+      "bytesPrefix": "B8 34 12 F4"
+    },
+    {
+      "chapter": 31,
+      "lesson": 2,
+      "registers": {
+        "CX": 22136
+      },
+      "bytesPrefix": "B9 78 56 F4"
+    },
+    {
+      "chapter": 31,
+      "lesson": 3,
+      "registers": {
+        "AX": 4660,
+        "BX": 4660
+      }
+    },
+    {
+      "chapter": 32,
+      "lesson": 1,
+      "registers": {
+        "AX": 43981,
+        "BX": 256,
+        "SI": 2
+      },
+      "memory": {
+        "262": 205,
+        "263": 171
+      }
+    },
+    {
+      "chapter": 32,
+      "lesson": 2,
+      "registers": {
+        "AX": 34952,
+        "DS": 4096,
+        "SS": 8192
+      },
+      "memory": {
+        "65538": 85,
+        "65540": 102,
+        "65792": 136,
+        "65794": 17,
+        "65796": 34,
+        "131078": 119,
+        "131336": 51,
+        "131338": 68
+      }
+    },
+    {
+      "chapter": 32,
+      "lesson": 3,
+      "registers": {
+        "AX": 48879
+      },
+      "memory": {
+        "4660": 239,
+        "4661": 190
+      }
+    },
+    {
+      "chapter": 33,
+      "lesson": 1,
+      "registers": {
+        "AX": 0
+      },
+      "bytesPrefix": "EB 01",
+      "steps": 2
+    },
+    {
+      "chapter": 33,
+      "lesson": 2,
+      "registers": {
+        "AX": 4660
+      },
+      "bytesPrefix": "B8 34 12 F4"
+    },
+    {
+      "chapter": 33,
+      "lesson": 3,
+      "steps": 1,
+      "kind": "conceptual",
+      "note": "Le flux 64h doit être testé dans le désassembleur ; ce programme source ne fournit que le commentaire et HLT."
+    },
+    {
+      "chapter": 34,
+      "lesson": 1,
+      "registers": {
+        "AX": 90,
+        "DS": 0,
+        "ES": 0
+      },
+      "memory": {
+        "512": 90
+      },
+      "note": "La valeur passe, mais DS=ES=CS=0000h : le cas ne distingue pas les segments et ne prouve pas l'effet de l'override CS."
+    },
+    {
+      "chapter": 34,
+      "lesson": 2,
+      "registers": {
+        "AX": 2
+      },
+      "memory": {
+        "256": 2
+      }
+    },
+    {
+      "chapter": 34,
+      "lesson": 3,
+      "registers": {
+        "DS": 4096,
+        "ES": 8192,
+        "SI": 258,
+        "DI": 514,
+        "CX": 0
+      },
+      "memory": {
+        "131584": 49,
+        "131585": 50
+      }
+    },
+    {
+      "chapter": 35,
+      "lesson": 1,
+      "registers": {
+        "AX": 4660,
+        "BX": 256
+      },
+      "memory": {
+        "256": 52,
+        "257": 18
+      }
+    },
+    {
+      "chapter": 35,
+      "lesson": 2,
+      "registers": {
+        "CX": 0
+      },
+      "steps": 6
+    },
+    {
+      "chapter": 35,
+      "lesson": 3,
+      "registers": {
+        "AX": 8
+      }
+    },
+    {
+      "chapter": 36,
+      "lesson": 1,
+      "registers": {
+        "AX": 12,
+        "BX": 5
+      }
+    },
+    {
+      "chapter": 36,
+      "lesson": 2,
+      "registers": {
+        "AX": 6,
+        "SP": 65534
+      },
+      "stackDepth": 0
+    },
+    {
+      "chapter": 36,
+      "lesson": 3,
+      "registers": {
+        "AX": 0
+      },
+      "flags": {
+        "CF": 1,
+        "ZF": 1
+      }
+    }
+  ]
+}
