@@ -45,7 +45,7 @@ Cause commune : les documents de suivi n'avaient pas été réconciliés après 
 
 ## Points qui restent ouverts — aucune clôture fictive
 
-1. **Questions :** les 684 évaluateurs automatisés réussissent, mais le registre officiel reste 384/684. Le registre officiel conserve 300 questions non certifiées. Des revues individuelles distinctes documentent déjà 361 questions des chapitres 1 à 19 (289 passées, 72 corrigées, 0 bloquée), mais ces fichiers ne sont pas automatiquement réconciliés avec le registre officiel. Les 300 entrées restantes doivent être rapprochées des preuves existantes avant toute modification du compteur ; les chapitres 20 à 36 restent à examiner individuellement.
+1. **Questions :** les 684 évaluateurs automatisés réussissent, mais le registre officiel reste 384/684. Le registre officiel conserve 300 questions non certifiées. Des revues individuelles distinctes documentent déjà 361 questions des chapitres 1 à 19 (289 passées, 72 corrigées, 0 bloquée), mais ces fichiers ne sont pas automatiquement réconciliés avec le registre officiel. Les chapitres 20 à 36 restent à examiner individuellement. Le nombre de 300 questions restantes est un compteur historique ; il n'est pas encore associé à une liste vérifiable d'identifiants, car le dépôt ne fournit pas le registre nominatif des 384 questions déjà certifiées.
 2. **Cours :** la présence de 108 explications de longueur minimale et la réussite des tests structurels ne remplacent pas une relecture experte de chaque notion, prérequis, progression et exemple.
 3. **Exemples :** la comparaison source/binaire couvre 108/108 ; les quatre exemples conceptuels sont explicitement conservés. Les résultats du moteur logiciel ne constituent pas une comparaison avec un 8086 physique.
 4. **Simulateur, assembleur, désassembleur :** les matrices et vecteurs ciblés sont étendus, mais le balayage structurel des opcodes ne certifie pas la sémantique de chaque opcode ni toutes les combinaisons de préfixes, états indéfinis, interruptions matérielles et signaux de bus.
@@ -61,7 +61,7 @@ Les deux jobs du CI correctif run 1884 sont réussis sur la branche d'audit. L'i
 
 - Chapitre 17 : le plan d'évaluation finale est désormais équilibré, avec exactement deux questions dans chacune des cinq catégories attendues.
 - Chapitre 18 : 19 questions examinées individuellement ; 15 validées et 4 corrigées. Les corrections portent sur la précision des adresses segment:offset et sur l'analyse d'un programme comparant deux références mémoire aliasées.
-- Les revues documentées couvrent maintenant 361 questions des chapitres 1 à 19 : 271 validées, 71 corrigées, aucune bloquée.
+- Les revues documentées couvrent maintenant 361 questions des chapitres 1 à 19 : 289 validées, 72 corrigées, aucune bloquée.
 - Le compteur officiel reste 384/684 (300 restantes) : les fiches de revue ne sont pas automatiquement ajoutées au registre historique. Aucun registre historique complet listant les 384 identifiants certifiés n'a encore été trouvé ; le nombre 300 ne peut donc pas encore être associé à un ensemble d'identifiants vérifiable.
 
 
