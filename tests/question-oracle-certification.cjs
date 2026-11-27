@@ -63,6 +63,13 @@ function independentlyCompute(oracle) {
     case "intel_operand_order":
     case "separate_register_and_address_width":
     case "8086_widths_tuple":
+    case "eu_function":
+    case "alu_function":
+    case "eu_biu_responsibility":
+    case "biu_function":
+    case "control_transfer_prefetch":
+    case "prefetch_queue_capacity":
+    case "eu_biu_work_split":
       return fact[oracle.rule];
     case "source_instruction_vs_data":
       return "assembly_statement_is_instruction";
