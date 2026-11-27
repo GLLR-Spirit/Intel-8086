@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue individuelle — chapitre 24",
+  "reviewDate": "2026-11-27",
+  "scope": "Examen individuel des 19 questions sur MUL/IMUL octet et mot, multiplicandes implicites, largeur des produits, interprétation signée/non signée et indicateurs CF/OF. Revue distincte des oracles automatiques.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "sections": "MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior.",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Assembly Language Reference Manual",
+      "edition": "1979",
+      "sections": "MUL and IMUL instruction forms and operand widths.",
+      "url": "https://bitsavers.trailing-edge.com/pdf/intel/ISIS_II/9800640A_MCS-86_Assembly_Language_Reference_Manual_Apr79.pdf"
+    }
+  ],
+  "records": [
+    {
+      "id": "C24-L1-Q1",
+      "result": "passed",
+      "finding": "MUL BL multiplie AL par BL et place le produit 16 bits dans AX : 6×7=42.",
+      "basis": "Intel 8086 Family User's Manual, MUL byte form."
+    },
+    {
+      "id": "C24-L1-Q2",
+      "result": "passed",
+      "finding": "Le produit de deux opérandes octet est placé dans AX.",
+      "basis": "Intel 8086 Family User's Manual, MUL byte result registers."
+    },
+    {
+      "id": "C24-L1-Q3",
+      "result": "passed",
+      "finding": "AL est le multiplicande implicite de MUL r/m8.",
+      "basis": "Intel 8086 Family User's Manual, implicit operands."
+    },
+    {
+      "id": "C24-L2-Q1",
+      "result": "passed",
+      "finding": "IMUL interprète les opérandes comme des entiers signés en complément à deux.",
+      "basis": "Intel 8086 Family User's Manual, signed multiplication."
+    },
+    {
+      "id": "C24-L2-Q2",
+      "result": "passed",
+      "finding": "FEh vaut 254 non signé et −2 signé sur huit bits.",
+      "basis": "Décodage indépendant du complément à deux."
+    },
+    {
+      "id": "C24-L2-Q3",
+      "result": "passed",
+      "finding": "−2×2=−4, représenté FFFCh sur seize bits dans AX.",
+      "basis": "Calcul indépendant."
+    },
+    {
+      "id": "C24-L3-Q1",
+      "result": "passed",
+      "finding": "Pour MUL, CF et OF sont positionnés si la moitié haute du produit est non nulle.",
+      "basis": "Intel 8086 Family User's Manual, MUL flag behavior."
+    },
+    {
+      "id": "C24-L3-Q2",
+      "result": "passed",
+      "finding": "FFh×2=255×2=510 décimal, soit 01FEh dans AX.",
+      "basis": "Calcul indépendant."
+    },
+    {
+      "id": "C24-L3-Q3",
+      "result": "corrected",
+      "finding": "La question associait DX:AX à MUL sans préciser la forme mot. Elle précise maintenant MUL r/m16 et distingue le produit DX:AX des indicateurs CF/OF qui signalent si DX est non nul.",
+      "basis": "Intel 8086 Family User's Manual, MUL word result and CF/OF behavior."
+    },
+    {
+      "id": "C24-F-Q1",
+      "result": "passed",
+      "finding": "MUL réalise une multiplication non signée ; IMUL est la forme signée.",
+      "basis": "Intel 8086 Family User's Manual, MUL/IMUL semantics."
+    },
+    {
+      "id": "C24-F-Q2",
+      "result": "passed",
+      "finding": "Deux opérandes de huit bits peuvent nécessiter seize bits ; le produit est donc placé dans AX.",
+      "basis": "Largeur maximale 255×255=65025."
+    },
+    {
+      "id": "C24-F-Q3",
+      "result": "passed",
+      "finding": "MUL BL est la forme valide à un opérande explicite ; AL est implicite.",
+      "basis": "Intel MCS-86 Assembly Language Reference Manual, MUL syntax."
+    },
+    {
+      "id": "C24-F-Q4",
+      "result": "passed",
+      "finding": "Pour MUL octet, AH=0 implique que le produit tient dans AL et que CF/OF sont effacés.",
+      "basis": "Intel 8086 Family User's Manual, MUL byte flags."
+    },
+    {
+      "id": "C24-F-Q5",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait 6×7 déjà posé dans la leçon. Elle vérifie maintenant le produit non signé 80h×02h=0100h.",
+      "basis": "80h=128 non signé ; 128×2=256=0100h."
+    },
+    {
+      "id": "C24-F-Q6",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait FFh×2 déjà posé dans la leçon. Elle vérifie maintenant le même motif 80h en signé : −128×2=−256=FF00h.",
+      "basis": "Complément à deux sur huit bits et produit signé sur seize bits."
+    },
+    {
+      "id": "C24-F-Q7",
+      "result": "passed",
+      "finding": "FEh vaut −2 signé ; IMUL BL avec BL=02h produit −4, encodé FFFCh dans AX.",
+      "basis": "Calcul indépendant et IMUL byte form."
+    },
+    {
+      "id": "C24-F-Q8",
+      "result": "passed",
+      "finding": "MUL mot produit 32 bits dans DX:AX, AX étant le mot faible et DX le mot haut.",
+      "basis": "Intel 8086 Family User's Manual, MUL word result registers."
+    },
+    {
+      "id": "C24-F-Q9",
+      "result": "corrected",
+      "finding": "L'énoncé précise maintenant MUL r/m16 et DX comme moitié haute ; CF=OF=1 signalent DX non nul.",
+      "basis": "Intel 8086 Family User's Manual, MUL word flags."
+    },
+    {
+      "id": "C24-F-Q10",
+      "result": "passed",
+      "finding": "La validation doit examiner la largeur, le produit complet et les indicateurs de dépassement adaptés à la forme MUL utilisée.",
+      "basis": "Synthèse des règles MUL byte/word."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 15,
+    "corrected": 4,
+    "needsRevision": 0,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  },
+  "openFindings": []
+}
