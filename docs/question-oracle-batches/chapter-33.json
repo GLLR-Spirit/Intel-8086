@@ -535,6 +535,7 @@
       },
       "expected": {
         "directive": "DB",
+        "byte": 100,
         "bytePreserved": true,
         "alignmentMarkedUncertain": true,
         "doNotInventInstruction": true
