@@ -356,6 +356,10 @@ function independentlyCompute(oracle) {
       return { aliases: true, condition: "ZF=1" };
     case "jcc_reads_flags":
       return { comparesOperands: false, readsExistingFLAGS: true };
+    case "jcc_unsigned_condition":
+      return { condition: ({ JB: "CF=1", JA: "CF=0 && ZF=0" })[i.mnemonic], unsigned: true };
+    case "jcc_signed_condition":
+      return { condition: ({ JL: "SF!=OF", JG: "ZF=0 && SF=OF" })[i.mnemonic], signed: true };
     case "signed_byte_decode": {
       const unsignedValue = i.value;
       const sign = 2 ** (i.bits - 1);
