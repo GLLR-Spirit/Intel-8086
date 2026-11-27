@@ -1,0 +1,518 @@
+{
+  "schemaVersion": 1,
+  "batch": "chapter-22",
+  "title": "Oracles indépendants — chapitre 22 : conventions d'appel et procédures imbriquées",
+  "reviewDate": "2026-11-27",
+  "statusLegend": {
+    "certified": "Contrats de procédure, paramètres, registres préservés et appels imbriqués vérifiés indépendamment"
+  },
+  "referenceBasis": [
+    "Intel 8086 Family User's Manual (October 1979), CALL/RET and stack operations.",
+    "Intel MCS-86 Assembly Language Reference Manual, procedure and parameter conventions. Calling conventions are software conventions rather than CPU-enforced architecture."
+  ],
+  "oracles": [
+    {
+      "id": "C22-L1-Q1",
+      "status": "certified",
+      "rule": "procedure_parameter_location",
+      "inputs": {
+        "convention": "documented"
+      },
+      "expected": {
+        "locations": [
+          "register",
+          "stack"
+        ]
+      },
+      "correctAnswer": "Par un registre convenu ou la pile",
+      "derivation": "Une convention d'appel définit comment l'appelant transmet les paramètres. Ils peuvent être placés dans des registres convenus ou empilés ; le choix doit être partagé par l'appelant et la routine.",
+      "distractorRationales": [
+        {
+          "choice": "U",
+          "reason": "n"
+        },
+        {
+          "choice": "P",
+          "reason": "a"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
+    },
+    {
+      "id": "C22-L1-Q2",
+      "status": "certified",
+      "rule": "procedure_addition",
+      "inputs": {
+        "left": 4,
+        "right": 5,
+        "width": 16
+      },
+      "expected": {
+        "AX": 9,
+        "sum": 9
+      },
+      "correctAnswer": "9",
+      "derivation": "Les deux paramètres valent 4 et 5 ; leur addition donne 9. Le résultat attendu dans AX est donc 0009h, sans dépendre d'une modification de segment ou d'un indicateur de contrôle.",
+      "distractorRationales": [
+        {
+          "choice": "2",
+          "reason": "0"
+        },
+        {
+          "choice": "1"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
+    },
+    {
+      "id": "C22-L1-Q3",
+      "status": "certified",
+      "rule": "procedure_calling_convention",
+      "inputs": {
+        "callerAndCalleeShareContract": true
+      },
+      "expected": {
+        "explicitSharedConvention": true
+      },
+      "correctAnswer": "Pour que l'appelant et la procédure partagent la même convention",
+      "derivation": "L'appelant et la routine doivent s'accorder sur l'emplacement des paramètres, la valeur de retour et les registres préservés. Sans convention commune, les mêmes registres ou mots de pile peuvent être interprétés différemment.",
+      "distractorRationales": [
+        {
+          "choice": "P",
+          "reason": "o"
+        },
+        {
+          "choice": "P",
+          "reason": "o"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
+    },
+    {
+      "id": "C22-L2-Q1",
+      "status": "certified",
+      "rule": "preserve_register_push_pop",
+      "inputs": {
+        "register": "AX",
+        "value": 4660
+      },
+      "expected": {
+        "restoredValue": 4660,
+        "sequence": [
+          "PUSH AX",
+          "...",
+          "POP AX"
+        ]
+      },
+      "correctAnswer": "Pour préserver sa valeur et la restaurer avec POP",
+      "derivation": "PUSH AX place une copie du mot sur la pile. Après les opérations intermédiaires, POP AX restaure la valeur initiale si la pile est restée équilibrée et que l'ordre LIFO est respecté.",
+      "distractorRationales": [
+        {
+          "choice": "P",
+          "reason": "o"
+        },
+        {
+          "choice": "P",
+          "reason": "o"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
+    },
+    {
+      "id": "C22-L2-Q2",
+      "status": "certified",
+      "rule": "pop_restores_saved_value",
+      "inputs": {
+        "register": "AX",
+        "savedValue": 4660
+      },
+      "expected": {
+        "restoredValue": 4660
+      },
+      "correctAnswer": "1234h",
+      "derivation": "POP AX lit le mot sauvegardé au sommet de la pile et le copie dans AX. Si PUSH AX avait empilé 1234h et qu'aucune opération n'a perturbé l'ordre, la valeur restaurée est 1234h.",
+      "distractorRationales": [
+        {
+          "choice": "0",
+          "reason": "0"
+        },
+        {
+          "choice": "F",
+          "reason": "F"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
+    },
+    {
+      "id": "C22-L2-Q3",
+      "status": "certified",
+      "rule": "stack_push_pop_balance",
+      "inputs": {
+        "pushCount": 1,
+        "popCount": 1,
+        "pathsBalanced": true
+      },
+      "expected": {
+        "everyPushMatched": true,
+        "LIFO": true
+      },
+      "correctAnswer": "Chaque PUSH correspondant doit être équilibré par un POP",
+      "derivation": "Pour restaurer SP et les valeurs attendues, chaque PUSH doit avoir un POP correspondant sur chaque chemin d'exécution. L'ordre LIFO est nécessaire ; SP n'a pas à rester zéro.",
+      "distractorRationales": [
+        {
+          "choice": "S",
+          "reason": "P"
+        },
+        {
+          "choice": "P",
+          "reason": "O"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
+    },
+    {
+      "id": "C22-L3-Q1",
+      "status": "certified",
+      "rule": "nested_call_return_stack",
+      "inputs": {
+        "calls": 2
+      },
+      "expected": {
+        "returnAddressesStored": 2,
+        "eachCallHasOwnReturn": true
+      },
+      "correctAnswer": "Chaque CALL empile son propre IP de retour",
+      "derivation": "Chaque instruction CALL empile son adresse de continuation. Dans des appels imbriqués, chaque niveau possède donc son propre IP de retour, retiré dans l'ordre inverse des appels.",
+      "distractorRationales": [
+        {
+          "choice": "T",
+          "reason": "o"
+        },
+        {
+          "choice": "R",
+          "reason": "E"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
+    },
+    {
+      "id": "C22-L3-Q2",
+      "status": "certified",
+      "rule": "nested_call_return_order",
+      "inputs": {
+        "sequence": [
+          "CALL EXTERNE",
+          "CALL INTERNE",
+          "RET INTERNE",
+          "RET EXTERNE"
+        ]
+      },
+      "expected": {
+        "firstReturn": "EXTERNE",
+        "secondReturn": "CALLER"
+      },
+      "correctAnswer": "Celui d'INTERNE",
+      "derivation": "La procédure INTERNE termine d'abord et son RET dépile l'adresse de continuation située dans EXTERNE. Ensuite EXTERNE reprend puis son propre RET retourne à l'appelant initial.",
+      "distractorRationales": [
+        {
+          "choice": "C",
+          "reason": "e"
+        },
+        {
+          "choice": "A",
+          "reason": "u"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
+    },
+    {
+      "id": "C22-L3-Q3",
+      "status": "certified",
+      "rule": "procedure_stack_balance_paths",
+      "inputs": {
+        "paths": [
+          "normal",
+          "conditional"
+        ]
+      },
+      "expected": {
+        "everyPathBalanced": true,
+        "unmatchedPush": false
+      },
+      "correctAnswer": "Un déséquilibre de pile dans l'un des chemins",
+      "derivation": "Une routine doit préserver l'équilibre de pile sur tous ses chemins de sortie. Un PUSH non compensé dans une branche peut faire que RET lise une donnée au lieu de l'adresse de retour.",
+      "distractorRationales": [
+        {
+          "choice": "U",
+          "reason": "n"
+        },
+        {
+          "choice": "U",
+          "reason": "n"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
+    },
+    {
+      "id": "C22-F-Q1",
+      "status": "certified",
+      "rule": "procedure_parameter_definition",
+      "inputs": {
+        "parameter": "input"
+      },
+      "expected": {
+        "isDataSuppliedToRoutine": true
+      },
+      "correctAnswer": "Une donnée transmise à la routine",
+      "derivation": "Un paramètre est une valeur d'entrée fournie à une routine pour qu'elle puisse effectuer son traitement. Il peut être transmis dans un registre ou par la pile selon la convention.",
+      "distractorRationales": [
+        {
+          "choice": "U",
+          "reason": "n"
+        },
+        {
+          "choice": "U",
+          "reason": "n"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
+    },
+    {
+      "id": "C22-F-Q2",
+      "status": "certified",
+      "rule": "calling_convention_inputs_outputs",
+      "inputs": {
+        "callerAndCalleeShareContract": true
+      },
+      "expected": {
+        "definesInputs": true,
+        "definesOutputs": true
+      },
+      "correctAnswer": "Pour définir où placer les entrées et récupérer les sorties",
+      "derivation": "Une convention d'appel spécifie où l'appelant place les paramètres, où la routine retourne les résultats et quels registres doivent être préservés. Elle évite les interprétations incompatibles.",
+      "distractorRationales": [
+        {
+          "choice": "P",
+          "reason": "o"
+        },
+        {
+          "choice": "P",
+          "reason": "o"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
+    },
+    {
+      "id": "C22-F-Q3",
+      "status": "certified",
+      "rule": "push_register_semantics",
+      "inputs": {
+        "instruction": "PUSH AX",
+        "AX": 4660
+      },
+      "expected": {
+        "stackValue": 4660,
+        "SPDecrement": 2
+      },
+      "correctAnswer": "PUSH AX",
+      "derivation": "PUSH AX empile le mot contenu dans AX et décrémente SP de deux octets avant l'écriture. POP AX effectuerait l'opération inverse et CALL AX n'est pas la forme d'un empilement de registre.",
+      "distractorRationales": [
+        {
+          "choice": "P",
+          "reason": "O"
+        },
+        {
+          "choice": "C",
+          "reason": "A"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
+    },
+    {
+      "id": "C22-F-Q4",
+      "status": "certified",
+      "rule": "register_preservation_contract",
+      "inputs": {
+        "register": "BX",
+        "incomingValue": 17767
+      },
+      "expected": {
+        "mustRestoreIncomingValue": true,
+        "mechanism": "PUSH_POP"
+      },
+      "correctAnswer": "BX doit être sauvegardé puis restauré",
+      "derivation": "Si la convention exige de préserver BX, la procédure doit restituer sa valeur d'entrée avant de retourner. Une sauvegarde PUSH BX suivie d'un POP BX correctement équilibré est une méthode courante.",
+      "distractorRationales": [
+        {
+          "choice": "B",
+          "reason": "X"
+        },
+        {
+          "choice": "B",
+          "reason": "X"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
+    },
+    {
+      "id": "C22-F-Q5",
+      "status": "certified",
+      "rule": "procedure_addition",
+      "inputs": {
+        "left": 4,
+        "right": 5,
+        "width": 16
+      },
+      "expected": {
+        "AX": 9,
+        "sum": 9
+      },
+      "correctAnswer": "AX=9",
+      "derivation": "Les paramètres 4 et 5 sont additionnés : 4+5=9. La routine doit placer ce résultat dans AX conformément au contrat de sortie documenté.",
+      "distractorRationales": [
+        {
+          "choice": "A",
+          "reason": "X"
+        },
+        {
+          "choice": "A",
+          "reason": "X"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
+    },
+    {
+      "id": "C22-F-Q6",
+      "status": "certified",
+      "rule": "pop_restores_saved_value",
+      "inputs": {
+        "register": "AX",
+        "savedValue": 4660
+      },
+      "expected": {
+        "restoredValue": 4660
+      },
+      "correctAnswer": "1234h",
+      "derivation": "Le mot empilé vaut 1234h ; POP AX le retire du sommet et restaure AX à cette valeur. Le résultat dépend de la discipline LIFO et de l'absence d'empilement parasite.",
+      "distractorRationales": [
+        {
+          "choice": "0",
+          "reason": "0"
+        },
+        {
+          "choice": "F",
+          "reason": "F"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
+    },
+    {
+      "id": "C22-F-Q7",
+      "status": "certified",
+      "rule": "nested_call_return_stack",
+      "inputs": {
+        "calls": 2
+      },
+      "expected": {
+        "returnAddressesStored": 2,
+        "eachCallHasOwnReturn": true
+      },
+      "correctAnswer": "Chaque appel conserve son propre site de retour",
+      "derivation": "CALL empile l'adresse de continuation de chaque appel. Deux appels imbriqués créent deux mots de retour distincts qui sont dépilés en ordre inverse des appels.",
+      "distractorRationales": [
+        {
+          "choice": "T",
+          "reason": "o"
+        },
+        {
+          "choice": "L",
+          "reason": "e"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
+    },
+    {
+      "id": "C22-F-Q8",
+      "status": "certified",
+      "rule": "nested_call_return_order",
+      "inputs": {
+        "sequence": [
+          "CALL EXTERNE",
+          "CALL INTERNE",
+          "RET INTERNE",
+          "RET EXTERNE"
+        ]
+      },
+      "expected": {
+        "firstReturn": "EXTERNE",
+        "secondReturn": "CALLER"
+      },
+      "correctAnswer": "Le flot revient d'abord dans EXTERNE puis après son CALL",
+      "derivation": "Le RET de la routine interne restaure l'adresse de continuation dans EXTERNE. Lorsque cette routine externe termine, son propre RET restaure l'adresse de continuation dans l'appelant.",
+      "distractorRationales": [
+        {
+          "choice": "L",
+          "reason": "e"
+        },
+        {
+          "choice": "S",
+          "reason": "P"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
+    },
+    {
+      "id": "C22-F-Q9",
+      "status": "certified",
+      "rule": "register_preservation_contract",
+      "inputs": {
+        "register": "BX",
+        "incomingValue": 17767
+      },
+      "expected": {
+        "mustRestoreIncomingValue": true,
+        "mechanism": "PUSH_POP"
+      },
+      "correctAnswer": "Sauvegarder BX à l'entrée et le restaurer avant RET",
+      "derivation": "La convention exige que BX retrouve sa valeur d'entrée. La procédure peut l'empiler à l'entrée et le restaurer avant RET, en maintenant l'ordre LIFO et l'équilibre de SP.",
+      "distractorRationales": [
+        {
+          "choice": "E",
+          "reason": "f"
+        },
+        {
+          "choice": "R",
+          "reason": "e"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
+    },
+    {
+      "id": "C22-F-Q10",
+      "status": "certified",
+      "rule": "procedure_contract",
+      "inputs": {
+        "inputsDocumented": true,
+        "outputsDocumented": true,
+        "stackBalanced": true
+      },
+      "expected": {
+        "interfaceExplicit": true,
+        "stackDisciplineExplicit": true
+      },
+      "correctAnswer": "Convention explicite et vérification des registres/pile",
+      "derivation": "Une procédure robuste documente ses paramètres, ses résultats, ses registres préservés et son comportement de pile. Les valeurs initiales inconnues et l'absence de documentation rendent les appels non déterministes du point de vue de l'appelant.",
+      "distractorRationales": [
+        {
+          "choice": "D",
+          "reason": "é"
+        },
+        {
+          "choice": "A",
+          "reason": "b"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
+    }
+  ]
+}
