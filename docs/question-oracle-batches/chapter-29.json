@@ -333,7 +333,7 @@
     {
       "id": "C29-F-Q2",
       "status": "certified",
-      "rule": "ivt_entry_layout",
+      "rule": "ivt_entry_size",
       "inputs": {
         "offsetBits": 16,
         "segmentBits": 16,
