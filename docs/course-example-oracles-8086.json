@@ -942,14 +942,16 @@
       "chapter": 34,
       "lesson": 1,
       "registers": {
-        "AX": 90,
-        "DS": 0,
-        "ES": 0
+        "AX": 8252,
+        "DS": 4096,
+        "ES": 8192
       },
       "memory": {
-        "512": 90
+        "512": 60,
+        "66048": 165,
+        "131584": 90
       },
-      "note": "La valeur passe, mais DS=ES=CS=0000h : le cas ne distingue pas les segments et ne prouve pas l'effet de l'override CS."
+      "note": "Valeurs distinctes aux mêmes offsets pour démontrer l'override CS."
     },
     {
       "chapter": 34,
