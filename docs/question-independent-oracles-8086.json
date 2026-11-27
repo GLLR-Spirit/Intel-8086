@@ -31,8 +31,9 @@
       ],
       "reference": "Intel MCS-86 Macro Assembly Language Reference Manual, syntaxe des instructions ; Intel 8086 Family User's Manual, ADD.",
       "explanationChecks": [
-        "six octets",
-        "sans exécution superscalaire"
+        "destination",
+        "source",
+        "ADD AX,3"
       ]
     },
     {
