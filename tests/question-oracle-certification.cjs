@@ -729,8 +729,10 @@ function independentlyCompute(oracle) {
       return { requiresMemoryBus: true, additionalTransfers: true };
     case "lab_timing_scope":
       return { exactCyclesModeled: false, biuTimingModeled: false, physicalClockModeled: false };
-    case "branch_prefetch_flush":
-      return { queueDiscarded: true, refillFromNewIP: true, newIP: i.newIP };
+    case "branch_prefetch_flush": {
+      const taken = Boolean(i.controlTransfer);
+      return { queueDiscarded: taken, refillFromNewIP: taken, newIP: taken ? i.newIP : null };
+    }
     case "biu_prefetch_role":
       return { unit: "BIU", responsibilities: ["bus_interface", "instruction_prefetch"] };
     case "shift_left_trace":
@@ -1156,6 +1158,12 @@ function independentlyCompute(oracle) {
     }
     case "prefetch_overlap":
       return { overlap: Boolean(i.euExecution && i.biuFetch), superscalar: false };
+    case "biu_prefetch_suspension":
+      return { prefetchSuspended: Boolean(i.euMemoryRequest), finishCurrentFetchFirst: Boolean(i.euMemoryRequest && i.fetchAlreadyInProgress) };
+    case "prefetch_start_threshold":
+      return { emptyBytesRequired: i.processor === "8086" ? 2 : null };
+    case "prefetch_fetch_width":
+      return { bytesPerFetch: i.processor === "8086" ? 2 : null };
     case "alu_add_trace": {
       const sum = i.left + i.right;
       return { sum, result: sum % (2 ** i.width) };
@@ -1238,6 +1246,10 @@ assert.deepEqual(
   { requiredChecks: ["functional_result", "relevant_FLAGS", "input_boundaries"], missingChecks: [], complete: true },
   "Optimization audit requires result, relevant FLAGS and input-boundary checks"
 );
+assert.deepEqual(independentlyCompute({ rule: "biu_prefetch_suspension", inputs: { euMemoryRequest: true, fetchAlreadyInProgress: true } }), { prefetchSuspended: true, finishCurrentFetchFirst: true }, "BIU suspends new prefetch for an EU memory request but completes an active fetch first");
+assert.deepEqual(independentlyCompute({ rule: "prefetch_start_threshold", inputs: { processor: "8086" } }), { emptyBytesRequired: 2 }, "8086 prefetch starts only when two queue bytes are empty");
+assert.deepEqual(independentlyCompute({ rule: "prefetch_fetch_width", inputs: { processor: "8086" } }), { bytesPerFetch: 2 }, "8086 BIU normally fetches two instruction bytes per operation");
+assert.deepEqual(independentlyCompute({ rule: "branch_prefetch_flush", inputs: { controlTransfer: false, newIP: null } }), { queueDiscarded: false, refillFromNewIP: false, newIP: null }, "A not-taken conditional branch leaves the sequential prefetch queue usable");
 const keyMap = new Map(key.questions.map(q => [q.id, q]));
 assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23", "chapter-24", "chapter-25", "chapter-26", "chapter-27", "chapter-28", "chapter-29", "chapter-30", "chapter-31", "chapter-32", "chapter-33", "chapter-34", "chapter-35", "chapter-36"]);
 assert.deepEqual(batches.map(batch => batch.oracles.length), [19, 18, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19], "Chapters 2, 4 and 28 reuse one historical oracle outside their supplemental batch");
