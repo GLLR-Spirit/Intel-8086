@@ -63,11 +63,11 @@ For every finding: detect the symptom, inspect the complete affected path, ident
 
 ### Exercises
 
-- Replaced position-based and keyword-inferred chapter associations with explicit mappings for all 42 exercises.
-- Added 15 practical exercises covering jumps, procedures, stack parameters, modular routines, MUL/DIV, shifts, interrupts, I/O, encoding, ModR/M, disassembly, segment overrides, optimization limits and a memory-array project.
+- Replaced position-based and keyword-inferred chapter associations with explicit mappings for the original exercise set; the current guided exercise bank contains 48 exercises.
+- Expanded the guided exercise bank to 48 exercises. Topics include jumps, procedures, stack parameters, modular routines, MUL/DIV, shifts, interrupts, I/O, encoding, ModR/M, disassembly, segment overrides, optimization limits and memory-array projects.
 - Mapped the two existing integration exercises to the chapters they actually combine and set explicit difficulty/type metadata.
 - Strengthened stack validators to check SP restoration and empty stack metadata; the reverse string-copy validator now checks destination bytes as well as SI, DI and DF.
-- Added CI contracts for 42 exercises, complete coverage of 36 chapters, valid metadata and executable validated solutions; browser checks verify the actual filtered card metadata and chapter association.
+- CI checks validate the current exercise inventory, chapter coverage, metadata and executable solutions; browser checks verify actual filtered card metadata and chapter association.
 
 ### Question bank
 
@@ -87,3 +87,11 @@ For every finding: detect the symptom, inspect the complete affected path, ident
 - No deployment was triggered; the published site was not checked against this commit.
 
 The mission remains in progress. Passing automated suites is evidence for the tested software paths, not proof of exhaustive 8086 hardware equivalence or complete manual pedagogical certification.
+
+
+### Audit report consistency regression
+
+- Root cause found during the repeated verification: Markdown-only changes were intentionally excluded by `paths-ignore: "**/*.md"`, so the draft PR had no CI run. This was a skipped workflow, not a passing or failing test.
+- Added `tests/audit-report-consistency.cjs` and wired it into CI. The test protects the 48-exercise inventory, the 384/684 individual certification ledger, the 300 pending reviews, and the distinction between automated oracle checks and independent certification.
+- Renamed the question-oracle CI step to state explicitly that it is automated validation, not independent certification.
+- This commit also changes a workflow file and a test file, so the pull-request path filters should now allow CI to run. The result must still be inspected before this tranche is marked validated.
