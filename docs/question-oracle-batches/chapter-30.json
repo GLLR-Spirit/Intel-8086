@@ -180,8 +180,7 @@
         "initialIF": 1
       },
       "expected": {
-        "IF": 0,
-        "maskableInterruptsEnabled": false
+        "IF": 0
       },
       "correctAnswer": "IF est effacé",
       "derivation": "CLI efface le bit IF (Interrupt Flag). Les interruptions masquables sont ainsi désactivées ; CLI ne modifie pas DF ni CF.",
@@ -205,8 +204,7 @@
         "initialIF": 0
       },
       "expected": {
-        "IF": 1,
-        "maskableInterruptsEnabled": true
+        "IF": 1
       },
       "correctAnswer": "Positionne IF",
       "derivation": "STI positionne IF à 1, ce qui réactive les interruptions masquables. Il ne l'efface pas et ne modifie pas le drapeau de direction DF.",
