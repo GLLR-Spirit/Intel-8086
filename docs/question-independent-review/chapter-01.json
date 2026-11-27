@@ -92,7 +92,7 @@
     },
     {
       "id": "C01-F-Q4",
-      "result": "passed",
+      "result": "corrected",
       "finding": "1234h=4660 nécessite 13 bits ; AL n'en accepte que 8.",
       "basis": "Intel 8086 Manual, registres et opérandes immédiats."
     },
@@ -135,7 +135,7 @@
   ],
   "summary": {
     "questionsReviewed": 19,
-    "corrected": 4,
+    "corrected": 5,
     "blocked": 0,
     "officialCertificationCountBefore": 384,
     "officialCertificationCountAfter": 384,
