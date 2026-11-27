@@ -402,7 +402,7 @@
         "hex": "03F8h"
       },
       "correctAnswer": "1016",
-      "derivation": "03F8h vaut 3×16³? Non : en base 16, 03F8h = 3×16² + 15×16 + 8 = 768+240+8 = 1016. Le zéro initial ne change pas la valeur.",
+      "derivation": "03F8h vaut 3×16² + 15×16 + 8 = 768 + 240 + 8 = 1016 en décimal. Le zéro initial ne change pas la valeur.",
       "distractorRationales": [
         {
           "choice": "248",
