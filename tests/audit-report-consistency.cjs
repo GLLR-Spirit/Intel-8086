@@ -21,7 +21,7 @@ assert.match(tracker, /300 pending/i, "Remaining individual question reviews mus
 assert.match(report, /684\/684[\s\S]*automatisés/i,
   "Audit report must label 684/684 as automated oracle evaluation");
 assert.match(report, /384\/684/, "Audit report must preserve the official certification count");
-assert.match(report, /342 questions \(chapitres 1 à 18\)/i, "Audit report must report the 361 individually reviewed questions");
+assert.match(report, /361 questions \(chapitres 1 à 19\)/i, "Audit report must report the 361 individually reviewed questions");
 assert.match(report, /300 restent non certifiées/i, "Audit report must distinguish official pending certification from review records");
 assert.match(tracker, /361 questions across chapters 1–19/i, "Tracker must report all documented individual reviews");
 assert.equal(oracleManifest.oracles.length, 684, "Manifest must expose all 684 registered question IDs");
