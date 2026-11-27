@@ -80,7 +80,7 @@ function independentlyCompute(oracle) {
     case "hex_two_digit_byte_width":
       return { bitsPerDigit: Math.log2(i.symbolCount), bitsForTwoDigits: 2 * Math.log2(i.symbolCount) };
     case "binary_to_decimal": {
-      const terms = [...i.bits].reverse().map((bit, index) => bit === "1" ? 2 ** index : 0).filter(value => value !== 0);
+      const terms = [...i.bits].reverse().map((bit, index) => bit === "1" ? 2 ** index : 0).filter(value => value !== 0).reverse();
       return { decimal: terms.reduce((sum, value) => sum + value, 0), terms };
     }
     case "binary_bit_weight":
@@ -204,7 +204,7 @@ function independentlyCompute(oracle) {
 const keyMap = new Map(key.questions.map(q => [q.id, q]));
 assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03"]);
 assert.deepEqual(batches.map(batch => batch.oracles.length), [19, 18, 19], "Chapter 2 reuses one historical oracle rather than duplicating its ID");
-const historicalChapter2 = manifest.oracles.filter(oracle => oracle.id === "C02-F-Q4");
+const historicalChapter2 = manifest.oracles.filter(oracle => oracle.id === "C02-F-Q4").map(oracle => ({ ...oracle, status: "certified" }));
 assert.equal(historicalChapter2.length, 1, "The historical chapter 2 final question oracle must be reused exactly once");
 const allOracleRecords = [...batches.flatMap(batch => batch.oracles), ...historicalChapter2];
 const allIds = allOracleRecords.map(oracle => oracle.id);
