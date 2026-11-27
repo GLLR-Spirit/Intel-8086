@@ -378,6 +378,58 @@ const assert = require("node:assert/strict");
   assert.ok(allExerciseMatch,"Exercise count must be visible: "+allExerciseText);
   const totalExercises=Number(allExerciseMatch[2]);
   assert.ok(totalExercises>0,"The exercise page must contain exercises.");
+  const filterMatrix=await page.evaluate(()=>{
+    const api=window.__8086Audit;
+    const rows=api.exercises.map((exercise,index)=>api.exerciseMetadata(exercise,index));
+    const values={
+      chapters:[...document.querySelectorAll("#exerciseChapter option")].slice(1).map(option=>option.value),
+      difficulties:[...document.querySelectorAll("#exerciseDifficulty option")].slice(1).map(option=>option.value),
+      types:[...document.querySelectorAll("#exerciseType option")].slice(1).map(option=>option.value)
+    };
+    return {
+      values,
+      chapterCounts:values.chapters.map(value=>[value,rows.filter(row=>row.chapters.includes(Number(value))).length]),
+      difficultyCounts:values.difficulties.map(value=>[value,rows.filter(row=>row.difficulty===value).length]),
+      typeCounts:values.types.map(value=>[value,rows.filter(row=>row.type===value).length]),
+      sampleTitle:api.exercises[0][0]
+    };
+  });
+  const readExerciseCount=async()=>{
+    const value=(await page.locator("#exerciseCount").textContent()).trim();
+    const parsed=value.match(/^(\\d+)/);
+    assert.ok(parsed,"Filtered exercise count must remain readable: "+value);
+    return Number(parsed[1]);
+  };
+  for(const [value,expected] of filterMatrix.chapterCounts){
+    await page.locator("#exerciseSearch").fill("");
+    await page.locator("#exerciseDifficulty").selectOption("all");
+    await page.locator("#exerciseType").selectOption("all");
+    await page.locator("#exerciseChapter").selectOption(value);
+    assert.equal(await readExerciseCount(),expected,"Chapter filter "+value+" must match the 48-entry assignment matrix.");
+    assert.equal(await page.locator("#exerciseList .exercise").count(),expected);
+  }
+  for(const [value,expected] of filterMatrix.difficultyCounts){
+    await page.locator("#exerciseChapter").selectOption("all");
+    await page.locator("#exerciseType").selectOption("all");
+    await page.locator("#exerciseDifficulty").selectOption(value);
+    assert.equal(await readExerciseCount(),expected,"Difficulty filter "+value+" must match exercise metadata.");
+    assert.equal(await page.locator("#exerciseList .exercise").count(),expected);
+  }
+  for(const [value,expected] of filterMatrix.typeCounts){
+    await page.locator("#exerciseChapter").selectOption("all");
+    await page.locator("#exerciseDifficulty").selectOption("all");
+    await page.locator("#exerciseType").selectOption(value);
+    assert.equal(await readExerciseCount(),expected,"Type filter "+value+" must match exercise metadata.");
+    assert.equal(await page.locator("#exerciseList .exercise").count(),expected);
+  }
+  await page.locator("#exerciseChapter").selectOption("all");
+  await page.locator("#exerciseDifficulty").selectOption("all");
+  await page.locator("#exerciseType").selectOption("all");
+  await page.locator("#exerciseSearch").fill(filterMatrix.sampleTitle);
+  assert.equal(await readExerciseCount(),1,"Search must find an exact exercise title.");
+  await page.locator("#exerciseSearch").fill("__exercise_not_found__");
+  assert.equal(await readExerciseCount(),0,"Search must return an empty list for an unmatched query.");
+  await page.locator("#exerciseSearch").fill("");
   const firstChapterValue=await page.locator("#exerciseChapter option").nth(1).getAttribute("value");
   assert.ok(firstChapterValue,"A chapter filter option must be populated.");
   await page.locator("#exerciseChapter").selectOption(firstChapterValue);
