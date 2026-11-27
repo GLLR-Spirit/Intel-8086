@@ -1361,4 +1361,20 @@ assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C03-L1-Q3").inpu
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C03-L3-Q3").expected, { bits: 8, distinctPatterns: 256 }, "Eight-bit pattern cardinality must be independently recomputed");
 assert.equal(keyMap.get("C03-F-Q4").correctAnswer, "100h vaut 256, au-dessus de FFh (255)", "The AL-width item must use the corrected, unambiguous answer");
 
+
+const chapter4Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-04.json", "utf8"));
+const chapter4Ids = key.questions.filter(question => question.chapter === 4).map(question => question.id).sort();
+const reviewedChapter4Ids = chapter4Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter4Ids, chapter4Ids, "Chapter 4 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter4Ids).size, 19, "Chapter 4 review must not duplicate question IDs");
+assert.equal(chapter4Review.summary.questionsReviewed, 19, "Chapter 4 review count must match the complete question bank");
+assert.equal(chapter4Review.summary.passed, 18, "Chapter 4 review must report 18 passed questions");
+assert.equal(chapter4Review.summary.corrected, 1, "Chapter 4 review must record the simultaneous CF/OF scenario correction");
+assert.equal(chapter4Review.summary.blocked, 0, "Chapter 4 review must have no unresolved blockers");
+assert.equal(chapter4Review.summary.officialCertificationCountBefore, 384, "Chapter 4 review starts from the official 384-question ledger");
+assert.equal(chapter4Review.summary.officialCertificationCountAfter, 384, "Chapter 4 review must not silently advance official certification");
+assert.equal(chapter4Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C04-F-Q8").inputs, { left: 128, right: 128, width: 8 }, "Chapter 4 must exercise the case where CF and OF are both set");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C04-F-Q8").expected, { OF: 1, CF: 1 }, "80h+80h must set both CF and OF");
+
 console.log("Question oracle evaluator: chapters 1–36 — " + oracleRecordsChecked + "/684 oracle records passed automated checks; official certification ledger remains " + manifest.oracleCoverageSummary.officialCertificationCount + "/684 (" + manifest.oracleCoverageSummary.remainingOfficialCertification + " pending); " + blocked + " blocked.");
