@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue pédagogique indépendante — chapitre 35",
+  "reviewDate": "2026-11-27",
+  "scope": "Examen individuel des 19 questions sur l'EU/BIU, la file de prélecture, les branchements, les coûts mémoire, les décalages et les limites temporelles du laboratoire.",
+  "sources": [
+    {
+      "id": "intel-8086-family-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "sections": "Execution Unit; Bus Interface Unit; six-byte prefetch queue; bus timing and branch behavior."
+    },
+    {
+      "id": "intel-timing-tables",
+      "title": "Intel 8086 instruction timing tables",
+      "sections": "Cycle counts depend on instruction, addressing mode and bus conditions; not derived from functional simulator steps."
+    },
+    {
+      "id": "lab-scope",
+      "title": "Intel-8086 Lab source and documentation",
+      "sections": "Functional execution scope and absence of a cycle-accurate BIU/timing model."
+    }
+  ],
+  "records": [
+    {
+      "id": "C35-L1-Q1",
+      "result": "passed",
+      "finding": "La file de prélecture 8086 a une capacité de six octets.",
+      "basis": "Vérification indépendante des propriétés de la file, des effets de branchement et des calculs de décalage ; séparation entre comportement matériel et modèle fonctionnel."
+    },
+    {
+      "id": "C35-L1-Q2",
+      "result": "passed",
+      "finding": "Un opérande mémoire peut nécessiter un transfert de bus supplémentaire ; aucun nombre fixe de cycles n'est affirmé.",
+      "basis": "Vérification indépendante des propriétés de la file, des effets de branchement et des calculs de décalage ; séparation entre comportement matériel et modèle fonctionnel."
+    },
+    {
+      "id": "C35-L1-Q3",
+      "result": "passed",
+      "finding": "Le laboratoire ne modélise ni BIU complète ni timings physiques cycle par cycle.",
+      "basis": "Vérification indépendante des propriétés de la file, des effets de branchement et des calculs de décalage ; séparation entre comportement matériel et modèle fonctionnel."
+    },
+    {
+      "id": "C35-L2-Q1",
+      "result": "passed",
+      "finding": "Un transfert de contrôle pris invalide les octets préchargés pour l'ancien chemin et requiert une réalimentation.",
+      "basis": "Vérification indépendante des propriétés de la file, des effets de branchement et des calculs de décalage ; séparation entre comportement matériel et modèle fonctionnel."
+    },
+    {
+      "id": "C35-L2-Q2",
+      "result": "passed",
+      "finding": "La BIU gère l'interface bus et la prélecture, contrairement à l'EU/ALU.",
+      "basis": "Vérification indépendante des propriétés de la file, des effets de branchement et des calculs de décalage ; séparation entre comportement matériel et modèle fonctionnel."
+    },
+    {
+      "id": "C35-L2-Q3",
+      "result": "passed",
+      "finding": "Sans modèle BIU ni cycles de bus, le simulateur ne peut pas mesurer le coût exact d'un flush.",
+      "basis": "Vérification indépendante des propriétés de la file, des effets de branchement et des calculs de décalage ; séparation entre comportement matériel et modèle fonctionnel."
+    },
+    {
+      "id": "C35-L3-Q1",
+      "result": "passed",
+      "finding": "SHL AX,1 transforme 4 en 8 sur l'opérande 16 bits dans ce cas.",
+      "basis": "Vérification indépendante des propriétés de la file, des effets de branchement et des calculs de décalage ; séparation entre comportement matériel et modèle fonctionnel."
+    },
+    {
+      "id": "C35-L3-Q2",
+      "result": "passed",
+      "finding": "Une optimisation par décalage doit préserver résultat et FLAGS pertinents ; l'équivalence dépend du contexte.",
+      "basis": "Vérification indépendante des propriétés de la file, des effets de branchement et des calculs de décalage ; séparation entre comportement matériel et modèle fonctionnel."
+    },
+    {
+      "id": "C35-L3-Q3",
+      "result": "passed",
+      "finding": "Les coûts temporels doivent être tirés de tables Intel correspondant au modèle et aux conditions exactes.",
+      "basis": "Vérification indépendante des propriétés de la file, des effets de branchement et des calculs de décalage ; séparation entre comportement matériel et modèle fonctionnel."
+    },
+    {
+      "id": "C35-F-Q1",
+      "result": "passed",
+      "finding": "La BIU peut précharger pendant l'exécution EU sans que deux instructions soient exécutées simultanément.",
+      "basis": "Vérification indépendante des propriétés de la file, des effets de branchement et des calculs de décalage ; séparation entre comportement matériel et modèle fonctionnel."
+    },
+    {
+      "id": "C35-F-Q2",
+      "result": "passed",
+      "finding": "La BIU sert la demande mémoire de l'EU et suspend la prélecture pendant le transfert requis.",
+      "basis": "Vérification indépendante des propriétés de la file, des effets de branchement et des calculs de décalage ; séparation entre comportement matériel et modèle fonctionnel."
+    },
+    {
+      "id": "C35-F-Q3",
+      "result": "passed",
+      "finding": "SHL AX,1 est une syntaxe valide pour un décalage d'un bit.",
+      "basis": "Vérification indépendante des propriétés de la file, des effets de branchement et des calculs de décalage ; séparation entre comportement matériel et modèle fonctionnel."
+    },
+    {
+      "id": "C35-F-Q4",
+      "result": "passed",
+      "finding": "La prélecture de deux octets nécessite normalement deux emplacements libres dans la file.",
+      "basis": "Vérification indépendante des propriétés de la file, des effets de branchement et des calculs de décalage ; séparation entre comportement matériel et modèle fonctionnel."
+    },
+    {
+      "id": "C35-F-Q5",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait la taille d'une prélecture demandée par la question précédente. Elle calcule désormais l'occupation de la file après ajout d'un mot.",
+      "basis": "Vérification indépendante des propriétés de la file, des effets de branchement et des calculs de décalage ; séparation entre comportement matériel et modèle fonctionnel."
+    },
+    {
+      "id": "C35-F-Q6",
+      "result": "corrected",
+      "finding": "L'ancienne question était une affirmation générale classée en calcul/prédiction. Elle devient une trace JNZ avec ZF=1, IP de continuation et file séquentielle.",
+      "basis": "Vérification indépendante des propriétés de la file, des effets de branchement et des calculs de décalage ; séparation entre comportement matériel et modèle fonctionnel."
+    },
+    {
+      "id": "C35-F-Q7",
+      "result": "passed",
+      "finding": "MOV AX,BX est un transfert registre ; MOV AX,[BX] ajoute un accès mémoire distinct.",
+      "basis": "Vérification indépendante des propriétés de la file, des effets de branchement et des calculs de décalage ; séparation entre comportement matériel et modèle fonctionnel."
+    },
+    {
+      "id": "C35-F-Q8",
+      "result": "passed",
+      "finding": "LOOP peut modifier IP lorsque le branchement est pris et provoquer un changement du flot préchargé.",
+      "basis": "Vérification indépendante des propriétés de la file, des effets de branchement et des calculs de décalage ; séparation entre comportement matériel et modèle fonctionnel."
+    },
+    {
+      "id": "C35-F-Q9",
+      "result": "passed",
+      "finding": "Un temps non mesuré doit être présenté comme référence documentaire et non comme résultat du simulateur.",
+      "basis": "Vérification indépendante des propriétés de la file, des effets de branchement et des calculs de décalage ; séparation entre comportement matériel et modèle fonctionnel."
+    },
+    {
+      "id": "C35-F-Q10",
+      "result": "passed",
+      "finding": "L'équivalence fonctionnelle, la taille du code et le coût matériel sont trois critères distincts.",
+      "basis": "Vérification indépendante des propriétés de la file, des effets de branchement et des calculs de décalage ; séparation entre comportement matériel et modèle fonctionnel."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 17,
+    "corrected": 2,
+    "needsRevision": 0,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  },
+  "openFindings": []
+}
