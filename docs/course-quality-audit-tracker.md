@@ -302,4 +302,4 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - Ajout de tests navigateur vérifiant les 21 corrections guidées et deux cas négatifs : état final identique sans exécution de CALL (EX27) ou RET (EX41).
 - Le rapport individuel des 48 exercices est conservé comme document de travail ; ses observations doivent être relues au regard des corrections déjà présentes sur `main`.
 - Cette réconciliation n'établit pas une certification pédagogique indépendante des 48 exercices. Les contrôles automatisés ne remplacent pas la revue humaine des consignes, explications et critères qualitatifs.
-- CI de cette nouvelle branche : en attente de résultat automatique après le commit. Aucun déploiement ni changement de `main`.
+- CI de cette nouvelle branche : réussite des deux workflows du commit `27e1be0` — [validation principale #2084](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46083010243) et [audit navigateur niveau 3 #1437](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46083010230). Aucun déploiement ni changement de `main`.
