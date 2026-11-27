@@ -19,7 +19,7 @@ function element(id) {
 const document = { getElementById: element, querySelectorAll: () => [] };
 const localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
 const context = { document, localStorage, console, confirm: () => true };
-const instrumented = match[1].replace(/\}\)\(\);\s*$/, "globalThis.__learningData = { lessons, chapterLearning, curriculum, exercises, exerciseChapterAssignments, exerciseMetadata, instructions, instructionMeta, executeAll, executeBinary, assembleProgram, disassembleBytes, courseVisual };\n})();");
+const instrumented = match[1].replace(/\}\)\(\);\s*$/, "globalThis.__learningData = { lessons, chapterLearning, curriculum, exercises, exerciseChapterAssignments, exerciseMetadata, instructions, instructionMeta, executeAll, executeBinary, assembleProgram, disassembleBytes, courseVisual, exerciseMethodSatisfied };\n})();");
 assert.notEqual(instrumented, match[1], "Application closure must be instrumented for learning checks");
 vm.runInNewContext(instrumented, context, { timeout: 5000 });
 const learning = context.__learningData;
@@ -396,6 +396,36 @@ for (let i = 0; i < learning.exercises.length; i++) {
   assert.ok(exercise[3](state), exercise[0] + " correction must satisfy its validator; state=" +
     JSON.stringify(state.reg) + "; flags=" + JSON.stringify(state.flags));
 }
+
+function exerciseByTitle(title) {
+  const index=learning.exercises.findIndex(item=>item[0]===title);
+  assert.notEqual(index,-1,"Missing method-gated exercise: "+title);
+  return {index,exercise:learning.exercises[index]};
+}
+function verifyMethodGate(title,bypassSource) {
+  const {index,exercise}=exerciseByTitle(title);
+  const reference=learning.executeAll(exercise[4].solution);
+  assert.ok(!reference.error,title+" reference solution must execute");
+  assert.ok(exercise[3](reference),title+" reference solution must satisfy its result oracle");
+  assert.ok(learning.exerciseMethodSatisfied(index,reference),title+" reference solution must satisfy its method oracle");
+  const bypass=learning.executeAll(bypassSource);
+  assert.ok(!bypass.error,title+" result-only bypass must execute");
+  assert.ok(exercise[3](bypass),title+" bypass must demonstrate that the result-only oracle is insufficient");
+  assert.equal(learning.exerciseMethodSatisfied(index,bypass),false,title+" method oracle must reject the result-only bypass");
+}
+verifyMethodGate("Somme répétée","MOV AX,20\\nMOV CX,0\\nHLT");
+verifyMethodGate("Somme de 1 à 6","MOV AX,21\\nMOV CX,0\\nHLT");
+verifyMethodGate("Boucle : somme de 1 à 4","MOV AX,10\\nMOV CX,0\\nHLT");
+verifyMethodGate("Branchement signé","MOV CX,1\\nHLT");
+verifyMethodGate("MUL : produit non signé sur 8 bits","MOV AX,42\\nCLC\\nHLT");
+verifyMethodGate("DIV : quotient et reste sur 8 bits","MOV AX,0208h\\nHLT");
+verifyMethodGate("Chaînes : copier deux octets avec REP MOVSB",
+  "MOV AX,1000h\\nMOV DS,AX\\nMOV AX,2000h\\nMOV ES,AX\\nMOV SI,0102h\\nMOV DI,0202h\\nMOV CX,0\\nMOV BYTE PTR ES:[0200h],41h\\nMOV BYTE PTR ES:[0201h],42h\\nHLT");
+verifyMethodGate("Chaînes : rechercher 42h avec REPNE SCASB",
+  "MOV AL,42h\\nMOV BL,42h\\nCMP AL,BL\\nMOV CX,1\\nMOV DI,0102h\\nHLT");
+verifyMethodGate("Interruption logicielle : INT et IRET","MOV AX,1234h\\nHLT");
+console.log("Exercise method audit: 9 reference methods accepted; 9 result-only bypasses rejected.");
+
 const renderer = match[1].slice(match[1].indexOf("function renderExercises()"), match[1].indexOf("\nfunction renderProjects()"));
 assert.ok(renderer.includes("Indice et correction expliquée"), "Exercise UI must expose progressive guidance");
 assert.ok(renderer.includes("guide.steps"), "Exercise UI must render step-by-step solutions");
