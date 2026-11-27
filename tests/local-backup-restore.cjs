@@ -41,7 +41,7 @@ function sandboxFor(store) {
     $,
     renderLessons: noop, renderExercises: noop, stats: noop,
     document: { },
-    Date, JSON, Object, Array, Number, String, Math, RegExp, Error
+    Date, JSON, Array, Number, String, Math, RegExp, Error
   };
 }
 function load(store) {
