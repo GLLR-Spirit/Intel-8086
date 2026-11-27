@@ -1,0 +1,162 @@
+const fs = require("node:fs");
+const vm = require("node:vm");
+const assert = require("node:assert/strict");
+
+const html = fs.readFileSync("index.html", "utf8");
+const match = html.match(/<script>([\\s\\S]*?)<\\/script>/);
+assert.ok(match, "Inline application script must exist");
+
+const elements = new Map();
+function element(id) {
+  if (!elements.has(id)) elements.set(id, {
+    id, value: "", textContent: "", innerHTML: "", className: "",
+    dataset: {}, onclick: null, oninput: null, onchange: null
+  });
+  return elements.get(id);
+}
+const context = {
+  document: { getElementById: element, querySelectorAll: () => [] },
+  localStorage: { getItem: () => null, setItem: () => {}, removeItem: () => {} },
+  console
+};
+const injection = [
+  "globalThis.__courseDifferentialApi = {",
+  " curriculum, executeAll, executeBinary, assembleProgram, parseProgram",
+  "};",
+  "})();"
+].join("\\n");
+const instrumented = match[1].replace(/\\}\\)\\(\\);\\s*$/, injection);
+assert.notEqual(instrumented, match[1], "Application closure injection point must exist");
+vm.runInNewContext(instrumented, context, { timeout: 30000 });
+const api = context.__courseDifferentialApi;
+assert.ok(api, "Course differential API must be exposed");
+
+const oracleFile = JSON.parse(fs.readFileSync("docs/course-example-oracles-8086.json", "utf8"));
+assert.equal(oracleFile.schema, "intel-8086-course-example-oracles-v1");
+assert.equal(oracleFile.examples.length, 108, "The independent oracle must cover all 108 lessons");
+
+function plain(value) { return JSON.parse(JSON.stringify(value)); }
+function compareRecord(a, b, label) {
+  assert.deepEqual(plain(a), plain(b), label);
+}
+function seedForBinary(source, assembled, parsed) {
+  const mem = {};
+  for (const [vectorText, label] of Object.entries(parsed.vectors || {})) {
+    const vector = Number(vectorText);
+    const offset = assembled.symbols[label];
+    assert.ok(Number.isInteger(offset), "VECTOR " + vector + " target " + label + " must resolve in the assembled symbol table");
+    const base = vector * 4;
+    mem[String(base)] = offset & 255;
+    mem[String(base + 1)] = (offset >>> 8) & 255;
+    mem[String(base + 2)] = 0;
+    mem[String(base + 3)] = 0;
+  }
+  return { io: assembled.ports || {}, mem };
+}
+function assertSameArchitecturalState(sourceState, binaryState, label, vectorAddresses) {
+  assert.equal(sourceState.execution.mode, "binary-offset", label + " source execution must use assembled byte offsets");
+  assert.equal(binaryState.execution.mode, "dynamic-binary", label + " binary execution must decode the emitted bytes");
+  for (const register of Object.keys(sourceState.reg)) {
+    assert.equal(binaryState.reg[register], sourceState.reg[register], label + " register " + register);
+  }
+  for (const flag of Object.keys(sourceState.flags)) {
+    assert.equal(binaryState.flags[flag], sourceState.flags[flag], label + " FLAGS." + flag);
+  }
+  assert.equal(binaryState.steps, sourceState.steps, label + " instruction count");
+  assert.equal(binaryState.output, sourceState.output, label + " output");
+  compareRecord(binaryState.stack, sourceState.stack, label + " stack metadata");
+  compareRecord(binaryState.io, sourceState.io, label + " I/O port state");
+
+  // VECTOR is source-level metadata on the interpreter path. The binary path
+  // receives the equivalent 4-byte IVT entries, so those setup bytes are
+  // excluded from the post-execution memory parity comparison.
+  const ignored = new Set(vectorAddresses.flatMap(base => [base, base + 1, base + 2, base + 3]));
+  const addresses = new Set([
+    ...Object.keys(sourceState.mem).map(Number),
+    ...Object.keys(binaryState.mem).map(Number)
+  ]);
+  for (const address of addresses) {
+    if (ignored.has(address)) continue;
+    assert.equal(binaryState.mem[address], sourceState.mem[address],
+      label + " memory[" + address.toString(16).toUpperCase() + "h]");
+  }
+}
+
+const failures = [];
+let compared = 0;
+let conceptual = 0;
+const categoryCounts = { registers: 0, flags: 0, memory: 0, ports: 0, stackDepth: 0, steps: 0, bytes: 0, vectors: 0, portSeeds: 0 };
+
+for (const oracle of oracleFile.examples) {
+  const id = "C" + String(oracle.chapter).padStart(2, "0") + "-L" + String(oracle.lesson).padStart(2, "0");
+  const lesson = api.curriculum[oracle.chapter - 1]?.[5]?.[oracle.lesson - 1];
+  if (!lesson) {
+    failures.push(id + ": missing curriculum lesson");
+    continue;
+  }
+  const source = lesson[2];
+  try {
+    const parsed = api.parseProgram(source);
+    const assembled = api.assembleProgram(source);
+    const sourceState = api.executeAll(source);
+    assert.ok(!sourceState.error, id + " source path: " + (sourceState.error || ""));
+    const vectors = Object.keys(parsed.vectors || {}).map(Number);
+    const initialState = seedForBinary(source, assembled, parsed);
+    const binaryState = api.executeBinary(assembled.bytes, 0, 0, initialState);
+    assert.ok(!binaryState.error, id + " binary path: " + (binaryState.error || ""));
+    assertSameArchitecturalState(sourceState, binaryState, id, vectors.map(vector => vector * 4));
+
+    for (const [register, expected] of Object.entries(oracle.registers || {})) {
+      assert.equal(sourceState.reg[register], expected, id + " source oracle register " + register);
+      assert.equal(binaryState.reg[register], expected, id + " binary oracle register " + register);
+      categoryCounts.registers++;
+    }
+    for (const [flag, expected] of Object.entries(oracle.flags || {})) {
+      assert.equal(sourceState.flags[flag], expected, id + " source oracle FLAGS." + flag);
+      assert.equal(binaryState.flags[flag], expected, id + " binary oracle FLAGS." + flag);
+      categoryCounts.flags++;
+    }
+    for (const [address, expected] of Object.entries(oracle.memory || {})) {
+      assert.equal(sourceState.mem[address], expected, id + " source oracle memory[" + address + "]");
+      assert.equal(binaryState.mem[address], expected, id + " binary oracle memory[" + address + "]");
+      categoryCounts.memory++;
+    }
+    for (const [port, expected] of Object.entries(oracle.ports || {})) {
+      assert.equal(sourceState.io[port], expected, id + " source oracle port " + port);
+      assert.equal(binaryState.io[port], expected, id + " binary oracle port " + port);
+      categoryCounts.ports++;
+    }
+    if (oracle.stackDepth !== undefined) {
+      assert.equal(sourceState.stack.length, oracle.stackDepth, id + " source oracle stack depth");
+      assert.equal(binaryState.stack.length, oracle.stackDepth, id + " binary oracle stack depth");
+      categoryCounts.stackDepth++;
+    }
+    if (oracle.steps !== undefined) {
+      assert.equal(sourceState.steps, oracle.steps, id + " source oracle instruction count");
+      assert.equal(binaryState.steps, oracle.steps, id + " binary oracle instruction count");
+      categoryCounts.steps++;
+    }
+    if (oracle.bytesPrefix) {
+      const expected = oracle.bytesPrefix.split(" ").map(byte => parseInt(byte, 16));
+      assert.deepEqual(assembled.bytes.slice(0, expected.length), expected, id + " encoding prefix");
+      categoryCounts.bytes++;
+    }
+    for (const [offset, expected] of Object.entries(oracle.bytesAt || {})) {
+      assert.equal(assembled.bytes[Number(offset)], parseInt(expected, 16), id + " encoding byte at " + offset);
+      categoryCounts.bytes++;
+    }
+    if (oracle.kind === "conceptual") conceptual++;
+    if (vectors.length) categoryCounts.vectors++;
+    if (Object.keys(assembled.ports || {}).length) categoryCounts.portSeeds++;
+    compared++;
+  } catch (error) {
+    failures.push(id + " (" + lesson[0] + "): " + error.message);
+  }
+}
+
+console.log("Course source/binary differential: " + compared + "/108 examples compared; " + conceptual + " conceptual examples explicitly retained.");
+console.log("Oracle dimensions: " + JSON.stringify(categoryCounts));
+if (failures.length) console.error("Differential failures:\\n" + failures.join("\\n"));
+assert.equal(compared, 108, "Every one of the 108 course examples must be compared.");
+assert.deepEqual(failures, [], "Source/binary parity and independent course oracles must match for all 108 examples.");
+console.log("Course source/binary differential audit PASS: 108/108.");
