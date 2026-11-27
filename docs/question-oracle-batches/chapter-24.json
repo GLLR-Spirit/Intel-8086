@@ -27,12 +27,12 @@
       "derivation": "Pour MUL BL, le multiplicande implicite est AL. 6×7=42, soit 002Ah ; le produit complet de deux octets est placé dans AX.",
       "distractorRationales": [
         {
-          "choice": "1",
-          "reason": "3"
+          "choice": "13 dans AX",
+          "reason": "Le produit calculé est 42 et la destination du résultat est AX, pas BX."
         },
         {
-          "choice": "4",
-          "reason": "2"
+          "choice": "42 dans BX",
+          "reason": "42 est obtenu par 6×7 ; BX n'est pas le registre de résultat pour MUL octet."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -52,12 +52,12 @@
       "derivation": "La multiplication de deux opérandes de huit bits produit jusqu'à seize bits. Le résultat complet est placé dans AX, avec AH comme moitié haute et AL comme moitié basse.",
       "distractorRationales": [
         {
-          "choice": "D",
-          "reason": "X"
+          "choice": "DX:AX",
+          "reason": "DX:AX est la paire de résultat de la forme mot 16×16 bits ; deux octets donnent un résultat 16 bits dans AX."
         },
         {
-          "choice": "B",
-          "reason": "X"
+          "choice": "BX",
+          "reason": "BX n'est pas le registre de résultat défini pour MUL octet."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -76,12 +76,12 @@
       "derivation": "La forme octet de MUL utilise AL comme multiplicande implicite et un seul opérande explicite, ici BL. L'instruction ne prend pas deux opérandes explicites comme certaines syntaxes d'autres architectures.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "H"
+          "choice": "AH",
+          "reason": "AH est la moitié haute du résultat ; le multiplicande implicite de MUL octet est AL."
         },
         {
-          "choice": "C",
-          "reason": "L"
+          "choice": "CL",
+          "reason": "CL n'est pas le multiplicande implicite de MUL octet sur le 8086."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -101,12 +101,12 @@
       "derivation": "IMUL interprète ses opérandes comme des entiers signés en complément à deux. MUL réalise au contraire une multiplication non signée ; les motifs binaires peuvent donc produire des produits interprétés différemment.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "o"
+          "choice": "Comme des entiers non signés uniquement",
+          "reason": "MUL traite les opérandes comme non signés ; IMUL est la forme signée."
         },
         {
-          "choice": "C",
-          "reason": "o"
+          "choice": "Comme des adresses segment:offset",
+          "reason": "Une adresse segment:offset n'est pas l'interprétation des opérandes de IMUL."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -127,12 +127,12 @@
       "derivation": "FEh vaut 254 en non signé. En complément à deux sur huit bits, le bit de signe est actif et la valeur est 254−256=−2.",
       "distractorRationales": [
         {
-          "choice": "2",
-          "reason": "5"
+          "choice": "254",
+          "reason": "254 est l'interprétation non signée de FEh ; en complément à deux sur huit bits, FEh vaut −2."
         },
         {
-          "choice": "−",
-          "reason": "1"
+          "choice": "-126",
+          "reason": "−126 correspond à un autre motif ; FEh vaut exactement −2 signé."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -156,12 +156,12 @@
       "derivation": "FEh représente −2 signé sur huit bits. −2×2=−4 ; l'encodage du produit signé sur seize bits est FFFCh, placé dans AX pour la forme octet.",
       "distractorRationales": [
         {
-          "choice": "0",
-          "reason": "0"
+          "choice": "0004h",
+          "reason": "Le produit signé −4 est FFFCh sur seize bits, pas 0004h."
         },
         {
-          "choice": "F",
-          "reason": "F"
+          "choice": "FFFEh",
+          "reason": "FFFEh représente −2 sur seize bits et ne correspond pas au produit −4."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -181,12 +181,12 @@
       "derivation": "Pour MUL non signé, CF et OF valent 1 si la moitié haute du produit est non nulle. Ils sont tous deux effacés lorsque cette moitié haute vaut zéro ; ils ne contiennent pas eux-mêmes les octets du produit.",
       "distractorRationales": [
         {
-          "choice": "Q",
-          "reason": "u"
+          "choice": "Quand le produit vaut zéro uniquement",
+          "reason": "Le produit nul n'est pas la condition définissant CF/OF ; les indicateurs reflètent la moitié haute non nulle."
         },
         {
-          "choice": "Q",
-          "reason": "u"
+          "choice": "Quand AX est préservé",
+          "reason": "AX préservé n'est pas un critère ; MUL écrit le produit et signale la moitié haute via CF/OF."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -208,12 +208,12 @@
       "derivation": "255×2=510 décimal. 510 se représente 01FEh sur seize bits ; AH=01h et AL=FEh, donc le résultat complet dans AX est 01FEh.",
       "distractorRationales": [
         {
-          "choice": "0",
-          "reason": "0"
+          "choice": "00FEh",
+          "reason": "510 décimal vaut 01FEh ; 00FEh omet la moitié haute 01h."
         },
         {
-          "choice": "0",
-          "reason": "1"
+          "choice": "01FFh",
+          "reason": "01FFh vaut 511 et ne correspond pas au produit 255×2."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -234,12 +234,12 @@
       "derivation": "Le produit complet est conservé dans AX pour la forme octet ou DX:AX pour la forme mot. CF/OF indiquent si la moitié haute est non nulle ; ces indicateurs ne remplacent pas la lecture du produit.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "F"
+          "choice": "CF et OF contiennent les deux octets hauts",
+          "reason": "CF et OF signalent la moitié haute, mais ne contiennent pas les octets hauts du produit."
         },
         {
-          "choice": "D",
-          "reason": "X"
+          "choice": "DX est toujours indéfini",
+          "reason": "DX est défini comme moitié haute pour MUL mot ; il n'est pas toujours indéfini."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -259,12 +259,12 @@
       "derivation": "MUL interprète les opérandes comme des valeurs non signées. IMUL est la forme destinée à la multiplication signée en complément à deux.",
       "distractorRationales": [
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Une division signée",
+          "reason": "MUL réalise une multiplication, pas une division signée."
         },
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Une comparaison",
+          "reason": "MUL ne compare pas les opérandes ; elle calcule leur produit non signé."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -284,12 +284,12 @@
       "derivation": "Deux opérandes non signés de huit bits peuvent produire un résultat allant jusqu'à 65025, ce qui nécessite seize bits. Le 8086 place donc le produit octet dans AX.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "L"
+          "choice": "AL est un registre 16 bits",
+          "reason": "AL est un registre 8 bits ; AX est le registre 16 bits qui reçoit le produit de deux octets."
         },
         {
-          "choice": "D",
-          "reason": "X"
+          "choice": "DX est réservé aux octets",
+          "reason": "DX est utilisé pour la moitié haute d'un produit mot 16×16, pas réservé aux octets."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -310,12 +310,12 @@
       "derivation": "La forme 8086 de MUL pour un opérande octet comporte un seul opérande explicite ; AL est implicite. MUL AL,BL utilise deux opérandes explicites et n'est pas une forme 8086 valide.",
       "distractorRationales": [
         {
-          "choice": "M",
-          "reason": "U"
+          "choice": "MUL AL,BL",
+          "reason": "MUL sur le 8086 prend un seul opérande explicite et utilise AL implicitement ; deux opérandes explicites sont invalides."
         },
         {
-          "choice": "I",
-          "reason": "M"
+          "choice": "IMUL AX,BX",
+          "reason": "IMUL AX,BX est une syntaxe à deux opérandes d'architectures plus récentes, non une forme 8086."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -335,12 +335,12 @@
       "derivation": "Pour MUL octet, le résultat complet est dans AX et AH constitue la moitié haute. Si AH=0, le produit tient dans AL et CF/OF sont effacés.",
       "distractorRationales": [
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Une moitié haute AH non nulle",
+          "reason": "Si AH est non nul, le produit octet dépasse 8 bits et CF/OF sont positionnés."
         },
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Un produit supérieur à 255",
+          "reason": "Un produit supérieur à 255 implique une moitié haute non nulle ; CF/OF ne sont donc pas effacés."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -361,12 +361,12 @@
       "derivation": "6×7=42 décimal, soit 002Ah. Le produit octet est stocké dans AX, avec AH=00h et AL=2Ah.",
       "distractorRationales": [
         {
-          "choice": "1",
-          "reason": "3"
+          "choice": "13",
+          "reason": "Le produit 6×7 vaut 42, pas 13."
         },
         {
-          "choice": "3",
-          "reason": "6"
+          "choice": "36",
+          "reason": "6×7 vaut 42, pas 36."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -388,12 +388,12 @@
       "derivation": "255×2 donne 510 décimal. La conversion hexadécimale donne 01FEh, donc AH=01h et AL=FEh dans AX.",
       "distractorRationales": [
         {
-          "choice": "0",
-          "reason": "0"
+          "choice": "00FEh",
+          "reason": "00FEh vaut 254 et omet le bit haut 01h du produit 510."
         },
         {
-          "choice": "0",
-          "reason": "1"
+          "choice": "0100h",
+          "reason": "0100h vaut 256 et ne correspond pas à 255×2."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -417,12 +417,12 @@
       "derivation": "FEh est −2 en complément à deux sur huit bits. IMUL avec 2 produit −4, représenté FFFCh sur seize bits dans AX.",
       "distractorRationales": [
         {
-          "choice": "P",
-          "reason": "r"
+          "choice": "Produit non signé 508 dans AX",
+          "reason": "IMUL traite FEh comme −2 signé ; le produit est −4, pas 508 non signé."
         },
         {
-          "choice": "R",
-          "reason": "é"
+          "choice": "Résultat 0004h",
+          "reason": "Le produit signé −4 s'encode FFFCh, pas 0004h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -443,12 +443,12 @@
       "derivation": "La forme mot de MUL produit jusqu'à 32 bits. Le mot faible est stocké dans AX et le mot fort dans DX, formant DX:AX.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "X"
+          "choice": "AX uniquement",
+          "reason": "AX seul ne contient que le mot faible ; DX reçoit le mot haut du produit 32 bits."
         },
         {
-          "choice": "B",
-          "reason": "X"
+          "choice": "BX:CX",
+          "reason": "BX:CX n'est pas la paire de résultat définie par MUL mot sur le 8086."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -468,12 +468,12 @@
       "derivation": "Pour MUL, CF et OF signalent que la moitié haute du produit est non nulle. Ils ne signifient pas que le produit est toujours négatif et ne signalent pas un diviseur nul.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le produit est toujours négatif",
+          "reason": "MUL peut produire un résultat positif ou nul ; CF/OF signalent la moitié haute non nulle, pas un signe négatif."
         },
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le diviseur vaut zéro",
+          "reason": "Le diviseur nul concerne DIV/IDIV, pas la multiplication MUL."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -497,12 +497,12 @@
       "derivation": "Une multiplication peut produire une moitié haute non nulle. Il faut vérifier le résultat complet dans AX ou DX:AX selon la largeur, ainsi que CF/OF ; lire seulement AL ou ignorer la moitié haute peut masquer une perte de résultat.",
       "distractorRationales": [
         {
-          "choice": "V",
-          "reason": "é"
+          "choice": "Vérifier uniquement AL",
+          "reason": "AL seul ne contient que l'octet faible ; il faut vérifier le résultat complet et les indicateurs."
         },
         {
-          "choice": "I",
-          "reason": "g"
+          "choice": "Ignorer la moitié haute",
+          "reason": "Ignorer la moitié haute peut masquer un produit tronqué et une indication de dépassement."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
