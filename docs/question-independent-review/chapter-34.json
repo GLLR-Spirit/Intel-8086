@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue pédagogique indépendante — chapitre 34",
+  "reviewDate": "2026-11-27",
+  "scope": "Examen individuel des 19 questions sur les overrides de segment, LOCK, REP, WAIT/ESC et les limites matérielles du simulateur.",
+  "sources": [
+    {
+      "id": "intel-8086-family-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "sections": "Segment override prefixes; LOCK; REP; WAIT; ESC; string instructions."
+    },
+    {
+      "id": "intel-mcs86-reference",
+      "title": "Intel MCS-86 Assembly Language Reference Manual",
+      "edition": "1979",
+      "sections": "Prefix applicability and instruction operand forms."
+    },
+    {
+      "id": "lab-prefix-model",
+      "title": "Intel-8086 Lab source and documentation",
+      "sections": "Prefix recognition, REP execution semantics, and explicitly unsupported hardware-level bus/8087 behavior."
+    }
+  ],
+  "records": [
+    {
+      "id": "C34-L1-Q1",
+      "result": "passed",
+      "finding": "Un override remplace le segment par défaut pour l'opérande mémoire concerné seulement.",
+      "basis": "Vérification indépendante des octets de préfixe, conditions d'application, calculs REP et limites explicites du modèle."
+    },
+    {
+      "id": "C34-L1-Q2",
+      "result": "passed",
+      "finding": "2Eh est le préfixe d'override CS ; 26h=ES, 36h=SS, 3Eh=DS.",
+      "basis": "Vérification indépendante des octets de préfixe, conditions d'application, calculs REP et limites explicites du modèle."
+    },
+    {
+      "id": "C34-L1-Q3",
+      "result": "passed",
+      "finding": "Des valeurs distinctes au même offset permettent de vérifier quel segment est réellement sélectionné.",
+      "basis": "Vérification indépendante des octets de préfixe, conditions d'application, calculs REP et limites explicites du modèle."
+    },
+    {
+      "id": "C34-L2-Q1",
+      "result": "passed",
+      "finding": "LOCK demande l'assertion du signal LOCK pendant l'instruction suivante en mode maximum ; le modèle logiciel ne prétend pas le simuler.",
+      "basis": "Vérification indépendante des octets de préfixe, conditions d'application, calculs REP et limites explicites du modèle."
+    },
+    {
+      "id": "C34-L2-Q2",
+      "result": "passed",
+      "finding": "LOCK INC WORD PTR [0100h] modifie un opérande mémoire ; LOCK INC AX ne protège aucune donnée mémoire.",
+      "basis": "Vérification indépendante des octets de préfixe, conditions d'application, calculs REP et limites explicites du modèle."
+    },
+    {
+      "id": "C34-L2-Q3",
+      "result": "passed",
+      "finding": "Le simulateur ne modélise ni signal physique, ni arbitrage du bus, ni atomicité face à un autre maître.",
+      "basis": "Vérification indépendante des octets de préfixe, conditions d'application, calculs REP et limites explicites du modèle."
+    },
+    {
+      "id": "C34-L3-Q1",
+      "result": "passed",
+      "finding": "REP s'applique à l'instruction de chaîne qui suit, pas au programme entier.",
+      "basis": "Vérification indépendante des octets de préfixe, conditions d'application, calculs REP et limites explicites du modèle."
+    },
+    {
+      "id": "C34-L3-Q2",
+      "result": "passed",
+      "finding": "REP MOVSB est une forme valide ; REP ADD AX,BX n'est pas une répétition de chaîne valide sur 8086.",
+      "basis": "Vérification indépendante des octets de préfixe, conditions d'application, calculs REP et limites explicites du modèle."
+    },
+    {
+      "id": "C34-L3-Q3",
+      "result": "passed",
+      "finding": "CX est le compteur de répétition des instructions de chaîne.",
+      "basis": "Vérification indépendante des octets de préfixe, conditions d'application, calculs REP et limites explicites du modèle."
+    },
+    {
+      "id": "C34-F-Q1",
+      "result": "passed",
+      "finding": "BP dans l'adresse effective sélectionne SS par défaut.",
+      "basis": "Vérification indépendante des octets de préfixe, conditions d'application, calculs REP et limites explicites du modèle."
+    },
+    {
+      "id": "C34-F-Q2",
+      "result": "passed",
+      "finding": "36h sélectionne SS ; les autres octets proposés correspondent à d'autres segments.",
+      "basis": "Vérification indépendante des octets de préfixe, conditions d'application, calculs REP et limites explicites du modèle."
+    },
+    {
+      "id": "C34-F-Q3",
+      "result": "passed",
+      "finding": "CS: devant l'opérande mémoire demande un override CS ; MOV ne charge pas CS directement.",
+      "basis": "Vérification indépendante des octets de préfixe, conditions d'application, calculs REP et limites explicites du modèle."
+    },
+    {
+      "id": "C34-F-Q4",
+      "result": "passed",
+      "finding": "LOCK INC AX porte sur un registre et ne protège pas une donnée mémoire partagée.",
+      "basis": "Vérification indépendante des octets de préfixe, conditions d'application, calculs REP et limites explicites du modèle."
+    },
+    {
+      "id": "C34-F-Q5",
+      "result": "passed",
+      "finding": "REP MOVSB avec CX=2 effectue deux transferts octet ; DF=0 incrémente SI et DI de deux.",
+      "basis": "Vérification indépendante des octets de préfixe, conditions d'application, calculs REP et limites explicites du modèle."
+    },
+    {
+      "id": "C34-F-Q6",
+      "result": "corrected",
+      "finding": "L'ancienne question identifiait simplement DF et ne correspondait pas à la catégorie calcul/prédiction. Elle demande désormais de tracer trois transferts en arrière avec DF=1.",
+      "basis": "Vérification indépendante des octets de préfixe, conditions d'application, calculs REP et limites explicites du modèle."
+    },
+    {
+      "id": "C34-F-Q7",
+      "result": "passed",
+      "finding": "Le modèle vérifie l'effet fonctionnel sur la mémoire, pas l'atomicité du bus.",
+      "basis": "Vérification indépendante des octets de préfixe, conditions d'application, calculs REP et limites explicites du modèle."
+    },
+    {
+      "id": "C34-F-Q8",
+      "result": "passed",
+      "finding": "WAIT/ESC sont reconnus sans modélisation d'un 8087 ni des signaux TEST.",
+      "basis": "Vérification indépendante des octets de préfixe, conditions d'application, calculs REP et limites explicites du modèle."
+    },
+    {
+      "id": "C34-F-Q9",
+      "result": "passed",
+      "finding": "L'opération LOCK doit modifier la donnée mémoire partagée, pas seulement un registre.",
+      "basis": "Vérification indépendante des octets de préfixe, conditions d'application, calculs REP et limites explicites du modèle."
+    },
+    {
+      "id": "C34-F-Q10",
+      "result": "passed",
+      "finding": "Les préfixes modifient l'interprétation ou le comportement de l'instruction suivante et leurs interactions doivent être testées.",
+      "basis": "Vérification indépendante des octets de préfixe, conditions d'application, calculs REP et limites explicites du modèle."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 18,
+    "corrected": 1,
+    "needsRevision": 0,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  },
+  "openFindings": []
+}
