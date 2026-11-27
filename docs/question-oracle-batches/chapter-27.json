@@ -1,0 +1,508 @@
+{
+  "schemaVersion": 1,
+  "batch": "chapter-27",
+  "title": "Oracles indépendants — chapitre 27 : MOVSB, STOSB et SCASB",
+  "reviewDate": "2026-11-27",
+  "statusLegend": {
+    "certified": "Opérandes implicites, segments, index et effets DF/FLAGS contrôlés indépendamment"
+  },
+  "referenceBasis": [
+    "Intel 8086 Family User's Manual (October 1979), MOVS/STOS/SCAS string operations, segment defaults, SI/DI and DF.",
+    "Intel MCS-86 Assembly Language Reference Manual, string instruction syntax and repeat semantics."
+  ],
+  "oracles": [
+    {
+      "id": "C27-L1-Q1",
+      "status": "certified",
+      "rule": "movsb_operands",
+      "inputs": {
+        "instruction": "MOVSB"
+      },
+      "expected": {
+        "source": "DS:SI",
+        "destination": "ES:DI"
+      },
+      "correctAnswer": "DS:SI et ES:DI",
+      "derivation": "MOVSB lit l'octet source à DS:SI et écrit cet octet à ES:DI. Le segment destination est fixé à ES pour les instructions de chaîne ; la source peut être remplacée par un préfixe de segment.",
+      "distractorRationales": [
+        {
+          "choice": "SS:SP et CS:IP",
+          "reason": "SS:SP et CS:IP ne sont pas les opérandes implicites de MOVSB ; la source et la destination sont des adresses de chaîne."
+        },
+        {
+          "choice": "ES:DI et DS:SI",
+          "reason": "L'ordre est inversé : MOVSB lit DS:SI puis écrit ES:DI."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
+    },
+    {
+      "id": "C27-L1-Q2",
+      "status": "certified",
+      "rule": "movsb_index_update",
+      "inputs": {
+        "SI": 256,
+        "DI": 512,
+        "DF": 0
+      },
+      "expected": {
+        "SI": 257,
+        "DI": 513
+      },
+      "correctAnswer": "SI=0101h et DI=0201h",
+      "derivation": "Avec DF=0, MOVSB incrémente SI et DI d'un octet après le transfert. Les index passent donc de 0100h/0200h à 0101h/0201h.",
+      "distractorRationales": [
+        {
+          "choice": "SI=00FFh et DI=01FFh",
+          "reason": "Avec DF=0, les index augmentent ; ils ne diminuent pas."
+        },
+        {
+          "choice": "Ils restent inchangés",
+          "reason": "MOVSB ajuste SI et DI après le transfert ; ils ne restent pas inchangés."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
+    },
+    {
+      "id": "C27-L1-Q3",
+      "status": "certified",
+      "rule": "string_destination_segment",
+      "inputs": {
+        "instruction": "MOVSB"
+      },
+      "expected": {
+        "destinationSegment": "ES"
+      },
+      "correctAnswer": "ES",
+      "derivation": "Les instructions de chaîne qui écrivent une destination mémoire utilisent ES:DI. Le segment source de MOVSB est DS par défaut, mais la destination n'est pas DS ou SS.",
+      "distractorRationales": [
+        {
+          "choice": "DS",
+          "reason": "DS est le segment source par défaut ; ES est le segment destination imposé pour MOVSB."
+        },
+        {
+          "choice": "SS",
+          "reason": "SS est le segment de pile et n'est pas la destination implicite de MOVSB."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
+    },
+    {
+      "id": "C27-L2-Q1",
+      "status": "certified",
+      "rule": "stosb_source_register",
+      "inputs": {
+        "instruction": "STOSB"
+      },
+      "expected": {
+        "sourceRegister": "AL"
+      },
+      "correctAnswer": "AL",
+      "derivation": "STOSB écrit le contenu de AL à l'adresse destination ES:DI. AX ou BL ne sont pas les sources implicites de la forme octet.",
+      "distractorRationales": [
+        {
+          "choice": "AH",
+          "reason": "AH est l'octet haut de AX ; STOSB utilise AL comme source octet."
+        },
+        {
+          "choice": "BL",
+          "reason": "BL peut être un registre général, mais la source implicite de STOSB est AL."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
+    },
+    {
+      "id": "C27-L2-Q2",
+      "status": "certified",
+      "rule": "stosb_destination",
+      "inputs": {
+        "ES": 4096,
+        "DI": 256
+      },
+      "expected": {
+        "destination": "ES:0100h"
+      },
+      "correctAnswer": "ES:0100h",
+      "derivation": "STOSB écrit à ES:DI. Avec DI=0100h et ES comme segment destination, l'adresse logique est ES:0100h ; DS n'est pas utilisé comme segment destination implicite.",
+      "distractorRationales": [
+        {
+          "choice": "DS:0100h",
+          "reason": "DS est le segment source par défaut de MOVSB, pas la destination implicite de STOSB."
+        },
+        {
+          "choice": "SS:0041h",
+          "reason": "SS:0041h ne correspond pas à l'adresse destination ; STOSB utilise ES:DI."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
+    },
+    {
+      "id": "C27-L2-Q3",
+      "status": "certified",
+      "rule": "stosb_index_register",
+      "inputs": {
+        "instruction": "STOSB"
+      },
+      "expected": {
+        "indexRegister": "DI"
+      },
+      "correctAnswer": "DI",
+      "derivation": "STOSB utilise DI comme offset de destination et le fait progresser ou reculer selon DF. SI est l'index source utilisé par MOVS/LODS, et BP est un registre général de base.",
+      "distractorRationales": [
+        {
+          "choice": "SI",
+          "reason": "SI est l'index source de MOVS, pas l'offset destination de STOSB."
+        },
+        {
+          "choice": "BP",
+          "reason": "BP sert à l'adressage de pile/base ; STOSB utilise DI."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
+    },
+    {
+      "id": "C27-L3-Q1",
+      "status": "certified",
+      "rule": "scasb_operands",
+      "inputs": {
+        "instruction": "SCASB"
+      },
+      "expected": {
+        "left": "AL",
+        "right": "ES:DI",
+        "operation": "compare"
+      },
+      "correctAnswer": "AL avec l'octet à ES:DI",
+      "derivation": "SCASB compare l'accumulateur AL à l'octet situé à ES:DI. Elle met à jour FLAGS comme une comparaison et ne copie pas AL dans la mémoire.",
+      "distractorRationales": [
+        {
+          "choice": "AX avec DS:SI",
+          "reason": "AX avec DS:SI ne correspond pas à SCASB, qui compare AL à ES:DI."
+        },
+        {
+          "choice": "BL avec SS:SP",
+          "reason": "BL et SS:SP ne sont pas les opérandes implicites de SCASB."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
+    },
+    {
+      "id": "C27-L3-Q2",
+      "status": "certified",
+      "rule": "scasb_equal_flags",
+      "inputs": {
+        "AL": 65,
+        "memoryByte": 65
+      },
+      "expected": {
+        "ZF": 1,
+        "equal": true
+      },
+      "correctAnswer": "AL égale l'octet comparé",
+      "derivation": "SCASB effectue une soustraction de comparaison entre AL et l'octet à ES:DI. Si les deux valeurs sont égales, la différence est nulle et ZF est positionné à 1.",
+      "distractorRationales": [
+        {
+          "choice": "AL est supérieur",
+          "reason": "L'égalité met ZF à 1 ; AL n'est pas nécessairement supérieur."
+        },
+        {
+          "choice": "DI vaut zéro",
+          "reason": "DI n'a pas besoin d'être zéro pour que ZF indique une égalité."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
+    },
+    {
+      "id": "C27-L3-Q3",
+      "status": "certified",
+      "rule": "scasb_index_register",
+      "inputs": {
+        "instruction": "SCASB"
+      },
+      "expected": {
+        "indexRegister": "DI"
+      },
+      "correctAnswer": "DI",
+      "derivation": "SCASB examine l'octet à ES:DI et met à jour DI selon DF après la comparaison. SI n'est pas l'index destination de SCASB.",
+      "distractorRationales": [
+        {
+          "choice": "SI",
+          "reason": "SI est l'index source des opérations MOVS ; SCASB utilise DI pour la destination examinée."
+        },
+        {
+          "choice": "BX",
+          "reason": "BX n'est pas l'index implicite de SCASB."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
+    },
+    {
+      "id": "C27-F-Q1",
+      "status": "certified",
+      "rule": "movsb_operands",
+      "inputs": {
+        "instruction": "MOVSB"
+      },
+      "expected": {
+        "source": "DS:SI",
+        "destination": "ES:DI"
+      },
+      "correctAnswer": "DS:SI source et ES:DI destination",
+      "derivation": "MOVSB lit la source dans DS:SI puis écrit à ES:DI. Le segment destination reste ES, tandis qu'un override de segment peut modifier le segment source.",
+      "distractorRationales": [
+        {
+          "choice": "SS:SP source et CS:IP destination",
+          "reason": "SS:SP et CS:IP ne sont pas les opérandes de MOVSB ; la source et la destination sont des chaînes mémoire."
+        },
+        {
+          "choice": "ES:DI source et DS:SI destination",
+          "reason": "ES:DI est la destination, pas la source ; DS:SI est la source par défaut."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
+    },
+    {
+      "id": "C27-F-Q2",
+      "status": "certified",
+      "rule": "movsb_direction_flag",
+      "inputs": {
+        "instruction": "MOVSB"
+      },
+      "expected": {
+        "controls": "DF"
+      },
+      "correctAnswer": "DF",
+      "derivation": "DF détermine si SI et DI sont incrémentés ou décrémentés après une instruction de chaîne. CF indique une retenue/emprunt et IF contrôle les interruptions masquables.",
+      "distractorRationales": [
+        {
+          "choice": "CF",
+          "reason": "DF règle la direction des index ; CF indique une retenue ou un emprunt arithmétique."
+        },
+        {
+          "choice": "IF",
+          "reason": "IF contrôle les interruptions masquables et ne règle pas la direction des chaînes."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
+    },
+    {
+      "id": "C27-F-Q3",
+      "status": "certified",
+      "rule": "movsb_instruction_semantics",
+      "inputs": {
+        "instruction": "MOVSB"
+      },
+      "expected": {
+        "copiesByte": true,
+        "source": "DS:SI",
+        "destination": "ES:DI"
+      },
+      "correctAnswer": "MOVSB",
+      "derivation": "MOVSB transfère l'octet situé à DS:SI vers ES:DI puis ajuste les index selon DF. STOSB écrit AL et SCASB compare AL à la destination.",
+      "distractorRationales": [
+        {
+          "choice": "STOSB",
+          "reason": "STOSB stocke AL vers ES:DI ; elle ne lit pas DS:SI pour copier vers une autre adresse."
+        },
+        {
+          "choice": "SCASB",
+          "reason": "SCASB compare AL à ES:DI et ne transfère pas l'octet source."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
+    },
+    {
+      "id": "C27-F-Q4",
+      "status": "certified",
+      "rule": "string_destination_segment",
+      "inputs": {
+        "instruction": "MOVSB"
+      },
+      "expected": {
+        "destinationSegment": "ES"
+      },
+      "correctAnswer": "ES",
+      "derivation": "Pour MOVSB, ES est le segment destination implicite et DI fournit l'offset. SS et CS ne sont pas les segments destination par défaut de cette instruction.",
+      "distractorRationales": [
+        {
+          "choice": "SS",
+          "reason": "SS est utilisé pour la pile ; MOVSB écrit sa destination dans ES:DI."
+        },
+        {
+          "choice": "CS",
+          "reason": "CS identifie le code et n'est pas le segment destination implicite de MOVSB."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
+    },
+    {
+      "id": "C27-F-Q5",
+      "status": "certified",
+      "rule": "movsb_index_update",
+      "inputs": {
+        "SI": 256,
+        "DI": 512,
+        "DF": 0
+      },
+      "expected": {
+        "SI": 257,
+        "DI": 513
+      },
+      "correctAnswer": "SI=0101h, DI=0201h",
+      "derivation": "Avec DF effacé, un transfert octet avance les deux index d'une unité. À partir de 0100h et 0200h, les nouvelles valeurs sont 0101h et 0201h.",
+      "distractorRationales": [
+        {
+          "choice": "SI=00FFh, DI=01FFh",
+          "reason": "Avec DF=0, les index sont incrémentés et non décrémentés."
+        },
+        {
+          "choice": "SI=0100h, DI=0200h",
+          "reason": "Les index sont mis à jour après le transfert ; ils ne restent pas à leurs valeurs initiales."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
+    },
+    {
+      "id": "C27-F-Q6",
+      "status": "certified",
+      "rule": "stosb_write",
+      "inputs": {
+        "AL": 65,
+        "ES": 4096,
+        "DI": 256
+      },
+      "expected": {
+        "value": 65,
+        "destination": "ES:0100h"
+      },
+      "correctAnswer": "41h à ES:0100h",
+      "derivation": "STOSB stocke l'octet contenu dans AL à l'adresse ES:DI. Avec AL=41h et DI=0100h, l'octet écrit est 41h à ES:0100h.",
+      "distractorRationales": [
+        {
+          "choice": "41h à DS:0100h",
+          "reason": "STOSB utilise ES:DI comme destination ; DS:0100h ne correspond pas à son segment destination implicite."
+        },
+        {
+          "choice": "0100h dans AL",
+          "reason": "AL contient la donnée à écrire ; DI est l'offset destination et ne doit pas être remplacé par AL."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
+    },
+    {
+      "id": "C27-F-Q7",
+      "status": "certified",
+      "rule": "scasb_equal_flags",
+      "inputs": {
+        "AL": 65,
+        "memoryByte": 65
+      },
+      "expected": {
+        "ZF": 1,
+        "equal": true
+      },
+      "correctAnswer": "Compare les octets et positionne ZF=1",
+      "derivation": "SCASB compare AL à l'octet mémoire ES:DI. Dans le cas d'égalité, le résultat conceptuel est nul et ZF=1 ; l'instruction ne réalise pas une copie de AL.",
+      "distractorRationales": [
+        {
+          "choice": "Copie AL vers ES:DI",
+          "reason": "SCASB compare les octets et met à jour FLAGS ; elle ne copie pas AL vers la mémoire."
+        },
+        {
+          "choice": "Charge ES:DI dans AX",
+          "reason": "SCASB n'effectue pas un chargement de l'adresse ES:DI dans AX ; elle compare AL au contenu mémoire."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
+    },
+    {
+      "id": "C27-F-Q8",
+      "status": "certified",
+      "rule": "movsb_copy_trace",
+      "inputs": {
+        "SI": 256,
+        "DI": 512,
+        "DF": 0,
+        "sourceByte": 65
+      },
+      "expected": {
+        "destinationByte": 65,
+        "SI": 257,
+        "DI": 513
+      },
+      "correctAnswer": "La donnée est copiée et SI/DI avancent d'un octet",
+      "derivation": "MOVSB copie l'octet source vers la destination. Avec DF=0, SI et DI sont ensuite incrémentés d'un octet ; CX n'est pas automatiquement mis à zéro par MOVSB seul.",
+      "distractorRationales": [
+        {
+          "choice": "La donnée est copiée et SI/DI diminuent",
+          "reason": "DF=0 fait avancer SI et DI ; ils ne diminuent pas."
+        },
+        {
+          "choice": "CX est automatiquement mis à zéro",
+          "reason": "MOVSB ne met pas automatiquement CX à zéro ; CX n'est utilisé que par les formes répétées REP."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
+    },
+    {
+      "id": "C27-F-Q9",
+      "status": "certified",
+      "rule": "movsb_source_override",
+      "inputs": {
+        "defaultSourceSegment": "DS",
+        "override": "FS",
+        "sourceOffset": 256
+      },
+      "expected": {
+        "sourceSegment": "FS",
+        "sourceOffset": 256,
+        "destinationSegment": "ES"
+      },
+      "correctAnswer": "Vérifier DS, SI et tout override de segment source",
+      "derivation": "La source de MOVSB est DS:SI par défaut, mais un préfixe de segment peut la remplacer. Il faut vérifier le segment réellement sélectionné et SI ; ES:DI reste la destination.",
+      "distractorRationales": [
+        {
+          "choice": "Modifier uniquement AX",
+          "reason": "AX ne détermine pas le segment source ; il faut vérifier DS/override et SI."
+        },
+        {
+          "choice": "Remplacer DI par SP",
+          "reason": "SP est le pointeur de pile et ne remplace pas DI comme index destination de chaîne."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
+    },
+    {
+      "id": "C27-F-Q10",
+      "status": "certified",
+      "rule": "string_instruction_validation",
+      "inputs": {
+        "checks": [
+          "source_data",
+          "destination_data",
+          "SI",
+          "DI",
+          "DF",
+          "segments",
+          "FLAGS"
+        ]
+      },
+      "expected": {
+        "checksAll": true
+      },
+      "correctAnswer": "Données source/destination, index, DF, segments et FLAGS pertinents",
+      "derivation": "Les instructions de chaîne utilisent des opérandes implicites et mettent à jour les index selon DF. Une validation doit vérifier les données transférées, les segments, SI/DI et les indicateurs pertinents, pas seulement l'opcode ou AL.",
+      "distractorRationales": [
+        {
+          "choice": "Seulement le résultat dans AL",
+          "reason": "AL seul ne décrit pas les données source/destination, les index, les segments et les effets FLAGS."
+        },
+        {
+          "choice": "Uniquement l'opcode",
+          "reason": "L'opcode seul ne suffit pas : les opérandes implicites et DF déterminent le comportement réel."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
+    }
+  ]
+}
