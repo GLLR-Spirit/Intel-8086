@@ -5047,7 +5047,7 @@
       ],
       "correctAnswer": "JA",
       "explanation": "JA branche si CF=0 et ZF=0 : la nouvelle valeur non signée est strictement supérieure. JAE inclurait aussi l'égalité.",
-      "category": "Compréhension"
+      "category": "Syntaxe"
     },
     {
       "id": "C17-F-Q3",
@@ -5063,7 +5063,7 @@
       ],
       "correctAnswer": "AX",
       "explanation": "AX reçoit les additions successives.",
-      "category": "Syntaxe"
+      "category": "Définition"
     },
     {
       "id": "C17-F-Q4",
@@ -5079,7 +5079,7 @@
       ],
       "correctAnswer": "Débordement de la capacité et perte de retenue si elle n'est pas propagée",
       "explanation": "Une somme multi-mots doit traiter la retenue avec ADC.",
-      "category": "Restrictions"
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C17-F-Q5",
@@ -5095,7 +5095,7 @@
       ],
       "correctAnswer": "CX",
       "explanation": "LOOP décrémente CX.",
-      "category": "Prédiction"
+      "category": "Syntaxe"
     },
     {
       "id": "C17-F-Q6",
@@ -5143,7 +5143,7 @@
       ],
       "correctAnswer": "Lire au-delà de la dernière case",
       "explanation": "Les bornes doivent être contrôlées avant chaque lecture.",
-      "category": "Analyse de résultat"
+      "category": "Analyse de programme"
     },
     {
       "id": "C17-F-Q9",
@@ -5159,7 +5159,7 @@
       ],
       "correctAnswer": "Leur interprétation signée ou non signée",
       "explanation": "Le choix Jcc dépend de l'interprétation des valeurs.",
-      "category": "Débogage"
+      "category": "Raisonnement / débogage"
     },
     {
       "id": "C17-F-Q10",
@@ -5175,7 +5175,7 @@
       ],
       "correctAnswer": "Vérifier le nombre d'éléments restants avant chaque lecture",
       "explanation": "Le compteur restant doit empêcher tout accès au-delà du dernier élément.",
-      "category": "Raisonnement"
+      "category": "Raisonnement / débogage"
     },
     {
       "id": "C18-L1-Q1",
