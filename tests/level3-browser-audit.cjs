@@ -323,7 +323,7 @@ const assert = require("node:assert/strict");
         const chapterNames = metadata.chapters.map(number => api.curriculum[number][0]);
         const searchText = [
           exercise[0], exercise[1], exercise[2],
-          api.exerciseTypeLabel(metadata.type),
+          ({application:"Application directe",raisonnement:"Raisonnement",completion:"Programme à compléter",debug:"Débogage / correction",probleme:"Problème complet",challenge:"Défi expert"}[metadata.type] || "Application directe"),
           chapterNames.join(" "),
           exercise[4]?.hint || "",
           (exercise[4]?.steps || []).join(" "),
