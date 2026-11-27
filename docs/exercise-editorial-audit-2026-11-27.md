@@ -218,3 +218,15 @@ Il vérifie aussi explicitement la présence des méthodes demandées dans les c
 ### EX39 — contrôle de justification plus discriminant
 
 Le contrôle ne se contente plus de rechercher cinq mots isolés. Il exige des groupes de notions reliés dans la réponse : résultat fonctionnel/équivalence, effet sur les cycles, BIU avec prélecture, bus avec accès mémoire, et limite explicite du simulateur. Un contrôle négatif fournit volontairement tous les termes tout en affirmant le contraire ; il doit être rejeté. Cette règle améliore la détection des réponses incohérentes, mais reste une grille lexicale structurée et ne remplace pas une correction sémantique humaine.
+
+## Mise à jour — contrôle des méthodes réellement exécutées
+
+Une faiblesse supplémentaire a été corrigée après inspection des validateurs : un résultat architectural final correct ne prouvait pas que l'élève avait réellement exécuté l'instruction demandée. Les contrôles de méthode précédents vérifiaient surtout les corrections guidées, pas le programme soumis.
+
+- L'exécution source conserve maintenant une trace ordonnée des mnémoniques effectivement exécutés (executedInstructions).
+- validateExercise impose une sous-séquence d'instructions exécutées pour les 18 exercices explicitement associés à une méthode : boucles, copie de chaînes, procédures CALL/RET, MUL/DIV, décalage, interruptions INT/IRET, E/S IN, sauvegarde de FLAGS et opérations de pile.
+- Les contrôles sont effectués sur la trace d'exécution, pas par simple recherche de mots dans le texte source ; une instruction présente uniquement dans un commentaire ou jamais atteinte ne satisfait donc pas le contrat.
+- Deux contrôles négatifs conservent artificiellement l'état final réussi tout en retirant CALL ou RET de la trace : les validateurs EX27 et EX41 doivent les refuser.
+- L'audit navigateur vérifie aussi que les corrections guidées des 18 exercices respectent leurs séquences obligatoires.
+
+Cette correction améliore la vérification des méthodes pour les exercices mappés. Elle ne constitue pas une certification exhaustive des 48 exercices : les autres consignes doivent encore être examinées individuellement pour identifier leurs propres contrats d'exécution, et les contrôles qualitatifs restent à terminer.
