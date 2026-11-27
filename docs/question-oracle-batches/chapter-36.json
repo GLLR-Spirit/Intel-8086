@@ -1,0 +1,580 @@
+{
+  "schemaVersion": 1,
+  "batch": "chapter-36",
+  "title": "Oracles indépendants — chapitre 36 : projet intégré et validation reproductible",
+  "reviewDate": "2026-11-27",
+  "statusLegend": {
+    "certified": "Spécifications, calculs, procédures, retenues et preuves de validation vérifiés indépendamment"
+  },
+  "referenceBasis": [
+    "Intel 8086 Family User's Manual (October 1979), ADD and FLAGS behavior, CALL and RET.",
+    "Intel MCS-86 Assembly Language Reference Manual, procedure calls and return-address handling.",
+    "Principes de validation logicielle : spécification explicite, cas limites, assertions d'état et preuves reproductibles."
+  ],
+  "oracles": [
+    {
+      "id": "C36-L1-Q1",
+      "status": "certified",
+      "rule": "program_specification_contract",
+      "inputs": {
+        "fields": [
+          "inputs",
+          "outputs",
+          "constraints",
+          "boundary_cases"
+        ]
+      },
+      "expected": {
+        "requiredFields": [
+          "inputs",
+          "outputs",
+          "constraints",
+          "boundary_cases"
+        ],
+        "complete": true
+      },
+      "correctAnswer": "Entrées, sorties, contraintes et cas limites",
+      "derivation": "Une spécification décrit le comportement attendu avant de choisir les instructions : domaine des entrées, sorties, contraintes et cas limites. Le nom du programme ou sa longueur ne suffit pas à définir une exigence vérifiable.",
+      "distractorRationales": [
+        {
+          "choice": "Uniquement le nom du programme",
+          "reason": "Un nom identifie le projet mais ne définit ni les données acceptées ni le résultat attendu."
+        },
+        {
+          "choice": "Uniquement le nombre de lignes",
+          "reason": "La longueur du source n'exprime pas les contraintes fonctionnelles ni les cas limites."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+    },
+    {
+      "id": "C36-L1-Q2",
+      "status": "certified",
+      "rule": "unsigned_word_add",
+      "inputs": {
+        "left": 7,
+        "right": 5,
+        "width": 16
+      },
+      "expected": {
+        "result": 12,
+        "CF": 0
+      },
+      "correctAnswer": "12",
+      "derivation": "ADD AX,BX calcule 7+5=12. Le résultat tient dans 16 bits, donc aucune retenue non signée ne sort du mot et CF reste à zéro.",
+      "distractorRationales": [
+        {
+          "choice": "35",
+          "reason": "35 est le produit 7×5 ; ADD effectue une addition, pas une multiplication."
+        },
+        {
+          "choice": "2",
+          "reason": "2 correspondrait à une soustraction 7−5, pas à ADD AX,BX."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+    },
+    {
+      "id": "C36-L1-Q3",
+      "status": "certified",
+      "rule": "boundary_case_rationale",
+      "inputs": {
+        "case": "maximum_plus_one",
+        "width": 8,
+        "maxValue": 255
+      },
+      "expected": {
+        "testsRequired": true,
+        "checksBoundary": true
+      },
+      "correctAnswer": "Pour savoir quels états doivent être testés",
+      "derivation": "Définir les frontières avant le codage permet d'identifier les valeurs minimales, maximales, nulles et les transitions de retenue ou de signe. Ces cas guident les assertions et réduisent les hypothèses implicites.",
+      "distractorRationales": [
+        {
+          "choice": "Pour éviter les tests",
+          "reason": "Les cas limites servent à construire des tests ciblés ; ils ne remplacent pas les tests."
+        },
+        {
+          "choice": "Pour rendre les registres plus larges",
+          "reason": "La définition des cas limites ne modifie pas la largeur architecturale des registres."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+    },
+    {
+      "id": "C36-L2-Q1",
+      "status": "certified",
+      "rule": "procedure_reuse_semantics",
+      "inputs": {
+        "procedure": "DOUBLE",
+        "responsibility": "double_input"
+      },
+      "expected": {
+        "encapsulatesReusableOperation": true
+      },
+      "correctAnswer": "Encapsuler une opération réutilisable",
+      "derivation": "Une procédure regroupe un traitement avec une interface et un point de retour. DOUBLE peut être appelée depuis plusieurs endroits sans recopier le corps de l'opération, à condition de respecter sa convention d'appel.",
+      "distractorRationales": [
+        {
+          "choice": "Remplacer le registre CS",
+          "reason": "Une procédure ne remplace pas CS ; CALL/RET utilisent l'adresse de retour pour organiser le flot de contrôle."
+        },
+        {
+          "choice": "Désassembler les octets",
+          "reason": "Le désassemblage est une tâche distincte ; une procédure encapsule une opération du programme."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+    },
+    {
+      "id": "C36-L2-Q2",
+      "status": "certified",
+      "rule": "procedure_double_result",
+      "inputs": {
+        "initialAX": 3,
+        "operation": "ADD AX,AX"
+      },
+      "expected": {
+        "finalAX": 6
+      },
+      "correctAnswer": "6",
+      "derivation": "La routine exécute ADD AX,AX avec AX=3. Elle calcule 3+3=6 puis RET restaure l'adresse de continuation empilée par CALL.",
+      "distractorRationales": [
+        {
+          "choice": "3",
+          "reason": "3 est la valeur d'entrée ; la routine l'additionne à elle-même et produit 6."
+        },
+        {
+          "choice": "9",
+          "reason": "9 correspondrait à 3×3 ; ADD AX,AX réalise un doublement par addition."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+    },
+    {
+      "id": "C36-L2-Q3",
+      "status": "certified",
+      "rule": "procedure_state_validation",
+      "inputs": {
+        "expectedAX": 6,
+        "expectedSPRestored": true,
+        "observedAX": 6,
+        "observedSPRestored": true
+      },
+      "expected": {
+        "resultCorrect": true,
+        "stackBalanced": true
+      },
+      "correctAnswer": "AX résultat et SP restauré",
+      "derivation": "Après l'appel, il faut vérifier que le résultat annoncé est bien dans AX et que la pile retrouve l'état attendu après le retour. Un résultat correct avec un SP déséquilibré peut corrompre les appels suivants.",
+      "distractorRationales": [
+        {
+          "choice": "Seulement CX",
+          "reason": "CX seul ne valide ni le résultat retourné dans AX ni l'équilibre de la pile."
+        },
+        {
+          "choice": "Uniquement DS",
+          "reason": "DS seul ne prouve pas que le résultat est correct ou que RET a restauré SP."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+    },
+    {
+      "id": "C36-L3-Q1",
+      "status": "certified",
+      "rule": "unsigned_byte_add_flags",
+      "inputs": {
+        "left": 255,
+        "right": 1,
+        "width": 8
+      },
+      "expected": {
+        "result": 0,
+        "AL": 0,
+        "CF": 1
+      },
+      "correctAnswer": "00h avec CF=1",
+      "derivation": "FFh vaut 255. L'addition 255+1 produit 100h sur neuf bits ; le registre AL ne conserve que les huit bits faibles, donc AL=00h, tandis que CF signale la retenue sortante.",
+      "distractorRationales": [
+        {
+          "choice": "FFh avec CF=0",
+          "reason": "La somme dépasse FFh ; le résultat faible reboucle à 00h et CF doit être positionné."
+        },
+        {
+          "choice": "01h avec CF=1",
+          "reason": "Le résultat modulo 256 de 100h est 00h, pas 01h ; la retenue est séparée dans CF."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+    },
+    {
+      "id": "C36-L3-Q2",
+      "status": "certified",
+      "rule": "boundary_case_crossing",
+      "inputs": {
+        "value": 255,
+        "increment": 1,
+        "width": 8,
+        "maxValue": 255
+      },
+      "expected": {
+        "crossesUnsignedMaximum": true,
+        "result": 0,
+        "carry": 1
+      },
+      "correctAnswer": "Il traverse la limite maximale non signée d'un octet",
+      "derivation": "FFh est la plus grande valeur non signée sur huit bits. Ajouter un provoque un dépassement de la plage représentable : le résultat stocké reboucle à 00h et CF indique la retenue.",
+      "distractorRationales": [
+        {
+          "choice": "Il n'utilise aucun indicateur",
+          "reason": "CF est précisément l'indicateur qui signale la retenue sortante dans cette addition non signée."
+        },
+        {
+          "choice": "Il ne modifie pas AL",
+          "reason": "ADD écrit le résultat tronqué dans AL ; ici AL passe de FFh à 00h."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+    },
+    {
+      "id": "C36-L3-Q3",
+      "status": "certified",
+      "rule": "validation_evidence_record",
+      "inputs": {
+        "artifacts": [
+          "source",
+          "expected_state",
+          "observed_state",
+          "test_evidence"
+        ]
+      },
+      "expected": {
+        "requiredArtifacts": [
+          "source",
+          "expected_state",
+          "observed_state",
+          "test_evidence"
+        ],
+        "reproducible": true
+      },
+      "correctAnswer": "Source, état attendu, état observé et preuves de test",
+      "derivation": "Un dossier de validation reproductible relie le code testé, les résultats attendus, les résultats observés et les preuves d'exécution. Une capture isolée ou le nom de l'auteur ne permet pas de rejouer et vérifier les assertions.",
+      "distractorRationales": [
+        {
+          "choice": "Seulement une capture de l'interface",
+          "reason": "Une capture ne conserve pas nécessairement les entrées, les états attendus ni les traces permettant de reproduire le test."
+        },
+        {
+          "choice": "Uniquement le nom de l'auteur",
+          "reason": "Le nom d'un auteur n'est pas une preuve technique du comportement observé."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+    },
+    {
+      "id": "C36-F-Q1",
+      "status": "certified",
+      "rule": "program_specification_contract",
+      "inputs": {
+        "fields": [
+          "inputs",
+          "outputs",
+          "constraints",
+          "boundary_cases"
+        ]
+      },
+      "expected": {
+        "requiredFields": [
+          "inputs",
+          "outputs",
+          "constraints",
+          "boundary_cases"
+        ],
+        "complete": true
+      },
+      "correctAnswer": "Entrées, sorties, contraintes et cas limites",
+      "derivation": "Une spécification utile définit les entrées acceptées, les sorties attendues, les contraintes et les frontières du domaine. Ces éléments deviennent des critères vérifiables pendant les tests.",
+      "distractorRationales": [
+        {
+          "choice": "Seulement le nom de l'algorithme",
+          "reason": "Le nom ne précise pas le comportement, les limites ou les résultats attendus."
+        },
+        {
+          "choice": "Seulement le registre AX",
+          "reason": "Un registre peut être un détail d'implémentation ; il ne remplace pas la spécification du problème."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+    },
+    {
+      "id": "C36-F-Q2",
+      "status": "certified",
+      "rule": "design_before_implementation",
+      "inputs": {
+        "steps": [
+          "specify",
+          "reason_about_algorithm",
+          "choose_instructions",
+          "test"
+        ]
+      },
+      "expected": {
+        "designPrecedesInstructionSelection": true,
+        "algorithmCanBeReviewedFirst": true
+      },
+      "correctAnswer": "Pour vérifier l'algorithme avant de choisir les instructions",
+      "derivation": "Séparer conception et implémentation permet de valider la logique et les cas limites avant de la traduire en assembleur. Les instructions et registres deviennent alors une réalisation d'un comportement déjà défini.",
+      "distractorRationales": [
+        {
+          "choice": "Pour éviter les tests",
+          "reason": "La conception facilite la définition des tests ; elle ne justifie pas leur suppression."
+        },
+        {
+          "choice": "Pour ignorer les registres",
+          "reason": "Les registres restent nécessaires à l'implémentation ; la conception les choisit après avoir clarifié le traitement."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+    },
+    {
+      "id": "C36-F-Q3",
+      "status": "certified",
+      "rule": "add_instruction_semantics",
+      "inputs": {
+        "instruction": "ADD AX,BX",
+        "AX": 7,
+        "BX": 5,
+        "width": 16
+      },
+      "expected": {
+        "result": 12,
+        "destination": "AX"
+      },
+      "correctAnswer": "ADD AX,BX",
+      "derivation": "ADD AX,BX additionne la source BX à la destination AX et place le résultat dans la première opérande. Avec AX=7 et BX=5, le résultat dans AX vaut 12.",
+      "distractorRationales": [
+        {
+          "choice": "SUB AX,BX",
+          "reason": "SUB réalise une soustraction et donnerait 2 dans ce cas, pas la somme 12."
+        },
+        {
+          "choice": "XCHG AX,BX",
+          "reason": "XCHG échange les contenus des registres sans calculer leur somme."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+    },
+    {
+      "id": "C36-F-Q4",
+      "status": "certified",
+      "rule": "call_return_stack_contract",
+      "inputs": {
+        "callPushesReturnIP": true,
+        "retPopsReturnIP": true,
+        "entrySP": 4096,
+        "balanced": true
+      },
+      "expected": {
+        "returnAddressPreserved": true,
+        "stackBalanced": true
+      },
+      "correctAnswer": "Adresse de retour et équilibre de pile",
+      "derivation": "CALL empile l'adresse de continuation et transfère le contrôle à la procédure. RET doit dépiler cette adresse ; toute opération de pile non équilibrée peut faire restaurer une mauvaise valeur ou désynchroniser SP.",
+      "distractorRationales": [
+        {
+          "choice": "Seulement le nom de la procédure",
+          "reason": "Le nom identifie la routine mais ne vérifie ni l'adresse de retour ni l'état de pile."
+        },
+        {
+          "choice": "Uniquement la valeur de DS",
+          "reason": "DS n'établit pas que CALL a sauvegardé l'IP ni que RET restaure SP."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+    },
+    {
+      "id": "C36-F-Q5",
+      "status": "certified",
+      "rule": "unsigned_word_add",
+      "inputs": {
+        "left": 7,
+        "right": 5,
+        "width": 16
+      },
+      "expected": {
+        "result": 12,
+        "CF": 0
+      },
+      "correctAnswer": "12",
+      "derivation": "L'addition de 7 et 5 vaut 12. Le résultat tient dans AX sur 16 bits, sans retenue sortante.",
+      "distractorRationales": [
+        {
+          "choice": "35",
+          "reason": "35 est le produit et non la somme des deux opérandes."
+        },
+        {
+          "choice": "2",
+          "reason": "2 est la différence 7−5 et non le résultat de ADD."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+    },
+    {
+      "id": "C36-F-Q6",
+      "status": "certified",
+      "rule": "unsigned_byte_add_flags",
+      "inputs": {
+        "left": 255,
+        "right": 1,
+        "width": 8
+      },
+      "expected": {
+        "result": 0,
+        "AL": 0,
+        "CF": 1
+      },
+      "correctAnswer": "00h",
+      "derivation": "Sur huit bits, 100h est tronqué à son octet faible 00h. La retenue au-delà du bit 7 est signalée séparément par CF=1.",
+      "distractorRationales": [
+        {
+          "choice": "100h",
+          "reason": "100h est la somme mathématique sur neuf bits ; AL ne peut conserver que huit bits et contient 00h."
+        },
+        {
+          "choice": "FFh",
+          "reason": "FFh est la valeur initiale ; l'addition d'un fait reboucler AL à 00h."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+    },
+    {
+      "id": "C36-F-Q7",
+      "status": "certified",
+      "rule": "procedure_call_double",
+      "inputs": {
+        "initialAX": 3,
+        "procedure": [
+          "ADD AX,AX",
+          "RET"
+        ],
+        "callPushesReturnIP": true
+      },
+      "expected": {
+        "finalAX": 6,
+        "returnsAfterCall": true,
+        "stackBalanced": true
+      },
+      "correctAnswer": "Retourne AX=6",
+      "derivation": "CALL sauvegarde l'IP de continuation et entre dans DOUBLE. ADD AX,AX transforme 3 en 6 ; RET dépile l'adresse de retour et reprend après CALL, en restaurant l'équilibre de pile si la routine n'a pas laissé de PUSH parasite.",
+      "distractorRationales": [
+        {
+          "choice": "Retourne AX=3",
+          "reason": "La routine exécute ADD AX,AX ; elle ne conserve donc pas la valeur d'entrée inchangée."
+        },
+        {
+          "choice": "Retourne AX=9",
+          "reason": "La routine double par addition et ne calcule pas le carré 3×3."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+    },
+    {
+      "id": "C36-F-Q8",
+      "status": "certified",
+      "rule": "unsigned_byte_add_flags",
+      "inputs": {
+        "left": 255,
+        "right": 1,
+        "width": 8
+      },
+      "expected": {
+        "result": 0,
+        "AL": 0,
+        "CF": 1
+      },
+      "correctAnswer": "AL=00h et CF=1",
+      "derivation": "La somme 100h dépasse la capacité d'AL. Les huit bits faibles donnent 00h et le neuvième bit est représenté par CF=1 ; les deux éléments doivent être vérifiés ensemble.",
+      "distractorRationales": [
+        {
+          "choice": "AL=FFh et CF=0",
+          "reason": "Cette paire décrit l'absence de changement et de retenue, alors que FFh+1 dépasse la plage 8 bits."
+        },
+        {
+          "choice": "AL=01h et CF=1",
+          "reason": "Le modulo 256 de 100h est 00h ; 01h n'est pas le résultat stocké dans AL."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+    },
+    {
+      "id": "C36-F-Q9",
+      "status": "certified",
+      "rule": "validation_assertions_scope",
+      "inputs": {
+        "assertions": [
+          "registers",
+          "memory",
+          "FLAGS",
+          "stack"
+        ]
+      },
+      "expected": {
+        "requiredAssertions": [
+          "registers",
+          "memory",
+          "FLAGS",
+          "stack"
+        ],
+        "complete": true
+      },
+      "correctAnswer": "Ajouter des assertions sur registres, mémoire, FLAGS et pile",
+      "derivation": "Une exécution qui ne déclenche pas d'erreur ne démontre pas la correction. Il faut comparer l'état observé aux attentes : registres, mémoire, indicateurs et pile, selon le contrat du programme.",
+      "distractorRationales": [
+        {
+          "choice": "Supprimer les résultats attendus",
+          "reason": "Sans résultat attendu, aucune comparaison objective ne permet de détecter une sortie incorrecte."
+        },
+        {
+          "choice": "Vérifier uniquement HLT",
+          "reason": "Atteindre HLT indique seulement que le flot s'est arrêté ; cela ne prouve pas que les données, FLAGS et la pile sont corrects."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+    },
+    {
+      "id": "C36-F-Q10",
+      "status": "certified",
+      "rule": "reproducible_validation_evidence",
+      "inputs": {
+        "artifacts": [
+          "vectors",
+          "expected_results",
+          "observed_results",
+          "validation_logs"
+        ]
+      },
+      "expected": {
+        "requiredArtifacts": [
+          "vectors",
+          "expected_results",
+          "observed_results",
+          "validation_logs"
+        ],
+        "reproducible": true
+      },
+      "correctAnswer": "Vecteurs, résultats attendus, résultats observés et logs de validation",
+      "derivation": "Des vecteurs d'entrée, des résultats attendus, des états observés et des journaux permettent de rejouer les essais et de vérifier les écarts. Une capture isolée ou une déclaration de complétude ne constitue pas une preuve reproductible.",
+      "distractorRationales": [
+        {
+          "choice": "Une capture isolée",
+          "reason": "Une capture peut illustrer un résultat mais ne suffit pas à reproduire l'entrée et à comparer les états."
+        },
+        {
+          "choice": "Une déclaration de complétude",
+          "reason": "Une affirmation sans vecteurs ni logs ne permet pas de vérifier indépendamment le résultat."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."
+    }
+  ]
+}
