@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "title": "Oracles sémantiques indépendants — tranche initiale",
-  "scope": "Le manifeste conserve six oracles historiques. Les lots des chapitres 1 à 4 couvrent 76 questions distinctes : 19 au chapitre 1, 19 au chapitre 2 (dont C02-F-Q4 réutilisé depuis le manifeste), 19 au chapitre 3 et 19 au chapitre 4 (dont C04-F-Q4 réutilisé). Les autres questions restent non certifiées jusqu'à leur validation individuelle.",
+  "scope": "Le manifeste conserve six oracles historiques. Les lots des chapitres 1 à 5 couvrent 95 questions distinctes : 19 au chapitre 1, 19 au chapitre 2 (dont C02-F-Q4 réutilisé), 19 au chapitre 3, 19 au chapitre 4 (dont C04-F-Q4 réutilisé) et 19 au chapitre 5. Les autres questions restent non certifiées jusqu'à leur validation individuelle.",
   "referenceBasis": [
     "Intel 8086 Family User's Manual (October 1979), architecture EU/BIU, file de prélecture, arithmétique, instructions de décalage, instructions de chaîne et indicateurs.",
     "Intel MCS-86 Assembly Language Reference Manual, formes d'opérandes et syntaxe assembleur."
@@ -243,14 +243,22 @@
       "reusedHistorical": 1,
       "blocked": 0,
       "pending": 0
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-05.json",
+      "scope": "Chapitre 5 — 19 questions auditées",
+      "certified": 19,
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0
     }
   ],
   "certificationSummary": {
     "questionCount": 684,
     "historicalOracles": 6,
-    "newSupplementalOracles": 74,
-    "uniqueCertifiedQuestions": 80,
-    "remainingUncertified": 604,
-    "calculation": "6 oracles historiques distincts + 74 nouveaux identifiants dans les lots des chapitres 1 à 4 ; C02-F-Q4 et C04-F-Q4 sont réutilisés sans double comptage."
+    "newSupplementalOracles": 93,
+    "uniqueCertifiedQuestions": 99,
+    "remainingUncertified": 585,
+    "calculation": "6 oracles historiques distincts + 93 nouveaux identifiants dans les lots des chapitres 1 à 5 ; C02-F-Q4 et C04-F-Q4 sont réutilisés sans double comptage."
   }
 }
