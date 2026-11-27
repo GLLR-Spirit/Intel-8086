@@ -1,5 +1,7 @@
 const { chromium } = require("playwright");
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
 
 (async () => {
   const browser = await chromium.launch({ headless: true });
@@ -779,6 +781,48 @@ const assert = require("node:assert/strict");
   assert.equal((await page.locator("#bin").textContent()).trim(),"1111111111111111");
   console.log("Base converter strict validation and 16-bit limits PASS.");
 
+  // Real-browser JSON backup export/import round trip.
+  const backupData = {
+    "i86-lessons-v2": ["lesson-1", "lesson-2"],
+    "i86-exercises": ["exercise-1"],
+    "i86-chapter-scores-v2": {"0":8,"16":10},
+    "i86-lesson-scores-v2": {"0-0":3,"16-2":2},
+    "i86-title": "Projet navigateur",
+    "i86-idea": "Restauration réelle Playwright",
+    "i86-code": "MOV AX, 1234h\\nHLT"
+  };
+  await page.evaluate(data => {
+    for (const [key,value] of Object.entries(data)) {
+      localStorage.setItem(key, ["i86-title","i86-idea","i86-code"].includes(key) ? value : JSON.stringify(value));
+    }
+  }, backupData);
+  await page.locator('[data-view="tools"]').click();
+  const downloadPromise = page.waitForEvent("download");
+  await page.locator("#exportBackup").click();
+  const backupDownload = await downloadPromise;
+  const backupPath = path.join("artifacts", "browser-backup-roundtrip.json");
+  await backupDownload.saveAs(backupPath);
+  const exportedBackup = JSON.parse(fs.readFileSync(backupPath,"utf8"));
+  assert.equal(exportedBackup.application,"Intel 8086 Lab");
+  assert.equal(exportedBackup.backupVersion,1);
+  assert.deepEqual(exportedBackup.data,backupData,"Downloaded JSON must contain all seven local data categories.");
+  await page.evaluate(() => localStorage.setItem("i86-title","Valeur modifiée après export"));
+  await page.locator("#backupFile").setInputFiles(backupPath);
+  await page.waitForFunction(() => document.querySelector("#restoreBackup").disabled === false);
+  page.once("dialog", dialog => dialog.accept());
+  await page.locator("#restoreBackup").click();
+  const restoredBackup = await page.evaluate(() => ({
+    "i86-lessons-v2":JSON.parse(localStorage.getItem("i86-lessons-v2")),
+    "i86-exercises":JSON.parse(localStorage.getItem("i86-exercises")),
+    "i86-chapter-scores-v2":JSON.parse(localStorage.getItem("i86-chapter-scores-v2")),
+    "i86-lesson-scores-v2":JSON.parse(localStorage.getItem("i86-lesson-scores-v2")),
+    "i86-title":localStorage.getItem("i86-title"),
+    "i86-idea":localStorage.getItem("i86-idea"),
+    "i86-code":localStorage.getItem("i86-code")
+  }));
+  assert.deepEqual(restoredBackup,backupData,"Import must restore all seven categories in the real browser.");
+  console.log("Real-browser JSON export, download, validation, confirmation and seven-key restore PASS.");
+
   // Clear progress must remove the current versioned keys, including per-lesson scores.
   await page.evaluate(() => {
     localStorage.setItem("i86-lessons-v2", "[1,2]");
@@ -806,6 +850,13 @@ const assert = require("node:assert/strict");
   await blockedPage.locator('[data-view="editor"]').click();
   await blockedPage.locator("#save").click();
   assert.match(await blockedPage.locator("#status").textContent(),/Stockage local indisponible/i);
+  await blockedPage.locator('[data-view="tools"]').click();
+  await blockedPage.locator("#backupFile").setInputFiles(path.resolve("artifacts/browser-backup-roundtrip.json"));
+  await blockedPage.waitForFunction(() => document.querySelector("#restoreBackup").disabled === false);
+  blockedPage.once("dialog", dialog => dialog.accept());
+  await blockedPage.locator("#restoreBackup").click();
+  assert.match(await blockedPage.locator("#backupStatus").textContent(),/Impossible de lire les données actuelles/i,
+    "Restore must refuse cleanly when localStorage is inaccessible.");
   assert.deepEqual(blockedErrors,[],"Blocked localStorage must not crash the page.");
   await blockedPage.close();
   console.log("Blocked localStorage fallback PASS.");
