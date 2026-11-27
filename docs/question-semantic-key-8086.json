@@ -5055,14 +5055,14 @@
       "kind": "final",
       "lesson": null,
       "number": 3,
-      "stem": "Quelle syntaxe additionne deux mots en incluant la retenue ?",
+      "stem": "Quel registre sert d'accumulateur dans l'exemple de somme ?",
       "choices": [
-        "ADC AX,BX",
-        "ADD AX,BX puis oublier CF",
-        "CMP AX,BX"
+        "AX",
+        "CS",
+        "IP"
       ],
-      "correctAnswer": "ADC AX,BX",
-      "explanation": "ADC AX,BX additionne BX et le CF entrant au contenu de AX.",
+      "correctAnswer": "AX",
+      "explanation": "AX reçoit les additions successives.",
       "category": "Syntaxe"
     },
     {
@@ -5071,14 +5071,14 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "Après ADD AX,1 avec AX=FFFFh, quel état obtient-on ?",
+      "stem": "Quel risque existe lors d'une somme 16 bits ?",
       "choices": [
-        "AX=0000h et CF=1",
-        "AX=FFFFh et CF=0",
-        "AX=0001h et CF=1"
+        "Débordement de la capacité et perte de retenue si elle n'est pas propagée",
+        "DF est toujours modifié",
+        "La pile s'inverse"
       ],
-      "correctAnswer": "AX=0000h et CF=1",
-      "explanation": "FFFFh+1 produit 1 0000h ; AX conserve le mot faible 0000h et CF signale la retenue.",
+      "correctAnswer": "Débordement de la capacité et perte de retenue si elle n'est pas propagée",
+      "explanation": "Une somme multi-mots doit traiter la retenue avec ADC.",
       "category": "Restrictions"
     },
     {
@@ -5119,14 +5119,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Dans [3,8,11], quel index (base zéro) correspond à la cible 11 ?",
+      "stem": "Quel résultat distingue une cible absente ?",
       "choices": [
-        "2",
-        "3",
-        "1"
+        "Un état trouvé/non trouvé explicite",
+        "La valeur du segment CS",
+        "IP"
       ],
-      "correctAnswer": "2",
-      "explanation": "Les index commencent à zéro : 3 est à 0, 8 à 1 et 11 à 2.",
+      "correctAnswer": "Un état trouvé/non trouvé explicite",
+      "explanation": "Le programme doit distinguer l'échec de recherche d'une position valide.",
       "category": "Analyse de programme"
     },
     {
@@ -5135,14 +5135,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Pour un tableau de 3 éléments indexé à zéro, quel est le dernier index valide ?",
+      "stem": "Quel risque doit éviter une recherche dans un tableau ?",
       "choices": [
-        "2",
-        "3",
-        "1"
+        "Lire au-delà de la dernière case",
+        "Utiliser CMP",
+        "Initialiser un index"
       ],
-      "correctAnswer": "2",
-      "explanation": "Les index valides vont de 0 à longueur−1 ; pour trois éléments, le dernier vaut 2.",
+      "correctAnswer": "Lire au-delà de la dernière case",
+      "explanation": "Les bornes doivent être contrôlées avant chaque lecture.",
       "category": "Analyse de résultat"
     },
     {
@@ -5167,14 +5167,14 @@
       "kind": "final",
       "lesson": null,
       "number": 10,
-      "stem": "Dans le pire cas, combien d'éléments une recherche séquentielle de n éléments peut-elle comparer ?",
+      "stem": "Quel contrôle évite une lecture hors limites dans une recherche séquentielle ?",
       "choices": [
-        "n",
-        "n−1",
-        "1"
+        "Vérifier le nombre d'éléments restants avant chaque lecture",
+        "Lire systématiquement une case supplémentaire",
+        "Continuer après avoir trouvé la cible"
       ],
-      "correctAnswer": "n",
-      "explanation": "La cible peut être absente ou située à la dernière position : jusqu'à n éléments sont comparés, soit O(n).",
+      "correctAnswer": "Vérifier le nombre d'éléments restants avant chaque lecture",
+      "explanation": "Le compteur restant doit empêcher tout accès au-delà du dernier élément.",
       "category": "Raisonnement"
     },
     {
