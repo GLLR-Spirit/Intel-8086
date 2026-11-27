@@ -1,0 +1,496 @@
+{
+  "schemaVersion": 1,
+  "batch": "chapter-10",
+  "title": "Oracles indépendants — chapitre 10 : FLAGS et contrôle du processeur",
+  "reviewDate": "2026-11-27",
+  "statusLegend": {
+    "certified": "Règles FLAGS et effets de pile contrôlés indépendamment"
+  },
+  "referenceBasis": [
+    "Intel 8086 Family User's Manual (October 1979), FLAGS register, condition flags, TF/IF/DF, CLI/STI/CLD/STD, PUSHF/POPF.",
+    "Intel MCS-86 Assembly Language Reference Manual, flag effects of arithmetic and logical instructions."
+  ],
+  "oracles": [
+    {
+      "id": "C10-L1-Q1",
+      "status": "certified",
+      "rule": "flag_cf_semantics",
+      "inputs": {
+        "operation": "arithmetic"
+      },
+      "expected": {
+        "meaning": "unsigned_carry_or_borrow"
+      },
+      "correctAnswer": "CF",
+      "derivation": "CF indique une retenue sortante lors d'une addition ou un emprunt lors d'une soustraction dans l'interprétation non signée. Il ne représente pas le débordement signé, qui relève de OF.",
+      "distractorRationales": [
+        {
+          "choice": "OF",
+          "reason": "OF signale un débordement signé ; il ne décrit pas la retenue ou l'emprunt non signé."
+        },
+        {
+          "choice": "SF",
+          "reason": "SF reprend le bit de signe du résultat et ne signale pas une retenue non signée."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), FLAGS register, interrupt and direction control, PUSHF/POPF and stack operation; Intel MCS-86 Assembly Language Reference Manual, flag effects."
+    },
+    {
+      "id": "C10-L1-Q2",
+      "status": "certified",
+      "rule": "flag_cf_of_distinction",
+      "inputs": {},
+      "expected": {
+        "CF": "unsigned_carry_or_borrow",
+        "OF": "signed_overflow",
+        "sameMeaning": false
+      },
+      "correctAnswer": "CF non signé, OF signé",
+      "derivation": "CF et OF décrivent deux interprétations différentes du résultat binaire : CF signale une retenue ou un emprunt non signé, tandis que OF signale une sortie de la plage signée représentable. Ils ne sont pas identiques.",
+      "distractorRationales": [
+        {
+          "choice": "Ils sont identiques",
+          "reason": "CF et OF ont des significations distinctes et peuvent prendre des valeurs différentes pour une même opération."
+        },
+        {
+          "choice": "OF indique la direction",
+          "reason": "OF ne représente pas le drapeau de direction ; DF contrôle le sens des index des chaînes."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), FLAGS register, interrupt and direction control, PUSHF/POPF and stack operation; Intel MCS-86 Assembly Language Reference Manual, flag effects."
+    },
+    {
+      "id": "C10-L1-Q3",
+      "status": "certified",
+      "rule": "parity_flag",
+      "inputs": {
+        "lowByte": 3
+      },
+      "expected": {
+        "oneBits": 2,
+        "PF": 1
+      },
+      "correctAnswer": "Parité paire de l'octet faible",
+      "derivation": "PF vaut 1 lorsque l'octet faible du résultat contient un nombre pair de bits à 1. Ici 03h contient deux bits à 1, donc la parité est paire et PF=1.",
+      "distractorRationales": [
+        {
+          "choice": "Résultat négatif",
+          "reason": "SF décrit le signe du résultat, pas la parité des bits de l'octet faible."
+        },
+        {
+          "choice": "Retenue non signée",
+          "reason": "CF signale la retenue ou l'emprunt non signé ; PF mesure la parité paire de l'octet faible."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), FLAGS register, interrupt and direction control, PUSHF/POPF and stack operation; Intel MCS-86 Assembly Language Reference Manual, flag effects."
+    },
+    {
+      "id": "C10-L2-Q1",
+      "status": "certified",
+      "rule": "interrupt_flag_role",
+      "inputs": {
+        "flag": "IF"
+      },
+      "expected": {
+        "controls": "maskable_interrupt_enable"
+      },
+      "correctAnswer": "IF",
+      "derivation": "IF est l'Interrupt Flag. Lorsqu'il est positionné, les interruptions masquables peuvent être reconnues selon les règles du processeur ; il ne règle ni le sens des chaînes ni le pas à pas.",
+      "distractorRationales": [
+        {
+          "choice": "DF",
+          "reason": "DF règle la direction des index des chaînes, pas l'acceptation des interruptions masquables."
+        },
+        {
+          "choice": "TF",
+          "reason": "TF est associé au mécanisme de pas à pas, pas à l'activation des interruptions masquables."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), FLAGS register, interrupt and direction control, PUSHF/POPF and stack operation; Intel MCS-86 Assembly Language Reference Manual, flag effects."
+    },
+    {
+      "id": "C10-L2-Q2",
+      "status": "certified",
+      "rule": "std_direction_flag",
+      "inputs": {
+        "instruction": "STD"
+      },
+      "expected": {
+        "DF": 1,
+        "direction": "decrement"
+      },
+      "correctAnswer": "Positionne DF à 1",
+      "derivation": "STD met DF à 1. Les instructions de chaîne font alors décroître les index concernés au lieu de les incrémenter après chaque élément.",
+      "distractorRationales": [
+        {
+          "choice": "Efface IF",
+          "reason": "STD ne modifie pas IF ; il positionne DF à 1."
+        },
+        {
+          "choice": "Active CF",
+          "reason": "STD ne modifie pas CF ; il configure le sens d'avancement des chaînes via DF."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), FLAGS register, interrupt and direction control, PUSHF/POPF and stack operation; Intel MCS-86 Assembly Language Reference Manual, flag effects."
+    },
+    {
+      "id": "C10-L2-Q3",
+      "status": "certified",
+      "rule": "cli_interrupt_flag",
+      "inputs": {
+        "instruction": "CLI"
+      },
+      "expected": {
+        "IF": 0
+      },
+      "correctAnswer": "IF",
+      "derivation": "CLI efface IF et désactive la reconnaissance des interruptions masquables. Elle ne modifie pas OF ni ZF pour réaliser cette fonction.",
+      "distractorRationales": [
+        {
+          "choice": "OF",
+          "reason": "CLI efface IF, pas OF qui indique un débordement signé."
+        },
+        {
+          "choice": "ZF",
+          "reason": "CLI ne modifie pas ZF pour désactiver les interruptions ; il efface IF."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), FLAGS register, interrupt and direction control, PUSHF/POPF and stack operation; Intel MCS-86 Assembly Language Reference Manual, flag effects."
+    },
+    {
+      "id": "C10-L3-Q1",
+      "status": "certified",
+      "rule": "pushf_stack_write",
+      "inputs": {
+        "instruction": "PUSHF"
+      },
+      "expected": {
+        "operation": "push",
+        "value": "FLAGS",
+        "stack": "SS:SP"
+      },
+      "correctAnswer": "PUSHF",
+      "derivation": "PUSHF empile une copie du mot FLAGS sur la pile. L'opération utilise SS:SP et décrémente SP pour réserver l'emplacement du mot sauvegardé.",
+      "distractorRationales": [
+        {
+          "choice": "POPF",
+          "reason": "POPF restaure un mot FLAGS depuis la pile ; il ne le sauvegarde pas."
+        },
+        {
+          "choice": "PUSH AX",
+          "reason": "PUSH AX empile AX, pas le mot FLAGS."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), FLAGS register, interrupt and direction control, PUSHF/POPF and stack operation; Intel MCS-86 Assembly Language Reference Manual, flag effects."
+    },
+    {
+      "id": "C10-L3-Q2",
+      "status": "certified",
+      "rule": "popf_restore_flags",
+      "inputs": {
+        "savedFLAGS": 512
+      },
+      "expected": {
+        "restoredFLAGS": 512,
+        "IF": 1
+      },
+      "correctAnswer": "1",
+      "derivation": "Le mot 0200h contient le bit IF à 1. POPF restaure le mot FLAGS depuis la pile ; après restauration de ce mot, IF vaut donc 1.",
+      "distractorRationales": [
+        {
+          "choice": "0",
+          "reason": "Le bit IF du mot 0200h est à 1 ; POPF le restaure à 1, pas à 0."
+        },
+        {
+          "choice": "Indéterminé",
+          "reason": "Le résultat n'est pas indéterminé ici : le mot sauvegardé est explicitement donné et son bit IF vaut 1."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), FLAGS register, interrupt and direction control, PUSHF/POPF and stack operation; Intel MCS-86 Assembly Language Reference Manual, flag effects."
+    },
+    {
+      "id": "C10-L3-Q3",
+      "status": "certified",
+      "rule": "stack_segment_pointer",
+      "inputs": {
+        "operation": "PUSHF"
+      },
+      "expected": {
+        "segment": "SS",
+        "offset": "SP"
+      },
+      "correctAnswer": "SS:SP",
+      "derivation": "Les accès à la pile du 8086 utilisent le segment SS et le pointeur SP comme offset. Le couple SS:SP désigne donc le sommet courant de la pile.",
+      "distractorRationales": [
+        {
+          "choice": "DS:SI",
+          "reason": "DS:SI est un couple courant pour les données et les chaînes source, pas pour la pile."
+        },
+        {
+          "choice": "CS:IP",
+          "reason": "CS:IP désigne le flot d'instructions, pas le sommet de pile."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), FLAGS register, interrupt and direction control, PUSHF/POPF and stack operation; Intel MCS-86 Assembly Language Reference Manual, flag effects."
+    },
+    {
+      "id": "C10-F-Q1",
+      "status": "certified",
+      "rule": "parity_flag",
+      "inputs": {
+        "lowByte": 3
+      },
+      "expected": {
+        "oneBits": 2,
+        "PF": 1
+      },
+      "correctAnswer": "PF",
+      "derivation": "PF reflète la parité paire du nombre de bits à 1 dans l'octet faible du résultat. Ce n'est ni le demi-report AF ni le débordement signé OF.",
+      "distractorRationales": [
+        {
+          "choice": "AF",
+          "reason": "AF concerne la retenue auxiliaire entre les bits 3 et 4, pas la parité de l'octet faible."
+        },
+        {
+          "choice": "OF",
+          "reason": "OF signale un débordement signé, pas la parité."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), FLAGS register, interrupt and direction control, PUSHF/POPF and stack operation; Intel MCS-86 Assembly Language Reference Manual, flag effects."
+    },
+    {
+      "id": "C10-F-Q2",
+      "status": "certified",
+      "rule": "overflow_flag_semantics",
+      "inputs": {
+        "operation": "signed_arithmetic"
+      },
+      "expected": {
+        "meaning": "signed_result_out_of_range"
+      },
+      "correctAnswer": "OF",
+      "derivation": "OF indique qu'un résultat arithmétique interprété comme signé sort de la plage représentable. CF concerne au contraire la retenue ou l'emprunt non signé ; DF règle la direction des chaînes.",
+      "distractorRationales": [
+        {
+          "choice": "CF",
+          "reason": "CF signale une retenue ou un emprunt non signé, pas le débordement signé."
+        },
+        {
+          "choice": "DF",
+          "reason": "DF fixe le sens des index des instructions de chaîne et ne signale pas le débordement."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), FLAGS register, interrupt and direction control, PUSHF/POPF and stack operation; Intel MCS-86 Assembly Language Reference Manual, flag effects."
+    },
+    {
+      "id": "C10-F-Q3",
+      "status": "certified",
+      "rule": "sti_enable_interrupts",
+      "inputs": {
+        "instruction": "STI"
+      },
+      "expected": {
+        "IF": 1,
+        "maskableInterruptsEnabled": true
+      },
+      "correctAnswer": "STI",
+      "derivation": "STI positionne IF à 1 pour autoriser les interruptions masquables, sous réserve des règles temporelles du 8086. CLI réalise l'opération inverse ; STD agit sur DF.",
+      "distractorRationales": [
+        {
+          "choice": "CLI",
+          "reason": "STI positionne IF à 1 ; CLI l'efface."
+        },
+        {
+          "choice": "STD",
+          "reason": "STD positionne DF, le drapeau de direction, pas IF."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), FLAGS register, interrupt and direction control, PUSHF/POPF and stack operation; Intel MCS-86 Assembly Language Reference Manual, flag effects."
+    },
+    {
+      "id": "C10-F-Q4",
+      "status": "certified",
+      "rule": "flag_instruction_effects",
+      "inputs": {
+        "instruction": "8086_instruction"
+      },
+      "expected": {
+        "mayDefineFlags": true,
+        "mayPreserveFlags": true,
+        "mayLeaveSomeUndefined": true
+      },
+      "correctAnswer": "Une instruction peut définir, préserver ou laisser indéfinis certains bits",
+      "derivation": "Les effets sur FLAGS sont propres à chaque instruction et parfois à chaque indicateur. Une instruction peut modifier certains bits, préserver les autres et laisser certains indicateurs indéfinis ; il est incorrect de supposer que tous changent ou qu'aucun ne change.",
+      "distractorRationales": [
+        {
+          "choice": "Toutes les instructions modifient tous les bits",
+          "reason": "Toutes les instructions n'affectent pas tous les indicateurs ; certaines les préservent ou laissent certains bits indéfinis."
+        },
+        {
+          "choice": "FLAGS ne changent jamais",
+          "reason": "Certaines instructions modifient FLAGS ; l'affirmation selon laquelle FLAGS ne changent jamais est fausse."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), FLAGS register, interrupt and direction control, PUSHF/POPF and stack operation; Intel MCS-86 Assembly Language Reference Manual, flag effects."
+    },
+    {
+      "id": "C10-F-Q5",
+      "status": "certified",
+      "rule": "cld_direction_flag",
+      "inputs": {
+        "instruction": "CLD"
+      },
+      "expected": {
+        "DF": 0,
+        "direction": "increment"
+      },
+      "correctAnswer": "DF=0",
+      "derivation": "CLD efface le drapeau DF. Les instructions de chaîne font alors progresser SI/DI dans le sens croissant après chaque élément.",
+      "distractorRationales": [
+        {
+          "choice": "DF=1",
+          "reason": "STD positionne DF à 1 ; CLD l'efface."
+        },
+        {
+          "choice": "IF=0",
+          "reason": "CLD agit sur DF et non sur IF."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), FLAGS register, interrupt and direction control, PUSHF/POPF and stack operation; Intel MCS-86 Assembly Language Reference Manual, flag effects."
+    },
+    {
+      "id": "C10-F-Q6",
+      "status": "certified",
+      "rule": "pushf_popf_order",
+      "inputs": {
+        "sequence": [
+          "PUSHF",
+          "...",
+          "POPF"
+        ]
+      },
+      "expected": {
+        "order": "push_then_pop",
+        "restoresSavedWord": true
+      },
+      "correctAnswer": "Empiler FLAGS puis le dépiler plus tard",
+      "derivation": "PUSHF sauvegarde le mot FLAGS en haut de pile ; POPF doit ensuite restaurer ce mot dans l'ordre LIFO. Dépiler avant la sauvegarde ne restaure pas l'état attendu.",
+      "distractorRationales": [
+        {
+          "choice": "Dépiler avant d'empiler",
+          "reason": "L'ordre LIFO exige d'empiler le mot avant de le dépiler ; l'inverse ne restaure pas la sauvegarde."
+        },
+        {
+          "choice": "Copier FLAGS dans AX",
+          "reason": "PUSHF/POPF utilisent la pile ; copier FLAGS dans AX ne constitue pas une restauration par POPF."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), FLAGS register, interrupt and direction control, PUSHF/POPF and stack operation; Intel MCS-86 Assembly Language Reference Manual, flag effects."
+    },
+    {
+      "id": "C10-F-Q7",
+      "status": "certified",
+      "rule": "trap_flag_role",
+      "inputs": {
+        "flag": "TF"
+      },
+      "expected": {
+        "controls": "single_step_trap"
+      },
+      "correctAnswer": "TF",
+      "derivation": "TF est le Trap Flag, utilisé pour le mécanisme d'exécution pas à pas du processeur. IF contrôle les interruptions masquables et AF est un indicateur arithmétique auxiliaire.",
+      "distractorRationales": [
+        {
+          "choice": "IF",
+          "reason": "IF contrôle les interruptions masquables ; TF est le drapeau de trap/pas à pas."
+        },
+        {
+          "choice": "AF",
+          "reason": "AF est l'indicateur auxiliaire de retenue, pas le Trap Flag."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), FLAGS register, interrupt and direction control, PUSHF/POPF and stack operation; Intel MCS-86 Assembly Language Reference Manual, flag effects."
+    },
+    {
+      "id": "C10-F-Q8",
+      "status": "certified",
+      "rule": "popf_control_bits",
+      "inputs": {
+        "instruction": "POPF",
+        "savedFLAGS": 768
+      },
+      "expected": {
+        "restoresFlagsWord": true,
+        "mayAffectIF": true,
+        "mayAffectTF": true
+      },
+      "correctAnswer": "Il restaure le mot FLAGS et peut aussi affecter des bits de contrôle",
+      "derivation": "POPF restaure un mot FLAGS depuis la pile. Ce mot comprend des indicateurs d'état et des bits de contrôle tels que IF et TF ; l'effet ne se limite donc pas à AX ou à aucun indicateur.",
+      "distractorRationales": [
+        {
+          "choice": "Il ne restaure aucun indicateur",
+          "reason": "POPF restaure le mot FLAGS depuis la pile ; il ne laisse pas tous les indicateurs inchangés."
+        },
+        {
+          "choice": "Il modifie uniquement AX",
+          "reason": "POPF ne modifie pas uniquement AX ; sa destination architecturale est le registre FLAGS."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), FLAGS register, interrupt and direction control, PUSHF/POPF and stack operation; Intel MCS-86 Assembly Language Reference Manual, flag effects."
+    },
+    {
+      "id": "C10-F-Q9",
+      "status": "certified",
+      "rule": "stack_lifo_corruption",
+      "inputs": {
+        "sequence": [
+          "PUSHF",
+          "other_stack_write",
+          "POPF"
+        ]
+      },
+      "expected": {
+        "wrongWordMayBeRestored": true,
+        "stateMayBeCorrupted": true
+      },
+      "correctAnswer": "Une restauration depuis le mauvais mot et une corruption de l'état",
+      "derivation": "La pile fonctionne en LIFO. Si SP est modifié de façon incohérente ou si un autre mot occupe la position attendue, POPF peut restaurer un contenu incorrect et corrompre l'état du processeur.",
+      "distractorRationales": [
+        {
+          "choice": "Une modification de la largeur du bus",
+          "reason": "Une largeur de bus ne change pas du fait d'une erreur LIFO ; le risque est de restaurer le mauvais mot FLAGS."
+        },
+        {
+          "choice": "Une conversion automatique en BCD",
+          "reason": "La pile ne réalise pas de conversion BCD ; un mauvais offset SP peut simplement restaurer une valeur incorrecte."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), FLAGS register, interrupt and direction control, PUSHF/POPF and stack operation; Intel MCS-86 Assembly Language Reference Manual, flag effects."
+    },
+    {
+      "id": "C10-F-Q10",
+      "status": "certified",
+      "rule": "software_flag_vs_hardware_interrupt",
+      "inputs": {
+        "softwareIFBit": true,
+        "hardwareEventsModeled": false
+      },
+      "expected": {
+        "bitRepresentationDoesNotModelHardwareEvents": true
+      },
+      "correctAnswer": "Le bit représenté ne prouve pas l'émulation des événements matériels",
+      "derivation": "Un simulateur peut stocker et modifier IF sans reproduire les broches, priorités, acquittements et temporisations du mécanisme matériel d'interruption. La présence du bit ne prouve donc pas une émulation complète des événements physiques.",
+      "distractorRationales": [
+        {
+          "choice": "Le simulateur reproduit automatiquement les broches",
+          "reason": "La présence d'un bit IF dans le modèle logiciel ne signifie pas que les broches et événements matériels sont reproduits."
+        },
+        {
+          "choice": "IF ne peut jamais être observé",
+          "reason": "IF peut être observé et modifié dans un modèle logiciel ; l'observer ne prouve toutefois pas l'émulation du matériel."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), FLAGS register, interrupt and direction control, PUSHF/POPF and stack operation; Intel MCS-86 Assembly Language Reference Manual, flag effects."
+    }
+  ]
+}

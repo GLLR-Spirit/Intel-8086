@@ -1,0 +1,595 @@
+{
+  "schemaVersion": 1,
+  "batch": "chapter-31",
+  "title": "Oracles indépendants — chapitre 31 : encodage machine, opcode, ModR/M et little-endian",
+  "reviewDate": "2026-11-27",
+  "statusLegend": {
+    "certified": "Encodages MOV, décodage ModR/M, longueur et ordre des octets recalculés indépendamment"
+  },
+  "referenceBasis": [
+    "Intel 8086 Family User's Manual (October 1979), Instruction Format, MOV immediate and ModR/M encoding, Little-Endian Storage.",
+    "Intel MCS-86 Assembly Language Reference Manual, MOV register and immediate instruction forms.",
+    "Les octets attendus doivent être comparés à une référence d'assemblage 16 bits indépendante ; le texte source seul n'est pas une preuve d'encodage."
+  ],
+  "oracles": [
+    {
+      "id": "C31-L1-Q1",
+      "status": "certified",
+      "rule": "opcode_semantics",
+      "inputs": {
+        "mnemonic": "MOV AX,1234h",
+        "encoding": "machine_code"
+      },
+      "expected": {
+        "identifiesOperation": true,
+        "mayEncodeForm": true
+      },
+      "correctAnswer": "Le code qui identifie l'opération et parfois sa forme",
+      "derivation": "L'opcode est le champ principal qui identifie l'opération machine. Selon la famille d'instructions, certains bits de l'opcode peuvent aussi sélectionner une forme ou un registre ; d'autres détails sont portés par ModR/M, le déplacement et l'immédiat.",
+      "distractorRationales": [
+        {
+          "choice": "L'adresse physique du programme",
+          "reason": "Une adresse physique localise une donnée ou une instruction en mémoire ; elle n'identifie pas l'opération à exécuter."
+        },
+        {
+          "choice": "Le contenu de FLAGS",
+          "reason": "FLAGS contient des indicateurs d'état et de contrôle, pas le champ opcode de l'instruction."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."
+    },
+    {
+      "id": "C31-L1-Q2",
+      "status": "certified",
+      "rule": "mov_ax_immediate_opcode",
+      "inputs": {
+        "destination": "AX",
+        "immediate": 4660
+      },
+      "expected": {
+        "opcode": 184,
+        "hex": "B8h"
+      },
+      "correctAnswer": "B8h",
+      "derivation": "La forme MOV reg16,imm16 utilise l'opcode de base B8h auquel s'ajoute le code du registre. AX a le code zéro, donc l'opcode reste B8h ; l'immédiat est ensuite encodé sur deux octets.",
+      "distractorRationales": [
+        {
+          "choice": "89h",
+          "reason": "89h est une forme MOV avec ModR/M pour un transfert entre registre/mémoire et registre, pas l'opcode MOV AX,imm16."
+        },
+        {
+          "choice": "8Bh",
+          "reason": "8Bh est l'autre direction de MOV avec ModR/M ; l'immédiat vers AX utilise B8h."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."
+    },
+    {
+      "id": "C31-L1-Q3",
+      "status": "certified",
+      "rule": "little_endian_word_bytes",
+      "inputs": {
+        "word": 4660,
+        "startAddress": 4096,
+        "byteBits": 8
+      },
+      "expected": {
+        "lowByte": 52,
+        "highByte": 18,
+        "lowAddress": 4096,
+        "highAddress": 4097
+      },
+      "correctAnswer": "Les mots multi-octets sont little-endian",
+      "derivation": "Pour le mot 1234h, l'octet faible est 34h et l'octet fort 12h. En little-endian, l'octet faible est placé à l'adresse la plus basse : 34h à 1000h, puis 12h à 1001h.",
+      "distractorRationales": [
+        {
+          "choice": "Le 8086 est big-endian",
+          "reason": "En big-endian, l'octet fort précéderait l'octet faible ; le 8086 stocke au contraire le poids faible à l'adresse basse."
+        },
+        {
+          "choice": "L'opcode inverse les octets",
+          "reason": "L'ordre little-endian est une convention de stockage des valeurs multi-octets ; l'opcode ne permute pas arbitrairement les octets de l'immédiat."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."
+    },
+    {
+      "id": "C31-L2-Q1",
+      "status": "certified",
+      "rule": "instruction_length_components",
+      "inputs": {
+        "prefixBytes": 0,
+        "opcodeBytes": 1,
+        "modrmBytes": 0,
+        "displacementBytes": 0,
+        "immediateBytes": 2
+      },
+      "expected": {
+        "totalBytes": 3
+      },
+      "correctAnswer": "3",
+      "derivation": "MOV AX,1234h utilise un octet d'opcode B8h et deux octets pour l'immédiat 16 bits. Il n'y a ni préfixe, ni octet ModR/M, ni déplacement dans cette forme ; la longueur totale est 1+2=3 octets.",
+      "distractorRationales": [
+        {
+          "choice": "2",
+          "reason": "Deux octets ne suffisent pas : il faut l'octet d'opcode en plus des deux octets de l'immédiat."
+        },
+        {
+          "choice": "4",
+          "reason": "Cette forme ne contient ni préfixe ni ModR/M ni déplacement ; aucun quatrième octet n'est nécessaire."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."
+    },
+    {
+      "id": "C31-L2-Q2",
+      "status": "certified",
+      "rule": "instruction_next_ip",
+      "inputs": {
+        "startIP": 0,
+        "length": 3,
+        "ipBits": 16
+      },
+      "expected": {
+        "nextIP": 3,
+        "hex": "0003h"
+      },
+      "correctAnswer": "0003h",
+      "derivation": "L'instruction occupe trois octets à partir de l'offset 0000h. L'offset de continuation est donc 0000h+3=0003h, sans débordement du registre IP.",
+      "distractorRationales": [
+        {
+          "choice": "0002h",
+          "reason": "0002h serait l'offset après seulement deux octets et omettrait le troisième octet de l'immédiat."
+        },
+        {
+          "choice": "0004h",
+          "reason": "0004h compterait un octet de trop ; l'encodage de cette forme mesure exactement trois octets."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."
+    },
+    {
+      "id": "C31-L2-Q3",
+      "status": "certified",
+      "rule": "audit_checklist_coverage",
+      "inputs": {
+        "domain": "instruction_length_fields",
+        "checks": [
+          "prefixes",
+          "opcode",
+          "ModR/M",
+          "displacement",
+          "immediate"
+        ]
+      },
+      "expected": {
+        "requiredChecks": [
+          "prefixes",
+          "opcode",
+          "ModR/M",
+          "displacement",
+          "immediate"
+        ],
+        "missingChecks": [],
+        "complete": true
+      },
+      "correctAnswer": "Préfixes éventuels, opcode, ModR/M, déplacement et immédiat",
+      "derivation": "La longueur d'une instruction 8086 est la somme de tous les champs effectivement présents : préfixes éventuels, opcode, octet(s) ModR/M, déplacement et donnée immédiate. Certains champs sont absents selon la forme ; les préfixes doivent aussi être comptés lorsqu'ils existent.",
+      "distractorRationales": [
+        {
+          "choice": "Seulement le mnémonique",
+          "reason": "Le mnémonique est une notation source ; il ne révèle pas à lui seul les champs et octets effectivement encodés."
+        },
+        {
+          "choice": "Seulement le registre AX",
+          "reason": "Le registre destination ne détermine ni la présence de ModR/M, ni celle d'un déplacement, d'un immédiat ou d'un préfixe."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."
+    },
+    {
+      "id": "C31-L3-Q1",
+      "status": "certified",
+      "rule": "modrm_directional_equivalence",
+      "inputs": {
+        "forms": [
+          {
+            "opcode": 137,
+            "modrm": 216
+          },
+          {
+            "opcode": 139,
+            "modrm": 195
+          }
+        ]
+      },
+      "expected": {
+        "decoded": [
+          "MOV AX,BX",
+          "MOV AX,BX"
+        ],
+        "sameEffect": true
+      },
+      "correctAnswer": "89 D8 et 8B C3",
+      "derivation": "89h encode MOV r/m16,r16 : D8h sélectionne AX comme r/m et BX comme Reg, donc MOV AX,BX. 8Bh encode MOV r16,r/m16 : C3h sélectionne AX comme Reg et BX comme r/m, produisant le même transfert. Les octets diffèrent, mais la sémantique est identique.",
+      "distractorRationales": [
+        {
+          "choice": "B8 89 et C3 D8",
+          "reason": "Ces octets ne constituent pas les deux encodages ModR/M de MOV AX,BX ; ils ne décodent pas en ce transfert registre-registre."
+        },
+        {
+          "choice": "8C C8 et 8E D8",
+          "reason": "8C/8E concernent les transferts avec registres de segment ; ces séquences ne sont pas les deux formes directionnelles de MOV AX,BX."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."
+    },
+    {
+      "id": "C31-L3-Q2",
+      "status": "certified",
+      "rule": "mov_register_transfer",
+      "inputs": {
+        "destination": "AX",
+        "source": "BX",
+        "initialAX": 4369,
+        "initialBX": 8738
+      },
+      "expected": {
+        "finalAX": 8738,
+        "finalBX": 8738,
+        "operation": "copy"
+      },
+      "correctAnswer": "Copie BX vers AX",
+      "derivation": "Dans la syntaxe Intel, la première opérande est la destination. MOV AX,BX copie la valeur initiale de BX dans AX ; BX reste inchangé, contrairement à XCHG qui échangerait les deux valeurs.",
+      "distractorRationales": [
+        {
+          "choice": "Échange AX et BX",
+          "reason": "XCHG réalise un échange ; MOV effectue une copie et laisse le registre source inchangé."
+        },
+        {
+          "choice": "Copie AX vers BX",
+          "reason": "Cette interprétation inverse les opérandes ; AX est la destination et BX la source."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."
+    },
+    {
+      "id": "C31-L3-Q3",
+      "status": "certified",
+      "rule": "modrm_direction_field",
+      "inputs": {
+        "forms": [
+          {
+            "opcode": 137,
+            "modrm": 216
+          },
+          {
+            "opcode": 139,
+            "modrm": 195
+          }
+        ]
+      },
+      "expected": {
+        "sameOperation": true,
+        "destinationCanBeEncodedInRegOrRM": true
+      },
+      "correctAnswer": "Les opcodes directionnels codent la destination dans des champs différents",
+      "derivation": "Avec 89h, le champ Reg est la source et le champ R/M la destination ; avec 8Bh, le champ Reg devient la destination et R/M la source. Les deux combinaisons ModR/M peuvent donc exprimer le même transfert registre-registre.",
+      "distractorRationales": [
+        {
+          "choice": "Le processeur ignore les octets",
+          "reason": "Le processeur interprète précisément l'opcode et ModR/M ; l'équivalence provient de champs directionnels différents, pas de l'ignorance des octets."
+        },
+        {
+          "choice": "Les registres ont des alias physiques",
+          "reason": "AX et BX sont des registres distincts ; l'équivalence vient du décodage des champs, pas d'alias physiques."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."
+    },
+    {
+      "id": "C31-F-Q1",
+      "status": "certified",
+      "rule": "opcode_semantics",
+      "inputs": {
+        "mnemonic": "MOV AX,1234h",
+        "encoding": "machine_code"
+      },
+      "expected": {
+        "identifiesOperation": true,
+        "mayEncodeForm": true
+      },
+      "correctAnswer": "Le champ qui identifie l'opération",
+      "derivation": "L'opcode identifie l'opération machine, parfois avec des bits qui précisent la forme. Les autres champs éventuels, comme ModR/M et l'immédiat, complètent l'encodage sans remplacer le rôle de l'opcode.",
+      "distractorRationales": [
+        {
+          "choice": "Le registre SP",
+          "reason": "SP est le pointeur de pile et n'est pas le champ opcode de l'instruction."
+        },
+        {
+          "choice": "Une adresse physique",
+          "reason": "Une adresse physique indique un emplacement mémoire ; elle ne décrit pas l'opération codée."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."
+    },
+    {
+      "id": "C31-F-Q2",
+      "status": "certified",
+      "rule": "little_endian_word_bytes",
+      "inputs": {
+        "word": 4660,
+        "startAddress": 8192,
+        "byteBits": 8
+      },
+      "expected": {
+        "lowByte": 52,
+        "highByte": 18,
+        "lowAddress": 8192,
+        "highAddress": 8193
+      },
+      "correctAnswer": "L'octet faible est stocké avant l'octet fort",
+      "derivation": "Le 8086 utilise le little-endian : pour 1234h, 34h est écrit à l'adresse basse et 12h à l'adresse suivante. L'ordre des octets en mémoire ne signifie pas que l'ALU échange les octets.",
+      "distractorRationales": [
+        {
+          "choice": "L'octet fort est toujours premier",
+          "reason": "Cette proposition décrit le big-endian ; le 8086 place l'octet faible à l'adresse la plus basse."
+        },
+        {
+          "choice": "Les deux octets sont échangés par l'ALU",
+          "reason": "L'ALU ne permute pas les octets pour le stockage ; c'est l'ordre mémoire little-endian qui place le poids faible en premier."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."
+    },
+    {
+      "id": "C31-F-Q3",
+      "status": "certified",
+      "rule": "mov_ax_immediate_bytes",
+      "inputs": {
+        "destination": "AX",
+        "immediate": 4660
+      },
+      "expected": {
+        "bytes": [
+          184,
+          52,
+          18
+        ],
+        "hexBytes": [
+          "B8",
+          "34",
+          "12"
+        ],
+        "length": 3
+      },
+      "correctAnswer": "B8 34 12",
+      "derivation": "AX est le registre 16 bits de code zéro pour la famille B8+r, d'où B8h. L'immédiat 1234h est stocké little-endian : 34h puis 12h. L'instruction complète mesure trois octets.",
+      "distractorRationales": [
+        {
+          "choice": "89 12 34",
+          "reason": "89h est une forme ModR/M et non l'opcode MOV AX,imm16 ; les deux octets d'immédiat ne corrigent pas cette différence."
+        },
+        {
+          "choice": "8B 12 34",
+          "reason": "8Bh est une forme MOV avec ModR/M, pas la forme immédiate B8+r destinée à charger AX."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."
+    },
+    {
+      "id": "C31-F-Q4",
+      "status": "certified",
+      "rule": "immediate_width",
+      "inputs": {
+        "destinationBits": 16,
+        "immediate": 4660,
+        "byteBits": 8
+      },
+      "expected": {
+        "fits": true,
+        "maximum": 65535,
+        "bytes": 2
+      },
+      "correctAnswer": "Il doit tenir sur 16 bits et occupe deux octets après l'opcode",
+      "derivation": "AX est un registre de 16 bits ; l'immédiat doit donc être représentable sur 16 bits. Le champ immédiat occupe deux octets, stockés dans l'ordre faible puis fort après l'opcode.",
+      "distractorRationales": [
+        {
+          "choice": "Il doit tenir sur 8 bits",
+          "reason": "Un immédiat 16 bits peut utiliser toute la largeur de AX ; 8 bits ne couvriraient pas la plage entière."
+        },
+        {
+          "choice": "Il est stocké en big-endian",
+          "reason": "Le champ 16 bits est stocké little-endian sur le 8086, avec l'octet faible en premier."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."
+    },
+    {
+      "id": "C31-F-Q5",
+      "status": "certified",
+      "rule": "instruction_next_ip",
+      "inputs": {
+        "startIP": 0,
+        "length": 3,
+        "ipBits": 16
+      },
+      "expected": {
+        "nextIP": 3,
+        "hex": "0003h"
+      },
+      "correctAnswer": "0003h",
+      "derivation": "La longueur de MOV AX,1234h est de trois octets. En partant de IP=0000h, l'adresse de l'instruction suivante est 0000h+0003h=0003h.",
+      "distractorRationales": [
+        {
+          "choice": "0002h",
+          "reason": "Cette valeur ne compte que deux octets et omet un octet de l'encodage."
+        },
+        {
+          "choice": "0004h",
+          "reason": "Cette valeur compte un octet supplémentaire alors que l'instruction ne contient que trois octets."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."
+    },
+    {
+      "id": "C31-F-Q6",
+      "status": "certified",
+      "rule": "little_endian_word_bytes",
+      "inputs": {
+        "word": 22136,
+        "startAddress": 12288,
+        "byteBits": 8
+      },
+      "expected": {
+        "lowByte": 120,
+        "highByte": 86,
+        "lowAddress": 12288,
+        "highAddress": 12289
+      },
+      "correctAnswer": "78 56",
+      "derivation": "5678h se décompose en octet faible 78h et octet fort 56h. Le little-endian place 78h à l'adresse la plus basse, puis 56h à l'adresse suivante.",
+      "distractorRationales": [
+        {
+          "choice": "56 78",
+          "reason": "Cette séquence place l'octet fort en premier et correspondrait à l'ordre big-endian."
+        },
+        {
+          "choice": "67 85",
+          "reason": "Ces octets ne sont pas les deux octets du mot 5678h ; la décomposition correcte est 78h puis 56h."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."
+    },
+    {
+      "id": "C31-F-Q7",
+      "status": "certified",
+      "rule": "mov_register_modrm_decode",
+      "inputs": {
+        "opcode": 137,
+        "modrm": 216
+      },
+      "expected": {
+        "instruction": "MOV AX,BX",
+        "destination": "AX",
+        "source": "BX"
+      },
+      "correctAnswer": "MOV AX,BX",
+      "derivation": "89h encode MOV r/m16,r16. Dans D8h, mod=11b indique registre, Reg=011b désigne BX et R/M=000b désigne AX ; la destination R/M reçoit donc BX.",
+      "distractorRationales": [
+        {
+          "choice": "MOV BX,AX",
+          "reason": "Cette direction correspondrait à un encodage où BX est la destination ; D8h avec opcode 89h place BX dans le champ source."
+        },
+        {
+          "choice": "XCHG AX,BX",
+          "reason": "XCHG utilise un autre opcode ; 89 D8 est un MOV et ne modifie pas BX."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."
+    },
+    {
+      "id": "C31-F-Q8",
+      "status": "certified",
+      "rule": "modrm_directional_equivalence",
+      "inputs": {
+        "forms": [
+          {
+            "opcode": 137,
+            "modrm": 216
+          },
+          {
+            "opcode": 139,
+            "modrm": 195
+          }
+        ]
+      },
+      "expected": {
+        "decoded": [
+          "MOV AX,BX",
+          "MOV AX,BX"
+        ],
+        "sameEffect": true
+      },
+      "correctAnswer": "Ils codent le même transfert avec des directions ModR/M opposées",
+      "derivation": "89 D8 encode la destination dans R/M et la source dans Reg ; 8B C3 encode la destination dans Reg et la source dans R/M. Le décodage des deux formes donne MOV AX,BX malgré des octets différents.",
+      "distractorRationales": [
+        {
+          "choice": "Ils ont le même opcode",
+          "reason": "Les opcodes sont 89h et 8Bh, donc ils sont différents ; l'équivalence vient de leurs directions complémentaires et des champs ModR/M."
+        },
+        {
+          "choice": "Ils échangent les registres",
+          "reason": "Un échange modifierait aussi BX ; les deux encodages réalisent une copie de BX vers AX."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."
+    },
+    {
+      "id": "C31-F-Q9",
+      "status": "certified",
+      "rule": "little_endian_word_bytes",
+      "inputs": {
+        "word": 4660,
+        "startAddress": 16384,
+        "byteBits": 8
+      },
+      "expected": {
+        "lowByte": 52,
+        "highByte": 18,
+        "lowAddress": 16384,
+        "highAddress": 16385
+      },
+      "correctAnswer": "Inverser les octets en 34 12",
+      "derivation": "Pour représenter 1234h en mémoire sur le 8086, l'octet faible 34h doit précéder l'octet fort 12h. L'ordre 12 34 est big-endian et doit être corrigé en 34 12.",
+      "distractorRationales": [
+        {
+          "choice": "Remplacer l'opcode B8 par F4",
+          "reason": "F4h est l'opcode HLT ; le remplacer changerait l'instruction au lieu de corriger l'ordre little-endian de l'immédiat."
+        },
+        {
+          "choice": "Supprimer l'octet faible",
+          "reason": "L'immédiat 16 bits nécessite ses deux octets ; supprimer 34h détruirait une partie de la valeur 1234h."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."
+    },
+    {
+      "id": "C31-F-Q10",
+      "status": "certified",
+      "rule": "audit_checklist_coverage",
+      "inputs": {
+        "domain": "encoding_validation",
+        "checks": [
+          "bytes",
+          "instruction_length",
+          "disassembly",
+          "independent_reference"
+        ]
+      },
+      "expected": {
+        "requiredChecks": [
+          "bytes",
+          "instruction_length",
+          "disassembly",
+          "independent_reference"
+        ],
+        "missingChecks": [],
+        "complete": true
+      },
+      "correctAnswer": "Comparer les octets, la longueur et le désassemblage à une référence indépendante",
+      "derivation": "Une validation robuste confronte les octets exacts, la longueur totale, le décodage obtenu et une référence indépendante. Le seul texte source ne prouve pas l'encodage produit ; vérifier seulement l'opcode peut manquer ModR/M, déplacement, immédiat ou préfixes.",
+      "distractorRationales": [
+        {
+          "choice": "Se fier uniquement au texte source",
+          "reason": "Le texte source ne révèle pas nécessairement la forme machine choisie ni les octets effectivement émis."
+        },
+        {
+          "choice": "Vérifier seulement l'opcode",
+          "reason": "L'opcode seul ne valide pas les champs ModR/M, déplacement, immédiat, préfixes ni la longueur totale."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."
+    }
+  ]
+}

@@ -89,8 +89,15 @@ assert.ok(learning.chapterLearning.every(c => c.lessons.every(l => l.quiz.every(
   "Lesson questions must have distinct choices and a substantive explanation.");
 assert.ok(learning.chapterLearning.every(c => {
   const categories = c.quiz.map(q => q[4]);
-  return ["Définition","Compréhension","Syntaxe","Restrictions","Prédiction","Calcul / prédiction","Analyse de programme","Analyse de résultat","Débogage","Raisonnement"].every(x => categories.includes(x));
-}), "Each final assessment must cover the ten required evaluation dimensions");
+  const groups = [
+    ["Définition","Compréhension"],
+    ["Syntaxe","Restrictions"],
+    ["Prédiction","Calcul / prédiction"],
+    ["Analyse de programme","Analyse de résultat"],
+    ["Débogage","Raisonnement"]
+  ];
+  return groups.every(group => categories.filter(category => group.includes(category)).length === 2);
+}), "Each final assessment must contain two definition/comprehension, two syntax/validity, two calculation/prediction, two program-analysis, and two reasoning/debugging questions");
 assert.ok(learning.chapterLearning.every(c => new Set(c.quiz.map(q => q[2])).size > 1),
   "Correct answer positions must vary across each final assessment");
 assert.ok(learning.chapterLearning.every(c => c.lessons.every(l => new Set(l.quiz.map(q => q[2])).size > 1)),
@@ -123,7 +130,21 @@ const semanticQuestionOracles = [
   ["Pourquoi LOCK INC AX ne protège-t-il pas une donnée mémoire partagée ?","AX est un registre et l'instruction ne modifie aucune donnée mémoire partagée","Le 8086 active le signal LOCK pendant l'instruction suivante en mode maximum, mais INC AX ne touche qu'un registre. Pour protéger une donnée partagée, l'instruction doit réellement accéder à cette donnée en mémoire."],
   ["Comment rendre LOCK utile pour protéger une donnée partagée ?","Employer une opération qui modifie cette donnée en mémoire, par exemple LOCK INC WORD PTR [BX]","Le verrouillage protège l'accès au bus pendant l'instruction ; l'opération doit effectivement accéder à la donnée mémoire partagée."],
   ["Pourquoi initialise-t-on DS, ES et CS avec des valeurs distinctes dans l'exemple ?","Pour vérifier que chaque override sélectionne réellement le segment demandé","Des valeurs distinctes aux mêmes offsets permettent d'observer quel segment est effectivement utilisé."],
-  ["Quel effet le préfixe LOCK demande-t-il sur le 8086 ?","L'assertion du signal de verrouillage du bus pendant l'instruction suivante","Le préfixe demande l'activation du signal LOCK pendant l'opération de l'instruction suivante ; il est utile lorsque celle-ci accède à une ressource partagée."]
+  ["Quel effet le préfixe LOCK demande-t-il sur le 8086 ?","L'assertion du signal LOCK du bus pendant l'instruction suivante en mode maximum","En mode maximum, le préfixe LOCK active le signal pendant l'exécution de l'instruction qui suit. Pour protéger une ressource partagée, on l'associe à une opération qui modifie réellement un opérande mémoire ; le préfixe ne transforme pas une opération sur registre en accès mémoire."],
+  ["Quel segment est utilisé par défaut pour une référence mémoire fondée sur BP sans préfixe ?","SS","Sur le 8086, une adresse effective contenant BP utilise SS par défaut. DS est le segment par défaut pour les formes basées sur BX, SI ou DI."],
+  ["Quel octet de préfixe sélectionne le segment SS ?","36h","36h est le préfixe de surcharge SS ; 26h sélectionne ES, 2Eh CS et 3Eh DS."],
+  ["Quelle limite du laboratoire doit être annoncée pour LOCK ?","L'atomicité et les signaux physiques du bus ne sont pas simulés","Le laboratoire reconnaît le préfixe et vérifie l'effet fonctionnel de l'instruction, mais ne simule ni le signal LOCK physique, ni l'arbitrage du bus, ni l'atomicité face à un autre maître de bus."],
+  ["Que fait REP MOVSB avec CX=2 et DF=0 ?","Copie deux octets et incrémente SI/DI de deux","REP exécute MOVSB deux fois car CX=2. Avec DF=0, chaque transfert incrémente SI et DI d'un octet : deux octets sont copiés, les deux index avancent de deux et CX atteint zéro."],
+  ["Quel indicateur de FLAGS détermine le sens de progression des chaînes ?","DF","DF est le Direction Flag dans FLAGS. DF=0 incrémente SI et DI après chaque opération de chaîne ; DF=1 les décrémente."],
+  ["Pendant que l'EU exécute une instruction, que peut faire la BIU en parallèle ?","Précharger les octets des instructions suivantes","La BIU peut précharger les octets suivants pendant que l'EU exécute. Ce chevauchement des tâches ne signifie pas que le 8086 exécute deux instructions simultanément."],
+  ["Que fait la BIU lorsque l'EU demande une lecture mémoire ?","Elle suspend la prélecture pour servir la demande mémoire de l'EU","La BIU suspend la prélecture d'instructions lorsqu'elle doit satisfaire une demande mémoire ou E/S de l'EU. Une lecture déjà engagée peut d'abord se terminer."],
+  ["Quand la BIU du 8086 démarre-t-elle une nouvelle prélecture ?","Quand au moins deux octets sont libres dans la file","Le 8086 récupère normalement deux octets par prélecture et attend donc que deux emplacements soient libres avant d'en lancer une nouvelle."],
+  ["Lors d'une opération normale de prélecture, combien d'octets le 8086 récupère-t-il ?","2","La BIU du 8086 récupère normalement deux octets par opération de prélecture ; la capacité totale de la file reste de six octets."],
+  ["Si un branchement conditionnel n'est pas pris, que devient la file de prélecture séquentielle ?","Elle reste utilisable car le flot séquentiel continue","Si la condition n'est pas satisfaite, IP suit le chemin séquentiel. Le branchement n'impose donc pas de vider la file pour réalimenter un nouvel emplacement."],
+  ["Que doit préciser le contrat d'interface d'une procédure ?","Ses paramètres d'entrée, ses résultats de sortie et les registres qu'elle préserve","Le contrat documente les entrées, les résultats, les effets de bord et les registres préservés afin que l'appelant connaisse les obligations de la procédure."],
+  ["Quel mot CALL NEAR empile-t-il pour permettre le retour ?","L'offset de l'instruction qui suit CALL","CALL NEAR empile l'offset de l'instruction suivante, c'est-à-dire l'IP de retour. RET récupère ce mot pour reprendre l'exécution après l'appel."],
+  ["Que valent AX et CF après ADD AX,1 avec AX=FFFFh ?","AX=0000h et CF=1","FFFFh+1 produit 10000h. Sur 16 bits, AX conserve 0000h et CF signale la retenue sortante."],
+  ["Pourquoi un test de FFh+1 doit-il aussi vérifier CF ?","Parce que AL=00h seul ne prouve pas que la retenue a été correctement calculée","AL peut contenir le résultat octet correct même si le calcul de la retenue est erroné. Vérifier CF=1 contrôle donc un effet architectural distinct du résultat stocké dans AL."]
 ];
 for(const [stem,answer,explanation] of semanticQuestionOracles){
   const {q,where}=findQuestion(stem);
@@ -224,7 +245,7 @@ assert.ok(/structurally indexed/i.test(semanticKey.reviewScope),
   "The semantic manifest must distinguish runtime concordance from independent certification.");
 assert.ok(/only items with explicit independent oracle evidence are certified/i.test(semanticKey.reviewScope),
   "The semantic manifest must not overstate the scope of independent question validation.");
-console.log("Independent semantic question oracles: "+independentQuestionAudit.oracles.length+"/684 explicitly recalculated; remaining items are not certified by concordance alone.");
+console.log("Initial semantic tranche: "+independentQuestionAudit.oracles.length+" historical oracles explicitly recalculated; supplemental oracle records are evaluated by tests/question-oracle-certification.cjs. Automated checks do not advance the official certification ledger (384/684; 300 pending).");
 const semanticKeyFailures=[];
 for(const expected of semanticKey.questions){
   const actual=runtimeQuestionMap.get(expected.id);
@@ -240,11 +261,20 @@ assert.equal(semanticKeyFailures.length,0,
 console.log("Question concordance manifest: 684/684 runtime items match the pinned stems, choices, answers and explanations.");
 
 
-const requiredFinalCategories = ["Définition","Compréhension","Syntaxe","Restrictions","Prédiction","Calcul / prédiction","Analyse de programme","Analyse de résultat","Débogage","Raisonnement"];
+const requiredFinalCategoryGroups = [
+  ["Définition","Compréhension"],
+  ["Syntaxe","Restrictions"],
+  ["Prédiction","Calcul / prédiction"],
+  ["Analyse de programme","Analyse de résultat"],
+  ["Débogage","Raisonnement"]
+];
 for (let chapterIndex = 0; chapterIndex < learning.chapterLearning.length; chapterIndex++) {
   const chapter = learning.chapterLearning[chapterIndex];
-  assert.equal(JSON.stringify(chapter.quiz.map(q => q[4])), JSON.stringify(requiredFinalCategories),
-    "Chapter " + (chapterIndex + 1) + " final questions must follow the ten technical categories in order.");
+  const finalCategories = chapter.quiz.map(q => q[4]);
+  for (const group of requiredFinalCategoryGroups) {
+    assert.equal(finalCategories.filter(category => group.includes(category)).length, 2,
+      "Chapter " + (chapterIndex + 1) + " must include exactly two questions in each paired assessment dimension.");
+  }
   for (let lessonIndex = 0; lessonIndex < chapter.lessons.length; lessonIndex++) {
     assert.equal(JSON.stringify(chapter.lessons[lessonIndex].quiz.map(q => q[4])), JSON.stringify(["Compréhension","Application","Vérification"]),
       "Chapter " + (chapterIndex + 1) + ", lesson " + (lessonIndex + 1) + " must have three distinct learning checks.");
@@ -487,10 +517,20 @@ for (const [chapter, lesson, check, expected] of foundationalExampleOracles) {
 for (let chapterIndex = 0; chapterIndex < 5; chapterIndex++) {
   const chapter = learning.chapterLearning[chapterIndex];
   assert.equal(chapter.quiz.length, 10, "Foundational chapter must retain ten final questions.");
-  assert.equal(JSON.stringify(chapter.quiz.map(q => q[4])), JSON.stringify([
-    "Définition","Compréhension","Syntaxe","Restrictions","Prédiction",
-    "Calcul / prédiction","Analyse de programme","Analyse de résultat","Débogage","Raisonnement"
-  ]), "Foundational final assessment must use the ten audited categories in order.");
+  const auditedCategoryPairs = [
+    ["Définition","Compréhension"],
+    ["Définition","Compréhension"],
+    ["Syntaxe","Restrictions"],
+    ["Syntaxe","Restrictions"],
+    ["Prédiction","Calcul / prédiction"],
+    ["Prédiction","Calcul / prédiction"],
+    ["Analyse de programme","Analyse de résultat"],
+    ["Analyse de programme","Analyse de résultat"],
+    ["Débogage","Raisonnement"],
+    ["Débogage","Raisonnement"]
+  ];
+  assert.ok(chapter.quiz.every((question,index) => auditedCategoryPairs[index].includes(question[4])),
+    "Foundational final assessment must preserve the five audited category pairs in order.");
   assert.ok(chapter.lessons.every(lesson => lesson.quiz.length === 3),
     "Each foundational lesson must retain exactly three questions.");
 }

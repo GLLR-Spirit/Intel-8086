@@ -18,11 +18,11 @@
       "stem": "Quel est le rôle central d'un microprocesseur ?",
       "choices": [
         "Exécuter les instructions d'un programme",
-        "Fabriquer les données stockées",
-        "Remplacer la mémoire"
+        "Conserver durablement les programmes et les données",
+        "Produire le signal d'horloge du système"
       ],
       "correctAnswer": "Exécuter les instructions d'un programme",
-      "explanation": "Le microprocesseur récupère, décode et exécute les instructions.",
+      "explanation": "Le microprocesseur récupère, décode et exécute les instructions. La conservation durable relève de la mémoire et l'horloge est fournie par un circuit dédié.",
       "category": "Compréhension"
     },
     {
@@ -38,7 +38,7 @@
         "Une adresse mémoire"
       ],
       "correctAnswer": "MOV AX,1234h",
-      "explanation": "MOV AX,1234h est une instruction encodée ; 1234h est ici son opérande immédiat.",
+      "explanation": "MOV AX,1234h est une instruction en langage assembleur ; 1234h est son opérande immédiat. L'assembleur traduit cette instruction en octets machine distincts.",
       "category": "Application"
     },
     {
@@ -79,14 +79,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 2,
-      "stem": "Quelle capacité théorique correspond à 20 bits d'adresse ?",
+      "stem": "Quelle unité de mémoire une adresse désigne-t-elle sur le 8086 ?",
       "choices": [
-        "64 Kio",
-        "1 Mio",
-        "16 Mio"
+        "Un octet",
+        "Un mot de 16 bits",
+        "Un bloc de quatre octets"
       ],
-      "correctAnswer": "1 Mio",
-      "explanation": "2^20 adresses d'octets correspondent à 1 048 576 octets, soit 1 Mio.",
+      "correctAnswer": "Un octet",
+      "explanation": "La mémoire du 8086 est adressée par octet : une adresse identifie un octet de 8 bits. Un mot de 16 bits occupe deux octets à des adresses consécutives.",
       "category": "Application"
     },
     {
@@ -159,14 +159,14 @@
       "kind": "final",
       "lesson": null,
       "number": 1,
-      "stem": "Quelle est la fonction fondamentale du microprocesseur ?",
+      "stem": "Quel est le rôle de l'assembleur dans la chaîne de traitement ?",
       "choices": [
-        "Exécuter les instructions du programme",
-        "Conserver durablement tous les fichiers",
-        "Fournir l'alimentation électrique"
+        "Traduire le code source assembleur en code machine",
+        "Exécuter directement le texte source à la place du processeur",
+        "Gérer les signaux électriques du bus"
       ],
-      "correctAnswer": "Exécuter les instructions du programme",
-      "explanation": "Le microprocesseur récupère, décode et exécute les instructions, en coordonnant les transferts et les calculs.",
+      "correctAnswer": "Traduire le code source assembleur en code machine",
+      "explanation": "L'assembleur analyse les instructions et les symboles du programme source, puis produit les octets de code machine que le processeur pourra exécuter.",
       "category": "Définition"
     },
     {
@@ -175,15 +175,15 @@
       "kind": "final",
       "lesson": null,
       "number": 2,
-      "stem": "Que signifie la largeur de 20 bits du bus d'adresses du 8086 ?",
+      "stem": "Lors d'un accès mémoire, que transporte le bus d'adresses ?",
       "choices": [
-        "Il peut sélectionner 2^20 adresses d'octets",
-        "Chaque registre général contient 20 bits",
-        "Le bus de données transporte 20 bits par transfert"
+        "L'adresse physique de l'emplacement mémoire ciblé",
+        "La valeur qui sera lue ou écrite",
+        "Le résultat de l'opération arithmétique"
       ],
-      "correctAnswer": "Il peut sélectionner 2^20 adresses d'octets",
-      "explanation": "Les 20 lignes d'adresse permettent de sélectionner 1 048 576 adresses d'octets, soit 1 Mio.",
-      "category": "Compréhension"
+      "correctAnswer": "L'adresse physique de l'emplacement mémoire ciblé",
+      "explanation": "Le bus d'adresses sélectionne l'emplacement mémoire ciblé. Le bus de données transporte la valeur échangée avec cet emplacement.",
+      "category": "Définition"
     },
     {
       "id": "C01-F-Q3",
@@ -214,8 +214,8 @@
         "MOV ne permet jamais de constante immédiate"
       ],
       "correctAnswer": "La constante dépasse la capacité de 8 bits de AL",
-      "explanation": "AL accepte une valeur immédiate de 8 bits au maximum, soit FFh ; 1234h exige 16 bits.",
-      "category": "Restrictions"
+      "explanation": "AL accepte une valeur immédiate de 8 bits au maximum, soit FFh ; 1234h vaut 4660 et nécessite 13 bits, donc ne peut pas être encodé dans AL.",
+      "category": "Syntaxe"
     },
     {
       "id": "C01-F-Q5",
@@ -9217,12 +9217,12 @@
       "number": 3,
       "stem": "Quel élément détermine la longueur d'une instruction ?",
       "choices": [
-        "Opcode, ModR/M éventuel, déplacement et immédiat",
+        "Préfixes éventuels, opcode, ModR/M, déplacement et immédiat",
         "Seulement le mnémonique",
         "Seulement le registre AX"
       ],
-      "correctAnswer": "Opcode, ModR/M éventuel, déplacement et immédiat",
-      "explanation": "La longueur dépend de tous les champs encodés présents.",
+      "correctAnswer": "Préfixes éventuels, opcode, ModR/M, déplacement et immédiat",
+      "explanation": "La longueur est la somme des champs effectivement présents : préfixes éventuels, opcode, ModR/M éventuel, déplacement et immédiat.",
       "category": "Vérification"
     },
     {
@@ -9775,14 +9775,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 3,
-      "stem": "Que désigne JMP FIN ?",
+      "stem": "Que désigne JMP NEAR FIN ?",
       "choices": [
-        "Une cible symbolique résolue en déplacement",
+        "Une cible symbolique résolue en déplacement relatif",
         "Une donnée immédiate toujours égale à FIN",
         "Un accès mémoire indirect obligatoire"
       ],
-      "correctAnswer": "Une cible symbolique résolue en déplacement",
-      "explanation": "FIN est une étiquette dont l'offset est résolu par l'assembleur.",
+      "correctAnswer": "Une cible symbolique résolue en déplacement relatif",
+      "explanation": "NEAR impose un transfert dans le segment courant ; FIN est une étiquette dont l'offset est résolu par l'assembleur en déplacement relatif.",
       "category": "Vérification"
     },
     {
@@ -9839,14 +9839,14 @@
       "kind": "intermediate",
       "lesson": 3,
       "number": 1,
-      "stem": "Que doit faire le désassembleur face à un octet inconnu ?",
+      "stem": "Que doit faire le désassembleur face à un octet isolé non reconnu dont la longueur d'instruction ne peut pas être établie ?",
       "choices": [
         "Le conserver comme donnée brute DB",
         "Inventer une instruction valide",
         "Supprimer l'octet"
       ],
       "correctAnswer": "Le conserver comme donnée brute DB",
-      "explanation": "Un octet non pris en charge doit rester visible et ne pas être perdu.",
+      "explanation": "Le listing peut émettre DB pour préserver l'octet brut ; cela ne prouve pas qu'il s'agissait d'une donnée dans le source original, et la synchronisation du flux peut rester incertaine.",
       "category": "Compréhension"
     },
     {
@@ -9878,7 +9878,7 @@
         "Pour changer les adresses"
       ],
       "correctAnswer": "Pour conserver l'alignement et permettre l'analyse du flux",
-      "explanation": "Perdre un octet décale toutes les instructions suivantes.",
+      "explanation": "Préserver l'octet évite une perte de données ; si sa longueur sémantique est inconnue, l'alignement des instructions suivantes doit rester marqué comme incertain.",
       "category": "Vérification"
     },
     {
@@ -9919,14 +9919,14 @@
       "kind": "final",
       "lesson": null,
       "number": 3,
-      "stem": "Que fait JMP FIN lorsque FIN est une étiquette ?",
+      "stem": "Que fait JMP NEAR FIN lorsque FIN est une étiquette ?",
       "choices": [
-        "Transfère le contrôle vers l'offset de FIN",
+        "Transfère le contrôle vers l'offset relatif de FIN",
         "Charge le texte FIN dans AX",
         "Lit un pointeur far en mémoire"
       ],
-      "correctAnswer": "Transfère le contrôle vers l'offset de FIN",
-      "explanation": "L'assembleur résout l'étiquette en déplacement relatif.",
+      "correctAnswer": "Transfère le contrôle vers l'offset relatif de FIN",
+      "explanation": "L'assembleur résout FIN en offset cible et encode le déplacement relatif à l'instruction suivante.",
       "category": "Syntaxe"
     },
     {
@@ -9967,14 +9967,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Quel est l'offset de FIN après JMP FIN / NOP si JMP est short ?",
+      "stem": "Dans JMP FIN, puis NOP, puis l'étiquette FIN:, quel est l'offset de FIN si JMP est encodé en short et si le premier octet est à 0000h ?",
       "choices": [
         "3",
         "2",
         "4"
       ],
       "correctAnswer": "3",
-      "explanation": "EB 01 occupe deux octets puis NOP un octet ; FIN commence à offset 3.",
+      "explanation": "JMP short est encodé par EB 01 et occupe deux octets ; NOP occupe un octet. L'étiquette FIN commence donc à l'offset 0003h.",
       "category": "Calcul / prédiction"
     },
     {
@@ -9999,14 +9999,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Pourquoi un octet inconnu doit-il être affiché comme DB ?",
+      "stem": "Pourquoi un octet non décodé doit-il être représenté comme DB dans le listing ?",
       "choices": [
-        "Pour ne pas perdre l'octet ni désaligner la suite",
+        "Pour préserver l'octet brut et signaler l'incertitude du décodage",
         "Pour le transformer en NOP",
         "Pour effacer les données"
       ],
-      "correctAnswer": "Pour ne pas perdre l'octet ni désaligner la suite",
-      "explanation": "DB préserve les octets non interprétés comme instructions.",
+      "correctAnswer": "Pour préserver l'octet brut et signaler l'incertitude du décodage",
+      "explanation": "DB conserve la valeur brute sans prétendre connaître sa signification originale ; la frontière de la prochaine instruction peut rester incertaine.",
       "category": "Analyse de résultat"
     },
     {
@@ -10015,14 +10015,14 @@
       "kind": "final",
       "lesson": null,
       "number": 9,
-      "stem": "Comment corriger un désassemblage décalé après un octet inconnu ?",
+      "stem": "Comment un balayage linéaire doit-il signaler un octet non décodé lorsque la synchronisation suivante n'est pas certaine ?",
       "choices": [
-        "Conserver l'octet brut et reprendre au byte suivant",
+        "Conserver l'octet en DB et marquer la suite comme incertaine",
         "Supprimer l'octet inconnu",
         "Forcer un opcode supposé"
       ],
-      "correctAnswer": "Conserver l'octet brut et reprendre au byte suivant",
-      "explanation": "La consommation exacte des octets préserve l'alignement du flux.",
+      "correctAnswer": "Conserver l'octet en DB et marquer la suite comme incertaine",
+      "explanation": "Émettre DB préserve l'octet ; marquer la suite comme incertaine évite d'affirmer à tort que le point de resynchronisation correspond à une vraie frontière d'instruction.",
       "category": "Débogage"
     },
     {
@@ -10097,12 +10097,12 @@
       "number": 1,
       "stem": "Quel effet le préfixe LOCK demande-t-il sur le 8086 ?",
       "choices": [
-        "L'assertion du signal de verrouillage du bus pendant l'instruction suivante",
+        "L'assertion du signal LOCK du bus pendant l'instruction suivante en mode maximum",
         "Le verrouillage permanent d'un registre",
         "La répétition de CX fois"
       ],
-      "correctAnswer": "L'assertion du signal de verrouillage du bus pendant l'instruction suivante",
-      "explanation": "Le préfixe demande l'activation du signal LOCK pendant l'opération de l'instruction suivante ; il est utile lorsque celle-ci accède à une ressource partagée.",
+      "correctAnswer": "L'assertion du signal LOCK du bus pendant l'instruction suivante en mode maximum",
+      "explanation": "En mode maximum, le préfixe LOCK active le signal pendant l'exécution de l'instruction qui suit. Pour protéger une ressource partagée, on l'associe à une opération qui modifie réellement un opérande mémoire ; le préfixe ne transforme pas une opération sur registre en accès mémoire.",
       "category": "Compréhension"
     },
     {
@@ -10134,7 +10134,7 @@
         "LOCK change la valeur de CX"
       ],
       "correctAnswer": "L'atomicité et les signaux physiques du bus ne sont pas simulés",
-      "explanation": "La reconnaissance du préfixe ne reproduit pas l'arbitrage électrique du bus.",
+      "explanation": "Le laboratoire reconnaît le préfixe et vérifie l'effet fonctionnel de l'instruction, mais ne simule ni le signal LOCK physique, ni l'arbitrage du bus, ni l'atomicité face à un autre maître de bus.",
       "category": "Vérification"
     },
     {
@@ -10191,14 +10191,14 @@
       "kind": "final",
       "lesson": null,
       "number": 1,
-      "stem": "Quel est l'effet d'un préfixe de segment ?",
+      "stem": "Quel segment est utilisé par défaut pour une référence mémoire fondée sur BP sans préfixe ?",
       "choices": [
-        "Choisir un segment explicite pour un accès mémoire",
-        "Modifier toutes les adresses de code",
-        "Changer les FLAGS"
+        "SS",
+        "DS",
+        "ES"
       ],
-      "correctAnswer": "Choisir un segment explicite pour un accès mémoire",
-      "explanation": "Le préfixe remplace le segment par défaut de l'opérande mémoire concernée.",
+      "correctAnswer": "SS",
+      "explanation": "Sur le 8086, une adresse effective contenant BP utilise SS par défaut. DS est le segment par défaut pour les formes basées sur BX, SI ou DI.",
       "category": "Définition"
     },
     {
@@ -10207,14 +10207,14 @@
       "kind": "final",
       "lesson": null,
       "number": 2,
-      "stem": "Quel préfixe représente CS ?",
+      "stem": "Quel octet de préfixe sélectionne le segment SS ?",
       "choices": [
-        "2Eh",
+        "36h",
         "26h",
         "3Eh"
       ],
-      "correctAnswer": "2Eh",
-      "explanation": "2Eh est le préfixe de segment CS.",
+      "correctAnswer": "36h",
+      "explanation": "36h est le préfixe de surcharge SS ; 26h sélectionne ES, 2Eh CS et 3Eh DS.",
       "category": "Compréhension"
     },
     {
@@ -10262,7 +10262,7 @@
         "Répète deux ADD"
       ],
       "correctAnswer": "Copie deux octets et incrémente SI/DI de deux",
-      "explanation": "REP contrôle les itérations de l'instruction de chaîne.",
+      "explanation": "REP exécute MOVSB deux fois car CX=2. Avec DF=0, chaque transfert incrémente SI et DI d'un octet : deux octets sont copiés, les deux index avancent de deux et CX atteint zéro.",
       "category": "Prédiction"
     },
     {
@@ -10271,14 +10271,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Quel registre indique le sens de progression des chaînes ?",
+      "stem": "Quel indicateur de FLAGS détermine le sens de progression des chaînes ?",
       "choices": [
         "DF",
         "IF",
         "OF"
       ],
       "correctAnswer": "DF",
-      "explanation": "DF=0 incrémente les index ; DF=1 les décrémente.",
+      "explanation": "DF est le Direction Flag dans FLAGS. DF=0 incrémente SI et DI après chaque opération de chaîne ; DF=1 les décrémente.",
       "category": "Calcul / prédiction"
     },
     {
@@ -10495,14 +10495,14 @@
       "kind": "final",
       "lesson": null,
       "number": 1,
-      "stem": "Quel est le rôle de la BIU ?",
+      "stem": "Pendant que l'EU exécute une instruction, que peut faire la BIU en parallèle ?",
       "choices": [
-        "Gérer les accès au bus et la prélecture",
-        "Calculer toutes les additions",
-        "Stocker les FLAGS"
+        "Précharger les octets des instructions suivantes",
+        "Exécuter une deuxième instruction à la place de l'EU",
+        "Modifier les FLAGS"
       ],
-      "correctAnswer": "Gérer les accès au bus et la prélecture",
-      "explanation": "La BIU gère l'interface de bus et la file de prélecture.",
+      "correctAnswer": "Précharger les octets des instructions suivantes",
+      "explanation": "La BIU peut précharger les octets suivants pendant que l'EU exécute. Ce chevauchement des tâches ne signifie pas que le 8086 exécute deux instructions simultanément.",
       "category": "Définition"
     },
     {
@@ -10511,14 +10511,14 @@
       "kind": "final",
       "lesson": null,
       "number": 2,
-      "stem": "Pourquoi une instruction mémoire peut-elle coûter davantage qu'une instruction registre ?",
+      "stem": "Que fait la BIU lorsque l'EU demande une lecture mémoire ?",
       "choices": [
-        "Elle nécessite des transferts via le bus mémoire",
-        "Elle possède toujours deux opcodes",
-        "Elle désactive IF"
+        "Elle suspend la prélecture pour servir la demande mémoire de l'EU",
+        "Elle continue toujours à lire les instructions",
+        "Elle vide les registres généraux"
       ],
-      "correctAnswer": "Elle nécessite des transferts via le bus mémoire",
-      "explanation": "Les accès externes ajoutent des cycles selon l'adressage et la mémoire.",
+      "correctAnswer": "Elle suspend la prélecture pour servir la demande mémoire de l'EU",
+      "explanation": "La BIU suspend la prélecture d'instructions lorsqu'elle doit satisfaire une demande mémoire ou E/S de l'EU. Une lecture déjà engagée peut d'abord se terminer.",
       "category": "Compréhension"
     },
     {
@@ -10543,14 +10543,14 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "Quelle affirmation le simulateur ne peut-il pas certifier ?",
+      "stem": "Quand la BIU du 8086 démarre-t-elle une nouvelle prélecture ?",
       "choices": [
-        "Le nombre exact de cycles et le comportement de prélecture BIU",
-        "La valeur finale d'AX",
-        "La somme de deux registres"
+        "Quand au moins deux octets sont libres dans la file",
+        "Dès qu'un seul octet est libre",
+        "Uniquement lorsque la file est vide"
       ],
-      "correctAnswer": "Le nombre exact de cycles et le comportement de prélecture BIU",
-      "explanation": "Le modèle ne simule pas les cycles matériels détaillés.",
+      "correctAnswer": "Quand au moins deux octets sont libres dans la file",
+      "explanation": "Le 8086 récupère normalement deux octets par prélecture et attend donc que deux emplacements soient libres avant d'en lancer une nouvelle.",
       "category": "Restrictions"
     },
     {
@@ -10559,14 +10559,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Combien d'octets la file de prélecture du 8086 contient-elle ?",
+      "stem": "Lors d'une opération normale de prélecture, combien d'octets le 8086 récupère-t-il ?",
       "choices": [
-        "6",
-        "4",
-        "8"
+        "2",
+        "1",
+        "4"
       ],
-      "correctAnswer": "6",
-      "explanation": "Le 8086 dispose d'une file de six octets.",
+      "correctAnswer": "2",
+      "explanation": "La BIU du 8086 récupère normalement deux octets par opération de prélecture ; la capacité totale de la file reste de six octets.",
       "category": "Prédiction"
     },
     {
@@ -10575,14 +10575,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Quel événement peut invalider la file de prélecture ?",
+      "stem": "Si un branchement conditionnel n'est pas pris, que devient la file de prélecture séquentielle ?",
       "choices": [
-        "Un branchement qui change IP",
-        "Une addition registre-registre",
-        "Un MOV vers AX"
+        "Elle reste utilisable car le flot séquentiel continue",
+        "Elle est toujours vidée par tout branchement",
+        "IP est remis à zéro"
       ],
-      "correctAnswer": "Un branchement qui change IP",
-      "explanation": "Le transfert de contrôle impose de réalimenter la file au nouvel IP.",
+      "correctAnswer": "Elle reste utilisable car le flot séquentiel continue",
+      "explanation": "Si la condition n'est pas satisfaite, IP suit le chemin séquentiel. Le branchement n'impose donc pas de vider la file pour réalimenter un nouvel emplacement.",
       "category": "Calcul / prédiction"
     },
     {
@@ -10799,14 +10799,14 @@
       "kind": "final",
       "lesson": null,
       "number": 1,
-      "stem": "Que doit préciser une spécification ?",
+      "stem": "Que doit préciser le contrat d'interface d'une procédure ?",
       "choices": [
-        "Entrées, sorties, contraintes et cas limites",
-        "Seulement le nom de l'algorithme",
-        "Seulement le registre AX"
+        "Ses paramètres d'entrée, ses résultats de sortie et les registres qu'elle préserve",
+        "La fréquence du processeur",
+        "L'adresse physique de tous les segments"
       ],
-      "correctAnswer": "Entrées, sorties, contraintes et cas limites",
-      "explanation": "Une spécification décrit les résultats attendus et les limites du problème.",
+      "correctAnswer": "Ses paramètres d'entrée, ses résultats de sortie et les registres qu'elle préserve",
+      "explanation": "Le contrat documente les entrées, les résultats, les effets de bord et les registres préservés afin que l'appelant connaisse les obligations de la procédure.",
       "category": "Définition"
     },
     {
@@ -10863,14 +10863,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Que vaut AX après AX=7, BX=5, ADD AX,BX ?",
+      "stem": "Quel mot CALL NEAR empile-t-il pour permettre le retour ?",
       "choices": [
-        "12",
-        "35",
-        "2"
+        "L'offset de l'instruction qui suit CALL",
+        "Le registre AX",
+        "Le segment DS"
       ],
-      "correctAnswer": "12",
-      "explanation": "7+5 donne 12.",
+      "correctAnswer": "L'offset de l'instruction qui suit CALL",
+      "explanation": "CALL NEAR empile l'offset de l'instruction suivante, c'est-à-dire l'IP de retour. RET récupère ce mot pour reprendre l'exécution après l'appel.",
       "category": "Prédiction"
     },
     {
@@ -10879,14 +10879,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Que vaut AL après FFh+1 sur 8 bits ?",
+      "stem": "Que valent AX et CF après ADD AX,1 avec AX=FFFFh ?",
       "choices": [
-        "00h",
-        "100h",
-        "FFh"
+        "AX=0000h et CF=1",
+        "AX=FFFFh et CF=0",
+        "AX=0001h et CF=1"
       ],
-      "correctAnswer": "00h",
-      "explanation": "Le résultat est tronqué à huit bits : 100h devient 00h.",
+      "correctAnswer": "AX=0000h et CF=1",
+      "explanation": "FFFFh+1 produit 10000h. Sur 16 bits, AX conserve 0000h et CF signale la retenue sortante.",
       "category": "Calcul / prédiction"
     },
     {
@@ -10911,14 +10911,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Quel état valide le test FFh+1 ?",
+      "stem": "Pourquoi un test de FFh+1 doit-il aussi vérifier CF ?",
       "choices": [
-        "AL=00h et CF=1",
-        "AL=FFh et CF=0",
-        "AL=01h et CF=1"
+        "Parce que AL=00h seul ne prouve pas que la retenue a été correctement calculée",
+        "Parce que CF contient le résultat complet",
+        "Parce que CF remplace AL"
       ],
-      "correctAnswer": "AL=00h et CF=1",
-      "explanation": "La retenue est perdue du résultat octet mais signalée par CF.",
+      "correctAnswer": "Parce que AL=00h seul ne prouve pas que la retenue a été correctement calculée",
+      "explanation": "AL peut contenir le résultat octet correct même si le calcul de la retenue est erroné. Vérifier CF=1 contrôle donc un effet architectural distinct du résultat stocké dans AL.",
       "category": "Analyse de résultat"
     },
     {

@@ -1,0 +1,593 @@
+{
+  "schemaVersion": 1,
+  "batch": "chapter-33",
+  "title": "Oracles indépendants — chapitre 33 : symboles, désassemblage séquentiel et octets bruts",
+  "reviewDate": "2026-11-27",
+  "statusLegend": {
+    "certified": "Résolution des symboles, décodage des flux, octets inconnus et limites de resynchronisation vérifiés indépendamment"
+  },
+  "referenceBasis": [
+    "Intel 8086 Family User's Manual (October 1979), instruction encodings, relative control transfers and HLT.",
+    "Intel MCS-86 Assembly Language Reference Manual, labels, symbols, two-pass assembly and DB directive.",
+    "Règle de désassemblage : un octet rendu par DB est préservé dans le listing ; cela ne prouve pas qu'il s'agissait d'une donnée dans le source original."
+  ],
+  "oracles": [
+    {
+      "id": "C33-L1-Q1",
+      "status": "certified",
+      "rule": "symbol_table_offsets",
+      "inputs": {
+        "symbols": [
+          {
+            "label": "DEBUT",
+            "offset": 0
+          },
+          {
+            "label": "FIN",
+            "offset": 3
+          }
+        ]
+      },
+      "expected": {
+        "DEBUT": 0,
+        "FIN": 3,
+        "valuesAreOffsets": true
+      },
+      "correctAnswer": "Associer les étiquettes à leurs offsets",
+      "derivation": "La table des symboles associe chaque nom défini dans le source à sa valeur résolue, généralement un offset dans le segment ou la section. Elle permet ensuite de remplacer les références symboliques par des valeurs d'encodage appropriées.",
+      "distractorRationales": [
+        {
+          "choice": "Stocker les valeurs de FLAGS",
+          "reason": "FLAGS appartient à l'état du processeur ; la table des symboles conserve les valeurs associées aux noms du programme."
+        },
+        {
+          "choice": "Déterminer la fréquence du processeur",
+          "reason": "La fréquence est une caractéristique matérielle et n'est pas calculée à partir des étiquettes du source."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
+    },
+    {
+      "id": "C33-L1-Q2",
+      "status": "certified",
+      "rule": "assembler_two_pass",
+      "inputs": {
+        "firstPass": [
+          "layout",
+          "label_offsets"
+        ],
+        "secondPass": [
+          "resolve_references",
+          "encode_instructions"
+        ]
+      },
+      "expected": {
+        "firstPass": "calculate_offsets_and_symbols",
+        "secondPass": "resolve_references_and_encode"
+      },
+      "correctAnswer": "Pour calculer les offsets puis résoudre les références",
+      "derivation": "Dans un assembleur à deux passes, la première parcourt le source pour établir la disposition et les offsets des étiquettes. La seconde peut alors résoudre les références en avant et produire les octets ou déplacements correspondants ; elle ne réexécute pas les instructions.",
+      "distractorRationales": [
+        {
+          "choice": "Pour exécuter chaque instruction deux fois",
+          "reason": "L'assembleur transforme le source en code machine ; il n'exécute pas le programme deux fois."
+        },
+        {
+          "choice": "Pour doubler la mémoire",
+          "reason": "Les passes sont des étapes d'analyse et de résolution, pas une opération qui augmente la mémoire."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
+    },
+    {
+      "id": "C33-L1-Q3",
+      "status": "certified",
+      "rule": "near_label_jump_resolution",
+      "inputs": {
+        "mnemonic": "JMP NEAR FIN",
+        "label": "FIN",
+        "targetOffset": 32
+      },
+      "expected": {
+        "target": "FIN",
+        "targetOffset": 32,
+        "relativeNearTransfer": true
+      },
+      "correctAnswer": "Une cible symbolique résolue en déplacement relatif",
+      "derivation": "JMP NEAR FIN est un transfert near dans le segment courant. L'assembleur résout le symbole FIN en offset cible puis calcule le déplacement relatif requis par l'encodage choisi ; le nom FIN n'est pas une donnée immédiate.",
+      "distractorRationales": [
+        {
+          "choice": "Une donnée immédiate toujours égale à FIN",
+          "reason": "FIN est un symbole dont la valeur est résolue par l'assembleur ; ce n'est pas une chaîne de caractères chargée comme immédiat."
+        },
+        {
+          "choice": "Un accès mémoire indirect obligatoire",
+          "reason": "Une étiquette utilisée dans un saut direct ne force pas un accès indirect via un pointeur mémoire."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
+    },
+    {
+      "id": "C33-L2-Q1",
+      "status": "certified",
+      "rule": "sequential_disassembler_model",
+      "inputs": {
+        "stream": [
+          184,
+          52,
+          18,
+          244
+        ],
+        "startOffset": 0
+      },
+      "expected": {
+        "readsBytesInOrder": true,
+        "usesDecodedInstructionLengths": true,
+        "executesProgram": false
+      },
+      "correctAnswer": "Interprète les octets dans l'ordre selon les longueurs d'instruction",
+      "derivation": "Un désassembleur séquentiel commence à un offset donné, lit les octets dans l'ordre et avance selon la longueur de chaque instruction décodée. Il produit une représentation du flux ; il n'exécute pas le programme et ne retrouve pas nécessairement les noms symboliques d'origine.",
+      "distractorRationales": [
+        {
+          "choice": "Exécute le programme",
+          "reason": "L'exécution relève du processeur ou du simulateur ; le désassembleur interprète le flux pour afficher des instructions."
+        },
+        {
+          "choice": "Retrouve toujours les noms de variables",
+          "reason": "Les noms de variables et d'étiquettes ne sont généralement pas présents dans les octets machine bruts."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
+    },
+    {
+      "id": "C33-L2-Q2",
+      "status": "certified",
+      "rule": "decode_mov_hlt_stream",
+      "inputs": {
+        "bytes": [
+          184,
+          52,
+          18,
+          244
+        ],
+        "startOffset": 0
+      },
+      "expected": {
+        "instructions": [
+          "MOV AX,1234h",
+          "HLT"
+        ],
+        "lengths": [
+          3,
+          1
+        ],
+        "bytesConsumed": 4
+      },
+      "correctAnswer": "MOV AX,1234h puis HLT",
+      "derivation": "B8h encode MOV AX,imm16 ; les octets 34h puis 12h forment l'immédiat 1234h en little-endian. Cette instruction consomme trois octets. L'octet suivant F4h est l'opcode HLT et consomme un octet.",
+      "distractorRationales": [
+        {
+          "choice": "MOV AX,3412h puis NOP",
+          "reason": "Les octets 34 12 forment 1234h en little-endian, pas 3412h ; F4h code HLT et non NOP."
+        },
+        {
+          "choice": "ADD AX,12h puis INT",
+          "reason": "B8h est un opcode MOV immédiat vers AX ; F4h est HLT, pas une instruction INT."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
+    },
+    {
+      "id": "C33-L2-Q3",
+      "status": "certified",
+      "rule": "disassembly_start_alignment",
+      "inputs": {
+        "bytes": [
+          184,
+          52,
+          18,
+          244
+        ],
+        "startOffset": 1
+      },
+      "expected": {
+        "startOffsetAffectsDecode": true,
+        "dataCanBeMistakenForOpcode": true
+      },
+      "correctAnswer": "Un décalage peut faire interpréter des octets de données comme opcodes",
+      "derivation": "Le désassemblage séquentiel dépend du point de départ : le même flux peut être découpé en instructions différentes si le décodage commence au milieu d'une instruction ou d'une zone de données. Le désassembleur ne connaît pas automatiquement les frontières code/données.",
+      "distractorRationales": [
+        {
+          "choice": "Il change la valeur des registres",
+          "reason": "Le désassemblage est une interprétation statique du flux et ne modifie aucun registre du processeur."
+        },
+        {
+          "choice": "Il modifie les octets en mémoire",
+          "reason": "Lire et décoder les octets ne les réécrit pas ; le point de départ change seulement leur interprétation."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
+    },
+    {
+      "id": "C33-L3-Q1",
+      "status": "certified",
+      "rule": "unknown_byte_representation",
+      "inputs": {
+        "byte": 100,
+        "knownInstructionLength": false
+      },
+      "expected": {
+        "directive": "DB",
+        "value": 100,
+        "bytePreserved": true,
+        "sourceDataProven": false,
+        "alignmentCertain": false
+      },
+      "correctAnswer": "Le conserver comme donnée brute DB",
+      "derivation": "Quand le désassembleur ne peut pas établir une instruction valide à partir de cet octet isolé, il peut l'émettre sous forme DB pour préserver exactement sa valeur. Cette notation de listing ne prouve pas que l'octet était une donnée dans le source original ; l'alignement du flux peut rester incertain.",
+      "distractorRationales": [
+        {
+          "choice": "Inventer une instruction valide",
+          "reason": "Inventer un mnémonique ferait perdre la distinction entre un décodage vérifié et une interprétation spéculative."
+        },
+        {
+          "choice": "Supprimer l'octet",
+          "reason": "Supprimer l'octet altérerait le flux et ferait perdre une valeur présente dans le binaire."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
+    },
+    {
+      "id": "C33-L3-Q2",
+      "status": "certified",
+      "rule": "db_directive_semantics",
+      "inputs": {
+        "value": 100,
+        "width": 8
+      },
+      "expected": {
+        "directive": "DB",
+        "byte": 100,
+        "rawData": true,
+        "machineInstruction": false
+      },
+      "correctAnswer": "Un octet de donnée 64h",
+      "derivation": "DB est une directive d'assemblage qui émet un octet de donnée. Dans un listing de désassemblage, DB 64h indique que la valeur 64h est conservée comme octet brut plutôt que présentée comme une instruction décodée.",
+      "distractorRationales": [
+        {
+          "choice": "Une instruction MOV",
+          "reason": "MOV est un mnémonique d'instruction ; DB déclare ici un octet brut et n'exécute aucun transfert."
+        },
+        {
+          "choice": "Un registre de segment",
+          "reason": "Un registre de segment est un état du processeur ; 64h est la valeur de l'octet émis par la directive DB."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
+    },
+    {
+      "id": "C33-L3-Q3",
+      "status": "certified",
+      "rule": "unknown_byte_alignment_uncertainty",
+      "inputs": {
+        "byte": 100,
+        "bytePreserved": true,
+        "knownInstructionLength": false
+      },
+      "expected": {
+        "bytePreserved": true,
+        "subsequentAlignmentKnown": false,
+        "uncertaintyReported": true
+      },
+      "correctAnswer": "Pour conserver l'alignement et permettre l'analyse du flux",
+      "derivation": "Préserver chaque octet empêche de perdre ou de décaler artificiellement le flux binaire. Toutefois, si la longueur sémantique de l'élément non décodé n'est pas connue, le désassembleur doit signaler que l'alignement des instructions suivantes peut être incertain plutôt que prétendre avoir retrouvé la frontière exacte.",
+      "distractorRationales": [
+        {
+          "choice": "Pour masquer les erreurs",
+          "reason": "Cacher l'octet supprimerait une information utile et rendrait le diagnostic moins fiable."
+        },
+        {
+          "choice": "Pour changer les adresses",
+          "reason": "Le désassembleur ne doit pas modifier les adresses du flux ; il doit préserver les offsets et signaler l'incertitude."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
+    },
+    {
+      "id": "C33-F-Q1",
+      "status": "certified",
+      "rule": "segment_offset_definition",
+      "inputs": {
+        "offset": 4660,
+        "segmentBase": 4096
+      },
+      "expected": {
+        "offsetIsRelative": true,
+        "physicalAddressRequiresSegment": true
+      },
+      "correctAnswer": "Sa position relative au début du segment",
+      "derivation": "Un offset est une position relative à la base d'un segment. Il ne constitue pas à lui seul une adresse physique 20 bits : la base du segment est nécessaire pour calculer l'adresse physique.",
+      "distractorRationales": [
+        {
+          "choice": "Son adresse physique sur 20 bits",
+          "reason": "L'adresse physique dépend du segment et de l'offset ; l'offset seul n'est qu'une composante."
+        },
+        {
+          "choice": "Le nombre de ses opérandes",
+          "reason": "Le nombre d'opérandes décrit la syntaxe de l'instruction, pas sa position dans le segment."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
+    },
+    {
+      "id": "C33-F-Q2",
+      "status": "certified",
+      "rule": "assembler_two_pass",
+      "inputs": {
+        "firstPass": [
+          "layout",
+          "label_offsets"
+        ],
+        "secondPass": [
+          "resolve_references",
+          "encode_instructions"
+        ]
+      },
+      "expected": {
+        "firstPass": "calculate_offsets_and_symbols",
+        "secondPass": "resolve_references_and_encode"
+      },
+      "correctAnswer": "Pour calculer les offsets et résoudre les références",
+      "derivation": "La première passe établit les offsets des instructions et les symboles ; la seconde utilise ces valeurs pour encoder les références et les cibles. Cette organisation traite les références en avant sans exécuter les instructions.",
+      "distractorRationales": [
+        {
+          "choice": "Pour doubler les instructions",
+          "reason": "Deux passes ne dupliquent pas le programme ; elles séparent la construction de la table des symboles et l'encodage."
+        },
+        {
+          "choice": "Pour exécuter chaque ligne deux fois",
+          "reason": "L'assembleur produit le code machine ; les passes ne sont pas deux exécutions du programme."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
+    },
+    {
+      "id": "C33-F-Q3",
+      "status": "certified",
+      "rule": "near_label_jump_resolution",
+      "inputs": {
+        "mnemonic": "JMP NEAR FIN",
+        "label": "FIN",
+        "targetOffset": 32
+      },
+      "expected": {
+        "target": "FIN",
+        "targetOffset": 32,
+        "relativeNearTransfer": true
+      },
+      "correctAnswer": "Transfère le contrôle vers l'offset relatif de FIN",
+      "derivation": "JMP NEAR FIN transfère le contrôle vers l'étiquette FIN dans le segment de code courant. L'assembleur résout son offset et encode le déplacement relatif à l'adresse suivant l'instruction ; il ne charge pas le texte FIN dans AX.",
+      "distractorRationales": [
+        {
+          "choice": "Charge le texte FIN dans AX",
+          "reason": "JMP modifie le flot de contrôle ; il ne charge pas le nom de l'étiquette dans un registre."
+        },
+        {
+          "choice": "Lit un pointeur far en mémoire",
+          "reason": "JMP NEAR utilise une cible near dans le segment courant et ne requiert pas de lecture d'un pointeur far en mémoire."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
+    },
+    {
+      "id": "C33-F-Q4",
+      "status": "certified",
+      "rule": "machine_code_symbol_names",
+      "inputs": {
+        "sourceSymbol": "FIN",
+        "binaryContainsSymbolTable": false
+      },
+      "expected": {
+        "symbolNameEncoded": false,
+        "offsetMayRemainResolvable": true
+      },
+      "correctAnswer": "Les symboles ne sont pas présents dans les octets bruts",
+      "derivation": "Le code machine contient des opcodes, champs d'opérandes et déplacements, mais pas nécessairement les noms textuels du source. Sans table de symboles ou métadonnées séparées, le désassembleur ne peut pas reconstruire avec certitude le nom FIN.",
+      "distractorRationales": [
+        {
+          "choice": "Les opcodes n'ont pas de longueur",
+          "reason": "Les opcodes et leurs champs déterminent la longueur des instructions ; cette propriété n'explique pas la perte des noms symboliques."
+        },
+        {
+          "choice": "Les registres sont chiffrés",
+          "reason": "Les registres ne sont pas chiffrés ; les noms d'étiquettes sont absents parce qu'ils ne sont pas encodés comme texte dans le flux machine."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
+    },
+    {
+      "id": "C33-F-Q5",
+      "status": "certified",
+      "rule": "decode_hlt_opcode",
+      "inputs": {
+        "byte": 244
+      },
+      "expected": {
+        "mnemonic": "HLT",
+        "length": 1
+      },
+      "correctAnswer": "Il code HLT",
+      "derivation": "Après les trois octets de MOV AX,1234h, F4h est le code machine de HLT sur 8086. Il s'agit d'une instruction d'un octet qui arrête l'exécution jusqu'à un événement de reprise matériel modélisé ou réel.",
+      "distractorRationales": [
+        {
+          "choice": "Il code NOP",
+          "reason": "NOP est encodé par 90h ; F4h est l'opcode HLT."
+        },
+        {
+          "choice": "Il code INT 4",
+          "reason": "INT 4 utilise CD 04h ; F4h seul n'est pas une instruction INT."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
+    },
+    {
+      "id": "C33-F-Q6",
+      "status": "certified",
+      "rule": "short_jump_label_offset",
+      "inputs": {
+        "startOffset": 0,
+        "jmpBytes": 2,
+        "nopBytes": 1,
+        "labelAfterNop": true
+      },
+      "expected": {
+        "labelOffset": 3,
+        "hex": "0003h"
+      },
+      "correctAnswer": "3",
+      "derivation": "Le JMP short occupe deux octets ; le NOP suivant occupe un octet. Si FIN est placée immédiatement après ce NOP, son offset est 0+2+1=3, soit 0003h.",
+      "distractorRationales": [
+        {
+          "choice": "2",
+          "reason": "L'offset 2 correspond au début du NOP ; l'étiquette FIN est placée après son octet."
+        },
+        {
+          "choice": "4",
+          "reason": "Aucun quatrième octet ne précède FIN dans la séquence décrite ; le JMP et le NOP totalisent trois octets."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
+    },
+    {
+      "id": "C33-F-Q7",
+      "status": "certified",
+      "rule": "decode_mov_hlt_stream",
+      "inputs": {
+        "bytes": [
+          184,
+          52,
+          18,
+          244
+        ],
+        "startOffset": 0
+      },
+      "expected": {
+        "instructions": [
+          "MOV AX,1234h",
+          "HLT"
+        ],
+        "lengths": [
+          3,
+          1
+        ],
+        "bytesConsumed": 4
+      },
+      "correctAnswer": "Décode MOV AX,1234h puis HLT",
+      "derivation": "Le désassembleur lit B8h, consomme l'immédiat 34 12 pour former MOV AX,1234h sur trois octets, puis traite F4h comme HLT sur un octet. Il décode le flux sans l'exécuter.",
+      "distractorRationales": [
+        {
+          "choice": "Décode quatre instructions d'un octet",
+          "reason": "B8h est suivi de deux octets d'immédiat ; ces octets appartiennent à la même instruction MOV et ne sont pas quatre opcodes séparés."
+        },
+        {
+          "choice": "Exécute le flux",
+          "reason": "Un désassembleur décode et affiche les instructions ; il n'exécute pas le programme."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
+    },
+    {
+      "id": "C33-F-Q8",
+      "status": "certified",
+      "rule": "unknown_byte_representation",
+      "inputs": {
+        "byte": 100,
+        "knownInstructionLength": false
+      },
+      "expected": {
+        "directive": "DB",
+        "value": 100,
+        "bytePreserved": true,
+        "sourceDataProven": false,
+        "alignmentCertain": false
+      },
+      "correctAnswer": "Pour préserver l'octet brut et signaler l'incertitude du décodage",
+      "derivation": "DB conserve la valeur brute sans prétendre connaître sa signification originale. Si l'octet ne permet pas d'établir la frontière d'une instruction, le désassembleur doit aussi signaler que la suite peut être désalignée ou ambiguë.",
+      "distractorRationales": [
+        {
+          "choice": "Pour le transformer en NOP",
+          "reason": "Transformer arbitrairement l'octet en NOP modifierait sa valeur et inventerait une instruction non démontrée."
+        },
+        {
+          "choice": "Pour effacer les données",
+          "reason": "Effacer l'octet détruirait une partie du binaire au lieu de la préserver dans le listing."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
+    },
+    {
+      "id": "C33-F-Q9",
+      "status": "certified",
+      "rule": "unknown_byte_resynchronization",
+      "inputs": {
+        "byte": 100,
+        "knownInstructionLength": false
+      },
+      "expected": {
+        "directive": "DB",
+        "byte": 100,
+        "bytePreserved": true,
+        "alignmentMarkedUncertain": true,
+        "doNotInventInstruction": true
+      },
+      "correctAnswer": "Conserver l'octet en DB et marquer la suite comme incertaine",
+      "derivation": "Un balayage linéaire peut préserver l'octet sous DB, mais il ne doit pas affirmer que le prochain octet est nécessairement une frontière d'instruction si la longueur de l'élément inconnu n'est pas établie. Signaler l'incertitude évite d'inventer un opcode ou un alignement.",
+      "distractorRationales": [
+        {
+          "choice": "Supprimer l'octet inconnu",
+          "reason": "Supprimer l'octet modifie le flux et peut décaler artificiellement toutes les positions suivantes."
+        },
+        {
+          "choice": "Forcer un opcode supposé",
+          "reason": "Un opcode supposé n'est pas une preuve de décodage ; il faut conserver la valeur brute et signaler l'incertitude."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
+    },
+    {
+      "id": "C33-F-Q10",
+      "status": "certified",
+      "rule": "audit_checklist_coverage",
+      "inputs": {
+        "domain": "disassembly_validation",
+        "checks": [
+          "fixed_bytes",
+          "disassembler",
+          "independent_assembler"
+        ]
+      },
+      "expected": {
+        "requiredChecks": [
+          "fixed_bytes",
+          "disassembler",
+          "independent_assembler"
+        ],
+        "missingChecks": [],
+        "complete": true
+      },
+      "correctAnswer": "Octets fixes, désassembleur et assembleur indépendant",
+      "derivation": "Une validation croisée utilise des octets de référence connus, vérifie le désassemblage obtenu et compare l'assemblage à un outil indépendant. Le texte source seul ou le nombre de lignes ne démontre pas que les octets encodés sont corrects.",
+      "distractorRationales": [
+        {
+          "choice": "Seulement l'affichage des mnémoniques",
+          "reason": "Un affichage plausible peut masquer des erreurs de longueur, de ModR/M, de déplacement ou d'immédiat."
+        },
+        {
+          "choice": "Le nombre de lignes",
+          "reason": "Le nombre de lignes ne valide ni les octets, ni leur décodage, ni leur conformité à une référence indépendante."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
+    }
+  ]
+}

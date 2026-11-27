@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "title": "Oracles sémantiques indépendants — tranche initiale",
-  "scope": "Six questions corrigées et recalculées indépendamment. Ce fichier ne certifie pas les 678 autres questions.",
+  "title": "Oracles automatisés — couverture des 684 questions",
+  "scope": "Les lots des chapitres 1 à 36 contiennent 681 enregistrements, dont trois identifiants historiques réutilisés, auxquels s'ajoutent trois oracles historiques hors lots : 684 identifiants uniques disposent ainsi d'un oracle enregistré. Le statut « certified » des lots décrit le contrôle automatisé de l'oracle (résultat attendu, dérivation, référence, évaluateur et alignement runtime/clé) ; il ne constitue pas la certification officielle de la question. Le registre officiel reste à 384/684 ; 300 questions restent à examiner et certifier indépendamment.",
   "referenceBasis": [
     "Intel 8086 Family User's Manual (October 1979), architecture EU/BIU, file de prélecture, arithmétique, instructions de décalage, instructions de chaîne et indicateurs.",
     "Intel MCS-86 Assembly Language Reference Manual, formes d'opérandes et syntaxe assembleur."
@@ -194,7 +194,7 @@
       "distractorRationales": [
         {
           "choice": "Compare deux octets",
-          "reason": "Décrit SCASB, pas STOSB."
+          "reason": "SCASB compare AL avec l'octet en ES:DI et met à jour les indicateurs ; STOSB écrit AL en ES:DI sans effectuer de comparaison."
         },
         {
           "choice": "Copie AX vers DS:SI",
@@ -207,6 +207,325 @@
         "DI augmente",
         "CX atteint zéro"
       ]
+    }
+  ],
+  "supplementalBatches": [
+    {
+      "path": "docs/question-oracle-batches/chapter-01.json",
+      "scope": "Chapitre 1 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-02.json",
+      "scope": "Chapitre 2 — 19 questions couvertes ; C02-F-Q4 est réutilisé depuis le manifeste historique",
+      "newlyAdded": 18,
+      "reusedHistorical": 1,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-03.json",
+      "scope": "Chapitre 3 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-04.json",
+      "scope": "Chapitre 4 — 19 questions couvertes ; C04-F-Q4 est réutilisé depuis le manifeste historique",
+      "newlyAdded": 18,
+      "reusedHistorical": 1,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-05.json",
+      "scope": "Chapitre 5 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-06.json",
+      "scope": "Chapitre 6 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-07.json",
+      "scope": "Chapitre 7 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-08.json",
+      "scope": "Chapitre 8 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-09.json",
+      "scope": "Chapitre 9 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-10.json",
+      "scope": "Chapitre 10 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-11.json",
+      "scope": "Chapitre 11 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-12.json",
+      "scope": "Chapitre 12 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-13.json",
+      "scope": "Chapitre 13 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-14.json",
+      "scope": "Chapitre 14 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-15.json",
+      "scope": "Chapitre 15 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-16.json",
+      "scope": "Chapitre 16 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-17.json",
+      "scope": "Chapitre 17 — 19 questions couvertes ; C17-F-Q2 est réutilisé depuis le manifeste historique",
+      "newlyAdded": 18,
+      "reusedHistorical": 1,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-18.json",
+      "scope": "Chapitre 18 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-19.json",
+      "scope": "Chapitre 19 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-20.json",
+      "scope": "Chapitre 20 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-21.json",
+      "scope": "Chapitre 21 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-22.json",
+      "scope": "Chapitre 22 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-23.json",
+      "scope": "Chapitre 23 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-24.json",
+      "scope": "Chapitre 24 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-25.json",
+      "scope": "Chapitre 25 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-26.json",
+      "scope": "Chapitre 26 — 19 questions couvertes ; C26-F-Q5 et C26-F-Q6 sont réutilisés depuis le manifeste historique",
+      "newlyAdded": 17,
+      "reusedHistorical": 2,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-27.json",
+      "scope": "Chapitre 27 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-28.json",
+      "scope": "Chapitre 28 — 18 questions couvertes ; C28-F-Q7 est réutilisé depuis le manifeste historique",
+      "newlyAdded": 18,
+      "reusedHistorical": 1,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 18
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-29.json",
+      "scope": "Chapitre 29 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-30.json",
+      "scope": "Chapitre 30 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-31.json",
+      "scope": "Chapitre 31 — 19 questions couvertes ; C31-L2-Q3 corrigée pour inclure les préfixes éventuels dans la longueur d'instruction",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-32.json",
+      "scope": "Chapitre 32 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-33.json",
+      "scope": "Chapitre 33 — 19 questions couvertes ; ambiguïtés de JMP NEAR et de resynchronisation du désassembleur clarifiées",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-34.json",
+      "scope": "Chapitre 34 — 19 questions couvertes ; effet du préfixe LOCK qualifié pour le mode maximum",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-35.json",
+      "scope": "Chapitre 35 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-36.json",
+      "scope": "Chapitre 36 — 19 questions couvertes",
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0,
+      "oracleRecords": 19
+    }
+  ],
+  "statusSemantics": "Les statuts des lots décrivent l'état des enregistrements d'oracles et de leurs évaluateurs automatisés. Ils ne modifient pas le compteur officiel de certification des questions.",
+  "oracleCoverageSummary": {
+    "questionCount": 684,
+    "historicalOracles": 6,
+    "supplementalBatchRecords": 681,
+    "newSupplementalOracles": 678,
+    "uniqueOracleQuestionIds": 684,
+    "questionsWithoutOracle": 0,
+    "officialCertificationCount": 384,
+    "remainingOfficialCertification": 300,
+    "calculation": "681 enregistrements de lots, dont 3 identifiants déjà historiques, plus 3 oracles historiques non présents dans les lots (C02-F-Q4, C04-F-Q4 et C28-F-Q7) = 684 identifiants uniques. Les 6 oracles historiques sont tous comptés une seule fois."
+  },
+  "independentReviewBatches": [
+    {
+      "path": "docs/question-independent-review/chapter-01.json",
+      "chapter": 1,
+      "reviewedQuestions": 19,
+      "correctedQuestions": 5,
+      "blockedQuestions": 0,
+      "officialCertificationCountBefore": 384,
+      "officialCertificationCountAfter": 384,
+      "note": "Revue indépendante enregistrée séparément ; aucun incrément du compteur officiel tant que le registre nominatif antérieur n'est pas réconcilié."
     }
   ]
 }

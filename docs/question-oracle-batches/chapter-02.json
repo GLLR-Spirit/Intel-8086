@@ -1,0 +1,475 @@
+{
+  "schemaVersion": 1,
+  "batch": "chapter-02",
+  "title": "Oracles indépendants — chapitre 2 : architecture EU/BIU et prélecture",
+  "reviewDate": "2026-11-27",
+  "statusLegend": {
+    "certified": "Réponse, raisonnement et explication contrôlés indépendamment"
+  },
+  "referenceBasis": [
+    "Intel 8086 Family User's Manual, October 1979 — Execution Unit, Bus Interface Unit, instruction queue and address formation.",
+    "Intel MCS-86 Assembly Language Reference Manual — Intel operand order."
+  ],
+  "oracles": [
+    {
+      "id": "C02-L1-Q1",
+      "rule": "eu_function",
+      "inputs": {
+        "unit": "EU"
+      },
+      "expected": "decode_and_execute",
+      "correctAnswer": "EU",
+      "derivation": "L'Execution Unit décode les instructions reçues et en commande l'exécution à l'aide des registres et de l'ALU. Elle n'est pas l'interface directe du bus externe.",
+      "distractorRationales": [
+        {
+          "choice": "BIU",
+          "reason": "La BIU gère les accès au bus et la prélecture, pas le décodage/exécution principal."
+        },
+        {
+          "choice": "Bus de données",
+          "reason": "Le bus transporte des données ; ce n'est pas une unité de contrôle/exécution."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), Execution Unit (EU).",
+      "status": "certified"
+    },
+    {
+      "id": "C02-L1-Q2",
+      "rule": "alu_function",
+      "inputs": {
+        "unit": "ALU"
+      },
+      "expected": "arithmetic_and_logic",
+      "correctAnswer": "ALU",
+      "derivation": "L'ALU réalise les opérations arithmétiques et logiques utilisées par l'EU. La file de prélecture et CS n'effectuent pas ces calculs.",
+      "distractorRationales": [
+        {
+          "choice": "File de prélecture",
+          "reason": "La file stocke temporairement les octets d'instruction préchargés."
+        },
+        {
+          "choice": "Registre CS",
+          "reason": "CS contient la base du segment de code ; il ne réalise pas les opérations arithmétiques et logiques."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, EU and arithmetic logic unit.",
+      "status": "certified"
+    },
+    {
+      "id": "C02-L1-Q3",
+      "rule": "eu_biu_responsibility",
+      "inputs": {
+        "operation": "external_bus_cycles"
+      },
+      "expected": "biu_manages_bus",
+      "correctAnswer": "Non, la BIU gère l'interface de bus",
+      "derivation": "L'EU exécute les instructions ; la BIU assure l'interface avec le bus, génère les adresses physiques et gère les transferts externes. L'EU ne pilote donc pas seule les cycles externes.",
+      "distractorRationales": [
+        {
+          "choice": "Oui, seule",
+          "reason": "Cela attribue à l'EU les responsabilités de l'interface de bus de la BIU."
+        },
+        {
+          "choice": "Non, le registre AX gère le bus",
+          "reason": "AX est un registre général de données ; il ne remplace pas la BIU."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, division des fonctions EU/BIU.",
+      "status": "certified"
+    },
+    {
+      "id": "C02-L2-Q1",
+      "rule": "biu_function",
+      "inputs": {
+        "unit": "BIU"
+      },
+      "expected": "bus_and_prefetch",
+      "correctAnswer": "BIU",
+      "derivation": "La Bus Interface Unit gère les accès mémoire et aux E/S, la génération des adresses et le remplissage de la file de prélecture.",
+      "distractorRationales": [
+        {
+          "choice": "EU",
+          "reason": "L'EU décode et exécute les instructions."
+        },
+        {
+          "choice": "ALU",
+          "reason": "L'ALU effectue les opérations arithmétiques et logiques."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, Bus Interface Unit.",
+      "status": "certified"
+    },
+    {
+      "id": "C02-L2-Q2",
+      "rule": "segment_offset_address",
+      "inputs": {
+        "segment": 4096,
+        "offset": 32,
+        "shift": 4,
+        "addressBits": 20
+      },
+      "expected": {
+        "linear": 65568,
+        "physical": 65568
+      },
+      "correctAnswer": "segment × 10h + offset",
+      "derivation": "L'adresse de base vaut 1000h × 10h = 10000h. En ajoutant l'offset 0020h, on obtient 10020h. Le décalage de quatre bits correspond à la multiplication par 16.",
+      "distractorRationales": [
+        {
+          "choice": "segment + offset",
+          "reason": "Cette addition donnerait 1020h et omettrait le décalage du segment."
+        },
+        {
+          "choice": "offset × 10h",
+          "reason": "Cette expression ne tient pas compte du segment et ne correspond pas à la formation d'adresse."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, formation des adresses segment:offset.",
+      "status": "certified"
+    },
+    {
+      "id": "C02-L2-Q3",
+      "rule": "prefetch_queue_capacity",
+      "inputs": {
+        "processor": "8086"
+      },
+      "expected": {
+        "bytes": 6
+      },
+      "correctAnswer": "6 octets",
+      "derivation": "La file de prélecture de l'Intel 8086 contient six octets. Ne pas la confondre avec la file de quatre octets du 8088.",
+      "distractorRationales": [
+        {
+          "choice": "4 octets",
+          "reason": "Quatre octets est la capacité associée au 8088."
+        },
+        {
+          "choice": "8 octets",
+          "reason": "La capacité de la file 8086 est six octets, pas huit."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, instruction queue; Intel 8088 documentation.",
+      "status": "certified"
+    },
+    {
+      "id": "C02-L3-Q1",
+      "rule": "control_transfer_prefetch",
+      "inputs": {
+        "transfer": "taken_jump"
+      },
+      "expected": "flush_and_refill",
+      "correctAnswer": "La file de prélecture est invalidée puis réalimentée à la cible",
+      "derivation": "Un saut pris modifie le flot d'instructions. Les octets préchargés pour la suite séquentielle ne correspondent plus à la cible ; la file doit être réalimentée depuis la nouvelle adresse.",
+      "distractorRationales": [
+        {
+          "choice": "La file conserve le chemin séquentiel",
+          "reason": "Ces octets appartiennent au chemin abandonné et ne doivent pas être consommés comme la suite du programme."
+        },
+        {
+          "choice": "L'EU exécute les deux chemins",
+          "reason": "Un saut transfère le contrôle ; le 8086 n'exécute pas simultanément les deux chemins."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, instruction queue et transferts de contrôle.",
+      "status": "certified"
+    },
+    {
+      "id": "C02-L3-Q2",
+      "rule": "prefetch_overlap",
+      "inputs": {
+        "euExecution": true,
+        "biuFetch": true
+      },
+      "expected": {
+        "overlap": true,
+        "superscalar": false
+      },
+      "correctAnswer": "Non, elle chevauche la récupération des octets et l'exécution",
+      "derivation": "La BIU peut précharger des octets pendant que l'EU exécute une instruction. Ce chevauchement entre deux unités ne signifie pas que le processeur exécute deux instructions simultanément comme un processeur superscalaire.",
+      "distractorRationales": [
+        {
+          "choice": "Oui, comme un processeur superscalaire",
+          "reason": "Le chevauchement BIU/EU n'est pas une exécution superscalaire de plusieurs instructions."
+        },
+        {
+          "choice": "Oui, l'ALU exécute les instructions en parallèle",
+          "reason": "L'ALU réalise les opérations demandées ; la prélecture est gérée par la BIU."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, architecture EU/BIU et file de prélecture.",
+      "status": "certified"
+    },
+    {
+      "id": "C02-L3-Q3",
+      "rule": "alu_add_trace",
+      "inputs": {
+        "left": 4,
+        "right": 3,
+        "width": 16
+      },
+      "expected": {
+        "sum": 7,
+        "result": 7
+      },
+      "correctAnswer": "Elle effectue l'addition",
+      "derivation": "L'opération ADD AX,3 calcule 4+3=7. L'ALU réalise le calcul ; la BIU n'effectue pas cette addition et CS ne sélectionne pas le résultat.",
+      "distractorRationales": [
+        {
+          "choice": "Elle charge la file de prélecture",
+          "reason": "Le remplissage de la file relève de la BIU."
+        },
+        {
+          "choice": "Elle choisit CS",
+          "reason": "CS est le registre de segment de code ; il n'effectue pas le calcul arithmétique."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, ALU and ADD.",
+      "status": "certified"
+    },
+    {
+      "id": "C02-F-Q1",
+      "rule": "eu_function",
+      "inputs": {
+        "unit": "EU"
+      },
+      "expected": "decode_and_execute",
+      "correctAnswer": "Décoder et exécuter les instructions",
+      "derivation": "L'EU décode les instructions et commande leur exécution avec l'ALU et les registres. La gestion des cycles du bus relève de la BIU.",
+      "distractorRationales": [
+        {
+          "choice": "Gérer les cycles du bus externe",
+          "reason": "La BIU est l'unité d'interface du bus externe."
+        },
+        {
+          "choice": "Stocker les octets préchargés uniquement",
+          "reason": "La file de prélecture appartient à la BIU ; ce n'est pas le rôle de l'EU."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, architecture EU/BIU.",
+      "status": "certified"
+    },
+    {
+      "id": "C02-F-Q2",
+      "rule": "eu_biu_work_split",
+      "inputs": {},
+      "expected": {
+        "biu": "external_bus_and_prefetch",
+        "eu": "instruction_decode_and_execution"
+      },
+      "correctAnswer": "La BIU gère les accès externes et la prélecture ; l'EU exécute les instructions",
+      "derivation": "La BIU gère les transferts externes et la prélecture ; l'EU traite les instructions et les opérations internes. Elles se coordonnent mais ne sont pas deux processeurs exécutant deux flux indépendants.",
+      "distractorRationales": [
+        {
+          "choice": "La BIU exécute les calculs et l'EU pilote les broches d'adresse",
+          "reason": "Cette proposition inverse les responsabilités des deux unités."
+        },
+        {
+          "choice": "Elles exécutent indépendamment deux flux d'instructions",
+          "reason": "L'architecture du 8086 ne constitue pas deux processeurs indépendants."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, architecture fonctionnelle.",
+      "status": "certified"
+    },
+    {
+      "id": "C02-F-Q3",
+      "rule": "intel_operand_order",
+      "inputs": {
+        "instruction": "MOV AX,4"
+      },
+      "expected": {
+        "destination": "AX",
+        "source": "4"
+      },
+      "correctAnswer": "AX",
+      "derivation": "Dans la syntaxe Intel, le premier opérande est la destination : MOV destination,source. AX reçoit la constante immédiate 4.",
+      "distractorRationales": [
+        {
+          "choice": "4",
+          "reason": "La constante 4 est l'opérande source."
+        },
+        {
+          "choice": "BIU",
+          "reason": "BIU est une unité du processeur, pas un opérande de l'instruction."
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, syntaxe des opérandes.",
+      "status": "certified"
+    },
+    {
+      "id": "C02-F-Q5",
+      "rule": "alu_add_trace",
+      "inputs": {
+        "left": 4,
+        "right": 3,
+        "width": 16
+      },
+      "expected": {
+        "sum": 7,
+        "result": 7
+      },
+      "correctAnswer": "7",
+      "derivation": "MOV AX,4 initialise AX à 4. ADD AX,3 calcule 4+3, soit 7 ; HLT arrête ensuite l'exécution.",
+      "distractorRationales": [
+        {
+          "choice": "3",
+          "reason": "Cette réponse ignore la valeur initiale 4 déjà chargée dans AX."
+        },
+        {
+          "choice": "4",
+          "reason": "Cette réponse ignore l'effet de ADD AX,3."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, MOV and ADD instruction semantics.",
+      "status": "certified"
+    },
+    {
+      "id": "C02-F-Q6",
+      "rule": "segment_offset_address",
+      "inputs": {
+        "segment": 4096,
+        "offset": 32,
+        "shift": 4,
+        "addressBits": 20
+      },
+      "expected": {
+        "linear": 65568,
+        "physical": 65568
+      },
+      "correctAnswer": "10020h",
+      "derivation": "1000h décalé de quatre bits donne 10000h ; 10000h+0020h=10020h. Cette adresse est déjà dans l'espace 20 bits, donc aucun repliement modulo 100000h ne change le résultat.",
+      "distractorRationales": [
+        {
+          "choice": "1002h",
+          "reason": "Cette valeur résulte d'une formule incorrecte qui ne décale pas le segment de quatre bits."
+        },
+        {
+          "choice": "10000h",
+          "reason": "Cette valeur omet l'addition de l'offset 0020h."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, calcul des adresses physiques.",
+      "status": "certified"
+    },
+    {
+      "id": "C02-F-Q7",
+      "rule": "jump_program_trace",
+      "inputs": {
+        "program": [
+          [
+            "MOV",
+            "AX",
+            1
+          ],
+          [
+            "JMP",
+            "SUITE"
+          ],
+          [
+            "MOV",
+            "AX",
+            2
+          ],
+          [
+            "LABEL",
+            "SUITE"
+          ],
+          [
+            "HLT"
+          ]
+        ],
+        "initialAX": 0
+      },
+      "expected": {
+        "finalAX": 1,
+        "halted": true,
+        "skippedInstruction": "MOV AX,2"
+      },
+      "correctAnswer": "MOV AX,2 est sauté et AX reste 1",
+      "derivation": "MOV AX,1 place 1 dans AX. JMP SUITE transfère le contrôle à l'étiquette SUITE ; MOV AX,2, situé entre le saut et la cible, n'est pas exécuté. AX reste donc égal à 1.",
+      "distractorRationales": [
+        {
+          "choice": "AX devient 2",
+          "reason": "Cela supposerait que l'instruction située après JMP soit exécutée malgré le saut."
+        },
+        {
+          "choice": "L'EU exécute les deux MOV",
+          "reason": "Un JMP pris abandonne le chemin séquentiel et poursuit à la cible."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, JMP and instruction sequencing.",
+      "status": "certified"
+    },
+    {
+      "id": "C02-F-Q8",
+      "rule": "control_transfer_prefetch",
+      "inputs": {
+        "transfer": "taken_jump"
+      },
+      "expected": "flush_and_refill",
+      "correctAnswer": "Les octets préchargés appartiennent au chemin séquentiel abandonné",
+      "derivation": "Les octets préchargés avant la résolution du transfert correspondent à l'ancien flot séquentiel. Après le saut, la BIU doit récupérer les octets à partir de la nouvelle adresse de code.",
+      "distractorRationales": [
+        {
+          "choice": "La file ne contient que des données",
+          "reason": "La file contient des octets d'instruction préchargés."
+        },
+        {
+          "choice": "Le saut efface les registres généraux",
+          "reason": "Un JMP modifie le flot de contrôle, pas l'ensemble des registres généraux."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, instruction queue and control transfers.",
+      "status": "certified"
+    },
+    {
+      "id": "C02-F-Q9",
+      "rule": "eu_biu_work_split",
+      "inputs": {},
+      "expected": {
+        "biu": "external_bus_and_prefetch",
+        "eu": "instruction_decode_and_execution"
+      },
+      "correctAnswer": "Les rôles sont inversés : EU exécute, BIU gère l'interface de bus",
+      "derivation": "L'énoncé attribue à tort les calculs à la BIU et les transferts externes à l'EU. L'EU contient la logique d'exécution et l'ALU ; la BIU gère l'interface de bus et la prélecture.",
+      "distractorRationales": [
+        {
+          "choice": "Remplacer BIU par ALU dans tous les cas",
+          "reason": "L'ALU fait les calculs, mais la BIU reste l'interface de bus ; l'énoncé inverse deux responsabilités."
+        },
+        {
+          "choice": "Dire que l'EU n'intervient jamais dans l'exécution",
+          "reason": "C'est précisément l'EU qui décode et exécute les instructions."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, architecture fonctionnelle EU/BIU.",
+      "status": "certified"
+    },
+    {
+      "id": "C02-F-Q10",
+      "rule": "prefetch_overlap",
+      "inputs": {
+        "euExecution": true,
+        "biuFetch": true
+      },
+      "expected": {
+        "overlap": true,
+        "superscalar": false
+      },
+      "correctAnswer": "Chevauchement de récupération des octets et d'exécution, sans exécution superscalaire de plusieurs instructions",
+      "derivation": "La BIU peut effectuer la prélecture pendant que l'EU exécute. Il s'agit d'un chevauchement entre récupération et exécution, pas d'une exécution simultanée de plusieurs instructions par plusieurs unités d'exécution.",
+      "distractorRationales": [
+        {
+          "choice": "Exécution simultanée de six instructions",
+          "reason": "Les six octets désignent la capacité de la file, pas six unités d'exécution."
+        },
+        {
+          "choice": "Exécution de toutes les instructions par la BIU",
+          "reason": "La BIU gère le bus et la prélecture ; l'EU exécute les instructions."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, EU/BIU overlap and prefetch queue.",
+      "status": "certified"
+    }
+  ]
+}

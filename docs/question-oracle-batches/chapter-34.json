@@ -1,0 +1,570 @@
+{
+  "schemaVersion": 1,
+  "batch": "chapter-34",
+  "title": "Oracles indépendants — chapitre 34 : préfixes de segment, LOCK, REP, WAIT et ESC",
+  "reviewDate": "2026-11-27",
+  "statusLegend": {
+    "certified": "Préfixes, restrictions d'opérandes, calculs REP et limites matérielles vérifiés indépendamment"
+  },
+  "referenceBasis": [
+    "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT, ESC and string instructions.",
+    "Intel MCS-86 Assembly Language Reference Manual, prefix applicability and instruction operand forms.",
+    "LOCK signal qualification: 8086 maximum mode; software laboratory does not simulate physical bus locking, atomicity or 8087 TEST signals."
+  ],
+  "oracles": [
+    {
+      "id": "C34-L1-Q1",
+      "status": "certified",
+      "rule": "segment_override_semantics",
+      "inputs": {
+        "defaultSegment": "DS",
+        "overrideSegment": "CS",
+        "operandKind": "memory"
+      },
+      "expected": {
+        "selectedSegment": "CS",
+        "affectsMemoryReference": true
+      },
+      "correctAnswer": "Remplace le segment par défaut pour une référence mémoire",
+      "derivation": "Un préfixe de surcharge de segment choisit un segment explicite pour l'opérande mémoire concernée. Il ne modifie pas le registre destination et ne change pas globalement la taille des registres ; le segment par défaut reste applicable aux autres références.",
+      "distractorRationales": [
+        {
+          "choice": "Modifie le registre de destination",
+          "reason": "Le préfixe de segment sélectionne la base segmentaire de l'accès mémoire ; il ne change pas le registre dans lequel le résultat est chargé."
+        },
+        {
+          "choice": "Change la taille de tous les registres",
+          "reason": "Les registres restent de 16 bits sur 8086 ; un override de segment ne change pas leur largeur."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
+    },
+    {
+      "id": "C34-L1-Q2",
+      "status": "certified",
+      "rule": "segment_prefix_opcode",
+      "inputs": {
+        "segment": "CS"
+      },
+      "expected": {
+        "prefix": 46,
+        "hex": "2Eh"
+      },
+      "correctAnswer": "2Eh",
+      "derivation": "Le préfixe d'override CS du 8086 est 2Eh. Les préfixes correspondants sont 26h pour ES, 36h pour SS et 3Eh pour DS.",
+      "distractorRationales": [
+        {
+          "choice": "26h",
+          "reason": "26h est le préfixe ES, pas CS."
+        },
+        {
+          "choice": "36h",
+          "reason": "36h est le préfixe SS, pas CS."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
+    },
+    {
+      "id": "C34-L1-Q3",
+      "status": "certified",
+      "rule": "segment_override_distinct_values",
+      "inputs": {
+        "offset": 256,
+        "segmentValues": {
+          "DS": 4369,
+          "ES": 8738,
+          "CS": 13107
+        },
+        "overrideTests": [
+          "DS",
+          "ES",
+          "CS"
+        ]
+      },
+      "expected": {
+        "observedValues": [
+          4369,
+          8738,
+          13107
+        ],
+        "distinguishesSelectedSegment": true
+      },
+      "correctAnswer": "Pour vérifier que chaque override sélectionne réellement le segment demandé",
+      "derivation": "Si chaque segment contient une valeur différente au même offset, une lecture avec override permet d'observer quel segment a été sélectionné. Des valeurs identiques ne permettraient pas de distinguer une erreur de sélection de segment.",
+      "distractorRationales": [
+        {
+          "choice": "Pour modifier CS avec MOV",
+          "reason": "MOV ne permet pas de charger CS directement ; l'exemple sert à observer la sélection de segment lors d'une référence mémoire."
+        },
+        {
+          "choice": "Pour éviter d'utiliser BX",
+          "reason": "La distinction des valeurs segmentaires vérifie le préfixe ; elle ne dépend pas de l'élimination de BX."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
+    },
+    {
+      "id": "C34-L2-Q1",
+      "status": "certified",
+      "rule": "lock_prefix_semantics",
+      "inputs": {
+        "mode": "maximum",
+        "nextInstruction": {
+          "mnemonic": "INC",
+          "operandKind": "memory",
+          "modifiesOperand": true
+        }
+      },
+      "expected": {
+        "lockSignalAssertedDuringNextInstruction": true,
+        "mode": "maximum"
+      },
+      "correctAnswer": "L'assertion du signal LOCK du bus pendant l'instruction suivante en mode maximum",
+      "derivation": "En mode maximum, LOCK active le signal pendant toute l'exécution de l'instruction suivante, indépendamment du type d'opérande. Pour protéger une ressource partagée, on l'emploie avec une opération de lecture-modification-écriture qui vise effectivement un opérande mémoire.",
+      "distractorRationales": [
+        {
+          "choice": "Le verrouillage permanent d'un registre",
+          "reason": "LOCK ne verrouille pas un registre de façon permanente ; il concerne le bus pendant l'instruction suivante en mode maximum."
+        },
+        {
+          "choice": "La répétition de CX fois",
+          "reason": "La répétition d'une chaîne est contrôlée par REP et CX, pas par le préfixe LOCK."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
+    },
+    {
+      "id": "C34-L2-Q2",
+      "status": "certified",
+      "rule": "lock_instruction_validity",
+      "inputs": {
+        "prefix": "LOCK",
+        "mnemonic": "INC",
+        "operandKind": "memory",
+        "width": 16,
+        "address": 256
+      },
+      "expected": {
+        "valid": true,
+        "modifiesMemory": true,
+        "lockableInstruction": true
+      },
+      "correctAnswer": "LOCK INC WORD PTR [0100h]",
+      "derivation": "INC r/m16 modifie son opérande mémoire. Avec le préfixe LOCK et un opérande mémoire, cette forme est adaptée à la protection d'une mise à jour partagée sur le bus en mode maximum. LOCK INC AX ne serait pas une opération mémoire.",
+      "distractorRationales": [
+        {
+          "choice": "LOCK INC AX",
+          "reason": "AX est un registre ; cette forme ne réalise aucun accès mémoire partagé à protéger par LOCK."
+        },
+        {
+          "choice": "LOCK MOV AX,BX",
+          "reason": "MOV AX,BX est un transfert registre-registre et ne modifie pas un opérande mémoire ; LOCK n'est pas applicable à cette forme."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
+    },
+    {
+      "id": "C34-L2-Q3",
+      "status": "certified",
+      "rule": "lock_model_limit",
+      "inputs": {
+        "model": "software_instruction_semantics",
+        "simulatesBusSignals": false,
+        "simulatesAtomicity": false
+      },
+      "expected": {
+        "atomicitySimulated": false,
+        "physicalBusSignalsSimulated": false
+      },
+      "correctAnswer": "L'atomicité et les signaux physiques du bus ne sont pas simulés",
+      "derivation": "Le laboratoire peut reconnaître le préfixe et vérifier l'effet fonctionnel de l'instruction, mais ne modélise pas le signal électrique LOCK, l'arbitrage du bus ni l'atomicité face à un autre maître de bus.",
+      "distractorRationales": [
+        {
+          "choice": "LOCK ne possède aucun opcode",
+          "reason": "LOCK possède un octet de préfixe défini sur 8086 ; l'absence de simulation électrique ne signifie pas que le préfixe n'existe pas."
+        },
+        {
+          "choice": "LOCK change la valeur de CX",
+          "reason": "LOCK ne modifie pas CX ; le compteur de répétition des chaînes est lié à REP."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
+    },
+    {
+      "id": "C34-L3-Q1",
+      "status": "certified",
+      "rule": "rep_prefix_semantics",
+      "inputs": {
+        "prefix": "REP",
+        "nextInstruction": "MOVSB",
+        "stringInstruction": true
+      },
+      "expected": {
+        "appliesToNextInstruction": true,
+        "target": "MOVSB"
+      },
+      "correctAnswer": "À l'instruction de chaîne qui suit",
+      "derivation": "REP est un préfixe qui modifie le comportement de l'instruction de chaîne immédiatement suivante. Il ne s'applique pas à l'ensemble du programme ni rétroactivement à l'instruction précédente.",
+      "distractorRationales": [
+        {
+          "choice": "À tout le programme",
+          "reason": "REP ne définit pas une répétition globale ; sa portée est l'instruction de chaîne suivante."
+        },
+        {
+          "choice": "À l'instruction précédente",
+          "reason": "Un préfixe précède l'instruction qu'il modifie ; il ne peut pas agir rétroactivement."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
+    },
+    {
+      "id": "C34-L3-Q2",
+      "status": "certified",
+      "rule": "rep_string_validity",
+      "inputs": {
+        "prefix": "REP",
+        "nextInstruction": "MOVSB"
+      },
+      "expected": {
+        "valid": true,
+        "compatibleStringInstruction": true
+      },
+      "correctAnswer": "REP MOVSB",
+      "derivation": "MOVSB est une instruction de chaîne compatible avec REP. Le préfixe précède l'opcode de chaîne ; REP ADD AX,BX n'est pas une combinaison valide du préfixe de répétition avec une instruction arithmétique ordinaire.",
+      "distractorRationales": [
+        {
+          "choice": "MOVSB REP",
+          "reason": "Le préfixe doit précéder l'instruction qu'il modifie, pas la suivre."
+        },
+        {
+          "choice": "REP ADD AX,BX",
+          "reason": "ADD n'est pas une instruction de chaîne contrôlée par CX ; REP ne s'applique pas à cette forme."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
+    },
+    {
+      "id": "C34-L3-Q3",
+      "status": "certified",
+      "rule": "rep_iteration_count",
+      "inputs": {
+        "initialCX": 2,
+        "stringInstruction": "MOVSB"
+      },
+      "expected": {
+        "iterations": 2
+      },
+      "correctAnswer": "CX",
+      "derivation": "Pour REP sur une instruction de chaîne, CX contrôle le nombre d'itérations. Chaque itération décrémente CX ; avec CX initial égal à deux, deux transferts sont effectués avant que CX atteigne zéro.",
+      "distractorRationales": [
+        {
+          "choice": "AX",
+          "reason": "AX peut contenir des données, mais le compteur de répétition des chaînes sur 8086 est CX."
+        },
+        {
+          "choice": "BP",
+          "reason": "BP sert souvent de base pour la pile ou l'adressage mémoire ; il ne compte pas les répétitions REP."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
+    },
+    {
+      "id": "C34-F-Q1",
+      "status": "certified",
+      "rule": "default_segment_by_addressing_form",
+      "inputs": {
+        "containsBP": true
+      },
+      "expected": {
+        "segment": "SS"
+      },
+      "correctAnswer": "SS",
+      "derivation": "Sur le 8086, les formes d'adressage dont l'adresse effective contient BP utilisent SS par défaut. Un préfixe de segment peut remplacer ce choix, mais aucun override n'est présent dans l'énoncé.",
+      "distractorRationales": [
+        {
+          "choice": "DS",
+          "reason": "DS est le segment par défaut des formes basées sur BX, SI ou DI et de l'adressage direct ; une adresse effective contenant BP utilise SS."
+        },
+        {
+          "choice": "ES",
+          "reason": "ES est notamment le segment de destination implicite des instructions de chaîne, mais ce n'est pas le segment par défaut d'une adresse basée sur BP."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), §2.8 Memory Addressing: BP-based effective addresses default to SS; segment override rules."
+    },
+    {
+      "id": "C34-F-Q2",
+      "status": "certified",
+      "rule": "segment_prefix_opcode",
+      "inputs": {
+        "segment": "SS"
+      },
+      "expected": {
+        "prefix": 54,
+        "hex": "36h"
+      },
+      "correctAnswer": "36h",
+      "derivation": "Le préfixe de surcharge SS du 8086 est 36h. Les autres préfixes sont 26h pour ES, 2Eh pour CS et 3Eh pour DS.",
+      "distractorRationales": [
+        {
+          "choice": "26h",
+          "reason": "26h sélectionne ES, pas SS."
+        },
+        {
+          "choice": "3Eh",
+          "reason": "3Eh sélectionne DS, pas SS."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Table 4-12, segment override prefix encodings: SS = 36h."
+    },
+    {
+      "id": "C34-F-Q3",
+      "status": "certified",
+      "rule": "segment_override_syntax",
+      "inputs": {
+        "syntax": "MOV AL,CS:[BX]",
+        "destination": "AL",
+        "segment": "CS",
+        "memoryBase": "BX"
+      },
+      "expected": {
+        "valid": true,
+        "selectedSegment": "CS",
+        "memoryReference": true
+      },
+      "correctAnswer": "MOV AL,CS:[BX]",
+      "derivation": "Le préfixe CS: est associé à l'opérande mémoire [BX]. Il demande au processeur d'utiliser CS au lieu du segment DS par défaut pour cette lecture ; il ne s'agit pas d'une instruction MOV vers le registre CS.",
+      "distractorRationales": [
+        {
+          "choice": "MOV CS,AL",
+          "reason": "Le 8086 n'autorise pas MOV direct vers CS ; la surcharge de segment se place devant l'opérande mémoire."
+        },
+        {
+          "choice": "MOV AL,CS",
+          "reason": "Cette forme tente de transférer un registre de segment vers un registre 8 bits et ne désigne pas une lecture mémoire avec override."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
+    },
+    {
+      "id": "C34-F-Q4",
+      "status": "certified",
+      "rule": "lock_instruction_validity",
+      "inputs": {
+        "prefix": "LOCK",
+        "mnemonic": "INC",
+        "operandKind": "register",
+        "width": 16,
+        "address": "AX"
+      },
+      "expected": {
+        "valid": true,
+        "modifiesMemory": false,
+        "lockableInstruction": false
+      },
+      "correctAnswer": "AX est un registre et l'instruction ne modifie aucune donnée mémoire partagée",
+      "derivation": "LOCK est un préfixe valide du 8086 : en mode maximum, le signal LOCK est activé pendant l'instruction qui suit. INC AX modifie toutefois uniquement le registre AX ; aucune donnée mémoire partagée n'est donc mise à jour ni protégée par cette opération.",
+      "distractorRationales": [
+        {
+          "choice": "LOCK ne possède aucun octet d'encodage sur 8086",
+          "reason": "LOCK est un préfixe encodé ; le problème de cette forme est l'absence d'opérande mémoire modifié."
+        },
+        {
+          "choice": "INC ne modifie jamais son opérande",
+          "reason": "INC modifie bien son opérande ; ici il s'agit simplement d'un registre et non d'une donnée mémoire partagée."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), §2.5 Bus Lock and §2.11 Processor Control Instructions, LOCK: le préfixe d'un octet active LOCK pendant l'instruction suivante en mode maximum. L'opérande registre de INC AX ne réalise aucune mise à jour mémoire."
+    },
+    {
+      "id": "C34-F-Q5",
+      "status": "certified",
+      "rule": "rep_movsb_trace",
+      "inputs": {
+        "initialCX": 2,
+        "initialSI": 4096,
+        "initialDI": 8192,
+        "DF": 0,
+        "sourceBytes": [
+          65,
+          66
+        ]
+      },
+      "expected": {
+        "copiedBytes": [
+          65,
+          66
+        ],
+        "finalCX": 0,
+        "finalSI": 4098,
+        "finalDI": 8194
+      },
+      "correctAnswer": "Copie deux octets et incrémente SI/DI de deux",
+      "derivation": "REP exécute MOVSB deux fois puisque CX=2. Avec DF=0, chaque transfert d'octet incrémente SI et DI de un ; deux octets sont copiés, les deux index avancent de deux et CX atteint zéro.",
+      "distractorRationales": [
+        {
+          "choice": "Copie un mot et décrémente SI/DI",
+          "reason": "MOVSB transfère un octet par itération ; DF=0 incrémente les index, il ne les décrémente pas."
+        },
+        {
+          "choice": "Répète deux ADD",
+          "reason": "REP s'applique à MOVSB, instruction de chaîne, et ne transforme pas l'opération en addition."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
+    },
+    {
+      "id": "C34-F-Q6",
+      "status": "certified",
+      "rule": "direction_flag_string_step",
+      "inputs": {
+        "DF": 0,
+        "elementBytes": 1
+      },
+      "expected": {
+        "indexStep": 1,
+        "direction": "increment"
+      },
+      "correctAnswer": "DF",
+      "derivation": "DF est le Direction Flag, un indicateur du registre FLAGS. DF=0 fait progresser SI et DI vers les offsets croissants ; DF=1 les fait progresser vers les offsets décroissants.",
+      "distractorRationales": [
+        {
+          "choice": "IF",
+          "reason": "IF contrôle les interruptions masquables et n'indique pas le sens des chaînes."
+        },
+        {
+          "choice": "OF",
+          "reason": "OF indique un dépassement signé en arithmétique ; le sens des chaînes dépend de DF."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
+    },
+    {
+      "id": "C34-F-Q7",
+      "status": "certified",
+      "rule": "lock_memory_effect",
+      "inputs": {
+        "mnemonic": "INC",
+        "operand": {
+          "kind": "memory",
+          "address": 256
+        },
+        "initialValue": 32,
+        "width": 16,
+        "lockPrefix": true
+      },
+      "expected": {
+        "memoryValue": 33,
+        "functionalEffectVerified": true,
+        "hardwareAtomicityVerified": false
+      },
+      "correctAnswer": "La valeur mémoire est incrémentée",
+      "derivation": "Le modèle peut vérifier que INC applique l'incrément à la valeur stockée à l'adresse mémoire 0100h. Cette observation valide l'effet fonctionnel, mais ne prouve pas que le signal LOCK ou l'atomicité électrique du bus ont été reproduits.",
+      "distractorRationales": [
+        {
+          "choice": "L'atomicité du bus est matériellement reproduite",
+          "reason": "Le laboratoire ne simule pas l'arbitrage matériel ni les signaux électriques nécessaires pour démontrer l'atomicité réelle."
+        },
+        {
+          "choice": "Le port 0100h est lu",
+          "reason": "L'opérande [0100h] est une adresse mémoire, pas un numéro de port ; INC ne réalise pas une instruction IN."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
+    },
+    {
+      "id": "C34-F-Q8",
+      "status": "certified",
+      "rule": "wait_esc_model_limit",
+      "inputs": {
+        "instructions": [
+          "WAIT",
+          "ESC"
+        ],
+        "coprocessor8087": false,
+        "testSignalModeled": false
+      },
+      "expected": {
+        "coprocessorModeled": false,
+        "testSignalModeled": false
+      },
+      "correctAnswer": "Aucun coprocesseur 8087 ni signaux TEST ne sont simulés",
+      "derivation": "WAIT et ESC appartiennent à l'interface historique avec le coprocesseur 8087. Le laboratoire peut reconnaître les opcodes, mais ne modélise pas un coprocesseur réel ni les signaux TEST et les interactions électriques associées.",
+      "distractorRationales": [
+        {
+          "choice": "Ils sont des instructions 32 bits",
+          "reason": "WAIT et ESC appartiennent au jeu d'instructions 8086 ; leur présence ne signifie pas une architecture 32 bits."
+        },
+        {
+          "choice": "Ils changent toujours DS",
+          "reason": "Ces instructions ne définissent pas une modification systématique de DS ; leur limite ici concerne le coprocesseur et les signaux TEST non simulés."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
+    },
+    {
+      "id": "C34-F-Q9",
+      "status": "certified",
+      "rule": "lock_instruction_validity",
+      "inputs": {
+        "prefix": "LOCK",
+        "mnemonic": "INC",
+        "operandKind": "memory",
+        "width": 16,
+        "address": "[BX]"
+      },
+      "expected": {
+        "valid": true,
+        "modifiesMemory": true,
+        "lockableInstruction": true
+      },
+      "correctAnswer": "Employer une opération qui modifie cette donnée en mémoire, par exemple LOCK INC WORD PTR [BX]",
+      "derivation": "Pour qu'un préfixe LOCK soit pertinent, l'instruction suivante doit modifier un opérande mémoire partagé. INC WORD PTR [BX] réalise une lecture-modification-écriture de la donnée pointée par BX ; LOCK concerne alors cette opération mémoire en mode maximum.",
+      "distractorRationales": [
+        {
+          "choice": "Employer LOCK INC AX",
+          "reason": "AX est un registre ; cette instruction ne modifie pas la donnée mémoire partagée et ne justifie pas LOCK."
+        },
+        {
+          "choice": "Ajouter REP devant MOV AX,BX",
+          "reason": "REP concerne les instructions de chaîne compatibles et ne verrouille pas un transfert registre-registre."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
+    },
+    {
+      "id": "C34-F-Q10",
+      "status": "certified",
+      "rule": "prefix_interaction_validation",
+      "inputs": {
+        "prefixes": [
+          "segment_override",
+          "LOCK",
+          "REP"
+        ],
+        "nextInstructionKinds": [
+          "memory_operand",
+          "string_instruction",
+          "register_only"
+        ]
+      },
+      "expected": {
+        "mustValidatePrefixAndInstructionTogether": true,
+        "invalidCombinationsMustBeRejected": true
+      },
+      "correctAnswer": "Ils modifient l'interprétation et le comportement de l'instruction suivante",
+      "derivation": "Un préfixe ne se valide pas isolément : sa légalité et son effet dépendent de l'instruction suivante et de ses opérandes. Les tests doivent couvrir les formes mémoire, les chaînes, les registres seuls et les combinaisons invalides afin d'éviter d'accepter un préfixe sans effet architectural cohérent.",
+      "distractorRationales": [
+        {
+          "choice": "Ils sont toujours indépendants",
+          "reason": "Les préfixes modifient l'interprétation de l'instruction suivante et certaines combinaisons sont invalides ou sans effet défini."
+        },
+        {
+          "choice": "Ils remplacent l'opcode",
+          "reason": "Un préfixe précède l'opcode et le modifie ; il ne remplace pas le champ opcode de l'instruction."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
+    }
+  ]
+}
