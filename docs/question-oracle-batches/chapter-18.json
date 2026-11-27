@@ -317,7 +317,8 @@
       "rule": "mov_segment_register_validity",
       "inputs": {
         "instruction": "MOV DS,AX",
-        "destination": "segment_register",
+        "destination": "DS",
+        "destinationKind": "segment_register",
         "source": "general_register"
       },
       "expected": {
