@@ -22,15 +22,15 @@
       "derivation": "Le rôle fonctionnel central du microprocesseur est d'aller chercher les instructions, de les décoder et de les exécuter. La production durable des données et le remplacement de la mémoire ne sont pas ses fonctions.",
       "distractorRationales": [
         {
-          "choice": "Fabriquer les données stockées",
-          "reason": "La mémoire conserve les données ; le processeur les traite."
+          "choice": "Conserver durablement les programmes et les données",
+          "reason": "Le stockage persistant relève des mémoires et dispositifs de stockage ; le processeur traite les instructions et les données."
         },
         {
-          "choice": "Remplacer la mémoire",
-          "reason": "Le processeur et la mémoire ont des rôles distincts et complémentaires."
+          "choice": "Produire le signal d'horloge du système",
+          "reason": "Le signal d'horloge est fourni par un générateur d'horloge dédié, pas par la fonction centrale du microprocesseur."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual (1979), description générale du processeur et du cycle d'instruction."
+      "reference": "Intel 8086 Family User's Manual (1979), section 2.2, unités EU/BIU et organisation fonctionnelle du processeur."
     },
     {
       "id": "C01-L1-Q2",
@@ -102,29 +102,28 @@
     {
       "id": "C01-L2-Q2",
       "status": "certified",
-      "rule": "address_space_capacity",
+      "rule": "memory_byte_addressing",
       "inputs": {
-        "addressBits": 20,
-        "bytesPerAddress": 1
+        "wordBits": 16,
+        "byteBits": 8
       },
       "expected": {
-        "addresses": 1048576,
-        "bytes": 1048576,
-        "mebibytes": 1
+        "addressUnit": "byte",
+        "bytesPerWord": 2
       },
-      "correctAnswer": "1 Mio",
-      "derivation": "Chaque adresse sélectionne un octet. Il existe 2^20 = 1 048 576 adresses, soit 1 048 576 octets = 1 Mio.",
+      "correctAnswer": "Un octet",
+      "derivation": "La mémoire est adressée par octet : chaque adresse désigne un octet de 8 bits. Un mot de 16 bits occupe donc deux octets à deux adresses consécutives.",
       "distractorRationales": [
         {
-          "choice": "64 Kio",
-          "reason": "2^16 adresses correspondent à 64 Kio, pas à 20 bits."
+          "choice": "Un mot de 16 bits",
+          "reason": "Un mot occupe deux octets ; il ne constitue pas l'unité élémentaire d'adressage."
         },
         {
-          "choice": "16 Mio",
-          "reason": "16 Mio nécessiteraient 24 bits d'adresse."
+          "choice": "Un bloc de quatre octets",
+          "reason": "Une adresse du 8086 ne sélectionne pas un bloc de quatre octets."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual, espace d'adressage physique 20 bits."
+      "reference": "Intel 8086 Family User's Manual (1979), section 2.3, Figure 2-11, organisation mémoire adressable par octet."
     },
     {
       "id": "C01-L2-Q3",
@@ -217,49 +216,48 @@
     {
       "id": "C01-F-Q1",
       "status": "certified",
-      "rule": "microprocessor_role",
+      "rule": "assembler_role",
       "inputs": {},
-      "expected": "fetch_decode_execute",
-      "correctAnswer": "Exécuter les instructions du programme",
-      "derivation": "Le processeur exécute les instructions du programme en coordonnant récupération, décodage, calcul et transferts.",
+      "expected": {
+        "translatesSourceToMachineCode": true,
+        "executesSourceText": false
+      },
+      "correctAnswer": "Traduire le code source assembleur en code machine",
+      "derivation": "L'assembleur traduit les instructions et références symboliques du source en code machine. C'est le processeur qui exécute les octets produits ; l'assembleur n'exécute pas le programme sur le processeur.",
       "distractorRationales": [
         {
-          "choice": "Conserver durablement tous les fichiers",
-          "reason": "Le stockage durable relève des dispositifs de mémoire et de stockage."
+          "choice": "Exécuter directement le texte source à la place du processeur",
+          "reason": "Le texte assembleur doit être traduit en octets machine avant l'exécution par le processeur."
         },
         {
-          "choice": "Fournir l'alimentation électrique",
-          "reason": "L'alimentation relève du système électrique, pas de la fonction du CPU."
+          "choice": "Gérer les signaux électriques du bus",
+          "reason": "La gestion électrique et les signaux du bus relèvent du matériel et de son interface, pas de l'assembleur."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual, fonctionnement général du processeur."
+      "reference": "Intel MCS-86 Macro Assembly Language Reference Manual (1979), processus de développement et traduction du source."
     },
     {
       "id": "C01-F-Q2",
       "status": "certified",
-      "rule": "address_space_capacity",
-      "inputs": {
-        "addressBits": 20,
-        "bytesPerAddress": 1
-      },
+      "rule": "address_bus_role",
+      "inputs": {},
       "expected": {
-        "addresses": 1048576,
-        "bytes": 1048576,
-        "mebibytes": 1
+        "carriesAddress": true,
+        "carriesDataPayload": false
       },
-      "correctAnswer": "Il peut sélectionner 2^20 adresses d'octets",
-      "derivation": "Avec 20 bits, le nombre d'adresses distinctes vaut 2^20 = 1 048 576. L'espace est adressé par octet, soit 1 Mio.",
+      "correctAnswer": "L'adresse physique de l'emplacement mémoire ciblé",
+      "derivation": "Lors d'un accès mémoire, le bus d'adresses présente l'adresse de l'emplacement ciblé. La valeur transférée est portée par le bus de données ; les deux rôles ne doivent pas être confondus.",
       "distractorRationales": [
         {
-          "choice": "Chaque registre général contient 20 bits",
-          "reason": "Les registres généraux du 8086 ont 16 bits."
+          "choice": "La valeur qui sera lue ou écrite",
+          "reason": "La valeur lue ou écrite est transportée par le bus de données."
         },
         {
-          "choice": "Le bus de données transporte 20 bits par transfert",
-          "reason": "Le bus de données externe du 8086 est de 16 bits."
+          "choice": "Le résultat de l'opération arithmétique",
+          "reason": "Le résultat est produit par l'unité d'exécution et n'est pas la fonction du bus d'adresses."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual, bus d'adresses et espace mémoire."
+      "reference": "Intel 8086 Family User's Manual (1979), figures 1-2 et 1-3, distinction des lignes d'adresse et de données."
     },
     {
       "id": "C01-F-Q3",
