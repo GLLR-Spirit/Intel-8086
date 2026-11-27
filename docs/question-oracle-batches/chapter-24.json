@@ -1,0 +1,511 @@
+{
+  "schemaVersion": 1,
+  "batch": "chapter-24",
+  "title": "Oracles indépendants — chapitre 24 : MUL et IMUL",
+  "reviewDate": "2026-11-27",
+  "statusLegend": {
+    "certified": "Produits signés/non signés, registres implicites et indicateurs CF/OF vérifiés indépendamment"
+  },
+  "referenceBasis": [
+    "Intel 8086 Family User's Manual (October 1979), MUL/IMUL, implicit operands, product placement and CF/OF behavior.",
+    "Intel MCS-86 Assembly Language Reference Manual, multiplication operand forms."
+  ],
+  "oracles": [
+    {
+      "id": "C24-L1-Q1",
+      "status": "certified",
+      "rule": "mul_byte_trace",
+      "inputs": {
+        "AL": 6,
+        "BL": 7
+      },
+      "expected": {
+        "AX": 42,
+        "product": 42
+      },
+      "correctAnswer": "42 dans AX",
+      "derivation": "Pour MUL BL, le multiplicande implicite est AL. 6×7=42, soit 002Ah ; le produit complet de deux octets est placé dans AX.",
+      "distractorRationales": [
+        {
+          "choice": "1",
+          "reason": "3"
+        },
+        {
+          "choice": "4",
+          "reason": "2"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
+    },
+    {
+      "id": "C24-L1-Q2",
+      "status": "certified",
+      "rule": "mul_byte_result_registers",
+      "inputs": {
+        "operandBits": 8,
+        "resultBits": 16
+      },
+      "expected": {
+        "register": "AX"
+      },
+      "correctAnswer": "AX",
+      "derivation": "La multiplication de deux opérandes de huit bits produit jusqu'à seize bits. Le résultat complet est placé dans AX, avec AH comme moitié haute et AL comme moitié basse.",
+      "distractorRationales": [
+        {
+          "choice": "D",
+          "reason": "X"
+        },
+        {
+          "choice": "B",
+          "reason": "X"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
+    },
+    {
+      "id": "C24-L1-Q3",
+      "status": "certified",
+      "rule": "mul_byte_multiplicand",
+      "inputs": {
+        "instruction": "MUL BL"
+      },
+      "expected": {
+        "implicitMultiplicand": "AL"
+      },
+      "correctAnswer": "AL",
+      "derivation": "La forme octet de MUL utilise AL comme multiplicande implicite et un seul opérande explicite, ici BL. L'instruction ne prend pas deux opérandes explicites comme certaines syntaxes d'autres architectures.",
+      "distractorRationales": [
+        {
+          "choice": "A",
+          "reason": "H"
+        },
+        {
+          "choice": "C",
+          "reason": "L"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
+    },
+    {
+      "id": "C24-L2-Q1",
+      "status": "certified",
+      "rule": "imul_signedness",
+      "inputs": {
+        "instruction": "IMUL"
+      },
+      "expected": {
+        "signed": true,
+        "interpretation": "two_complement"
+      },
+      "correctAnswer": "Comme des entiers signés",
+      "derivation": "IMUL interprète ses opérandes comme des entiers signés en complément à deux. MUL réalise au contraire une multiplication non signée ; les motifs binaires peuvent donc produire des produits interprétés différemment.",
+      "distractorRationales": [
+        {
+          "choice": "C",
+          "reason": "o"
+        },
+        {
+          "choice": "C",
+          "reason": "o"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
+    },
+    {
+      "id": "C24-L2-Q2",
+      "status": "certified",
+      "rule": "signed_byte_decode",
+      "inputs": {
+        "value": 254,
+        "bits": 8
+      },
+      "expected": {
+        "unsignedValue": 254,
+        "signedValue": -2
+      },
+      "correctAnswer": "−2",
+      "derivation": "FEh vaut 254 en non signé. En complément à deux sur huit bits, le bit de signe est actif et la valeur est 254−256=−2.",
+      "distractorRationales": [
+        {
+          "choice": "2",
+          "reason": "5"
+        },
+        {
+          "choice": "−",
+          "reason": "1"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
+    },
+    {
+      "id": "C24-L2-Q3",
+      "status": "certified",
+      "rule": "imul_byte_product",
+      "inputs": {
+        "left": 254,
+        "right": 2,
+        "bits": 8
+      },
+      "expected": {
+        "signedLeft": -2,
+        "signedRight": 2,
+        "product": -4,
+        "resultAX": 65532
+      },
+      "correctAnswer": "FFFCh",
+      "derivation": "FEh représente −2 signé sur huit bits. −2×2=−4 ; l'encodage du produit signé sur seize bits est FFFCh, placé dans AX pour la forme octet.",
+      "distractorRationales": [
+        {
+          "choice": "0",
+          "reason": "0"
+        },
+        {
+          "choice": "F",
+          "reason": "F"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
+    },
+    {
+      "id": "C24-L3-Q1",
+      "status": "certified",
+      "rule": "mul_unsigned_overflow_flags",
+      "inputs": {
+        "highHalf": 1
+      },
+      "expected": {
+        "CF": 1,
+        "OF": 1
+      },
+      "correctAnswer": "Quand la moitié haute du produit n'est pas nulle",
+      "derivation": "Pour MUL non signé, CF et OF valent 1 si la moitié haute du produit est non nulle. Ils sont tous deux effacés lorsque cette moitié haute vaut zéro ; ils ne contiennent pas eux-mêmes les octets du produit.",
+      "distractorRationales": [
+        {
+          "choice": "Q",
+          "reason": "u"
+        },
+        {
+          "choice": "Q",
+          "reason": "u"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
+    },
+    {
+      "id": "C24-L3-Q2",
+      "status": "certified",
+      "rule": "mul_byte_product",
+      "inputs": {
+        "AL": 255,
+        "operand": 2
+      },
+      "expected": {
+        "product": 510,
+        "AX": 510,
+        "hex": "01FEh"
+      },
+      "correctAnswer": "01FEh",
+      "derivation": "255×2=510 décimal. 510 se représente 01FEh sur seize bits ; AH=01h et AL=FEh, donc le résultat complet dans AX est 01FEh.",
+      "distractorRationales": [
+        {
+          "choice": "0",
+          "reason": "0"
+        },
+        {
+          "choice": "0",
+          "reason": "1"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
+    },
+    {
+      "id": "C24-L3-Q3",
+      "status": "certified",
+      "rule": "mul_product_vs_flags",
+      "inputs": {
+        "resultRegisterPair": "DX:AX",
+        "highHalfNonzero": true
+      },
+      "expected": {
+        "fullProductStored": true,
+        "CF_OFIndicateHighHalf": true
+      },
+      "correctAnswer": "Le produit complet et l'indication de dépassement répondent à deux contrôles différents",
+      "derivation": "Le produit complet est conservé dans AX pour la forme octet ou DX:AX pour la forme mot. CF/OF indiquent si la moitié haute est non nulle ; ces indicateurs ne remplacent pas la lecture du produit.",
+      "distractorRationales": [
+        {
+          "choice": "C",
+          "reason": "F"
+        },
+        {
+          "choice": "D",
+          "reason": "X"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
+    },
+    {
+      "id": "C24-F-Q1",
+      "status": "certified",
+      "rule": "mul_unsigned_semantics",
+      "inputs": {
+        "instruction": "MUL"
+      },
+      "expected": {
+        "signed": false,
+        "operation": "multiplication"
+      },
+      "correctAnswer": "Une multiplication non signée",
+      "derivation": "MUL interprète les opérandes comme des valeurs non signées. IMUL est la forme destinée à la multiplication signée en complément à deux.",
+      "distractorRationales": [
+        {
+          "choice": "U",
+          "reason": "n"
+        },
+        {
+          "choice": "U",
+          "reason": "n"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
+    },
+    {
+      "id": "C24-F-Q2",
+      "status": "certified",
+      "rule": "mul_byte_result_registers",
+      "inputs": {
+        "operandBits": 8,
+        "resultBits": 16
+      },
+      "expected": {
+        "register": "AX"
+      },
+      "correctAnswer": "Le produit de deux octets peut nécessiter 16 bits",
+      "derivation": "Deux opérandes non signés de huit bits peuvent produire un résultat allant jusqu'à 65025, ce qui nécessite seize bits. Le 8086 place donc le produit octet dans AX.",
+      "distractorRationales": [
+        {
+          "choice": "A",
+          "reason": "L"
+        },
+        {
+          "choice": "D",
+          "reason": "X"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
+    },
+    {
+      "id": "C24-F-Q3",
+      "status": "certified",
+      "rule": "mul_byte_form_validity",
+      "inputs": {
+        "instruction": "MUL BL"
+      },
+      "expected": {
+        "valid": true,
+        "explicitOperandCount": 1,
+        "implicitMultiplicand": "AL"
+      },
+      "correctAnswer": "MUL BL",
+      "derivation": "La forme 8086 de MUL pour un opérande octet comporte un seul opérande explicite ; AL est implicite. MUL AL,BL utilise deux opérandes explicites et n'est pas une forme 8086 valide.",
+      "distractorRationales": [
+        {
+          "choice": "M",
+          "reason": "U"
+        },
+        {
+          "choice": "I",
+          "reason": "M"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
+    },
+    {
+      "id": "C24-F-Q4",
+      "status": "certified",
+      "rule": "mul_flags_high_half_zero",
+      "inputs": {
+        "highHalf": 0
+      },
+      "expected": {
+        "CF": 0,
+        "OF": 0
+      },
+      "correctAnswer": "Une moitié haute AH égale zéro",
+      "derivation": "Pour MUL octet, le résultat complet est dans AX et AH constitue la moitié haute. Si AH=0, le produit tient dans AL et CF/OF sont effacés.",
+      "distractorRationales": [
+        {
+          "choice": "U",
+          "reason": "n"
+        },
+        {
+          "choice": "U",
+          "reason": "n"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
+    },
+    {
+      "id": "C24-F-Q5",
+      "status": "certified",
+      "rule": "mul_byte_trace",
+      "inputs": {
+        "AL": 6,
+        "BL": 7
+      },
+      "expected": {
+        "AX": 42,
+        "product": 42
+      },
+      "correctAnswer": "42",
+      "derivation": "6×7=42 décimal, soit 002Ah. Le produit octet est stocké dans AX, avec AH=00h et AL=2Ah.",
+      "distractorRationales": [
+        {
+          "choice": "1",
+          "reason": "3"
+        },
+        {
+          "choice": "3",
+          "reason": "6"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
+    },
+    {
+      "id": "C24-F-Q6",
+      "status": "certified",
+      "rule": "mul_byte_product",
+      "inputs": {
+        "AL": 255,
+        "operand": 2
+      },
+      "expected": {
+        "product": 510,
+        "AX": 510,
+        "hex": "01FEh"
+      },
+      "correctAnswer": "01FEh",
+      "derivation": "255×2 donne 510 décimal. La conversion hexadécimale donne 01FEh, donc AH=01h et AL=FEh dans AX.",
+      "distractorRationales": [
+        {
+          "choice": "0",
+          "reason": "0"
+        },
+        {
+          "choice": "0",
+          "reason": "1"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
+    },
+    {
+      "id": "C24-F-Q7",
+      "status": "certified",
+      "rule": "imul_byte_product",
+      "inputs": {
+        "left": 254,
+        "right": 2,
+        "bits": 8
+      },
+      "expected": {
+        "signedLeft": -2,
+        "signedRight": 2,
+        "product": -4,
+        "resultAX": 65532
+      },
+      "correctAnswer": "Produit signé −4 dans AX",
+      "derivation": "FEh est −2 en complément à deux sur huit bits. IMUL avec 2 produit −4, représenté FFFCh sur seize bits dans AX.",
+      "distractorRationales": [
+        {
+          "choice": "P",
+          "reason": "r"
+        },
+        {
+          "choice": "R",
+          "reason": "é"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
+    },
+    {
+      "id": "C24-F-Q8",
+      "status": "certified",
+      "rule": "mul_word_result_registers",
+      "inputs": {
+        "operandBits": 16,
+        "resultBits": 32
+      },
+      "expected": {
+        "lowWord": "AX",
+        "highWord": "DX"
+      },
+      "correctAnswer": "DX:AX",
+      "derivation": "La forme mot de MUL produit jusqu'à 32 bits. Le mot faible est stocké dans AX et le mot fort dans DX, formant DX:AX.",
+      "distractorRationales": [
+        {
+          "choice": "A",
+          "reason": "X"
+        },
+        {
+          "choice": "B",
+          "reason": "X"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
+    },
+    {
+      "id": "C24-F-Q9",
+      "status": "certified",
+      "rule": "mul_unsigned_overflow_flags",
+      "inputs": {
+        "highHalf": 1
+      },
+      "expected": {
+        "CF": 1,
+        "OF": 1
+      },
+      "correctAnswer": "La moitié haute du produit est non nulle",
+      "derivation": "Pour MUL, CF et OF signalent que la moitié haute du produit est non nulle. Ils ne signifient pas que le produit est toujours négatif et ne signalent pas un diviseur nul.",
+      "distractorRationales": [
+        {
+          "choice": "L",
+          "reason": "e"
+        },
+        {
+          "choice": "L",
+          "reason": "e"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
+    },
+    {
+      "id": "C24-F-Q10",
+      "status": "certified",
+      "rule": "mul_result_validation",
+      "inputs": {
+        "operandBits": 8,
+        "resultBits": 16,
+        "highHalfMayBeNonzero": true
+      },
+      "expected": {
+        "checkFullProduct": true,
+        "checkWidth": true,
+        "checkCF": true,
+        "checkOF": true
+      },
+      "correctAnswer": "Vérifier produit complet, largeur et indicateurs CF/OF",
+      "derivation": "Une multiplication peut produire une moitié haute non nulle. Il faut vérifier le résultat complet dans AX ou DX:AX selon la largeur, ainsi que CF/OF ; lire seulement AL ou ignorer la moitié haute peut masquer une perte de résultat.",
+      "distractorRationales": [
+        {
+          "choice": "V",
+          "reason": "é"
+        },
+        {
+          "choice": "I",
+          "reason": "g"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
+    }
+  ]
+}
