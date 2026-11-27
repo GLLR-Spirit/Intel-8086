@@ -273,6 +273,7 @@ const assert = require("node:assert/strict");
     mimeType:"application/octet-stream",
     buffer:Buffer.from([0xB8,0x34,0x12,0xF4])
   });
+  await page.waitForFunction(()=>document.querySelector("#disassemblyInput").value==="B8 34 12 F4");
   assert.equal(await page.locator("#disassemblyInput").inputValue(),"B8 34 12 F4");
   assert.match(await page.locator("#disassemblerReport").textContent(),/DÉSASSEMBLAGE/);
   await page.locator("#example").click();
