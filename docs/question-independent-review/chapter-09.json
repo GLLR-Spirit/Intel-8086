@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue indépendante — chapitre 9",
+  "reviewDate": "2026-11-27",
+  "scope": "Contrôle individuel des 19 questions du chapitre 9 : AND, OR, XOR, NOT, TEST, masques binaires et effets sur FLAGS.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Macro Assembly Language Reference Manual",
+      "edition": "1979",
+      "url": "https://manuals.plus/m/3aa41c4d0f61cee77e606f5d25d65c409e33c472f7869184e8bf69d9a2c89b98"
+    }
+  ],
+  "records": [
+    {"id":"C09-L1-Q1","result":"passed","finding":"AND produit 1 uniquement lorsque les deux bits correspondants valent 1.","basis":"Intel 8086 Family User's Manual, AND."},
+    {"id":"C09-L1-Q2","result":"passed","finding":"AND AL,0Fh conserve le quartet faible et force à zéro le quartet fort.","basis":"Recalcul indépendant du masque 0Fh."},
+    {"id":"C09-L1-Q3","result":"corrected","finding":"La question générale sur OR répétait la question finale OR. Elle demande maintenant une trace : 08h OR 05h = 0Dh.","basis":"Calcul indépendant du OU bit à bit."},
+    {"id":"C09-L2-Q1","result":"passed","finding":"0F0h XOR 0FFh = 00Fh ; les quatre bits faibles diffèrent et les bits forts communs s'annulent.","basis":"Calcul indépendant XOR."},
+    {"id":"C09-L2-Q2","result":"corrected","finding":"La question répétait le fait que NOT inverse tous les bits, déjà vérifié en FQ5. Elle teste maintenant l'effet sur FLAGS : NOT modifie l'opérande mais préserve tous les indicateurs.","basis":"Intel 8086 Family User's Manual, NOT et effets sur FLAGS."},
+    {"id":"C09-L2-Q3","result":"passed","finding":"XOR avec un masque bascule les positions où le masque vaut 1 et conserve les autres.","basis":"Intel 8086 Family User's Manual, XOR."},
+    {"id":"C09-L3-Q1","result":"passed","finding":"TEST calcule un ET logique pour FLAGS sans écrire le résultat dans AL.","basis":"Intel 8086 Family User's Manual, TEST."},
+    {"id":"C09-L3-Q2","result":"passed","finding":"08h AND 01h vaut 00h ; le résultat nul met ZF à 1.","basis":"Calcul indépendant du ET et de ZF."},
+    {"id":"C09-L3-Q3","result":"passed","finding":"TEST met à jour les indicateurs sans conserver le résultat dans l'opérande, contrairement à AND.","basis":"Intel 8086 Family User's Manual, TEST et AND."},
+    {"id":"C09-F-Q1","result":"passed","finding":"AND conserve les positions où le masque vaut 1 et efface les positions où il vaut 0.","basis":"Intel 8086 Family User's Manual, AND."},
+    {"id":"C09-F-Q2","result":"passed","finding":"F0h=11110000b conserve le quartet fort et efface le quartet faible.","basis":"Recalcul indépendant du masque F0h."},
+    {"id":"C09-F-Q3","result":"passed","finding":"OR active les bits présents dans au moins un opérande ; 80h OR 05h vaut 85h.","basis":"Calcul indépendant du OU bit à bit."},
+    {"id":"C09-F-Q4","result":"corrected","finding":"La question répétait directement le basculement XOR avec masque de L2-Q3. Elle compare maintenant XOR sélectif à NOT global : XOR ne bascule que les bits du masque à 1, NOT inverse tout l'opérande.","basis":"Intel 8086 Family User's Manual, XOR et NOT."},
+    {"id":"C09-F-Q5","result":"passed","finding":"NOT AL inverse les huit bits d'AL et écrit le complément dans AL.","basis":"Intel 8086 Family User's Manual, NOT."},
+    {"id":"C09-F-Q6","result":"corrected","finding":"Répétait exactement le calcul 1010b AND 1100b=1000b de L1-Q1. Remplacé par 1110b XOR 1011b=0101b.","basis":"Calcul indépendant XOR : 1110₂ XOR 1011₂ = 0101₂."},
+    {"id":"C09-F-Q7","result":"corrected","finding":"La question générale sur TEST ne stockant pas son résultat répétait L3-Q1. Elle utilise maintenant une trace MOV/TEST/HLT : AL reste A5h alors que le résultat logique temporaire vaut 05h.","basis":"Trace indépendante : A5h AND 0Fh=05h ; TEST préserve AL."},
+    {"id":"C09-F-Q8","result":"passed","finding":"ZF=0 après TEST signifie que le résultat masqué est non nul ; au moins un bit sélectionné est actif.","basis":"Intel 8086 Family User's Manual, TEST et ZF."},
+    {"id":"C09-F-Q9","result":"passed","finding":"AND écrit son résultat dans l'opérande ; TEST est préférable si la valeur doit être conservée.","basis":"Intel 8086 Family User's Manual, AND et TEST."},
+    {"id":"C09-F-Q10","result":"passed","finding":"AND/OR/XOR/TEST remettent CF et OF à zéro ; SF/ZF/PF reflètent le résultat et AF est indéfini.","basis":"Intel 8086 Family User's Manual, effets des instructions logiques sur FLAGS."}
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 14,
+    "corrected": 5,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  }
+}
