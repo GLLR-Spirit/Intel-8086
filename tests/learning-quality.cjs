@@ -257,6 +257,45 @@ console.log("Course example execution audit: " +
 if (exampleAudit.length) console.log(JSON.stringify(exampleAudit, null, 2));
 assert.equal(exampleAudit.length, 0, "All 108 course examples must execute without simulator errors.");
 
+const courseExampleOracles = JSON.parse(fs.readFileSync("docs/course-example-oracles-8086.json", "utf8"));
+assert.equal(courseExampleOracles.examples.length, 108, "The independent course-example oracle must cover all 108 lessons.");
+const checkedExampleIds = new Set();
+for (const oracle of courseExampleOracles.examples) {
+  const id = "C" + String(oracle.chapter).padStart(2, "0") + "-L" + String(oracle.lesson).padStart(2, "0");
+  assert.ok(!checkedExampleIds.has(id), "Duplicate course-example oracle: " + id);
+  checkedExampleIds.add(id);
+  const lesson = learning.curriculum[oracle.chapter - 1]?.[5]?.[oracle.lesson - 1];
+  assert.ok(lesson, "Course-example oracle points to a missing lesson: " + id);
+  const state = learning.executeAll(lesson[2]);
+  assert.ok(!state.error, id + " must execute before its result is compared: " + state.error);
+  for (const [register, expected] of Object.entries(oracle.registers || {})) {
+    assert.equal(state.reg[register], expected, id + " register " + register + " expected " + expected.toString(16) + "h");
+  }
+  for (const [flag, expected] of Object.entries(oracle.flags || {})) {
+    assert.equal(state.flags[flag], expected, id + " FLAGS." + flag + " expected " + expected);
+  }
+  for (const [address, expected] of Object.entries(oracle.memory || {})) {
+    assert.equal(state.mem[address], expected, id + " physical memory[" + Number(address).toString(16) + "h] expected " + expected.toString(16) + "h");
+  }
+  for (const [port, expected] of Object.entries(oracle.ports || {})) {
+    assert.equal(state.io[port], expected, id + " port " + Number(port).toString(16) + "h expected " + expected.toString(16) + "h");
+  }
+  if (oracle.stackDepth !== undefined) assert.equal(state.stack.length, oracle.stackDepth, id + " stack depth");
+  if (oracle.steps !== undefined) assert.equal(state.steps, oracle.steps, id + " executed instruction count");
+  if (oracle.bytesPrefix) {
+    const actual = learning.assembleProgram(lesson[2]).bytes.slice(0, oracle.bytesPrefix.split(" ").length)
+      .map(byte => byte.toString(16).toUpperCase().padStart(2, "0")).join(" ");
+    assert.equal(actual, oracle.bytesPrefix, id + " encoded byte prefix");
+  }
+  for (const [index, expected] of Object.entries(oracle.bytesAt || {})) {
+    assert.equal(learning.assembleProgram(lesson[2]).bytes[Number(index)].toString(16).toUpperCase().padStart(2, "0"),
+      expected, id + " encoded byte at offset " + index);
+  }
+}
+assert.equal(checkedExampleIds.size, 108, "Every chapter/lesson pair must have exactly one independent result oracle.");
+console.log("Course example result audit: 108/108 independent end-state oracles match.");
+
+
 // Architectural-result spot checks: successful execution alone is not enough.
 const exampleOracles = [
   { chapter: 1, lesson: 1, check: state => state.reg.AX === 0x1234, expected: "AX=1234h" },
