@@ -4,7 +4,7 @@ const assert = require("node:assert/strict");
 
 const key = JSON.parse(fs.readFileSync("docs/question-semantic-key-8086.json", "utf8"));
 const manifest = JSON.parse(fs.readFileSync("docs/question-independent-oracles-8086.json", "utf8"));
-const batches = ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23", "chapter-24", "chapter-25", "chapter-26", "chapter-27", "chapter-28", "chapter-29", "chapter-30"].map(name => JSON.parse(fs.readFileSync("docs/question-oracle-batches/" + name + ".json", "utf8")));
+const batches = ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23", "chapter-24", "chapter-25", "chapter-26", "chapter-27", "chapter-28", "chapter-29", "chapter-30", "chapter-31"].map(name => JSON.parse(fs.readFileSync("docs/question-oracle-batches/" + name + ".json", "utf8")));
 const html = fs.readFileSync("index.html", "utf8");
 const match = html.match(/<script>([\s\S]*?)<\/script>/);
 assert.ok(match, "Inline application script must exist");
@@ -61,7 +61,9 @@ function independentlyCompute(oracle) {
       stack: ["LIFO_order", "word_values", "SP_before_after", "memory_bounds"],
       string_instruction: ["source_data", "destination_data", "SI", "DI", "DF", "segments", "FLAGS"],
       repeated_string: ["copied_data", "CX", "SI", "DI", "DF", "FLAGS"],
-      interrupt_return_debug: ["stack_word_order", "saved_IP", "saved_CS", "saved_FLAGS", "SP_before_IRET", "handler_stack_balance"]
+      interrupt_return_debug: ["stack_word_order", "saved_IP", "saved_CS", "saved_FLAGS", "SP_before_IRET", "handler_stack_balance"],
+      instruction_length_fields: ["prefixes", "opcode", "ModR/M", "displacement", "immediate"],
+      encoding_validation: ["bytes", "instruction_length", "disassembly", "independent_reference"]
     };
     const requiredChecks = requirements[oracle.inputs.domain];
     assert.ok(requiredChecks, "Unknown checklist domain: " + oracle.inputs.domain);
@@ -718,6 +720,54 @@ function independentlyCompute(oracle) {
       }));
       return { writes, finalCX: 0, finalDI: (i.initialDI + i.count) & 0xffff };
     }
+    case "opcode_semantics":
+      return { identifiesOperation: true, mayEncodeForm: true };
+    case "mov_ax_immediate_opcode": {
+      const registerCodes = { AX: 0, CX: 1, DX: 2, BX: 3, SP: 4, BP: 5, SI: 6, DI: 7 };
+      const opcode = 0xb8 + registerCodes[i.destination];
+      return { opcode, hex: opcode.toString(16).toUpperCase() + "h" };
+    }
+    case "instruction_length_components":
+      return { totalBytes: i.prefixBytes + i.opcodeBytes + i.modrmBytes + i.displacementBytes + i.immediateBytes };
+    case "instruction_next_ip": {
+      const nextIP = (i.startIP + i.length) & ((2 ** i.ipBits) - 1);
+      return { nextIP, hex: nextIP.toString(16).toUpperCase().padStart(4, "0") + "h" };
+    }
+    case "modrm_directional_equivalence": {
+      const registers = ["AX", "CX", "DX", "BX", "SP", "BP", "SI", "DI"];
+      const decode = form => {
+        const mod = form.modrm >>> 6;
+        const reg = (form.modrm >>> 3) & 7;
+        const rm = form.modrm & 7;
+        if (mod !== 3 || ![0x89, 0x8b].includes(form.opcode)) throw new Error("Unsupported MOV ModR/M form");
+        const destination = form.opcode === 0x89 ? registers[rm] : registers[reg];
+        const source = form.opcode === 0x89 ? registers[reg] : registers[rm];
+        return "MOV " + destination + "," + source;
+      };
+      const decoded = i.forms.map(decode);
+      return { decoded, sameEffect: decoded.every(text => text === decoded[0]) };
+    }
+    case "mov_register_transfer":
+      return { finalAX: i.initialBX, finalBX: i.initialBX, operation: "copy" };
+    case "modrm_direction_field":
+      return { sameOperation: true, destinationCanBeEncodedInRegOrRM: true };
+    case "mov_ax_immediate_bytes": {
+      const opcode = 0xb8;
+      const bytes = [opcode, i.immediate & 0xff, (i.immediate >>> 8) & 0xff];
+      return { bytes, hexBytes: bytes.map(value => value.toString(16).toUpperCase().padStart(2, "0")), length: bytes.length };
+    }
+    case "immediate_width": {
+      const maximum = (2 ** i.destinationBits) - 1;
+      return { fits: i.immediate >= 0 && i.immediate <= maximum, maximum, bytes: i.destinationBits / i.byteBits };
+    }
+    case "mov_register_modrm_decode": {
+      const registers = ["AX", "CX", "DX", "BX", "SP", "BP", "SI", "DI"];
+      const mod = i.modrm >>> 6;
+      const reg = (i.modrm >>> 3) & 7;
+      const rm = i.modrm & 7;
+      if (mod !== 3 || i.opcode !== 0x89) throw new Error("Unsupported MOV ModR/M form");
+      return { instruction: "MOV " + registers[rm] + "," + registers[reg], destination: registers[rm], source: registers[reg] };
+    }
     case "io_port_register":
       return { register: "DX" };
     case "mov_port_number":
@@ -1024,8 +1074,8 @@ function independentlyCompute(oracle) {
 }
 
 const keyMap = new Map(key.questions.map(q => [q.id, q]));
-assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23", "chapter-24", "chapter-25", "chapter-26", "chapter-27", "chapter-28", "chapter-29", "chapter-30"]);
-assert.deepEqual(batches.map(batch => batch.oracles.length), [19, 18, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 18, 19, 19], "Chapters 2, 4 and 28 reuse one historical oracle outside their supplemental batch");
+assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23", "chapter-24", "chapter-25", "chapter-26", "chapter-27", "chapter-28", "chapter-29", "chapter-30", "chapter-31"]);
+assert.deepEqual(batches.map(batch => batch.oracles.length), [19, 18, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 18, 19, 19, 19], "Chapters 2, 4 and 28 reuse one historical oracle outside their supplemental batch");
 const historicalChapterOracles = manifest.oracles.filter(oracle => ["C02-F-Q4", "C04-F-Q4", "C28-F-Q7"].includes(oracle.id)).map(oracle => ({ ...oracle, status: "certified" }));
 assert.equal(historicalChapterOracles.length, 3, "The historical chapter 2, chapter 4 and chapter 28 oracles not represented in supplemental batches must each be reused exactly once");
 const allOracleRecords = [...batches.flatMap(batch => batch.oracles), ...historicalChapterOracles];
@@ -1067,7 +1117,7 @@ for (const oracle of allOracleRecords) {
     assert.fail("Unknown oracle status for " + oracle.id + ": " + oracle.status);
   }
 }
-assert.equal(certified, 570, "All 570 unique questions and historical oracles are certified through chapter 30, including three historical records not duplicated in batches");
+assert.equal(certified, 589, "All 589 unique questions and historical oracles are certified through chapter 31, including three historical records not duplicated in batches");
 assert.equal(manifest.certificationSummary.questionCount, 684, "Manifest total must match the full assessment bank");
 assert.equal(manifest.certificationSummary.historicalOracles, 6, "All six historical oracles must remain registered");
 assert.equal(manifest.certificationSummary.supplementalBatchRecords, batches.reduce((sum, batch) => sum + batch.oracles.length, 0), "Manifest batch-record count must match the loaded files");
@@ -1075,11 +1125,11 @@ assert.equal(manifest.certificationSummary.newSupplementalOracles, batches.reduc
 assert.equal(manifest.certificationSummary.uniqueCertifiedQuestions, certified, "Manifest unique coverage must match the executable certification test");
 assert.equal(manifest.certificationSummary.remainingUncertified, 684 - certified, "Manifest remaining count must be arithmetically consistent");
 assert.equal(blocked, 0, "No question in the certified batches remains blocked");
-for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]) {
+for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]) {
   const prefix = "C" + String(chapter).padStart(2, "0") + "-";
   const expectedIds = key.questions.filter(question => question.id.startsWith(prefix)).map(question => question.id);
   assert.equal(expectedIds.length, 19, "Each audited chapter must contain exactly 19 keyed questions");
   for (const id of expectedIds) assert.ok(allIds.includes(id), "Missing independent oracle for " + id);
 }
 assert.match(keyMap.get("C01-L1-Q2").explanation, /octets machine distincts/i, "Source assembly must be distinguished from its encoded machine bytes");
-console.log("Question oracle certification: chapters 1–30 — " + certified + "/570 certified; " + blocked + " blocked; runtime/key alignment and independent evaluators passed.");
+console.log("Question oracle certification: chapters 1–31 — " + certified + "/589 certified; " + blocked + " blocked; runtime/key alignment and independent evaluators passed.");
