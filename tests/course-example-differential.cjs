@@ -3,7 +3,7 @@ const vm = require("node:vm");
 const assert = require("node:assert/strict");
 
 const html = fs.readFileSync("index.html", "utf8");
-const match = html.match(/<script>([\\s\\S]*?)<\\/script>/);
+const match = html.match(/<script>([\s\S]*?)<\/script>/);
 assert.ok(match, "Inline application script must exist");
 
 const elements = new Map();
@@ -24,8 +24,8 @@ const injection = [
   " curriculum, executeAll, executeBinary, assembleProgram, parseProgram",
   "};",
   "})();"
-].join("\\n");
-const instrumented = match[1].replace(/\\}\\)\\(\\);\\s*$/, injection);
+].join("\n");
+const instrumented = match[1].replace(/\}\)\(\);\s*$/, injection);
 assert.notEqual(instrumented, match[1], "Application closure injection point must exist");
 vm.runInNewContext(instrumented, context, { timeout: 30000 });
 const api = context.__courseDifferentialApi;
@@ -156,7 +156,7 @@ for (const oracle of oracleFile.examples) {
 
 console.log("Course source/binary differential: " + compared + "/108 examples compared; " + conceptual + " conceptual examples explicitly retained.");
 console.log("Oracle dimensions: " + JSON.stringify(categoryCounts));
-if (failures.length) console.error("Differential failures:\\n" + failures.join("\\n"));
+if (failures.length) console.error("Differential failures:\n" + failures.join("\n"));
 assert.equal(compared, 108, "Every one of the 108 course examples must be compared.");
 assert.deepEqual(failures, [], "Source/binary parity and independent course oracles must match for all 108 examples.");
 console.log("Course source/binary differential audit PASS: 108/108.");
