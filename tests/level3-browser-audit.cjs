@@ -218,6 +218,37 @@ const assert = require("node:assert/strict");
   await keyboardPage.keyboard.press("Enter");
   assert.equal(await difficulty.inputValue(),"Débutant",
     "The exercise difficulty filter must be operable with native keyboard selection.");
+  const allExerciseCountText=(await keyboardPage.locator("#exerciseCount").textContent()).trim();
+  const allExerciseCounts=allExerciseCountText.match(/(\\d+) exercice\\(s\\) affiché\\(s\\) sur (\\d+)/);
+  assert.ok(allExerciseCounts,"The exercise result counter must expose visible and total counts: "+allExerciseCountText);
+  const beginnerCount=Number(allExerciseCounts[1]),totalExerciseCount=Number(allExerciseCounts[2]);
+  assert.ok(beginnerCount>0&&beginnerCount<totalExerciseCount,
+    "Keyboard difficulty filtering must reduce the actual result set, not only change the select value.");
+  const beginnerLabels=await keyboardPage.locator("#exerciseList .exercise .eyebrow").allTextContents();
+  assert.ok(beginnerLabels.length>0&&beginnerLabels.every(label=>label.includes("Débutant")),
+    "Every visible result must satisfy the selected beginner difficulty.");
+
+  const chapterFilter=keyboardPage.locator("#exerciseChapter");
+  await chapterFilter.focus();
+  await keyboardPage.keyboard.press("ArrowDown");
+  await keyboardPage.keyboard.press("Enter");
+  assert.equal(await chapterFilter.inputValue(),"0","The chapter filter must be keyboard-selectable.");
+  const chapterResults=await keyboardPage.locator("#exerciseList .exercise").allTextContents();
+  assert.ok(chapterResults.length>0&&chapterResults.every(text=>/Chapitres : 1\\./.test(text)),
+    "Combined difficulty/chapter filters must return only exercises assigned to chapter 1.");
+
+  const typeFilter=keyboardPage.locator("#exerciseType");
+  await typeFilter.focus();
+  await keyboardPage.keyboard.press("ArrowDown");
+  await keyboardPage.keyboard.press("Enter");
+  assert.equal(await typeFilter.inputValue(),"application","The exercise-type filter must be keyboard-selectable.");
+  const combinedLabels=await keyboardPage.locator("#exerciseList .exercise .eyebrow").allTextContents();
+  assert.ok(combinedLabels.every(label=>label.includes("Débutant")&&label.includes("Application directe")),
+    "Combined filters must enforce difficulty and exercise type on every visible card.");
+  await keyboardPage.locator("#resetExerciseFilters").focus();
+  await keyboardPage.keyboard.press("Enter");
+  assert.equal((await keyboardPage.locator("#exerciseCount").textContent()).trim(),allExerciseCountText,
+    "Keyboard reset must restore the complete exercise result set.");
 
   const editorAgain=keyboardPage.locator('[data-view="editor"]');
   await editorAgain.focus();
@@ -227,6 +258,22 @@ const assert = require("node:assert/strict");
   await keyboardPage.keyboard.press("Enter");
   assert.ok((await keyboardPage.locator("#regs").textContent()).includes("000Ch"),
     "The editor Run action must execute using the keyboard.");
+  await keyboardPage.keyboard.press("Tab");
+  const nextControl=await keyboardPage.evaluate(()=>document.activeElement.id);
+  assert.notEqual(nextControl,"run","Tab must advance from Run to the next natural keyboard stop.");
+  await keyboardPage.keyboard.press("Shift+Tab");
+  assert.equal(await keyboardPage.evaluate(()=>document.activeElement.id),"run",
+    "Shift+Tab must reverse the same keyboard transition without losing focus.");
+
+  await keyboardPage.locator("#assemble").focus();
+  await keyboardPage.keyboard.press("Enter");
+  assert.match(await keyboardPage.locator("#assemblerReport").textContent(),/ASSEMBLAGE RÉUSSI/,
+    "The assembler action must be operable with Enter and expose its result.");
+  await keyboardPage.locator("#disassemblyInput").fill("B8 34 12 F4");
+  await keyboardPage.locator("#disassemble").focus();
+  await keyboardPage.keyboard.press("Enter");
+  assert.match(await keyboardPage.locator("#disassemblerReport").textContent(),/MOV AX, 1234h[\\s\\S]*HLT/,
+    "The disassembler action must be keyboard-operable and render decoded instructions.");
 
   await keyboardPage.close();
   console.log("Keyboard navigation, focus retention/transfer, course, exercise filter and editor activation PASS.");
