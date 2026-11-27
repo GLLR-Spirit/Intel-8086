@@ -21,7 +21,7 @@ Ce document consigne une vérification reproductible du dépôt et des résultat
 | Questions finales | 360 | Concordance runtime/manifeste contrôlée |
 | Oracles de questions | 684/684 | Évaluateurs automatisés réussis ; **ce résultat n'est pas une certification humaine indépendante** |
 | Registre de certification officiel | 384/684 | 300 restent non certifiées dans le registre officiel ; compteur inchangé |
-| Revues individuelles documentées | 323 questions (chapitres 1 à 17) | 256 passées, 67 corrigées, 0 bloquée ; non réconciliées automatiquement avec le registre officiel |
+| Revues individuelles documentées | 342 questions (chapitres 1 à 18) | 271 passées, 71 corrigées, 0 bloquée ; non réconciliées automatiquement avec le registre officiel |
 | Exercices et corrections guidées | 48/48 | Métadonnées, validateurs et comparaison source/binaire réussis |
 | Smoke tests | 378/378 | Réussis |
 | Matrice ModR/M | 11 568/11 568 | Tests de génération, décodage et validité réussis |
@@ -45,7 +45,7 @@ Cause commune : les documents de suivi n'avaient pas été réconciliés après 
 
 ## Points qui restent ouverts — aucune clôture fictive
 
-1. **Questions :** les 684 évaluateurs automatisés réussissent, mais le registre officiel reste 384/684. Le registre officiel conserve 300 questions non certifiées. Des revues individuelles distinctes documentent déjà 323 questions des chapitres 1 à 17 (256 passées, 67 corrigées, 0 bloquée), mais ces fichiers ne sont pas automatiquement réconciliés avec le registre officiel. Les 300 entrées restantes doivent être rapprochées des preuves existantes avant toute modification du compteur ; les chapitres 18 à 36 restent à examiner individuellement.
+1. **Questions :** les 684 évaluateurs automatisés réussissent, mais le registre officiel reste 384/684. Le registre officiel conserve 300 questions non certifiées. Des revues individuelles distinctes documentent déjà 342 questions des chapitres 1 à 18 (271 passées, 71 corrigées, 0 bloquée), mais ces fichiers ne sont pas automatiquement réconciliés avec le registre officiel. Les 300 entrées restantes doivent être rapprochées des preuves existantes avant toute modification du compteur ; les chapitres 18 à 36 restent à examiner individuellement.
 2. **Cours :** la présence de 108 explications de longueur minimale et la réussite des tests structurels ne remplacent pas une relecture experte de chaque notion, prérequis, progression et exemple.
 3. **Exemples :** la comparaison source/binaire couvre 108/108 ; les quatre exemples conceptuels sont explicitement conservés. Les résultats du moteur logiciel ne constituent pas une comparaison avec un 8086 physique.
 4. **Simulateur, assembleur, désassembleur :** les matrices et vecteurs ciblés sont étendus, mais le balayage structurel des opcodes ne certifie pas la sémantique de chaque opcode ni toutes les combinaisons de préfixes, états indéfinis, interruptions matérielles et signaux de bus.
@@ -55,3 +55,11 @@ Cause commune : les documents de suivi n'avaient pas été réconciliés après 
 ## Conclusion de cette tranche
 
 Les deux jobs du CI correctif run 1884 sont réussis sur la branche d'audit. L'index des 684 oracles, les 17 fichiers de revue, la clé sémantique et les évaluateurs ont été réconciliés. La mission globale reste en cours tant que les revues des chapitres 18 à 36 et les contrôles manuels listés ci-dessus ne sont pas terminés. La mission globale reste **en cours** tant que les revues individuelles restantes et les contrôles manuels listés ci-dessus ne sont pas terminés.
+
+
+## Mise à jour — revue individuelle du chapitre 18
+
+- Chapitre 17 : le plan d'évaluation finale est désormais équilibré, avec exactement deux questions dans chacune des cinq catégories attendues.
+- Chapitre 18 : 19 questions examinées individuellement ; 15 validées et 4 corrigées. Les corrections portent sur la précision des adresses segment:offset et sur l'analyse d'un programme comparant deux références mémoire aliasées.
+- Les revues documentées couvrent maintenant 342 questions des chapitres 1 à 18 : 271 validées, 71 corrigées, aucune bloquée.
+- Le compteur officiel reste 384/684 (300 restantes) : les fiches de revue ne sont pas automatiquement ajoutées au registre historique. Aucun registre historique complet listant les 384 identifiants certifiés n'a encore été trouvé ; le nombre 300 ne peut donc pas encore être associé à un ensemble d'identifiants vérifiable.
