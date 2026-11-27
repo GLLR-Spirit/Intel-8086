@@ -416,25 +416,31 @@
     {
       "id": "C34-F-Q6",
       "status": "certified",
-      "rule": "direction_flag_string_step",
+      "rule": "rep_movsb_backward_index_trace",
       "inputs": {
-        "DF": 0,
-        "elementBytes": 1
+        "SI": 4096,
+        "DI": 8192,
+        "CX": 3,
+        "DF": 1,
+        "elementWidth": 1
       },
       "expected": {
-        "indexStep": 1,
-        "direction": "increment"
+        "SI": 4093,
+        "DI": 8189,
+        "CX": 0,
+        "SIHex": "0FFDh",
+        "DIHex": "1FFDh"
       },
-      "correctAnswer": "DF",
-      "derivation": "DF est le Direction Flag, un indicateur du registre FLAGS. DF=0 fait progresser SI et DI vers les offsets croissants ; DF=1 les fait progresser vers les offsets décroissants.",
+      "correctAnswer": "0FFDh et 1FFDh",
+      "derivation": "DF=1 impose une décrémentation d'un octet après chaque MOVSB. Trois transferts donnent SI=1000h−3=0FFDh et DI=2000h−3=1FFDh. CX est décrémenté trois fois et atteint zéro.",
       "distractorRationales": [
         {
-          "choice": "IF",
-          "reason": "IF contrôle les interruptions masquables et n'indique pas le sens des chaînes."
+          "choice": "1003h et 2003h",
+          "reason": "Ces valeurs correspondent à une progression en avant avec DF=0."
         },
         {
-          "choice": "OF",
-          "reason": "OF indique un dépassement signé en arithmétique ; le sens des chaînes dépend de DF."
+          "choice": "0FFEh et 1FFEh",
+          "reason": "Ces valeurs ne comptent que deux décrémentations au lieu de trois."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
