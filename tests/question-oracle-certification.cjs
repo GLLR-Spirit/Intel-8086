@@ -269,10 +269,16 @@ function independentlyCompute(oracle) {
       return { result: (i.left | i.right) & ((2 ** i.width) - 1) };
     case "bitwise_xor":
       return { result: (i.left ^ i.right) & ((2 ** i.width) - 1) };
+    case "not_preserves_flags":
+      return { flagsModified: false, operandModified: true };
     case "not_instruction_semantics":
       return { invertsAllBits: true, modifiesOperand: true };
+    case "xor_vs_not_selective_toggle":
+      return { xorSelective: true, notInvertsAll: true };
     case "xor_mask_semantics":
       return { togglesMaskOneBits: true, unchangedMaskZeroBits: true };
+    case "test_trace_preserve_value":
+      return { finalAL: i.initialAL, logicalResult: i.initialAL & i.mask, destinationModified: false, flagsUpdated: true };
     case "test_preserves_destination":
       return { destinationModified: false, flagsUpdated: true };
     case "test_zero_flag": {
@@ -1465,5 +1471,22 @@ assert.equal(chapter8Review.summary.remainingOfficialCertification, 300, "The of
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C08-L1-Q3").expected, { lowResult: 0, carryFromLow: 1, highResult: 19, combined: 4864 }, "The 8-bit carry must propagate from AL to AH");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C08-L3-Q3").expected, { result: 255, OF: 0, CF: 1 }, "NEG 01h must yield FFh with CF=1 and OF=0");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C08-F-Q2").expected, { updated: ["OF", "SF", "ZF", "AF", "PF"], preserved: ["CF"] }, "INC must update arithmetic flags except CF");
+
+
+const chapter9Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-09.json", "utf8"));
+const chapter9Ids = key.questions.filter(question => question.chapter === 9).map(question => question.id).sort();
+const reviewedChapter9Ids = chapter9Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter9Ids, chapter9Ids, "Chapter 9 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter9Ids).size, 19, "Chapter 9 review must not duplicate question IDs");
+assert.equal(chapter9Review.summary.questionsReviewed, 19, "Chapter 9 review count must match the complete question bank");
+assert.equal(chapter9Review.summary.passed, 14, "Chapter 9 review must report 14 passed questions");
+assert.equal(chapter9Review.summary.corrected, 5, "Chapter 9 review must record OR, NOT flags, XOR comparison, XOR calculation and TEST trace corrections");
+assert.equal(chapter9Review.summary.blocked, 0, "Chapter 9 review must have no unresolved blockers");
+assert.equal(chapter9Review.summary.officialCertificationCountBefore, 384, "Chapter 9 review starts from the official 384-question ledger");
+assert.equal(chapter9Review.summary.officialCertificationCountAfter, 384, "Chapter 9 review must not silently advance official certification");
+assert.equal(chapter9Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C09-F-Q6").expected, { result: 5 }, "1110 XOR 1011 must produce 0101");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C09-F-Q7").expected, { finalAL: 165, logicalResult: 5, destinationModified: false, flagsUpdated: true }, "TEST must update FLAGS without overwriting AL");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C09-L2-Q2").expected, { flagsModified: false, operandModified: true }, "NOT must modify its operand without changing FLAGS");
 
 console.log("Question oracle evaluator: chapters 1–36 — " + oracleRecordsChecked + "/684 oracle records passed automated checks; official certification ledger remains " + manifest.oracleCoverageSummary.officialCertificationCount + "/684 (" + manifest.oracleCoverageSummary.remainingOfficialCertification + " pending); " + blocked + " blocked.");
