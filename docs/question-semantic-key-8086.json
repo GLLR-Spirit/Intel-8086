@@ -4079,14 +4079,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 1,
-      "stem": "Pourquoi initialiser le maximum avec le premier élément ?",
+      "stem": "Dans le tableau [-5, -2, -8], quelle valeur est choisie comme maximum initial ?",
       "choices": [
-        "Pour éviter une sentinelle qui pourrait être incorrecte",
-        "Pour activer CF",
-        "Pour éviter CMP"
+        "−5",
+        "−2",
+        "0"
       ],
-      "correctAnswer": "Pour éviter une sentinelle qui pourrait être incorrecte",
-      "explanation": "L'initialisation depuis les données garantit une base valide.",
+      "correctAnswer": "−5",
+      "explanation": "Le maximum initial est pris dans les données : le premier élément vaut −5.",
       "category": "Compréhension"
     },
     {
@@ -5055,14 +5055,14 @@
       "kind": "final",
       "lesson": null,
       "number": 3,
-      "stem": "Quel registre sert d'accumulateur dans l'exemple de somme ?",
+      "stem": "Quelle syntaxe additionne deux mots en incluant la retenue ?",
       "choices": [
-        "AX",
-        "CS",
-        "IP"
+        "ADC AX,BX",
+        "ADD AX,BX puis oublier CF",
+        "CMP AX,BX"
       ],
-      "correctAnswer": "AX",
-      "explanation": "AX reçoit les additions successives.",
+      "correctAnswer": "ADC AX,BX",
+      "explanation": "ADC AX,BX additionne BX et le CF entrant au contenu de AX.",
       "category": "Syntaxe"
     },
     {
@@ -5071,14 +5071,14 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "Quel risque existe lors d'une somme 16 bits ?",
+      "stem": "Après ADD AX,1 avec AX=FFFFh, quel état obtient-on ?",
       "choices": [
-        "Débordement de la capacité et perte de retenue si elle n'est pas propagée",
-        "La pile s'inverse",
-        "DF est toujours modifié"
+        "AX=0000h et CF=1",
+        "AX=FFFFh et CF=0",
+        "AX=0001h et CF=1"
       ],
-      "correctAnswer": "Débordement de la capacité et perte de retenue si elle n'est pas propagée",
-      "explanation": "Une somme multi-mots doit traiter la retenue avec ADC.",
+      "correctAnswer": "AX=0000h et CF=1",
+      "explanation": "FFFFh+1 produit 1 0000h ; AX conserve le mot faible 0000h et CF signale la retenue.",
       "category": "Restrictions"
     },
     {
@@ -5119,14 +5119,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Quel résultat distingue une cible absente ?",
+      "stem": "Dans [3,8,11], quel index (base zéro) correspond à la cible 11 ?",
       "choices": [
-        "Un état trouvé/non trouvé explicite",
-        "La valeur de DF",
-        "La valeur du segment CS"
+        "2",
+        "3",
+        "1"
       ],
-      "correctAnswer": "Un état trouvé/non trouvé explicite",
-      "explanation": "Le programme doit distinguer l'échec de recherche d'une position valide.",
+      "correctAnswer": "2",
+      "explanation": "Les index commencent à zéro : 3 est à 0, 8 à 1 et 11 à 2.",
       "category": "Analyse de programme"
     },
     {
@@ -5135,14 +5135,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Quel risque doit éviter une recherche dans un tableau ?",
+      "stem": "Pour un tableau de 3 éléments indexé à zéro, quel est le dernier index valide ?",
       "choices": [
-        "Lire au-delà de la dernière case",
-        "Utiliser CMP",
-        "Initialiser un index"
+        "2",
+        "3",
+        "1"
       ],
-      "correctAnswer": "Lire au-delà de la dernière case",
-      "explanation": "Les bornes doivent être contrôlées avant chaque lecture.",
+      "correctAnswer": "2",
+      "explanation": "Les index valides vont de 0 à longueur−1 ; pour trois éléments, le dernier vaut 2.",
       "category": "Analyse de résultat"
     },
     {
@@ -5167,14 +5167,14 @@
       "kind": "final",
       "lesson": null,
       "number": 10,
-      "stem": "Quel contrôle évite une lecture hors limites dans une recherche séquentielle ?",
+      "stem": "Dans le pire cas, combien d'éléments une recherche séquentielle de n éléments peut-elle comparer ?",
       "choices": [
-        "Vérifier le nombre d'éléments restants avant chaque lecture",
-        "Continuer après avoir trouvé la cible",
-        "Lire systématiquement une case supplémentaire"
+        "n",
+        "n−1",
+        "1"
       ],
-      "correctAnswer": "Vérifier le nombre d'éléments restants avant chaque lecture",
-      "explanation": "Le compteur restant doit empêcher tout accès au-delà du dernier élément.",
+      "correctAnswer": "n",
+      "explanation": "La cible peut être absente ou située à la dernière position : jusqu'à n éléments sont comparés, soit O(n).",
       "category": "Raisonnement"
     },
     {
