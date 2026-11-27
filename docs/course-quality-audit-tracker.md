@@ -100,8 +100,10 @@ The mission remains in progress. Passing automated suites is evidence for the te
 ### Independent question review — chapter 2
 
 - Reviewed all 19 chapter 2 questions individually against the Intel 8086 Family User's Manual, the MCS-86 assembly reference, and independent arithmetic/control-flow traces.
-- 18 items passed technical and item-level checks.
-- One item remains blocked: `C02-F-Q4` is factually correct but does not satisfy the required final-assessment blueprint because it does not provide the second syntax item. No runtime question was changed in this tranche.
-- Added `docs/question-independent-review/chapter-02.json` with one record per question and explicit findings.
-- Added CI assertions that the review covers exactly the 19 chapter 2 IDs, preserves the blocker, and does not increment the official ledger.
-- Official individual certification remains 384/684; 300 questions remain. This chapter review does not count as official certification while its blocker is open.
+- 18 items passed; one final-assessment item was corrected.
+- Root cause: the ten final questions did not provide two syntax items. Replaced the previous factual queue-capacity item with a second syntax item using `ADD AX,3`; queue capacity remains covered by the lesson quiz.
+- Reclassified the BIU/EU work-split item as a definition item so the final-assessment blueprint is explicit.
+- Final assessment now contains exactly two definition, two syntax, two calculation/prediction, two program-analysis, and two reasoning/debug items.
+- Updated runtime bank, semantic key, historical oracle, independent review record, and both oracle evaluators. Added assertions for category balance and runtime/key/oracle concordance.
+- PR CI run [1789](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46025557122) passed; separate browser audit [1152](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46025557121) passed.
+- The automated question-oracle suite reports 684/684 evaluator records passing. Official individual certification remains 384/684; 300 questions remain. This chapter review does not automatically advance that official ledger.
