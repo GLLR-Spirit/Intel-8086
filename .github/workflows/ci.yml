@@ -36,7 +36,7 @@ jobs:
         run: node tests/site-structure.cjs
       - name: Validate learning path and guided exercises
         run: node tests/learning-quality.cjs
-      - name: Compare all 108 course examples across source and binary execution
+      - name: Compare 108 course examples and 48 corrections across source and binary execution
         run: node tests/course-example-differential.cjs
       - name: Run independent instruction vectors
         run: node tests/instruction-vectors.cjs
