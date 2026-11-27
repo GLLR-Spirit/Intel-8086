@@ -4,7 +4,7 @@ const assert = require("node:assert/strict");
 
 const key = JSON.parse(fs.readFileSync("docs/question-semantic-key-8086.json", "utf8"));
 const manifest = JSON.parse(fs.readFileSync("docs/question-independent-oracles-8086.json", "utf8"));
-const batches = ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16"].map(name => JSON.parse(fs.readFileSync("docs/question-oracle-batches/" + name + ".json", "utf8")));
+const batches = ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17"].map(name => JSON.parse(fs.readFileSync("docs/question-oracle-batches/" + name + ".json", "utf8")));
 const html = fs.readFileSync("index.html", "utf8");
 const match = html.match(/<script>([\s\S]*?)<\/script>/);
 assert.ok(match, "Inline application script must exist");
@@ -407,6 +407,39 @@ function independentlyCompute(oracle) {
       return { flagsModified: false };
     case "jcxz_guard_before_loop":
       return { guard: "JCXZ", preventsZeroCounterUnderflow: true };
+    case "max_initialization":
+      return { initialMaximum: i.values[0] };
+    case "sum_accumulator_register":
+      return { register: "AX" };
+    case "search_test_cases":
+      return { coversAll: ["first", "middle", "absent", "empty"].every(value => i.cases.includes(value)) };
+    case "array_sum": {
+      const sum = i.values.reduce((total, value) => total + value, 0);
+      return { sum, finalAX: sum & ((2 ** i.width) - 1) };
+    }
+    case "count_register":
+      return { register: "DX" };
+    case "multiword_sum_carry":
+    case "multiword_sum_overflow":
+      return { carryPropagated: true, instruction: "ADC" };
+    case "sequential_search": {
+      const index = i.values.indexOf(i.target);
+      return { checksInOrder: index < 0 ? i.values.slice() : i.values.slice(0, index + 1), found: index >= 0, index };
+    }
+    case "bounds_check_before_read":
+      return { readAllowed: i.index >= 0 && i.index < i.arrayLength, checkBeforeRead: true };
+    case "not_found_status":
+      return { found: false, result: "explicit_not_found" };
+    case "empty_array_no_read":
+      return { memoryReads: 0, terminatesWithoutAccess: true };
+    case "found_status_explicit":
+      return { found: false, result: "explicit_not_found" };
+    case "bounds_violation":
+      return { readAllowed: i.index >= 0 && i.index < i.arrayLength, violation: i.index >= i.arrayLength ? "index_equals_length" : "index_out_of_range" };
+    case "comparison_signedness":
+      return { requiresSignednessChoice: true }; 
+    case "remaining_elements_guard":
+      return { readAllowed: i.remaining > 0, checkBeforeRead: true };
     case "lea_effective_offset":
       return { offset: i.base + (i.index || 0) + i.displacement, memoryRead: false };
     case "lea_symbolic_expression":
@@ -566,8 +599,8 @@ function independentlyCompute(oracle) {
 }
 
 const keyMap = new Map(key.questions.map(q => [q.id, q]));
-assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16"]);
-assert.deepEqual(batches.map(batch => batch.oracles.length), [19, 18, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19], "Chapters 2 and 4 each reuse one historical oracle rather than duplicating its ID");
+assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17"]);
+assert.deepEqual(batches.map(batch => batch.oracles.length), [19, 18, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19], "Chapters 2 and 4 each reuse one historical oracle rather than duplicating its ID");
 const historicalChapterOracles = manifest.oracles.filter(oracle => ["C02-F-Q4", "C04-F-Q4"].includes(oracle.id)).map(oracle => ({ ...oracle, status: "certified" }));
 assert.equal(historicalChapterOracles.length, 2, "The historical chapter 2 and chapter 4 final question oracles must each be reused exactly once");
 const allOracleRecords = [...batches.flatMap(batch => batch.oracles), ...historicalChapterOracles];
@@ -609,13 +642,13 @@ for (const oracle of allOracleRecords) {
     assert.fail("Unknown oracle status for " + oracle.id + ": " + oracle.status);
   }
 }
-assert.equal(certified, 304, "All 304 questions across chapters 1 to 16 are certified, including the two reused historical chapter oracles");
+assert.equal(certified, 323, "All 323 questions across chapters 1 to 17 are certified, including the two reused historical chapter oracles");
 assert.equal(blocked, 0, "No question in the certified batches remains blocked");
-for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]) {
+for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]) {
   const prefix = "C" + String(chapter).padStart(2, "0") + "-";
   const expectedIds = key.questions.filter(question => question.id.startsWith(prefix)).map(question => question.id);
   assert.equal(expectedIds.length, 19, "Each audited chapter must contain exactly 19 keyed questions");
   for (const id of expectedIds) assert.ok(allIds.includes(id), "Missing independent oracle for " + id);
 }
 assert.match(keyMap.get("C01-L1-Q2").explanation, /octets machine distincts/i, "Source assembly must be distinguished from its encoded machine bytes");
-console.log("Question oracle certification: chapters 1–16 — " + certified + "/304 certified; " + blocked + " blocked; runtime/key alignment and independent evaluators passed.");
+console.log("Question oracle certification: chapters 1–17 — " + certified + "/323 certified; " + blocked + " blocked; runtime/key alignment and independent evaluators passed.");
