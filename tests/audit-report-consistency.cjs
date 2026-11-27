@@ -23,7 +23,7 @@ assert.match(report, /684\/684[\s\S]*automatisés/i,
 assert.match(report, /384\/684/, "Audit report must preserve the official certification count");
 assert.match(report, /513 questions \(chapitres 1 à 27\)/i, "Audit report must report the 513 individually reviewed questions");
 assert.match(report, /300 restent non certifiées/i, "Audit report must distinguish official pending certification from review records");
-assert.match(tracker, /513 questions across chapters 1–27/i, "Tracker must report all documented individual reviews");
+assert.match(tracker, /684 questions across chapters 1–36/i, "Tracker must report all 36 chapters of individual reviews");
 assert.equal(oracleManifest.oracles.length, 684, "Manifest must expose all 684 registered question IDs");
 assert.equal(oracleManifest.oracleCoverageSummary.individuallyReviewedQuestions, 684, "Manifest review total must match all 36 individual review files");
 assert.equal(oracleManifest.oracleCoverageSummary.individuallyReviewedPassed, 575, "Manifest must record independently reviewed questions passed without correction");
