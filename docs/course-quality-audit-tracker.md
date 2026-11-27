@@ -126,3 +126,15 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - Updated the runtime bank, semantic key and chapter-04 oracle; the existing independent signed-add evaluator recalculates both flags.
 - Added CI assertions for the complete 19-question review and the dual-CF/OF result.
 - Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
+
+
+### Independent question review — chapter 5
+
+- Reviewed all 19 questions individually against the Intel 8086 Family User's Manual and MCS-86 assembly reference.
+- 16 items passed; three were corrected to remove repetition and cover distinct register semantics:
+  - C05-F-Q4 now tests the invalid width mismatch in `MOV AX,AL` rather than repeating BP's default segment.
+  - C05-F-Q7 now tests writing AH while preserving AL, complementing the lesson question that writes AL and preserves AH.
+  - C05-F-Q9 now tests the MOVSB destination pair ES:DI rather than repeating the prohibition on MOV CS.
+- Updated the runtime bank, semantic key and chapter-05 oracle batch. Added independent evaluators for operand-width compatibility, high-byte writes and the string destination index.
+- Added CI assertions for all 19 review records and the three independent results.
+- Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
