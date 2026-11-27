@@ -19,8 +19,8 @@ Ce document consigne une vérification reproductible du dépôt et des résultat
 | Questions intermédiaires | 324 | Concordance runtime/manifeste contrôlée |
 | Questions finales | 360 | Concordance runtime/manifeste contrôlée |
 | Oracles de questions | 684/684 | Évaluateurs automatisés réussis ; **ce résultat n'est pas une certification humaine indépendante** |
-| Registre de certification officiel | 384/684 | 300 restent à examiner ; compteur inchangé |
-| Revue individuelle enregistrée | 19 questions du chapitre 1 | 5 corrections consignées ; 0 bloquée |
+| Registre de certification officiel | 384/684 | 300 restent non certifiées dans le registre officiel ; compteur inchangé |
+| Revues individuelles documentées | 323 questions (chapitres 1 à 17) | 256 passées, 67 corrigées, 0 bloquée ; non réconciliées automatiquement avec le registre officiel |
 | Exercices et corrections guidées | 48/48 | Métadonnées, validateurs et comparaison source/binaire réussis |
 | Smoke tests | 378/378 | Réussis |
 | Matrice ModR/M | 11 568/11 568 | Tests de génération, décodage et validité réussis |
@@ -45,7 +45,7 @@ Cause commune : les documents de suivi n'avaient pas été réconciliés après 
 
 ## Points qui restent ouverts — aucune clôture fictive
 
-1. **Questions :** les 684 évaluateurs automatisés réussissent, mais le registre officiel reste 384/684. Les 300 questions restantes nécessitent une revue individuelle avec sources, calculs, distracteurs et explications. La revue enregistrée du chapitre 1 porte sur 19 questions et ne valide pas les 35 autres chapitres.
+1. **Questions :** les 684 évaluateurs automatisés réussissent, mais le registre officiel reste 384/684. Le registre officiel conserve 300 questions non certifiées. Des revues individuelles distinctes documentent déjà 323 questions des chapitres 1 à 17 (256 passées, 67 corrigées, 0 bloquée), mais ces fichiers ne sont pas automatiquement réconciliés avec le registre officiel. Les 300 entrées restantes doivent être rapprochées des preuves existantes avant toute modification du compteur ; les chapitres 18 à 36 restent à examiner individuellement.
 2. **Cours :** la présence de 108 explications de longueur minimale et la réussite des tests structurels ne remplacent pas une relecture experte de chaque notion, prérequis, progression et exemple.
 3. **Exemples :** la comparaison source/binaire couvre 108/108 ; les quatre exemples conceptuels sont explicitement conservés. Les résultats du moteur logiciel ne constituent pas une comparaison avec un 8086 physique.
 4. **Simulateur, assembleur, désassembleur :** les matrices et vecteurs ciblés sont étendus, mais le balayage structurel des opcodes ne certifie pas la sémantique de chaque opcode ni toutes les combinaisons de préfixes, états indéfinis, interruptions matérielles et signaux de bus.
