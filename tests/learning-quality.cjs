@@ -413,17 +413,17 @@ function verifyMethodGate(title,bypassSource) {
   assert.ok(exercise[3](bypass),title+" bypass must demonstrate that the result-only oracle is insufficient");
   assert.equal(learning.exerciseMethodSatisfied(index,bypass),false,title+" method oracle must reject the result-only bypass");
 }
-verifyMethodGate("Somme répétée","MOV AX,20\\nMOV CX,0\\nHLT");
-verifyMethodGate("Somme de 1 à 6","MOV AX,21\\nMOV CX,0\\nHLT");
-verifyMethodGate("Boucle : somme de 1 à 4","MOV AX,10\\nMOV CX,0\\nHLT");
-verifyMethodGate("Branchement signé","MOV CX,1\\nHLT");
-verifyMethodGate("MUL : produit non signé sur 8 bits","MOV AX,42\\nCLC\\nHLT");
-verifyMethodGate("DIV : quotient et reste sur 8 bits","MOV AX,0208h\\nHLT");
+verifyMethodGate("Somme répétée","MOV AX,20\nMOV CX,0\nHLT");
+verifyMethodGate("Somme de 1 à 6","MOV AX,21\nMOV CX,0\nHLT");
+verifyMethodGate("Boucle : somme de 1 à 4","MOV AX,10\nMOV CX,0\nHLT");
+verifyMethodGate("Branchement signé","MOV CX,1\nHLT");
+verifyMethodGate("MUL : produit non signé sur 8 bits","MOV AX,42\nCLC\nHLT");
+verifyMethodGate("DIV : quotient et reste sur 8 bits","MOV AX,0208h\nHLT");
 verifyMethodGate("Chaînes : copier deux octets avec REP MOVSB",
-  "MOV AX,1000h\\nMOV DS,AX\\nMOV AX,2000h\\nMOV ES,AX\\nMOV SI,0102h\\nMOV DI,0202h\\nMOV CX,0\\nMOV BYTE PTR ES:[0200h],41h\\nMOV BYTE PTR ES:[0201h],42h\\nHLT");
+  "MOV AX,1000h\nMOV DS,AX\nMOV AX,2000h\nMOV ES,AX\nMOV SI,0102h\nMOV DI,0202h\nMOV CX,0\nMOV BYTE PTR ES:[0200h],41h\nMOV BYTE PTR ES:[0201h],42h\nHLT");
 verifyMethodGate("Chaînes : rechercher 42h avec REPNE SCASB",
-  "MOV AL,42h\\nMOV BL,42h\\nCMP AL,BL\\nMOV CX,1\\nMOV DI,0102h\\nHLT");
-verifyMethodGate("Interruption logicielle : INT et IRET","MOV AX,1234h\\nHLT");
+  "MOV AL,42h\nMOV BL,42h\nCMP AL,BL\nMOV CX,1\nMOV DI,0102h\nHLT");
+verifyMethodGate("Interruption logicielle : INT et IRET","MOV AX,1234h\nHLT");
 console.log("Exercise method audit: 9 reference methods accepted; 9 result-only bypasses rejected.");
 
 const renderer = match[1].slice(match[1].indexOf("function renderExercises()"), match[1].indexOf("\nfunction renderProjects()"));
