@@ -513,6 +513,16 @@ function independentlyCompute(oracle) {
       return { requiresSignednessChoice: true, branchFamilies: "signed_and_unsigned" };
     case "signed_unsigned_branch_families":
       return { unsignedUsesCF: true, signedUsesSFandOF: true };
+    case "loop_operation_order":
+      return { sequence: ["decrement_CX", "test_CX_nonzero"], branchWhen: "CX!=0" };
+    case "loope_boundary_trace": {
+      const afterDecrementCX = (i.initialCX - 1) & 0xffff;
+      return { afterDecrementCX, branchTaken: afterDecrementCX !== 0 && i.ZF === 1 };
+    }
+    case "jcxz_preserves_flags":
+      return { flagsModified: false, FLAGSAfter: i.initialFLAGS };
+    case "loope_zf_source":
+      return { validProducers: ["CMP", "TEST"], loopeModifiesZF: false };
     case "loop_counter_register":
       return { register: "CX" };
     case "loope_condition":
