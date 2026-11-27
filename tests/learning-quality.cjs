@@ -508,7 +508,7 @@ const advancedExampleOracles = [
   [33,1,s=>s.reg.IP>=0&&s.reg.SP===initialSP,"assembler resolves FIN and execution reaches HLT"],
   [33,2,s=>s.reg.AX===0x1234,"MOV AX,1234h executes; its bytes are checked by the independent disassembler below"],
   [33,3,s=>s.reg.IP>=0,"unknown-byte example is checked by the independent disassembler below"],
-  [34,1,s=>(s.reg.AX&255)===0x5a,"CS override reads the byte written at the selected segment:offset"],
+  [34,1,s=>s.reg.AX===0x203c&&byte(s,s.reg.DS,0x0200)===0xa5&&byte(s,s.reg.ES,0x0200)===0x5a&&byte(s,s.reg.CS,0x0200)===0x3c,"Distinct DS/ES/CS values prove the CS segment override reads the selected segment:offset"],
   [34,2,s=>s.reg.AX===2&&word(s,s.reg.DS,0x100)===2,"LOCK INC memory updates the word from 1 to 2"],
   [34,3,s=>s.reg.CX===0&&s.reg.SI===0x102&&s.reg.DI===0x202&&byte(s,s.reg.ES,0x200)===0x31&&byte(s,s.reg.ES,0x201)===0x32,"REP MOVSB copies two bytes under the prefix"],
   [35,1,s=>s.reg.AX===0x1234,"register and memory forms execute; no cycle count is inferred"],
