@@ -1089,6 +1089,10 @@ function independentlyCompute(oracle) {
     case "xchg_form_validity":
       if (i.left === "memory" && i.right === "memory") return { valid: false, reason: "XCHG_does_not_allow_memory_to_memory" };
       return { valid: true, reason: "XCHG_register_memory_allowed" };
+    case "mov_vs_xchg_memory_semantics":
+      return { movReadsMemory: true, xchgReadsMemory: true, xchgWritesMemory: true, exchanges: true };
+    case "mov_memory_write":
+      return { readsMemory: false, writesMemory: true, sourceRegister: "AX" };
     case "mov_memory_read":
       return { readsMemory: true, writesAX: true };
     case "effective_address_form_validity":
@@ -1419,5 +1423,21 @@ assert.equal(chapter6Review.summary.officialCertificationCountAfter, 384, "Chapt
 assert.equal(chapter6Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C06-F-Q4").expected, { valid: false, reason: "no_segment_to_segment_form" }, "MOV DS,ES must be rejected as a direct segment-to-segment move");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C06-F-Q7").expected, { finalAX: 4660, halted: true, skippedInstruction: "MOV AX,22136" }, "The chapter 6 jump trace must skip the instruction after JMP");
+
+
+const chapter7Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-07.json", "utf8"));
+const chapter7Ids = key.questions.filter(question => question.chapter === 7).map(question => question.id).sort();
+const reviewedChapter7Ids = chapter7Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter7Ids, chapter7Ids, "Chapter 7 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter7Ids).size, 19, "Chapter 7 review must not duplicate question IDs");
+assert.equal(chapter7Review.summary.questionsReviewed, 19, "Chapter 7 review count must match the complete question bank");
+assert.equal(chapter7Review.summary.passed, 16, "Chapter 7 review must report 16 passed questions");
+assert.equal(chapter7Review.summary.corrected, 3, "Chapter 7 review must record the memory-write, far-pointer, and MOV/XCHG corrections");
+assert.equal(chapter7Review.summary.blocked, 0, "Chapter 7 review must have no unresolved blockers");
+assert.equal(chapter7Review.summary.officialCertificationCountBefore, 384, "Chapter 7 review starts from the official 384-question ledger");
+assert.equal(chapter7Review.summary.officialCertificationCountAfter, 384, "Chapter 7 review must not silently advance official certification");
+assert.equal(chapter7Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C07-L1-Q3").expected, { readsMemory: false, writesMemory: true, sourceRegister: "AX" }, "MOV [BX],AX must be validated as a memory write");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C07-F-Q10").expected, { movReadsMemory: true, xchgReadsMemory: true, xchgWritesMemory: true, exchanges: true }, "MOV and XCHG memory semantics must remain distinct");
 
 console.log("Question oracle evaluator: chapters 1–36 — " + oracleRecordsChecked + "/684 oracle records passed automated checks; official certification ledger remains " + manifest.oracleCoverageSummary.officialCertificationCount + "/684 (" + manifest.oracleCoverageSummary.remainingOfficialCertification + " pending); " + blocked + " blocked.");
