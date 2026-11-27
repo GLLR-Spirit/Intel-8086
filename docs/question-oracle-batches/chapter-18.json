@@ -516,7 +516,7 @@
     {
       "id": "C18-F-Q10",
       "status": "certified",
-      "rule": "physical_address_formula",
+      "rule": "physical_address_algorithm",
       "inputs": {
         "segment": 4096,
         "offset": 32,
