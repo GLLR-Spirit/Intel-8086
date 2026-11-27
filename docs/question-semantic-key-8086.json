@@ -5123,7 +5123,7 @@
       "choices": [
         "Un état trouvé/non trouvé explicite",
         "La valeur du segment CS",
-        "IP"
+        "La valeur de DF"
       ],
       "correctAnswer": "Un état trouvé/non trouvé explicite",
       "explanation": "Le programme doit distinguer l'échec de recherche d'une position valide.",
