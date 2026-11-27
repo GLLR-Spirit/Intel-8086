@@ -293,6 +293,8 @@ function independentlyCompute(oracle) {
     case "trace_state_sequence":
       return { recordsBeforeAfter: true, orderPreserved: true };
     case "first_divergence_diagnostic":
+      return { locatesEarliestDivergence: true };
+    case "first_divergence_and_isolate":
       return { locatesEarliestDivergence: true, isolatesCause: true };
     case "ip_instruction_offset":
       return { register: "IP", meaning: "instruction_offset" };
