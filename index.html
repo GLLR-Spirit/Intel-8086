@@ -67,7 +67,7 @@ HLT</textarea></div><div class="toolbar"><button class="btn primary" id="run">�
 <div class="console" id="binaryExecutionReport" role="status" aria-live="polite">Aucun flux binaire exécuté.</div></div></div><div><div class="panel"><h3>Registres généraux</h3><div class="reggrid" id="regs"></div><h3 style="margin-top:14px">Segments et pointeurs</h3><div class="reggrid" id="segments"></div></div><div class="panel"><h3>FLAGS</h3><div class="flags" id="flags"></div><p class="muted" style="font-size:11px">CF retenue · ZF zéro · SF signe · OF débordement · PF parité · AF retenue auxiliaire.</p></div><div class="panel"><h3>Mémoire observée</h3><div class="memory-tools"><label for="memoryAddress">Afficher à partir de l’adresse physique (hexadécimal, 20 bits)</label><div class="memory-controls"><input id="memoryAddress" type="text" inputmode="text" maxlength="7" placeholder="Ex. 00C20 ou 0x00C20" aria-describedby="memoryStatus"><button class="btn" type="button" id="showMemory">Afficher</button><button class="btn" type="button" id="allMemory">Début</button></div></div><p class="muted" id="memoryStatus" role="status" aria-live="polite">24 premiers octets initialisés affichés.</p><div class="memgrid" id="memory"><span class="muted">Aucune écriture mémoire.</span></div></div><div class="panel"><h3>Pile simulée (SS:SP)</h3><p class="muted" style="font-size:11px">Sommet en haut · chaque entrée occupe un mot de 16 bits (2 octets).</p><div id="stackView" class="console">Pile vide.</div><h3 style="margin-top:12px">Octets de la pile</h3><div id="stackBytes" class="console">Aucun octet de pile.</div></div></div></div><div class="panel"><h3>Limites du simulateur</h3><p class="muted">Ce moteur pédagogique interprète un sous-ensemble d'instructions 8086. Il ne remplace pas un émulateur matériel complet ni MASM/TASM. VECTOR et PORT sont des directives pédagogiques sans opcode. En binaire, l'IVT physique doit être initialisée : les directives du source sont reprises uniquement si le flux chargé est identique à son assemblage ; sinon, saisir les octets mémoire et les ports initiaux dans le panneau d'état binaire. Les interruptions matérielles, NMI et l'arbitrage ne sont pas simulés. WAIT et ESC n'émulent pas les signaux TEST ni un coprocesseur, et LOCK ne simule pas l'atomicité du bus.</p></div></section>
 <section class="view" id="view-instructions"><div class="head"><h2>Référence technique des instructions 8086</h2><p>Recherche par mnémotechnique, description, opcode et indicateur. Les fiches distinguent les informations documentées de la prise en charge réelle dans le laboratoire.</p><div class="ref-tools"><input id="searchInstruction" aria-label="Recherche" placeholder="Ex. MOV, 8Eh, ZF, mémoire…"><select id="filterCategory" aria-label="Catégorie"><option value="">Toutes les catégories</option><option>Transfert</option><option>Arithmétique</option><option>Logique</option><option>Contrôle</option><option>Pile</option><option>Chaînes</option><option>Processeur</option><option>Adressage</option><option>Directive</option></select><select id="filterOperand" aria-label="Type d'opérande"><option value="">Tous les opérandes</option><option value="r8">Registre 8 bits</option><option value="r16">Registre 16 bits</option><option value="mem">Mémoire</option><option value="imm">Immédiat</option><option value="none">Aucun</option></select><select id="filterSupport" aria-label="Prise en charge"><option value="">Toutes les prises en charge</option><option value="supported">Pris en charge</option><option value="partial">Partiel</option><option value="unsupported">Non pris en charge</option></select></div><div class="ref-summary" id="instructionCount" aria-live="polite"></div></div><div class="instgrid" id="instructionGrid"></div><div class="ref-note">Références : <a href="https://www.inf.pucrs.br/~calazans/undergrad/orgcomp_EC/mat_microproc/intel-8086_family_Users_Manual.pdf" target="_blank" rel="noopener">Intel 8086 Family User’s Manual (1979)</a> · <a href="https://mark-ogden.uk/files/intel/publications/9800640-02%20MCS-86%20Macro%20Assembly%20Language%20Reference%20Manual-Sep79.pdf" target="_blank" rel="noopener">Intel MCS-86 Macro Assembly Language Reference Manual (1979)</a><br><b>Cycles d'horloge :</b> les temps Intel dépendent de la forme exacte. « + EA » ajoute le calcul d'adresse effective. L'alignement des mots, les accès mémoire, la prélecture BIU et les conditions externes peuvent modifier le temps observé. Le laboratoire ne mesure pas les cycles matériels.</div></section><section class="view" id="view-exercises"><div class="head"><h2>Exercices pratiques</h2><p>Entraîne-toi par chapitre, difficulté et type de travail. Charge un énoncé dans l’atelier, propose ta solution puis vérifie-la.</p></div><div class="panel exercise-filters"><div class="grid2"><label>Rechercher<input id="exerciseSearch" type="search" placeholder="Titre, instruction ou notion…" style="width:100%"></label><label>Chapitre<select id="exerciseChapter" style="width:100%"><option value="all">Tous les chapitres</option></select></label><label>Difficulté<select id="exerciseDifficulty" style="width:100%"><option value="all">Toutes les difficultés</option><option value="Débutant">Débutant</option><option value="Facile">Facile</option><option value="Intermédiaire">Intermédiaire</option><option value="Avancé">Avancé</option><option value="Expert">Expert</option></select></label><label>Type d’exercice<select id="exerciseType" style="width:100%"><option value="all">Tous les types</option><option value="application">Application directe</option><option value="raisonnement">Raisonnement</option><option value="completion">Programme à compléter</option><option value="debug">Débogage / correction</option><option value="probleme">Problème complet</option><option value="challenge">Défi expert</option></select></label></div><div class="toolbar"><span class="status" id="exerciseCount" aria-live="polite"></span><button class="btn" id="resetExerciseFilters" type="button">Réinitialiser les filtres</button></div></div><div id="exerciseList"></div></section>
 <section class="view" id="view-projects"><div class="head"><h2>Idées et mini-projets</h2><p>Conçois, expérimente et améliore tes propres programmes.</p></div><div class="grid2" id="projectList"></div><div class="panel"><h3>Mon idée de projet</h3><input id="projectTitle" aria-label="Nom du projet" placeholder="Nom de mon projet" style="width:100%;margin-bottom:8px"><textarea class="idea" id="projectIdea" aria-label="Description du projet" rows="4" style="width:100%" placeholder="Objectif, entrées, traitement, résultat attendu…"></textarea><div class="toolbar"><button class="btn primary" id="saveIdea">Enregistrer mon idée</button><span class="muted" id="ideaStatus" aria-live="polite"></span></div></div></section>
-<section class="view" id="view-tools"><div class="head"><h2>Outils et références</h2><p>Conversions numériques et rappels utiles.</p></div><div class="grid2"><div class="panel"><h3>Convertisseur de bases</h3><input id="number" inputmode="text" aria-label="Nombre à convertir" value="42" style="width:100%;margin:7px 0"><select id="base" aria-label="Base numérique de la valeur saisie" style="width:100%;margin-bottom:12px"><option value="10">Décimale (10)</option><option value="2">Binaire (2)</option><option value="16">Hexadécimale (16)</option></select><div class="stats"><div class="stat"><small>Binaire</small><b id="bin">00101010</b></div><div class="stat"><small>Décimal</small><b id="dec">42</b></div><div class="stat"><small>Hexadécimal</small><b id="hex">2A</b></div><div class="stat"><small>Octal</small><b id="oct">52</b></div></div><div class="status" id="convertStatus"></div></div><div class="panel"><h3>Repères essentiels</h3><p><strong>1 octet</strong> = 8 bits. <strong>1 mot 8086</strong> = 16 bits = 2 octets.</p><p><strong>Registres 16 bits :</strong> AX, BX, CX, DX, SI, DI, BP, SP.</p><p><strong>Registres 8 bits :</strong> AH/AL, BH/BL, CH/CL, DH/DL.</p><p><strong>Segments :</strong> CS (code), DS (données), SS (pile), ES (extra).</p><p><strong>Adresse physique :</strong> segment × 16 + déplacement.</p><p><strong>Hexadécimal :</strong> 2Ah ou 0x2A. Les deux formes sont acceptées ici.</p></div></div><div class="panel"><h3>Vérification du moteur</h3><p class="muted">Lance une série de tests rapides sur les opérations, les FLAGS, les branchements, les boucles et la pile.</p><div class="toolbar"><button class="btn primary" id="runSelfTests">Lancer les tests</button><span id="testSummary" class="status">Tests non lancés.</span></div><div class="console" id="testResults">Les résultats apparaîtront ici.</div></div></section>
+<section class="view" id="view-tools"><div class="head"><h2>Outils et références</h2><p>Conversions numériques et rappels utiles.</p></div><div class="grid2"><div class="panel"><h3>Convertisseur de bases</h3><input id="number" inputmode="text" aria-label="Nombre à convertir" value="42" style="width:100%;margin:7px 0"><select id="base" aria-label="Base numérique de la valeur saisie" style="width:100%;margin-bottom:12px"><option value="10">Décimale (10)</option><option value="2">Binaire (2)</option><option value="16">Hexadécimale (16)</option></select><div class="stats"><div class="stat"><small>Binaire</small><b id="bin">00101010</b></div><div class="stat"><small>Décimal</small><b id="dec">42</b></div><div class="stat"><small>Hexadécimal</small><b id="hex">2A</b></div><div class="stat"><small>Octal</small><b id="oct">52</b></div></div><div class="status" id="convertStatus"></div></div><div class="panel"><h3>Repères essentiels</h3><p><strong>1 octet</strong> = 8 bits. <strong>1 mot 8086</strong> = 16 bits = 2 octets.</p><p><strong>Registres 16 bits :</strong> AX, BX, CX, DX, SI, DI, BP, SP.</p><p><strong>Registres 8 bits :</strong> AH/AL, BH/BL, CH/CL, DH/DL.</p><p><strong>Segments :</strong> CS (code), DS (données), SS (pile), ES (extra).</p><p><strong>Adresse physique :</strong> segment × 16 + déplacement.</p><p><strong>Hexadécimal :</strong> 2Ah ou 0x2A. Les deux formes sont acceptées ici.</p></div></div><div class="panel"><h3>Vérification du moteur</h3><p class="muted">Lance une série de tests rapides sur les opérations, les FLAGS, les branchements, les boucles et la pile.</p><div class="toolbar"><button class="btn primary" id="runSelfTests">Lancer les tests</button><span id="testSummary" class="status">Tests non lancés.</span></div><div class="console" id="testResults">Les résultats apparaîtront ici.</div></div><div class="panel" id="localBackupPanel"><h3>Sauvegarde et restauration locales</h3><p class="muted">Exporte ou restaure ta progression, tes scores, ton projet personnel et ton dernier code enregistré. Le fichier reste sur ton appareil : aucun envoi réseau.</p><div class="toolbar"><button class="btn primary" type="button" id="exportBackup">Exporter ma sauvegarde (.json)</button><label class="btn" for="backupFile">Choisir une sauvegarde (.json)</label><input id="backupFile" type="file" accept=".json,application/json" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)" aria-label="Choisir un fichier de sauvegarde JSON"><button class="btn" type="button" id="restoreBackup" disabled>Restaurer cette sauvegarde</button></div><p class="status" id="backupStatus" role="status" aria-live="polite">Aucune sauvegarde sélectionnée.</p><p class="muted" id="backupPreview">La restauration est vérifiée avant toute modification. Les données actuelles ne sont remplacées qu'après confirmation.</p></div></section>
 </main></div><footer class="footer">Intel 8086 Lab · Projet éducatif indépendant · <a href="https://github.com/GLLR-Spirit/Intel-8086" style="color:var(--blue)">Code source GitHub</a></footer></div>
 <script>
 (function(){
@@ -166,6 +166,97 @@ function storageJSON(key,fallback){try{var raw=storageGet(key,null);return raw==
 function storageList(key){var value=storageJSON(key,[]);return Array.isArray(value)?value:[];}
 function storageSet(key,value){try{window.localStorage.setItem(key,value);return true;}catch(error){return false;}}
 function storageRemove(key){try{window.localStorage.removeItem(key);return true;}catch(error){return false;}}
+var BACKUP_VERSION=1,BACKUP_MAX_BYTES=2097152;
+var BACKUP_KEYS=["i86-lessons-v2","i86-exercises","i86-chapter-scores-v2","i86-lesson-scores-v2","i86-title","i86-idea","i86-code"];
+var pendingBackup=null;
+function isBackupObject(value){return !!value&&typeof value==="object"&&!Array.isArray(value)&&Object.getPrototypeOf(value)===Object.prototype;}
+function validateBackupScoreMap(value,maxScore){if(!isBackupObject(value))return false;var keys=Object.keys(value);if(keys.length>500)return false;return keys.every(function(key){return key.length>80&&false||key.length<=80&&Number.isInteger(value[key])&&value[key]>=0&&value[key]<=maxScore;});}
+function validateBackupData(data){
+ if(!isBackupObject(data))return "Les données de sauvegarde doivent être un objet JSON.";
+ if(Object.keys(data).length!==7||!BACKUP_KEYS.every(function(key){return Object.prototype.hasOwnProperty.call(data,key);}))return "La sauvegarde ne contient pas exactement les sept catégories attendues.";
+ if(!Array.isArray(data["i86-lessons-v2"])||data["i86-lessons-v2"].length>10000||!data["i86-lessons-v2"].every(function(x){return typeof x==="string"&&x.length>0&&x.length<=200;}))return "La liste des leçons terminées est invalide.";
+ if(!Array.isArray(data["i86-exercises"])||data["i86-exercises"].length>10000||!data["i86-exercises"].every(function(x){return typeof x==="string"&&x.length>0&&x.length<=200;}))return "La liste des exercices réussis est invalide.";
+ if(!validateBackupScoreMap(data["i86-chapter-scores-v2"],10))return "Les scores des chapitres sont invalides.";
+ if(!validateBackupScoreMap(data["i86-lesson-scores-v2"],3))return "Les scores des leçons sont invalides.";
+ if(typeof data["i86-title"]!=="string"||data["i86-title"].length>500)return "Le titre du projet est invalide ou trop long.";
+ if(typeof data["i86-idea"]!=="string"||data["i86-idea"].length>10000)return "La description du projet est invalide ou trop longue.";
+ if(typeof data["i86-code"]!=="string"||data["i86-code"].length>500000)return "Le code enregistré est invalide ou trop volumineux.";
+ return null;
+}
+function validateBackupDocument(doc){
+ if(!isBackupObject(doc)||doc.application!=="Intel 8086 Lab")return "Ce fichier n'est pas une sauvegarde Intel 8086 Lab.";
+ if(doc.backupVersion!==BACKUP_VERSION)return "Version de sauvegarde non prise en charge : "+String(doc.backupVersion)+". Version attendue : "+BACKUP_VERSION+".";
+ if(typeof doc.createdAt!=="string"||!/^\d{4}-\d{2}-\d{2}T/.test(doc.createdAt)||!Number.isFinite(Date.parse(doc.createdAt)))return "La date de création de la sauvegarde est invalide.";
+ return validateBackupData(doc.data);
+}
+function readCurrentBackupData(){
+ var data={};
+ try{
+  var store=window.localStorage;
+  ["i86-lessons-v2","i86-exercises","i86-chapter-scores-v2","i86-lesson-scores-v2"].forEach(function(key){
+   var raw=store.getItem(key),value=raw===null?(key.indexOf("scores")>=0?{}:[]):JSON.parse(raw);
+   data[key]=value;
+  });
+  ["i86-title","i86-idea","i86-code"].forEach(function(key){var raw=store.getItem(key);data[key]=raw===null?"":raw;});
+ }catch(error){throw new Error("Le stockage local est inaccessible ou contient des données JSON invalides.");}
+ var issue=validateBackupData(data);if(issue)throw new Error(issue);return data;
+}
+function createBackupDocument(){
+ return {application:"Intel 8086 Lab",backupVersion:BACKUP_VERSION,createdAt:new Date().toISOString(),data:readCurrentBackupData()};
+}
+function restoreBackupDocument(doc){
+ var issue=validateBackupDocument(doc);if(issue)throw new Error(issue);
+ var store=window.localStorage,snapshot={};
+ try{BACKUP_KEYS.forEach(function(key){snapshot[key]=store.getItem(key);});}
+ catch(error){throw new Error("Impossible de lire les données actuelles : restauration annulée.");}
+ var written=[];
+ try{
+  BACKUP_KEYS.forEach(function(key){
+   var value=doc.data[key],serialized=(key==="i86-title"||key==="i86-idea"||key==="i86-code")?value:JSON.stringify(value);
+   store.setItem(key,serialized);written.push(key);
+  });
+ }catch(error){
+  var rollbackOk=true;
+  written.forEach(function(key){try{if(snapshot[key]===null)store.removeItem(key);else store.setItem(key,snapshot[key]);}catch(rollbackError){rollbackOk=false;}});
+  throw new Error(rollbackOk?"Écriture impossible : les données précédentes ont été rétablies.":"Écriture impossible et restauration de secours incomplète. Ne ferme pas cette page et vérifie tes données.");
+ }
+ completed=new Set(doc.data["i86-lessons-v2"]);passed=new Set(doc.data["i86-exercises"]);
+ chapterScores=doc.data["i86-chapter-scores-v2"];lessonScores=doc.data["i86-lesson-scores-v2"];
+ $("projectTitle").value=doc.data["i86-title"];$("projectIdea").value=doc.data["i86-idea"];$("code").value=doc.data["i86-code"];
+ renderLessons();renderExercises();stats();
+}
+function describeBackup(doc){
+ var d=doc.data;return "Sauvegarde du "+new Date(doc.createdAt).toLocaleString()+" · "+d["i86-lessons-v2"].length+" leçon(s) · "+d["i86-exercises"].length+" exercice(s) · "+Object.keys(d["i86-chapter-scores-v2"]).length+" score(s) de chapitre · "+Object.keys(d["i86-lesson-scores-v2"]).length+" score(s) de leçon · projet "+(d["i86-title"]?"« "+d["i86-title"].slice(0,80)+" »":"sans titre")+" · code "+d["i86-code"].length+" caractères.";
+}
+$("exportBackup").onclick=function(){
+ try{
+  var doc=createBackupDocument(),json=JSON.stringify(doc,null,2),blob=new Blob([json],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download="intel-8086-lab-backup-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+  $("backupStatus").textContent="Sauvegarde JSON exportée. Conserve ce fichier dans un emplacement sûr.";
+  $("backupPreview").textContent=describeBackup(doc);
+ }catch(error){$("backupStatus").textContent="Export impossible : "+error.message;}
+};
+$("backupFile").onchange=function(){
+ var file=this.files&&this.files[0];pendingBackup=null;$("restoreBackup").disabled=true;
+ if(!file){$("backupStatus").textContent="Aucun fichier sélectionné.";return;}
+ if(file.size>BACKUP_MAX_BYTES){$("backupStatus").textContent="Fichier trop volumineux (limite : 2 Mio).";$("backupPreview").textContent="Choisis un fichier de sauvegarde valide.";this.value="";return;}
+ var reader=new FileReader();
+ reader.onload=function(){
+  try{
+   var doc=JSON.parse(String(reader.result)),issue=validateBackupDocument(doc);
+   if(issue)throw new Error(issue);
+   pendingBackup=doc;$("restoreBackup").disabled=false;$("backupStatus").textContent="Sauvegarde valide. Vérifie le contenu avant restauration.";$("backupPreview").textContent=describeBackup(doc);
+  }catch(error){pendingBackup=null;$("backupStatus").textContent="Fichier refusé : "+error.message;$("backupPreview").textContent="Aucune donnée actuelle n'a été modifiée.";}
+ };
+ reader.onerror=function(){ $("backupStatus").textContent="Lecture du fichier impossible.";};
+ reader.readAsText(file);
+};
+$("restoreBackup").onclick=function(){
+ if(!pendingBackup)return;
+ if(!confirm("Remplacer les sept catégories de données locales par le contenu de cette sauvegarde ? Cette opération ne peut pas être annulée depuis l'application."))return;
+ try{restoreBackupDocument(pendingBackup);$("backupStatus").textContent="Restauration terminée. Progression, scores, projet et code enregistré ont été rechargés.";$("backupPreview").textContent=describeBackup(pendingBackup);pendingBackup=null;$("restoreBackup").disabled=true;$("backupFile").value="";}
+ catch(error){$("backupStatus").textContent="Restauration interrompue : "+error.message;}
+};
 var completed=new Set(storageList("i86-lessons-v2")),passed=new Set(storageList("i86-exercises")),mode="free";
 var currentChapterIndex=0,currentSublessonIndex=0;
 function navigate(v,forceFocus){var activeElement=document.activeElement,sourceView=activeElement&&activeElement.closest?activeElement.closest(".view"):null;document.querySelectorAll(".view").forEach(function(x){x.classList.toggle("active",x.id==="view-"+v);});document.querySelectorAll(".nav").forEach(function(x){var active=x.dataset.view===v;x.classList.toggle("active",active);if(active)x.setAttribute("aria-current","page");else x.removeAttribute("aria-current");});if((sourceView&&sourceView.id!=="view-"+v)||forceFocus){var target=document.querySelector("#view-"+v+" h2");if(target){if(!target.hasAttribute("tabindex"))target.setAttribute("tabindex","-1");target.focus();}}}
