@@ -38,8 +38,10 @@ jobs:
         run: node tests/learning-quality.cjs
       - name: Validate chapter 16 independent review and correction record
         run: node tests/chapter-16-independent-review.cjs
-      - name: Validate chapter 17 independent review and open assessment blueprint finding
+      - name: Validate chapter 17 independent review and balanced assessment blueprint
         run: node tests/chapter-17-independent-review.cjs
+      - name: Validate chapter 18 independent review and balanced assessment blueprint
+        run: node tests/chapter-18-independent-review.cjs
       - name: Validate question oracle evaluators (automated; not independent certification)
         run: node tests/question-oracle-certification.cjs
       - name: Compare 108 course examples and 48 corrections across source and binary execution
