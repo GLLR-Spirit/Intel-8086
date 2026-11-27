@@ -259,8 +259,11 @@ assert.equal(exampleAudit.length, 0, "All 108 course examples must execute witho
 
 const courseExampleOracles = JSON.parse(fs.readFileSync("docs/course-example-oracles-8086.json", "utf8"));
 assert.equal(courseExampleOracles.schema, "intel-8086-course-example-oracles-v1", "The course-example oracle schema must be versioned.");
-assert.ok(courseExampleOracles.examples.every(example => example.kind !== "conceptual" || typeof example.note === "string"),
-  "Conceptual-only examples must explain why no CPU calculation is claimed.");
+assert.ok(courseExampleOracles.examples.every(example =>
+  Number.isInteger(example.chapter) && example.chapter >= 1 && example.chapter <= 36 &&
+  Number.isInteger(example.lesson) && example.lesson >= 1 && example.lesson <= 3 &&
+  (example.kind !== "conceptual" || typeof example.note === "string")),
+  "Every oracle must map to a valid chapter/lesson, and conceptual-only examples must explain their limits.");
 assert.equal(courseExampleOracles.examples.length, 108, "The independent course-example oracle must cover all 108 lessons.");
 const checkedExampleIds = new Set();
 for (const oracle of courseExampleOracles.examples) {
