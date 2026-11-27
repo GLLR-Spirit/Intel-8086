@@ -14,26 +14,27 @@
     {
       "id": "C13-L1-Q1",
       "status": "certified",
-      "rule": "relative_displacement_range",
+      "rule": "relative_displacement_value",
       "inputs": {
-        "bits": 8,
-        "signed": true
+        "ipAfter": 256,
+        "target": 240,
+        "bits": 8
       },
       "expected": {
-        "minimum": -128,
-        "maximum": 127,
-        "unit": "bytes"
+        "displacement": -16,
+        "encoded": 240,
+        "fits": true
       },
-      "correctAnswer": "−128 à +127 octets",
-      "derivation": "Un déplacement relatif short est un entier signé sur huit bits. Le complément à deux sur huit bits couvre −2⁷ à 2⁷−1, soit −128 à +127 octets.",
+      "correctAnswer": "−16 (F0h)",
+      "derivation": "Le déplacement relatif est calculé à partir de l'IP après l'instruction : 00F0h−0100h=−0010h, soit −16. En complément à deux sur huit bits, −16 s'encode F0h et tient dans la plage −128 à +127.",
       "distractorRationales": [
         {
-          "choice": "−32768 à +32767 octets",
-          "reason": "Cette plage correspond à un déplacement signé 16 bits, pas au déplacement short 8 bits."
+          "choice": "+16 (10h)",
+          "reason": "Le signe est inversé : la cible 00F0h est située 16 octets avant l'IP après instruction 0100h."
         },
         {
-          "choice": "0 à 255 octets",
-          "reason": "Un déplacement signé short accepte aussi des valeurs négatives ; 0 à 255 ne décrit pas son intervalle."
+          "choice": "−128 (80h)",
+          "reason": "−128 est la borne minimale rel8, mais le déplacement calculé vaut seulement −16."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), direct/indirect near and far JMP encodings, relative displacement calculation and range; Intel MCS-86 Assembly Language Reference Manual, JMP forms."
@@ -91,26 +92,25 @@
     {
       "id": "C13-L2-Q1",
       "status": "certified",
-      "rule": "jmp_near_encoding",
+      "rule": "jmp_far_direct_encoding",
       "inputs": {
-        "kind": "direct_relative",
-        "displacementBits": 16
+        "instruction": "JMP FAR 1234h:5678h"
       },
       "expected": {
-        "opcode": "E9",
-        "displacementBits": 16,
-        "kind": "direct_relative_near"
+        "opcode": "EA",
+        "kind": "far_direct",
+        "pointerBits": 32
       },
-      "correctAnswer": "E9 rel16",
-      "derivation": "E9 est l'opcode du saut direct relatif near avec un déplacement signé de 16 bits sur le 8086. EB correspond au saut short rel8 et FF /4 au saut indirect near.",
+      "correctAnswer": "EA ptr16:16",
+      "derivation": "Le saut far direct immédiat utilise l'opcode EA suivi d'un pointeur 16:16, constitué d'un offset de 16 bits et d'un segment de 16 bits. FF /5 désigne la forme indirecte far via mémoire, tandis que E9 encode un saut near relatif.",
       "distractorRationales": [
         {
-          "choice": "EB rel8",
-          "reason": "EB rel8 est la forme short 8 bits, pas le saut direct relatif near 16 bits."
+          "choice": "FF /5",
+          "reason": "FF /5 est le groupe d'opcode du saut indirect far r/m16:16 ; il ne représente pas le pointeur far immédiat direct."
         },
         {
-          "choice": "FF /4",
-          "reason": "FF /4 est un saut indirect near r/m16 ; E9 rel16 est le saut direct relatif near."
+          "choice": "E9 rel16",
+          "reason": "E9 encode un saut near relatif avec déplacement 16 bits ; il ne charge pas un nouveau segment CS."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), direct/indirect near and far JMP encodings, relative displacement calculation and range; Intel MCS-86 Assembly Language Reference Manual, JMP forms."
@@ -145,23 +145,26 @@
     {
       "id": "C13-L2-Q3",
       "status": "certified",
-      "rule": "relative_displacement_base",
+      "rule": "relative_target_calculation",
       "inputs": {
-        "instruction": "JMP near TARGET"
+        "ipAfter": 8192,
+        "displacement": 48,
+        "width": 16
       },
       "expected": {
+        "target": 8240,
         "base": "IP_after_instruction"
       },
-      "correctAnswer": "Depuis l'IP après l'instruction",
-      "derivation": "Pour un saut relatif near, le déplacement signé est ajouté à l'IP qui pointe après l'instruction encodée. Il ne se calcule pas depuis la base du segment ni depuis l'adresse de l'étiquette précédente.",
+      "correctAnswer": "2030h",
+      "derivation": "La cible d'un saut relatif est l'IP après l'instruction additionné au déplacement signé. 2000h+0030h=2030h ; le calcul ne part ni du début du segment ni de l'adresse du saut lui-même.",
       "distractorRationales": [
         {
-          "choice": "Depuis le début de CS",
-          "reason": "La base relative est IP après l'instruction, pas le début du segment CS."
+          "choice": "1FD0h",
+          "reason": "1FD0h soustrait le déplacement au lieu de l'ajouter à l'IP après instruction."
         },
         {
-          "choice": "Depuis l'adresse de l'étiquette précédente",
-          "reason": "L'adresse d'une étiquette précédente n'est pas la base architecturale du déplacement relatif."
+          "choice": "0030h",
+          "reason": "0030h est le déplacement, pas l'adresse cible ; il faut l'ajouter à 2000h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), direct/indirect near and far JMP encodings, relative displacement calculation and range; Intel MCS-86 Assembly Language Reference Manual, JMP forms."
@@ -356,25 +359,28 @@
     {
       "id": "C13-F-Q5",
       "status": "certified",
-      "rule": "near_jump_segment",
+      "rule": "jmp_register_target_state",
       "inputs": {
-        "instruction": "JMP BX",
-        "targetOffset": 4660
+        "CS": 4096,
+        "IP": 32,
+        "BX": 4660
       },
       "expected": {
-        "IPChanged": true,
-        "CSChanged": false
+        "CS": 4096,
+        "IP": 4660,
+        "CSChanged": false,
+        "IPChanged": true
       },
-      "correctAnswer": "CS",
-      "derivation": "Un saut near change l'offset IP mais conserve le segment de code CS. C'est la propriété qui le distingue d'un saut far qui charge un nouveau CS et un nouvel IP.",
+      "correctAnswer": "1000h:1234h",
+      "derivation": "JMP BX est un saut indirect near : le contenu de BX devient le nouvel IP. Le segment CS reste 1000h, donc le nouvel état logique est 1000h:1234h.",
       "distractorRationales": [
         {
-          "choice": "IP",
-          "reason": "Un saut near remplace IP par la cible tout en conservant CS."
+          "choice": "1234h:0020h",
+          "reason": "BX fournit l'offset cible et ne remplace pas CS ; IP initial 0020h est remplacé par 1234h."
         },
         {
-          "choice": "Le flot d'exécution",
-          "reason": "Le flot d'exécution est affecté, mais le registre de segment qui reste inchangé est CS."
+          "choice": "1000h:0020h",
+          "reason": "Cette paire conserve aussi l'ancien IP ; JMP BX doit charger IP depuis BX."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), direct/indirect near and far JMP encodings, relative displacement calculation and range; Intel MCS-86 Assembly Language Reference Manual, JMP forms."
@@ -382,23 +388,27 @@
     {
       "id": "C13-F-Q6",
       "status": "certified",
-      "rule": "relative_displacement_base",
+      "rule": "relative_displacement_value",
       "inputs": {
-        "instruction": "JMP short TARGET"
+        "ipAfter": 4096,
+        "target": 4092,
+        "bits": 8
       },
       "expected": {
-        "base": "IP_after_instruction"
+        "displacement": -4,
+        "encoded": 252,
+        "fits": true
       },
-      "correctAnswer": "L'adresse suivant l'instruction",
-      "derivation": "Le processeur ajoute le déplacement signé à l'IP après l'instruction de branchement. Cette base est nécessaire pour calculer correctement la cible relative.",
+      "correctAnswer": "FCh",
+      "derivation": "Le déplacement est 0FFCh−1000h=−0004h, soit −4. En représentation signée sur huit bits, −4 s'encode FCh et respecte la plage rel8 −128 à +127.",
       "distractorRationales": [
         {
-          "choice": "Le début du segment",
-          "reason": "Le début du segment CS n'est pas la base du déplacement relatif."
+          "choice": "04h",
+          "reason": "04h encode +4 ; la cible est quatre octets avant l'IP après instruction, donc le déplacement est négatif."
         },
         {
-          "choice": "La cible elle-même",
-          "reason": "La cible elle-même est le résultat du calcul, pas la base à laquelle le déplacement est ajouté."
+          "choice": "ECh",
+          "reason": "ECh représente −20 sur huit bits ; le déplacement calculé est −4."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), direct/indirect near and far JMP encodings, relative displacement calculation and range; Intel MCS-86 Assembly Language Reference Manual, JMP forms."
@@ -406,26 +416,25 @@
     {
       "id": "C13-F-Q7",
       "status": "certified",
-      "rule": "jmp_indirect_near_encoding",
+      "rule": "jmp_indirect_far_encoding",
       "inputs": {
-        "kind": "near_indirect",
-        "operand": "r/m16"
+        "instruction": "JMP FAR [BX]"
       },
       "expected": {
         "opcode": "FF",
-        "extension": 4,
-        "kind": "near_indirect"
+        "extension": 5,
+        "kind": "far_indirect"
       },
-      "correctAnswer": "FF /4",
-      "derivation": "FF /4 correspond au saut indirect near r/m16. FF /5 correspond à la forme indirect far ; E8 est l'opcode de CALL near relatif, pas celui de JMP indirect.",
+      "correctAnswer": "FF /5",
+      "derivation": "Le groupe FF /5 encode JMP indirect far à travers un opérande mémoire m16:16. FF /4 est la forme indirecte near r/m16 ; EA correspond au saut far direct immédiat.",
       "distractorRationales": [
         {
-          "choice": "FF /5",
-          "reason": "FF /5 encode JMP indirect far ; FF /4 est la forme near demandée."
+          "choice": "FF /4",
+          "reason": "FF /4 charge seulement un nouvel IP dans le segment courant ; c'est le saut indirect near."
         },
         {
-          "choice": "E8",
-          "reason": "E8 est l'opcode de CALL near relatif, pas celui de JMP indirect near."
+          "choice": "EA ptr16:16",
+          "reason": "EA est le saut far direct avec pointeur immédiat, et non le groupe FF pour une cible indirecte en mémoire."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), direct/indirect near and far JMP encodings, relative displacement calculation and range; Intel MCS-86 Assembly Language Reference Manual, JMP forms."
@@ -497,16 +506,16 @@
         "targetFrom": "BX",
         "CSChanged": false
       },
-      "correctAnswer": "Parce que BX fournit une cible indirecte",
-      "derivation": "Dans JMP BX, BX contient l'offset cible qui sera chargé dans IP. L'adresse n'est pas codée comme un déplacement relatif direct ; l'instruction utilise un opérande registre indirect.",
+      "correctAnswer": "BX ne fournit qu'un offset ; un saut far doit charger aussi un segment",
+      "derivation": "JMP BX utilise BX comme offset cible dans le segment de code courant : c'est un saut indirect near. Un saut far doit fournir à la fois un nouvel offset et un nouveau segment CS, par exemple via un pointeur mémoire 16:16.",
       "distractorRationales": [
         {
-          "choice": "Parce que BX est un registre 8 bits",
-          "reason": "BX n'est pas un registre 8 bits ; BX est un registre général 16 bits du 8086."
+          "choice": "BX contient un registre de 8 bits",
+          "reason": "BX est un registre général de 16 bits ; la raison n'est pas sa largeur mais le fait qu'il ne fournit qu'un offset."
         },
         {
-          "choice": "Parce que JMP ne change pas IP",
-          "reason": "JMP modifie IP en transférant le contrôle à la cible fournie par BX."
+          "choice": "JMP ne modifie jamais IP",
+          "reason": "JMP modifie IP dans tous les cas ; un saut far modifie en plus CS."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), direct/indirect near and far JMP encodings, relative displacement calculation and range; Intel MCS-86 Assembly Language Reference Manual, JMP forms."
