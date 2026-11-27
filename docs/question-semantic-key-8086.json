@@ -1183,14 +1183,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Après 7Fh + 1 sur AL, quels indicateurs distinguent le cas signé du cas non signé ?",
+      "stem": "Après 80h + 80h sur AL, quels indicateurs sont activés ?",
       "choices": [
-        "OF=1 et CF=0",
+        "OF=1 et CF=1",
         "OF=0 et CF=1",
-        "OF=1 et CF=1"
+        "OF=1 et CF=0"
       ],
-      "correctAnswer": "OF=1 et CF=0",
-      "explanation": "La somme signée +127+1 déborde (OF=1), mais il n'y a pas de retenue hors de l'octet (CF=0).",
+      "correctAnswer": "OF=1 et CF=1",
+      "explanation": "80h+80h vaut 100h en non signé, donc CF=1 ; en signé, −128−128 sort de la plage −128 à +127, donc OF=1.",
       "category": "Analyse de résultat"
     },
     {
