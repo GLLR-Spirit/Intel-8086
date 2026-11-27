@@ -20,7 +20,7 @@ const document = { getElementById: element, querySelectorAll: () => [] };
 const localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
 const context = { document, localStorage, console, confirm: () => true };
 const instrumented = match[1].replace(/\}\)\(\);\s*$/, 
-  "globalThis.__learningData = { chapterLearning };\\n})();");
+  "globalThis.__learningData = { chapterLearning };})();");
 assert.notEqual(instrumented, match[1], "Application closure must be instrumented");
 vm.runInNewContext(instrumented, context, { timeout: 5000 });
 const runtime = context.__learningData;
