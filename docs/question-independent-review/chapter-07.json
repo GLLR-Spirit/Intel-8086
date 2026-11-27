@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue indépendante — chapitre 7",
+  "reviewDate": "2026-11-27",
+  "scope": "Contrôle individuel des 19 questions du chapitre 7 : LEA, XCHG, formes d'adressage effectif et chargement des pointeurs far par LDS/LES.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Macro Assembly Language Reference Manual",
+      "edition": "1979",
+      "url": "https://manuals.plus/m/3aa41c4d0f61cee77e606f5d25d65c409e33c472f7869184e8bf69d9a2c89b98"
+    }
+  ],
+  "records": [
+    {"id":"C07-L1-Q1","result":"passed","finding":"LEA SI,[BX+4] calcule BX+4 et place l'offset dans SI sans lire la donnée mémoire.","basis":"Intel 8086 Family User's Manual, calcul d'adresse effective et instruction LEA."},
+    {"id":"C07-L1-Q2","result":"passed","finding":"XCHG autorise registre-registre et registre-mémoire, mais pas mémoire-mémoire.","basis":"Intel 8086 Family User's Manual, formes d'opérandes XCHG."},
+    {"id":"C07-L1-Q3","result":"corrected","finding":"La question répétait la distinction LEA/MOV déjà vérifiée ailleurs. Elle teste maintenant l'écriture mémoire par MOV [BX],AX ; AX est la source et DS:BX la destination par défaut.","basis":"Intel MCS-86 Assembly Language Reference Manual, formes MOV ; Intel 8086 Family User's Manual, adressage mémoire."},
+    {"id":"C07-L2-Q1","result":"passed","finding":"BX+SI est une combinaison base/index valide ; AX+CX et DX+SP ne font pas partie des formes d'adressage effectif encodables du 8086.","basis":"Intel 8086 Family User's Manual, table des modes d'adressage effectif."},
+    {"id":"C07-L2-Q2","result":"passed","finding":"LEA ne modifie pas FLAGS ; elle calcule une adresse effective et écrit l'offset dans le registre destination.","basis":"Intel 8086 Family User's Manual, instruction LEA et FLAGS."},
+    {"id":"C07-L2-Q3","result":"passed","finding":"Sans valeurs numériques, LEA DX,[BX+SI+6] place l'expression d'offset BX+SI+6 dans DX, sans déréférencement.","basis":"Intel 8086 Family User's Manual, calcul d'adresse effective et instruction LEA."},
+    {"id":"C07-L3-Q1","result":"passed","finding":"Un pointeur far 16:16 contient deux mots de 16 bits, soit 32 bits ou quatre octets.","basis":"Intel 8086 Family User's Manual, format des pointeurs far et instructions LDS/LES."},
+    {"id":"C07-L3-Q2","result":"passed","finding":"LDS charge le premier mot, l'offset, dans le registre général destination SI.","basis":"Intel 8086 Family User's Manual, instruction LDS."},
+    {"id":"C07-L3-Q3","result":"passed","finding":"LDS charge le second mot du pointeur far dans DS ; ce second mot représente le segment.","basis":"Intel 8086 Family User's Manual, instruction LDS et format du pointeur far."},
+    {"id":"C07-F-Q1","result":"passed","finding":"LEA fournit l'offset calculé d'une expression d'adresse, pas le contenu de la mémoire pointée.","basis":"Intel 8086 Family User's Manual, instruction LEA."},
+    {"id":"C07-F-Q2","result":"passed","finding":"Pour LDS r16,m16:16, le registre général reçoit le premier mot du pointeur, c'est-à-dire l'offset.","basis":"Intel 8086 Family User's Manual, instruction LDS."},
+    {"id":"C07-F-Q3","result":"passed","finding":"XCHG AX,[BX] est une forme registre-mémoire valide ; mémoire-mémoire et segment-segment ne le sont pas.","basis":"Intel MCS-86 Assembly Language Reference Manual, formes XCHG."},
+    {"id":"C07-F-Q4","result":"passed","finding":"LEA calcule l'offset sans lire la donnée ; MOV AX,[BX+SI] lit le mot à l'adresse effective.","basis":"Intel 8086 Family User's Manual, LEA et MOV avec opérande mémoire."},
+    {"id":"C07-F-Q5","result":"passed","finding":"0100h+0020h+0004h=0124h ; l'offset calculé est exact.","basis":"Calcul indépendant de l'adresse effective."},
+    {"id":"C07-F-Q6","result":"corrected","finding":"La formulation associait à tort l'ordre des champs du pointeur far au little-endian. Elle précise maintenant que la structure 16:16 place le mot offset puis le mot segment ; little-endian concerne l'ordre des octets à l'intérieur de chaque mot.","basis":"Intel 8086 Family User's Manual, format mémoire des pointeurs far ; distinction entre ordre des champs et endianness des mots."},
+    {"id":"C07-F-Q7","result":"passed","finding":"LES DI,[BX] charge l'offset dans DI et le segment dans ES, formant ES:DI.","basis":"Intel 8086 Family User's Manual, instruction LES."},
+    {"id":"C07-F-Q8","result":"passed","finding":"LEA ne déclenche aucune lecture de la mémoire pointée ; elle calcule seulement l'offset effectif.","basis":"Intel 8086 Family User's Manual, instruction LEA."},
+    {"id":"C07-F-Q9","result":"passed","finding":"LDS/LES lisent deux mots, offset puis segment ; les quatre octets source doivent être initialisés.","basis":"Intel 8086 Family User's Manual, instructions LDS/LES et format far."},
+    {"id":"C07-F-Q10","result":"corrected","finding":"La question répétait la distinction LEA/MOV. Elle compare maintenant MOV AX,[BX], qui lit la case mémoire, et XCHG AX,[BX], qui échange AX et la case mémoire en réalisant une lecture et une écriture.","basis":"Intel 8086 Family User's Manual, MOV et XCHG avec opérande mémoire."}
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 16,
+    "corrected": 3,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  }
+}
