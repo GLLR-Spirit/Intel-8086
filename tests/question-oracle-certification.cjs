@@ -479,7 +479,7 @@ function independentlyCompute(oracle) {
       return { result, OF, branchTaken: i.condition === "JO" && OF === 1 };
     }
     case "jcc_condition": {
-      const conditions = { JE: "ZF=1", JB: "CF=1", JO: "OF=1", JL: "SF!=OF", JP: "PF=1", JNS: "SF=0", JA: "CF=0 && ZF=0", JBE: "CF=1 || ZF=1", JG: "ZF=0 && SF=OF", JNE: "ZF=0", JC: "CF=1", JS: "SF=1", JNO: "OF=0", JGE: "SF=OF" };
+      const conditions = { JE: "ZF=1", JB: "CF=1", JO: "OF=1", JL: "SF!=OF", JP: "PF=1", JNS: "SF=0", JA: "CF=0 && ZF=0", JAE: "CF=0", JBE: "CF=1 || ZF=1", JLE: "ZF=1 || SF!=OF", JG: "ZF=0 && SF=OF", JNE: "ZF=0", JC: "CF=1", JS: "SF=1", JNO: "OF=0", JGE: "SF=OF" };
       return { condition: conditions[i.mnemonic] };
     }
     case "jcc_alias":
