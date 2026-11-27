@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "title": "Oracles sémantiques indépendants — tranche initiale",
-  "scope": "Le manifeste principal conserve six oracles initiaux. Un lot complémentaire documente le chapitre 1 : 18 questions certifiées indépendamment et une question bloquée par une explication runtime incorrecte. Les autres questions restent non certifiées jusqu'à validation individuelle.",
+  "scope": "Le manifeste principal conserve six oracles initiaux. Un lot complémentaire certifie les 19 questions du chapitre 1 après contrôle indépendant et correction d'une explication source assembleur/code machine. Les autres questions restent non certifiées jusqu'à validation individuelle.",
   "referenceBasis": [
     "Intel 8086 Family User's Manual (October 1979), architecture EU/BIU, file de prélecture, arithmétique, instructions de décalage, instructions de chaîne et indicateurs.",
     "Intel MCS-86 Assembly Language Reference Manual, formes d'opérandes et syntaxe assembleur."
@@ -213,8 +213,8 @@
     {
       "path": "docs/question-oracle-batches/chapter-01.json",
       "scope": "Chapitre 1 — 19 questions auditées individuellement",
-      "certified": 18,
-      "blocked": 1,
+      "certified": 19,
+      "blocked": 0,
       "pending": 0
     }
   ]
