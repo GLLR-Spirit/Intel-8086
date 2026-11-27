@@ -239,3 +239,10 @@ Le rapport initial a été rédigé sur une version antérieure de la branche d'
 Les 21 séquences de méthode listées dans le rapport sont maintenant ajoutées comme contrats complémentaires aux métadonnées des exercices. Les exigences déjà présentes sur `main` (notamment les séquences existantes et les opérandes attendus) restent actives. Le test navigateur vérifie les corrections guidées et refuse les cas où l'état final est conservé artificiellement sans exécution de CALL ou RET.
 
 **Limite :** ce report de contrats et ces tests ne constituent pas une certification pédagogique indépendante complète des 48 exercices. Les écarts consignés dans le registre doivent être revérifiés individuellement, et la qualité sémantique des consignes et corrections nécessite toujours une revue éditoriale humaine.
+
+
+### Vérification CI de la réconciliation — 28 novembre 2026
+
+- [Validation principale #2084](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46083010243) : réussie, incluant les tests simulateur et l'audit navigateur du cours.
+- [Audit navigateur niveau 3 #1437](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46083010230) : réussi. Les 21 contrats de trace et les deux cas négatifs CALL/RET ont été vérifiés dans l'étape d'audit navigateur.
+- Cette réussite CI valide les contrôles automatisés exécutés par ces workflows ; elle ne remplace pas la certification éditoriale humaine des 48 exercices.
