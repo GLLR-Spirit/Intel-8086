@@ -269,56 +269,54 @@
     {
       "id": "C35-F-Q1",
       "status": "certified",
-      "rule": "biu_prefetch_role",
+      "rule": "prefetch_overlap",
       "inputs": {
-        "unit": "BIU"
+        "euExecution": true,
+        "biuFetch": true
       },
       "expected": {
-        "unit": "BIU",
-        "responsibilities": [
-          "bus_interface",
-          "instruction_prefetch"
-        ]
+        "overlap": true,
+        "superscalar": false
       },
-      "correctAnswer": "Gérer les accès au bus et la prélecture",
-      "derivation": "La BIU assure l'interface avec le bus et alimente la file de prélecture en octets d'instruction. L'EU décode et exécute les opérations à partir des octets disponibles.",
+      "correctAnswer": "Précharger les octets des instructions suivantes",
+      "derivation": "Pendant que l'EU exécute une instruction, la BIU peut récupérer les octets des instructions suivantes lorsque le bus est disponible. Ce chevauchement améliore l'alimentation de l'EU, mais ne signifie pas que deux instructions sont exécutées simultanément.",
       "distractorRationales": [
         {
-          "choice": "Calculer toutes les additions",
-          "reason": "Les additions sont réalisées par l'ALU dans l'EU ; la BIU s'occupe des transferts de bus et de la prélecture."
+          "choice": "Exécuter une deuxième instruction à la place de l'EU",
+          "reason": "La BIU assure l'interface de bus et la prélecture ; le décodage et l'exécution des instructions restent du ressort de l'EU."
         },
         {
-          "choice": "Stocker les FLAGS",
-          "reason": "FLAGS est un registre de l'état du processeur, pas une fonction de la BIU."
+          "choice": "Modifier les FLAGS",
+          "reason": "La BIU ne réalise pas les opérations arithmétiques ou logiques qui mettent à jour les indicateurs FLAGS."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual (October 1979), BIU, Prefetch Queue, Bus Timing and Instruction Timings; Intel 8086 timing tables are hardware-reference data, not measurements from the functional laboratory."
+      "reference": "Intel 8086 Family User's Manual (October 1979), §2.2 Bus Interface Unit and Instruction Queue: overlap of BIU prefetch and EU execution."
     },
     {
       "id": "C35-F-Q2",
       "status": "certified",
-      "rule": "memory_bus_cost",
+      "rule": "biu_prefetch_suspension",
       "inputs": {
-        "operandKind": "memory",
-        "registerOperandKind": "register"
+        "euMemoryRequest": true,
+        "fetchAlreadyInProgress": true
       },
       "expected": {
-        "requiresMemoryBus": true,
-        "additionalTransfers": true
+        "prefetchSuspended": true,
+        "finishCurrentFetchFirst": true
       },
-      "correctAnswer": "Elle nécessite des transferts via le bus mémoire",
-      "derivation": "Un opérande mémoire nécessite un accès au bus pour lire ou écrire les données ; un opérande registre est déjà dans l'état interne du processeur. Le nombre de cycles dépend toutefois du mode d'adressage et des conditions de bus.",
+      "correctAnswer": "Elle suspend la prélecture pour servir la demande mémoire de l'EU",
+      "derivation": "Lorsque l'EU demande une lecture ou une écriture mémoire ou E/S, la BIU suspend les nouvelles prélectures pour servir cette demande. Une récupération d'instruction déjà engagée est toutefois terminée avant le transfert demandé par l'EU.",
       "distractorRationales": [
         {
-          "choice": "Elle possède toujours deux opcodes",
-          "reason": "Le nombre d'opcodes ne détermine pas à lui seul le coût ; la différence considérée vient des transferts mémoire."
+          "choice": "Elle continue toujours à lire les instructions",
+          "reason": "La BIU suspend la prélecture afin de donner priorité à la demande de transfert mémoire ou E/S formulée par l'EU."
         },
         {
-          "choice": "Elle désactive IF",
-          "reason": "Un accès mémoire ordinaire ne désactive pas automatiquement IF ; ce drapeau concerne les interruptions masquables."
+          "choice": "Elle vide les registres généraux",
+          "reason": "Une demande mémoire de l'EU ne vide pas les registres généraux ; elle modifie seulement l'ordonnancement des accès au bus."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual (October 1979), BIU, Prefetch Queue, Bus Timing and Instruction Timings; Intel 8086 timing tables are hardware-reference data, not measurements from the functional laboratory."
+      "reference": "Intel 8086 Family User's Manual (October 1979), §2.2 Instruction Queue: BIU instruction fetching is suspended for EU memory and I/O requests."
     },
     {
       "id": "C35-F-Q3",
@@ -354,85 +352,81 @@
     {
       "id": "C35-F-Q4",
       "status": "certified",
-      "rule": "lab_timing_scope",
-      "inputs": {
-        "modelsBIU": false,
-        "modelsPhysicalBusCycles": false,
-        "modelsClockFrequency": false
-      },
-      "expected": {
-        "exactCyclesModeled": false,
-        "biuTimingModeled": false,
-        "physicalClockModeled": false
-      },
-      "correctAnswer": "Le nombre exact de cycles et le comportement de prélecture BIU",
-      "derivation": "Le simulateur vérifie les effets fonctionnels, mais ne reproduit pas la BIU, la file de six octets, les cycles de bus ni la fréquence d'horloge réelle. Il ne peut donc pas certifier un nombre exact de cycles ou le comportement temporel de la prélecture.",
-      "distractorRationales": [
-        {
-          "choice": "La valeur finale d'AX",
-          "reason": "La valeur finale d'un registre est un résultat fonctionnel que le simulateur peut calculer et vérifier."
-        },
-        {
-          "choice": "La somme de deux registres",
-          "reason": "Une addition de registres est une opération fonctionnelle que le simulateur peut exécuter ; ce n'est pas une mesure de timing physique."
-        }
-      ],
-      "reference": "Intel 8086 Family User's Manual (October 1979), BIU, Prefetch Queue, Bus Timing and Instruction Timings; Intel 8086 timing tables are hardware-reference data, not measurements from the functional laboratory."
-    },
-    {
-      "id": "C35-F-Q5",
-      "status": "certified",
-      "rule": "prefetch_queue_size",
+      "rule": "prefetch_start_threshold",
       "inputs": {
         "processor": "8086"
       },
       "expected": {
-        "queueBytes": 6
+        "emptyBytesRequired": 2
       },
-      "correctAnswer": "6",
-      "derivation": "La file de prélecture du 8086 contient six octets. La capacité est propre au modèle 8086 ; elle ne donne pas à elle seule le débit ou le temps de remplissage.",
+      "correctAnswer": "Quand au moins deux octets sont libres dans la file",
+      "derivation": "Le 8086 récupère normalement deux octets par opération de prélecture. La BIU n'initie donc pas une nouvelle récupération tant que deux emplacements ne sont pas disponibles dans la file.",
       "distractorRationales": [
         {
-          "choice": "4",
-          "reason": "Quatre octets n'est pas la capacité de la file du 8086."
+          "choice": "Dès qu'un seul octet est libre",
+          "reason": "Un seul emplacement libre ne suffit pas pour le transfert normal de deux octets effectué par la BIU du 8086."
         },
         {
-          "choice": "8",
-          "reason": "Huit octets n'est pas la capacité de la file de prélecture du 8086."
+          "choice": "Uniquement lorsque la file est vide",
+          "reason": "La BIU peut commencer une prélecture dès que deux octets sont libres ; elle n'a pas besoin d'attendre que les six emplacements soient vides."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual (October 1979), BIU, Prefetch Queue, Bus Timing and Instruction Timings; Intel 8086 timing tables are hardware-reference data, not measurements from the functional laboratory."
+      "reference": "Intel 8086 Family User's Manual (October 1979), §2.2 Instruction Queue: the 8086 BIU fetches two bytes and waits for two empty queue bytes."
+    },
+    {
+      "id": "C35-F-Q5",
+      "status": "certified",
+      "rule": "prefetch_fetch_width",
+      "inputs": {
+        "processor": "8086"
+      },
+      "expected": {
+        "bytesPerFetch": 2
+      },
+      "correctAnswer": "2",
+      "derivation": "Le 8086 récupère normalement deux octets d'instruction par opération de prélecture. Cette largeur de récupération est distincte de la capacité totale de six octets de la file.",
+      "distractorRationales": [
+        {
+          "choice": "1",
+          "reason": "Une récupération d'un octet caractérise le comportement de prélecture du 8088, pas le transfert normal de deux octets du 8086."
+        },
+        {
+          "choice": "4",
+          "reason": "La capacité de la file est de six octets, mais la BIU du 8086 récupère normalement deux octets par opération de prélecture."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), §2.2 Instruction Queue: the 8086 BIU normally obtains two instruction bytes per fetch."
     },
     {
       "id": "C35-F-Q6",
       "status": "certified",
       "rule": "branch_prefetch_flush",
       "inputs": {
-        "controlTransfer": true,
+        "controlTransfer": false,
         "oldSequentialQueue": [
           "next",
           "next+1"
         ],
-        "newIP": 256
+        "newIP": null
       },
       "expected": {
-        "queueDiscarded": true,
-        "refillFromNewIP": true,
-        "newIP": 256
+        "queueDiscarded": false,
+        "refillFromNewIP": false,
+        "newIP": null
       },
-      "correctAnswer": "Un branchement qui change IP",
-      "derivation": "Un branchement pris change IP ; les octets préchargés pour l'ancien chemin ne sont plus ceux du nouveau flot. La BIU réelle doit abandonner cette file et précharger les octets à partir de la nouvelle cible.",
+      "correctAnswer": "Elle reste utilisable car le flot séquentiel continue",
+      "derivation": "Si la condition du branchement n'est pas satisfaite, le transfert de contrôle n'a pas lieu et IP poursuit le chemin séquentiel. La file contenant les octets de ce chemin n'a donc pas à être abandonnée pour une nouvelle cible.",
       "distractorRationales": [
         {
-          "choice": "Une addition registre-registre",
-          "reason": "Une addition registre-registre ne change pas IP et ne force pas à elle seule un changement de chemin de prélecture."
+          "choice": "Elle est toujours vidée par tout branchement",
+          "reason": "La file est réinitialisée lorsque l'exécution transfère effectivement le contrôle vers une nouvelle adresse, pas lorsqu'un branchement conditionnel n'est pas pris."
         },
         {
-          "choice": "Un MOV vers AX",
-          "reason": "Un MOV vers AX ne modifie pas IP ; il ne provoque pas le flush de file associé à un transfert de contrôle."
+          "choice": "IP est remis à zéro",
+          "reason": "Un branchement non pris laisse l'exécution suivre l'adresse séquentielle ; il ne remet pas IP à zéro."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual (October 1979), BIU, Prefetch Queue, Bus Timing and Instruction Timings; Intel 8086 timing tables are hardware-reference data, not measurements from the functional laboratory."
+      "reference": "Intel 8086 Family User's Manual (October 1979), §2.2 Instruction Queue: a taken control transfer resets the queue and begins fetching at the new address."
     },
     {
       "id": "C35-F-Q7",
