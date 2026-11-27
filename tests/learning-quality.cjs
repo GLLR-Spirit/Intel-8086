@@ -237,7 +237,7 @@ for (const oracle of independentQuestionAudit.oracles) {
       break;
     }
     case "intel_operand_order": {
-      const operands=oracle.inputs.instruction.replace(/^[A-Z]+\\s+/i,"").split(",");
+      const operands=oracle.inputs.instruction.replace(/^[A-Z]+\s+/i,"").split(",");
       computed={destination:operands[0].trim(),source:operands[1].trim()};
       break;
     }
