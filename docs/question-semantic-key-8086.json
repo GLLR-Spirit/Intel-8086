@@ -487,7 +487,7 @@
       ],
       "correctAnswer": "La BIU gère les accès externes et la prélecture ; l'EU exécute les instructions",
       "explanation": "La BIU assure l'interface de bus ; l'EU traite les instructions et les données.",
-      "category": "Compréhension"
+      "category": "Définition"
     },
     {
       "id": "C02-F-Q3",
@@ -511,15 +511,15 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "Quelle affirmation est exacte au sujet de la file de prélecture du 8086 ?",
+      "stem": "Quelle écriture respecte la syntaxe Intel pour ajouter la valeur immédiate 3 à AX ?",
       "choices": [
-        "Elle contient six octets et n'implique pas une exécution superscalaire",
-        "Elle contient seize octets",
-        "Elle exécute plusieurs instructions simultanément"
+        "ADD AX,3",
+        "ADD 3,AX",
+        "AX ADD 3"
       ],
-      "correctAnswer": "Elle contient six octets et n'implique pas une exécution superscalaire",
-      "explanation": "La file du 8086 contient six octets ; elle chevauche la récupération et l'exécution sans exécution superscalaire.",
-      "category": "Restrictions"
+      "correctAnswer": "ADD AX,3",
+      "explanation": "En syntaxe Intel, l'opérande destination précède la source : ADD AX,3 ajoute la valeur immédiate 3 au registre AX.",
+      "category": "Syntaxe"
     },
     {
       "id": "C02-F-Q5",
