@@ -394,6 +394,11 @@ const assert = require("node:assert/strict");
       sampleTitle:api.exercises[0][0]
     };
   });
+  assert.equal(filterMatrix.values.chapters.length,36,"The chapter filter must expose all 36 chapters.");
+  assert.deepEqual([...filterMatrix.values.difficulties].sort(),["Avancé","Débutant","Expert","Facile","Intermédiaire"].sort(),
+    "The difficulty filter must expose all five requested levels.");
+  assert.deepEqual([...filterMatrix.values.types].sort(),["application","challenge","completion","debug","probleme","raisonnement"].sort(),
+    "The exercise-type filter must expose every supported type.");
   const readExerciseCount=async()=>{
     const value=(await page.locator("#exerciseCount").textContent()).trim();
     const parsed=value.match(/^(\d+)/);
