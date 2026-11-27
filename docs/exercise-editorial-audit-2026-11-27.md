@@ -42,13 +42,13 @@ Première passe individuelle sur les 48 entrées du tableau `exercises` : intitu
 | EX24 | Problème complet : somme des nombres pairs | 9, 16, 17 | Aucun écart structurel relevé ; TEST/JNZ et accumulation sont cohérents. |
 | EX25 | Défi expert : copie de mots en sens décroissant | 18, 27, 28 | Aucun écart structurel relevé ; DF, REP MOVSW et CLD sont explicités. |
 | EX26 | Saut direct : vérifier la cible | 13 | Aucun écart structurel relevé ; l'instruction sautée est identifiée. |
-| EX27 | Procédure : CALL et RET near | 21 | À compléter : la consigne demande une pile équilibrée, mais le validateur ne contrôle que AX=10. |
+| EX27 | Procédure : CALL et RET near | 21 | Aucun écart structurel relevé ; AX, SP et la pile logique sont contrôlés. |
 | EX28 | Paramètre sur pile : lire avec BP | 22 | Aucun écart structurel relevé ; [BP+4], cadre BP et RET 2 sont expliqués. |
 | EX29 | Programmation modulaire : deux routines | 23 | Aucun écart structurel relevé ; résultat et équilibre de pile sont vérifiés. |
 | EX30 | MUL : produit non signé sur 8 bits | 24 | Aucun écart structurel relevé ; produit et CF/OF sont contrôlés. |
 | EX31 | DIV : quotient et reste sur 8 bits | 25 | Aucun écart structurel relevé ; AL/AH et quotient/reste concordent. |
 | EX32 | Décalage : SHR et retenue | 26 | Aucun écart structurel relevé ; résultat et CF sont cohérents. |
-| EX33 | Interruption logicielle : INT et IRET | 29 | À approfondir : le validateur contrôle AX et la longueur logique de pile, mais pas explicitement SP ni l'adresse de reprise. |
+| EX33 | Interruption logicielle : INT et IRET | 29 | Aucun écart structurel relevé ; AX, SP et la pile logique sont contrôlés. |
 | EX34 | Entrée-sortie : lire un port | 30 | Aucun écart structurel relevé ; valeur lue et état du port sont contrôlés. |
 | EX35 | Encodage : vérifier MOV immédiat | 31 | Écart confirmé : la consigne exige l'encodage B8 34 12 F4, mais le validateur d'exercice ne vérifie que AX=1234h. |
 | EX36 | ModR/M : écrire puis relire une donnée | 32 | Aucun écart structurel relevé dans le résultat fonctionnel ; la mémoire little-endian et AX sont contrôlés. |
@@ -79,15 +79,15 @@ Le prédicat exécute le programme et vérifie AX ; il n'appelle pas le désasse
 
 L'énoncé contient une demande rédactionnelle, alors que l'interface n'offre qu'un éditeur assembleur et un prédicat d'état machine. Soit retirer la demande d'explication de la consigne et la déplacer dans la correction, soit ajouter une réponse réflexive textuelle avec critères de correction.
 
-### E4 — Critère de pile incomplet (EX27 et EX41)
+### E4 — Critère de pile incomplet (EX41)
 
-Les consignes demandent un retour équilibré, mais les validateurs correspondants n'exigent pas explicitement `SP` restauré ni une pile logique vide. Ajouter des assertions de pile adaptées à l'état initial, sans se limiter au résultat AX.
+La consigne demande un retour équilibré, mais le validateur de EX41 n'exige que AX=10. Ajouter des assertions de pile adaptées à l'état initial : SP restauré et pile logique vide.
 
 ### E5 — Préservation de BX non démontrée (EX47 et EX48)
 
 BX n'est pas initialisé à une sentinelle non nulle avant sa sauvegarde. La valeur implicite initiale est zéro, et le programme réécrit zéro avant le dépilage : le test peut donc réussir sans démontrer la conservation d'une valeur utile. Initialiser BX avec une valeur sentinelle (par exemple BEEFh), la sauvegarder, la modifier, la restaurer, puis vérifier BX et SP.
 
-### E6 — Reprise d'interruption à mieux certifier (EX33 et EX46)
+### E6 — Reprise d'interruption à mieux certifier (EX46)
 
 Les prédicats doivent rendre explicites les invariants de retour d'interruption : SP restauré, pile logique vide, exécution reprise à l'instruction attendue après INT et état FLAGS/CS:IP conforme au modèle testé. Les assertions actuelles ne couvrent pas toutes ces dimensions.
 
@@ -122,6 +122,6 @@ Chaque exercice doit être évalué indépendamment sur les critères suivants. 
 
 - **48/48** : couverture technique source/binaire établie par le CI existant.
 - **48/48** : inventoriés dans cette première passe éditoriale.
-- **6 familles d'écarts confirmées** : EX27, EX33, EX35, EX37, EX39, EX41, EX47 et EX48 (les familles E4/E5/E6 regroupent plusieurs exercices).
+- **6 familles d'écarts confirmées** : EX35, EX37, EX39, EX41, EX46, EX47 et EX48 (la famille E5 regroupe deux exercices).
 - **Certification éditoriale globale : non accordée** tant que les écarts ne sont pas corrigés et que les 48 exercices n'ont pas passé la grille complète.
 - Les corrections de contenu ne doivent pas être considérées comme terminées avant ajout des oracles manquants et nouvelle exécution des contrôles.
