@@ -9,28 +9,27 @@
   "oracles": [
     {
       "id": "C02-F-Q4",
-      "rule": "prefetch_queue_8086",
+      "rule": "intel_operand_order",
       "inputs": {
-        "processor": "8086"
+        "instruction": "ADD AX,3"
       },
       "expected": {
-        "queueBytes": 6,
-        "overlap": true,
-        "superscalarExecution": false
+        "destination": "AX",
+        "source": "3"
       },
-      "correctAnswer": "Elle contient six octets et n'implique pas une exécution superscalaire",
-      "derivation": "La file de prélecture du 8086 contient 6 octets. La BIU peut récupérer des octets pendant que l'EU exécute ; ce chevauchement ne signifie pas que plusieurs instructions sont exécutées simultanément.",
+      "correctAnswer": "ADD AX,3",
+      "derivation": "La syntaxe Intel place la destination en premier et la source en second. ADD AX,3 lit AX, ajoute l'immédiat 3 et écrit le résultat dans AX ; ADD 3,AX inverse les opérandes et n'est pas une forme valide de cette instruction.",
       "distractorRationales": [
         {
-          "choice": "Elle contient seize octets",
-          "reason": "Confond la capacité de la file 8086 avec une capacité plus grande non applicable à ce processeur."
+          "choice": "ADD 3,AX",
+          "reason": "Inverse l'ordre destination/source : une constante immédiate ne peut pas être la destination de ADD."
         },
         {
-          "choice": "Elle exécute plusieurs instructions simultanément",
-          "reason": "Confond le chevauchement BIU/EU avec une exécution superscalaire."
+          "choice": "AX ADD 3",
+          "reason": "N'emploie pas la syntaxe mnémonique/opérandes Intel attendue ; l'instruction doit commencer par ADD."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual — Bus Interface Unit and instruction queue.",
+      "reference": "Intel MCS-86 Macro Assembly Language Reference Manual, syntaxe des instructions ; Intel 8086 Family User's Manual, ADD.",
       "explanationChecks": [
         "six octets",
         "sans exécution superscalaire"
