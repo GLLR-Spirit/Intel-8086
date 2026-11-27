@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue individuelle — chapitre 23",
+  "reviewDate": "2026-11-27",
+  "scope": "Examen individuel des 19 questions sur la modularité, les interfaces de procédures, les conventions de registres, les cas limites et les tests de routines. Revue distincte des oracles automatiques.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "sections": "CALL/RET and stack behavior; procedure control flow.",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Assembly Language Reference Manual",
+      "edition": "1979",
+      "sections": "Procedure declarations, calls, register conventions and return behavior.",
+      "url": "https://bitsavers.trailing-edge.com/pdf/intel/ISIS_II/9800640A_MCS-86_Assembly_Language_Reference_Manual_Apr79.pdf"
+    }
+  ],
+  "records": [
+    {
+      "id": "C23-L1-Q1",
+      "result": "passed",
+      "finding": "La programmation modulaire sépare les responsabilités en routines dotées d'interfaces identifiables.",
+      "basis": "Principes de conception logicielle et sémantique CALL/RET."
+    },
+    {
+      "id": "C23-L1-Q2",
+      "result": "passed",
+      "finding": "Les appels successifs INITIALISER, TRAITER, TERMINER sont une séquence valide de routines indépendantes.",
+      "basis": "Trace de contrôle CALL/RET."
+    },
+    {
+      "id": "C23-L1-Q3",
+      "result": "passed",
+      "finding": "Une routine vide doit tout de même retourner à l'appelant et préserver l'équilibre de SP.",
+      "basis": "Intel 8086 Family User's Manual, CALL/RET and stack behavior."
+    },
+    {
+      "id": "C23-L2-Q1",
+      "result": "passed",
+      "finding": "La convention AX entrée/sortie définit le rôle de AX à l'appel puis au retour.",
+      "basis": "Convention logicielle documentée."
+    },
+    {
+      "id": "C23-L2-Q2",
+      "result": "passed",
+      "finding": "AX=6 puis ADD AX,AX donne AX=12.",
+      "basis": "Calcul arithmétique indépendant."
+    },
+    {
+      "id": "C23-L2-Q3",
+      "result": "passed",
+      "finding": "Une interface complète documente les registres modifiés, les entrées, les sorties et les règles de pile.",
+      "basis": "Principes d'interface de procédure."
+    },
+    {
+      "id": "C23-L3-Q1",
+      "result": "passed",
+      "finding": "Le doublement de zéro donne zéro.",
+      "basis": "Calcul indépendant : 0+0=0."
+    },
+    {
+      "id": "C23-L3-Q2",
+      "result": "passed",
+      "finding": "DOUBLE(0)=0 illustre le traitement correct du cas limite nul.",
+      "basis": "Analyse de frontière."
+    },
+    {
+      "id": "C23-L3-Q3",
+      "result": "passed",
+      "finding": "Plusieurs entrées sont nécessaires pour vérifier règle générale et cas limites ; un exemple isolé ne suffit pas.",
+      "basis": "Méthode de test de cas typiques et frontières."
+    },
+    {
+      "id": "C23-F-Q1",
+      "result": "passed",
+      "finding": "Une architecture modulaire décompose le programme en unités fonctionnelles séparées.",
+      "basis": "Principes de modularité."
+    },
+    {
+      "id": "C23-F-Q2",
+      "result": "passed",
+      "finding": "INITIALISER et TRAITER ont des responsabilités différentes ; leur séparation améliore lisibilité et testabilité.",
+      "basis": "Principes de modularité."
+    },
+    {
+      "id": "C23-F-Q3",
+      "result": "passed",
+      "finding": "CALL TRAITER est l'instruction d'appel qui transfère le contrôle et sauvegarde l'adresse de retour.",
+      "basis": "Intel 8086 Family User's Manual, CALL semantics."
+    },
+    {
+      "id": "C23-F-Q4",
+      "result": "passed",
+      "finding": "Ne pas documenter les registres modifiés rend l'interface incomplète et expose l'appelant à des effets de bord inconnus.",
+      "basis": "Contrat de procédure."
+    },
+    {
+      "id": "C23-F-Q5",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait le doublement AX=6 déjà présent dans la leçon. Elle teste maintenant la frontière AX=FFFFh : ADD AX,AX donne 1FFFEh, dont le mot faible FFFEh est conservé dans AX.",
+      "basis": "Calcul indépendant sur 16 bits : (FFFFh+FFFFh) mod 10000h = FFFEh."
+    },
+    {
+      "id": "C23-F-Q6",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait DOUBLE(0), déjà testé dans la leçon. Elle teste maintenant une routine d'addition recevant AX=0006h et BX=0004h, avec résultat 000Ah dans AX.",
+      "basis": "Calcul indépendant et convention d'entrée/sortie AX."
+    },
+    {
+      "id": "C23-F-Q7",
+      "result": "passed",
+      "finding": "Trois appels successifs à des routines vides doivent chacun revenir au site d'appel avant le CALL suivant.",
+      "basis": "Trace de contrôle séquentielle."
+    },
+    {
+      "id": "C23-F-Q8",
+      "result": "passed",
+      "finding": "Après des CALL/RET équilibrés, SP retrouve sa valeur initiale.",
+      "basis": "Invariant de pile."
+    },
+    {
+      "id": "C23-F-Q9",
+      "result": "passed",
+      "finding": "Si AX doit survivre à une routine, son contrat doit prévoir sa préservation ou sa sauvegarde/restauration.",
+      "basis": "Contrat de registre."
+    },
+    {
+      "id": "C23-F-Q10",
+      "result": "passed",
+      "finding": "Des interfaces explicites et des tests isolés facilitent la maintenance et limitent les régressions.",
+      "basis": "Principes de modularité et stratégie de test."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 17,
+    "corrected": 2,
+    "needsRevision": 0,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  },
+  "openFindings": []
+}
