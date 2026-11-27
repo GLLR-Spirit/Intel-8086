@@ -779,10 +779,33 @@ setExerciseMethod("DIV : quotient et reste sur 8 bits",{requiredTrace:["DIV"],re
 setExerciseMethod("Chaînes : copier deux octets avec REP MOVSB",{requiredTrace:["REP_MOVSB"]});
 setExerciseMethod("Chaînes : rechercher 42h avec REPNE SCASB",{requiredTrace:["REPNE_SCASB"]});
 setExerciseMethod("Interruption logicielle : INT et IRET",{requiredTrace:["INT","MOV","IRET"],requiredOperands:[{op:"INT",args:["30H"]},{op:"MOV",args:["AX","1234H"]},{op:"IRET",args:[]}]});
+
+// Contrats de méthode complémentaires issus de la revue EX01–EX48.
+// Les séquences sont contrôlées sur la trace réellement exécutée (pas sur le texte source).
+function setExerciseTraceAt(index,sequence){
+ var item=exercises[index];if(!item)throw Error("Exercice introuvable pour le contrat de trace : EX"+String(index+1).padStart(2,"0"));
+ var metadata=item[5]||{};metadata.requiredTraces=(metadata.requiredTraces||[]).concat([sequence]);item[5]=metadata;
+}
+var exerciseTraceContracts={
+ 2:["LOOP"],4:["LOOP"],9:["PUSH","POP"],15:["PUSH","POP"],24:["STD","REP_MOVSW","CLD"],
+ 26:["CALL","RET"],27:["PUSH","CALL","PUSH","POP","RET"],28:["CALL","RET","CALL","RET"],
+ 29:["MUL"],30:["DIV"],31:["SHR"],32:["INT","IRET"],33:["IN"],40:["CALL","RET"],
+ 41:["MUL","DIV"],42:["PUSHF","POPF"],43:["CLD","REP_MOVSB"],44:["REPNE_SCASB"],
+ 45:["INT","IRET"],46:["REP_MOVSB","PUSH","POP","INT","IRET"],
+ 47:["STD","REP_MOVSW","CLD","PUSH","POP","INT","IRET"]
+};
+Object.keys(exerciseTraceContracts).forEach(function(rawIndex){
+ setExerciseTraceAt(Number(rawIndex),exerciseTraceContracts[rawIndex]);
+});
+
 function exerciseMethodSatisfied(index,state){
- var metadata=exercises[index]&&exercises[index][5]||{},required=metadata.requiredTrace||[],trace=state&&state.instructionTrace||[],cursor=0;
- for(var i=0;i<trace.length&&cursor<required.length;i++){if(trace[i].op===required[cursor])cursor++;}
- if(cursor!==required.length)return false;
+ var metadata=exercises[index]&&exercises[index][5]||{},trace=state&&state.instructionTrace||[];
+ var sequences=(metadata.requiredTrace?[metadata.requiredTrace]:[]).concat(metadata.requiredTraces||[]);
+ for(var s=0;s<sequences.length;s++){
+  var required=sequences[s],cursor=0;
+  for(var i=0;i<trace.length&&cursor<required.length;i++){if(trace[i].op===required[cursor])cursor++;}
+  if(cursor!==required.length)return false;
+ }
  return (metadata.requiredOperands||[]).every(function(expected){
   return trace.some(function(actual){return actual.op===expected.op&&actual.args.length===expected.args.length&&actual.args.every(function(arg,i){return arg===expected.args[i];});});
  });
@@ -2149,6 +2172,6 @@ for(var auditedChapter=0;auditedChapter<19;auditedChapter++){
 }
 
 renderLessons();showLesson(0);renderInstructions();initExerciseFilters();renderExercises();renderProjects();stats();
-if(typeof window!=="undefined"&&window.location&&/(?:\?|&)audit=1(?:&|$)/.test(window.location.search||"")){window.__8086Audit={executeAll:executeAll,executeBinary:executeBinary,assembleProgram:assembleProgram,disassembleBytes:disassembleBytes,curriculum:curriculum,exercises:exercises,exerciseMetadata:exerciseMetadata,level3LessonQuestions:level3LessonQuestions,level3FinalQuestions:level3FinalQuestions,runSelfTests:runSelfTests};}
+if(typeof window!=="undefined"&&window.location&&/(?:\?|&)audit=1(?:&|$)/.test(window.location.search||"")){window.__8086Audit={executeAll:executeAll,executeBinary:executeBinary,assembleProgram:assembleProgram,disassembleBytes:disassembleBytes,curriculum:curriculum,exercises:exercises,exerciseMetadata:exerciseMetadata,exerciseMethodSatisfied:exerciseMethodSatisfied,exerciseTraceContracts:exerciseTraceContracts,level3LessonQuestions:level3LessonQuestions,level3FinalQuestions:level3FinalQuestions,runSelfTests:runSelfTests};}
 })();
 </script></body></html>
