@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "title": "Oracles sémantiques indépendants — tranche initiale",
-  "scope": "Le manifeste conserve six oracles historiques. Les lots des chapitres 1 à 6 couvrent 114 questions distinctes : 19 par chapitre, avec réutilisation sans doublon de C02-F-Q4 et C04-F-Q4 déjà présents dans le manifeste historique. Les autres questions restent non certifiées jusqu'à leur validation individuelle.",
+  "scope": "Le manifeste conserve six oracles historiques. Les lots des chapitres 1 à 7 couvrent 133 questions distinctes : 19 par chapitre, avec réutilisation sans doublon de C02-F-Q4 et C04-F-Q4 déjà présents dans le manifeste historique. Les autres questions restent non certifiées jusqu'à leur validation individuelle.",
   "referenceBasis": [
     "Intel 8086 Family User's Manual (October 1979), architecture EU/BIU, file de prélecture, arithmétique, instructions de décalage, instructions de chaîne et indicateurs.",
     "Intel MCS-86 Assembly Language Reference Manual, formes d'opérandes et syntaxe assembleur."
@@ -259,14 +259,22 @@
       "newlyAdded": 19,
       "blocked": 0,
       "pending": 0
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-07.json",
+      "scope": "Chapitre 7 — 19 questions auditées",
+      "certified": 19,
+      "newlyAdded": 19,
+      "blocked": 0,
+      "pending": 0
     }
   ],
   "certificationSummary": {
     "questionCount": 684,
     "historicalOracles": 6,
-    "newSupplementalOracles": 112,
-    "uniqueCertifiedQuestions": 118,
-    "remainingUncertified": 566,
-    "calculation": "6 oracles historiques distincts + 112 nouveaux identifiants dans les lots des chapitres 1 à 6 ; C02-F-Q4 et C04-F-Q4 sont réutilisés sans double comptage."
+    "newSupplementalOracles": 131,
+    "uniqueCertifiedQuestions": 137,
+    "remainingUncertified": 547,
+    "calculation": "6 oracles historiques distincts + 131 nouveaux identifiants dans les lots des chapitres 1 à 7 ; C02-F-Q4 et C04-F-Q4 sont réutilisés sans double comptage."
   }
 }
