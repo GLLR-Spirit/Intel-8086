@@ -190,7 +190,7 @@ for (const oracle of oracleFile.examples) {
     }
     if (oracle.bytesPrefix) {
       const expected = oracle.bytesPrefix.split(" ").map(byte => parseInt(byte, 16));
-      assert.deepEqual(assembled.bytes.slice(0, expected.length), expected, id + " encoding prefix");
+      assert.deepEqual(Array.from(assembled.bytes.slice(0, expected.length)), expected, id + " encoding prefix");
       categoryCounts.bytes++;
     }
     for (const [offset, expected] of Object.entries(oracle.bytesAt || {})) {
