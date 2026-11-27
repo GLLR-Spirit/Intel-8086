@@ -10495,14 +10495,14 @@
       "kind": "final",
       "lesson": null,
       "number": 1,
-      "stem": "Quel est le rôle de la BIU ?",
+      "stem": "Pendant que l'EU exécute une instruction, que peut faire la BIU en parallèle ?",
       "choices": [
-        "Gérer les accès au bus et la prélecture",
-        "Calculer toutes les additions",
-        "Stocker les FLAGS"
+        "Précharger les octets des instructions suivantes",
+        "Exécuter une deuxième instruction à la place de l'EU",
+        "Modifier les FLAGS"
       ],
-      "correctAnswer": "Gérer les accès au bus et la prélecture",
-      "explanation": "La BIU gère l'interface de bus et la file de prélecture.",
+      "correctAnswer": "Précharger les octets des instructions suivantes",
+      "explanation": "La BIU peut précharger les octets suivants pendant que l'EU exécute. Ce chevauchement des tâches ne signifie pas que le 8086 exécute deux instructions simultanément.",
       "category": "Définition"
     },
     {
@@ -10511,14 +10511,14 @@
       "kind": "final",
       "lesson": null,
       "number": 2,
-      "stem": "Pourquoi une instruction mémoire peut-elle coûter davantage qu'une instruction registre ?",
+      "stem": "Que fait la BIU lorsque l'EU demande une lecture mémoire ?",
       "choices": [
-        "Elle nécessite des transferts via le bus mémoire",
-        "Elle possède toujours deux opcodes",
-        "Elle désactive IF"
+        "Elle suspend la prélecture pour servir la demande mémoire de l'EU",
+        "Elle continue toujours à lire les instructions",
+        "Elle vide les registres généraux"
       ],
-      "correctAnswer": "Elle nécessite des transferts via le bus mémoire",
-      "explanation": "Les accès externes ajoutent des cycles selon l'adressage et la mémoire.",
+      "correctAnswer": "Elle suspend la prélecture pour servir la demande mémoire de l'EU",
+      "explanation": "La BIU suspend la prélecture d'instructions lorsqu'elle doit satisfaire une demande mémoire ou E/S de l'EU. Une lecture déjà engagée peut d'abord se terminer.",
       "category": "Compréhension"
     },
     {
@@ -10543,14 +10543,14 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "Quelle affirmation le simulateur ne peut-il pas certifier ?",
+      "stem": "Quand la BIU du 8086 démarre-t-elle une nouvelle prélecture ?",
       "choices": [
-        "Le nombre exact de cycles et le comportement de prélecture BIU",
-        "La valeur finale d'AX",
-        "La somme de deux registres"
+        "Quand au moins deux octets sont libres dans la file",
+        "Dès qu'un seul octet est libre",
+        "Uniquement lorsque la file est vide"
       ],
-      "correctAnswer": "Le nombre exact de cycles et le comportement de prélecture BIU",
-      "explanation": "Le modèle ne simule pas les cycles matériels détaillés.",
+      "correctAnswer": "Quand au moins deux octets sont libres dans la file",
+      "explanation": "Le 8086 récupère normalement deux octets par prélecture et attend donc que deux emplacements soient libres avant d'en lancer une nouvelle.",
       "category": "Restrictions"
     },
     {
@@ -10559,14 +10559,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Combien d'octets la file de prélecture du 8086 contient-elle ?",
+      "stem": "Lors d'une opération normale de prélecture, combien d'octets le 8086 récupère-t-il ?",
       "choices": [
-        "6",
-        "4",
-        "8"
+        "2",
+        "1",
+        "4"
       ],
-      "correctAnswer": "6",
-      "explanation": "Le 8086 dispose d'une file de six octets.",
+      "correctAnswer": "2",
+      "explanation": "La BIU du 8086 récupère normalement deux octets par opération de prélecture ; la capacité totale de la file reste de six octets.",
       "category": "Prédiction"
     },
     {
@@ -10575,14 +10575,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Quel événement peut invalider la file de prélecture ?",
+      "stem": "Si un branchement conditionnel n'est pas pris, que devient la file de prélecture séquentielle ?",
       "choices": [
-        "Un branchement qui change IP",
-        "Une addition registre-registre",
-        "Un MOV vers AX"
+        "Elle reste utilisable car le flot séquentiel continue",
+        "Elle est toujours vidée par tout branchement",
+        "IP est remis à zéro"
       ],
-      "correctAnswer": "Un branchement qui change IP",
-      "explanation": "Le transfert de contrôle impose de réalimenter la file au nouvel IP.",
+      "correctAnswer": "Elle reste utilisable car le flot séquentiel continue",
+      "explanation": "Si la condition n'est pas satisfaite, IP suit le chemin séquentiel. Le branchement n'impose donc pas de vider la file pour réalimenter un nouvel emplacement.",
       "category": "Calcul / prédiction"
     },
     {
@@ -10799,14 +10799,14 @@
       "kind": "final",
       "lesson": null,
       "number": 1,
-      "stem": "Que doit préciser une spécification ?",
+      "stem": "Que doit préciser le contrat d'interface d'une procédure ?",
       "choices": [
-        "Entrées, sorties, contraintes et cas limites",
-        "Seulement le nom de l'algorithme",
-        "Seulement le registre AX"
+        "Ses paramètres d'entrée, ses résultats de sortie et les registres qu'elle préserve",
+        "La fréquence du processeur",
+        "L'adresse physique de tous les segments"
       ],
-      "correctAnswer": "Entrées, sorties, contraintes et cas limites",
-      "explanation": "Une spécification décrit les résultats attendus et les limites du problème.",
+      "correctAnswer": "Ses paramètres d'entrée, ses résultats de sortie et les registres qu'elle préserve",
+      "explanation": "Le contrat documente les entrées, les résultats, les effets de bord et les registres préservés afin que l'appelant connaisse les obligations de la procédure.",
       "category": "Définition"
     },
     {
@@ -10863,14 +10863,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Que vaut AX après AX=7, BX=5, ADD AX,BX ?",
+      "stem": "Quel mot CALL NEAR empile-t-il pour permettre le retour ?",
       "choices": [
-        "12",
-        "35",
-        "2"
+        "L'offset de l'instruction qui suit CALL",
+        "Le registre AX",
+        "Le segment DS"
       ],
-      "correctAnswer": "12",
-      "explanation": "7+5 donne 12.",
+      "correctAnswer": "L'offset de l'instruction qui suit CALL",
+      "explanation": "CALL NEAR empile l'offset de l'instruction suivante, c'est-à-dire l'IP de retour. RET récupère ce mot pour reprendre l'exécution après l'appel.",
       "category": "Prédiction"
     },
     {
@@ -10879,14 +10879,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Que vaut AL après FFh+1 sur 8 bits ?",
+      "stem": "Que valent AX et CF après ADD AX,1 avec AX=FFFFh ?",
       "choices": [
-        "00h",
-        "100h",
-        "FFh"
+        "AX=0000h et CF=1",
+        "AX=FFFFh et CF=0",
+        "AX=0001h et CF=1"
       ],
-      "correctAnswer": "00h",
-      "explanation": "Le résultat est tronqué à huit bits : 100h devient 00h.",
+      "correctAnswer": "AX=0000h et CF=1",
+      "explanation": "FFFFh+1 produit 10000h. Sur 16 bits, AX conserve 0000h et CF signale la retenue sortante.",
       "category": "Calcul / prédiction"
     },
     {
@@ -10911,14 +10911,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Quel état valide le test FFh+1 ?",
+      "stem": "Pourquoi un test de FFh+1 doit-il aussi vérifier CF ?",
       "choices": [
-        "AL=00h et CF=1",
-        "AL=FFh et CF=0",
-        "AL=01h et CF=1"
+        "Parce que AL=00h seul ne prouve pas que la retenue a été correctement calculée",
+        "Parce que CF contient le résultat complet",
+        "Parce que CF remplace AL"
       ],
-      "correctAnswer": "AL=00h et CF=1",
-      "explanation": "La retenue est perdue du résultat octet mais signalée par CF.",
+      "correctAnswer": "Parce que AL=00h seul ne prouve pas que la retenue a été correctement calculée",
+      "explanation": "AL peut contenir le résultat octet correct même si le calcul de la retenue est erroné. Vérifier CF=1 contrôle donc un effet architectural distinct du résultat stocké dans AL.",
       "category": "Analyse de résultat"
     },
     {
