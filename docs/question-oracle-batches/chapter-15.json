@@ -92,23 +92,23 @@
       "status": "certified",
       "rule": "signed_byte_decode",
       "inputs": {
-        "value": 255,
+        "value": 128,
         "bits": 8
       },
       "expected": {
-        "unsignedValue": 255,
-        "signedValue": -1
+        "unsignedValue": 128,
+        "signedValue": -128
       },
-      "correctAnswer": "−1",
-      "derivation": "Le motif FFh représente 255 en non signé, mais −1 en complément à deux sur huit bits. La représentation binaire est identique ; seule l'interprétation change.",
+      "correctAnswer": "−128",
+      "derivation": "80h vaut 128 en non signé. En complément à deux sur huit bits, le bit de signe est actif et la valeur signée est 128−256=−128, la borne minimale représentable.",
       "distractorRationales": [
         {
-          "choice": "255",
-          "reason": "255 est la valeur non signée de FFh ; l'interprétation signée sur huit bits donne −1."
+          "choice": "128",
+          "reason": "128 est l'interprétation non signée de 80h ; la question demande la valeur en complément à deux."
         },
         {
-          "choice": "−128",
-          "reason": "−128 correspond à 80h, pas à FFh qui représente −1."
+          "choice": "−127",
+          "reason": "−127 correspond à 81h ; 80h représente exactement −128."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), signed and unsigned conditional jumps, CF/SF/OF/ZF and two's-complement data representation; Intel MCS-86 Assembly Language Reference Manual, condition codes."
@@ -116,24 +116,24 @@
     {
       "id": "C15-L2-Q2",
       "status": "certified",
-      "rule": "jcc_signed_condition",
+      "rule": "jcc_condition",
       "inputs": {
-        "mnemonic": "JL"
+        "mnemonic": "JGE",
+        "condition": "SF=OF"
       },
       "expected": {
-        "condition": "SF!=OF",
-        "signed": true
+        "condition": "SF=OF"
       },
-      "correctAnswer": "JL",
-      "derivation": "JL teste SF différent de OF et correspond à inférieur signé. JB et JA utilisent CF/ZF pour des relations non signées.",
+      "correctAnswer": "JGE",
+      "derivation": "JGE exprime supérieur ou égal en signé et teste SF=OF. Cette condition tient compte du débordement signé ; JL utilise l'inégalité SF≠OF pour inférieur signé.",
       "distractorRationales": [
         {
-          "choice": "JB",
-          "reason": "JB teste l'inférieur non signé via CF, pas l'inférieur signé."
+          "choice": "JL",
+          "reason": "JL teste SF≠OF et exprime inférieur signé, l'opposé de JGE."
         },
         {
-          "choice": "JA",
-          "reason": "JA teste supérieur strict non signé et n'utilise pas SF≠OF."
+          "choice": "JB",
+          "reason": "JB teste CF=1 pour inférieur non signé et ne compare pas SF à OF."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), signed and unsigned conditional jumps, CF/SF/OF/ZF and two's-complement data representation; Intel MCS-86 Assembly Language Reference Manual, condition codes."
@@ -297,24 +297,24 @@
     {
       "id": "C15-F-Q3",
       "status": "certified",
-      "rule": "jcc_unsigned_condition",
+      "rule": "jcc_condition",
       "inputs": {
-        "mnemonic": "JB"
+        "mnemonic": "JAE",
+        "condition": "CF=0"
       },
       "expected": {
-        "condition": "CF=1",
-        "unsigned": true
+        "condition": "CF=0"
       },
-      "correctAnswer": "AL inférieur à BL en non signé",
-      "derivation": "JB branche lorsque CF=1 après une comparaison non signée. Il interprète les opérandes comme des valeurs non signées et ne teste pas la relation signée SF≠OF.",
+      "correctAnswer": "AL supérieur ou égal à BL en non signé",
+      "derivation": "JAE branche lorsque CF=0 après CMP non signé : aucun emprunt ne s'est produit, donc le premier opérande est supérieur ou égal au second. JB teste la condition opposée CF=1.",
       "distractorRationales": [
         {
           "choice": "AL inférieur à BL en signé",
-          "reason": "JL teste SF≠OF et correspond à inférieur signé, pas à inférieur non signé."
+          "reason": "Cette relation signée utilise JL et SF≠OF ; JAE est une condition non signée basée sur CF."
         },
         {
-          "choice": "AL égal à BL",
-          "reason": "JB compare l'ordre non signé ; AL et BL ne sont pas égaux dans le cas décrit."
+          "choice": "AL égal à BL uniquement",
+          "reason": "JAE couvre aussi le cas strictement supérieur ; l'égalité est seulement un des cas où CF=0."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), signed and unsigned conditional jumps, CF/SF/OF/ZF and two's-complement data representation; Intel MCS-86 Assembly Language Reference Manual, condition codes."
@@ -322,24 +322,24 @@
     {
       "id": "C15-F-Q4",
       "status": "certified",
-      "rule": "jcc_signed_condition",
+      "rule": "jcc_condition",
       "inputs": {
-        "mnemonic": "JL"
+        "mnemonic": "JLE",
+        "condition": "ZF=1 || SF!=OF"
       },
       "expected": {
-        "condition": "SF!=OF",
-        "signed": true
+        "condition": "ZF=1 || SF!=OF"
       },
-      "correctAnswer": "Inférieur signé",
-      "derivation": "JL est le branchement inférieur signé et teste SF différent de OF. JB est inférieur non signé, tandis que JA est supérieur strict non signé.",
+      "correctAnswer": "Inférieur ou égal signé",
+      "derivation": "JLE branche si les opérandes sont égaux (ZF=1) ou si le résultat signé est inférieur (SF≠OF). Il combine donc égalité et inférieur signé.",
       "distractorRationales": [
         {
           "choice": "Inférieur non signé",
-          "reason": "JB est inférieur non signé, fondé sur CF."
+          "reason": "L'inférieur non signé utilise JB/JC et CF=1, pas la combinaison ZF ou SF≠OF."
         },
         {
           "choice": "Supérieur non signé",
-          "reason": "JA est supérieur strict non signé ; JL est la condition inférieur signé."
+          "reason": "Le supérieur non signé utilise JA et CF=0 avec ZF=0."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), signed and unsigned conditional jumps, CF/SF/OF/ZF and two's-complement data representation; Intel MCS-86 Assembly Language Reference Manual, condition codes."
@@ -375,23 +375,23 @@
       "status": "certified",
       "rule": "signed_byte_decode",
       "inputs": {
-        "value": 255,
+        "value": 127,
         "bits": 8
       },
       "expected": {
-        "unsignedValue": 255,
-        "signedValue": -1
+        "unsignedValue": 127,
+        "signedValue": 127
       },
-      "correctAnswer": "−1",
-      "derivation": "En complément à deux sur huit bits, FFh représente −1. La valeur 255 correspond à l'interprétation non signée du même motif.",
+      "correctAnswer": "127",
+      "derivation": "7Fh vaut 127 en non signé. Le bit de signe du mot 8 bits est nul ; le même motif représente donc aussi +127 en complément à deux, qui est la borne maximale signée.",
       "distractorRationales": [
         {
-          "choice": "255",
-          "reason": "255 est l'interprétation non signée de FFh ; en signé le même motif vaut −1."
+          "choice": "−1",
+          "reason": "−1 correspond à FFh ; 7Fh a son bit de signe à zéro et vaut +127."
         },
         {
           "choice": "−128",
-          "reason": "−128 correspond à 80h, pas à FFh."
+          "reason": "−128 correspond à 80h, le motif minimal signé, pas à 7Fh."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), signed and unsigned conditional jumps, CF/SF/OF/ZF and two's-complement data representation; Intel MCS-86 Assembly Language Reference Manual, condition codes."
@@ -399,24 +399,31 @@
     {
       "id": "C15-F-Q7",
       "status": "certified",
-      "rule": "jcc_unsigned_condition",
+      "rule": "jcc_compare_trace",
       "inputs": {
-        "mnemonic": "JA"
+        "left": 255,
+        "right": 1,
+        "bits": 8,
+        "signed": false,
+        "condition": "JA"
       },
       "expected": {
-        "condition": "CF=0 && ZF=0",
-        "unsigned": true
+        "leftValue": 255,
+        "rightValue": 1,
+        "CF": 0,
+        "ZF": 0,
+        "branchTaken": true
       },
-      "correctAnswer": "JA",
-      "derivation": "JA branche lorsque CF=0 et ZF=0, ce qui exprime strictement supérieur en non signé. JG est supérieur signé et JL est inférieur signé.",
+      "correctAnswer": "Oui, car 255 est supérieur à 1",
+      "derivation": "En non signé, FFh vaut 255 et 01h vaut 1. CMP 255,1 ne produit aucun emprunt (CF=0) et les opérandes sont différents (ZF=0), donc JA branche.",
       "distractorRationales": [
         {
-          "choice": "JG",
-          "reason": "JG exprime supérieur signé avec ZF et SF/OF ; JA est la condition non signée CF=0 et ZF=0."
+          "choice": "Non, car FFh vaut −1",
+          "reason": "La question précise l'interprétation non signée ; FFh vaut alors 255 et dépasse 1."
         },
         {
-          "choice": "JL",
-          "reason": "JB exprime inférieur non signé via CF=1, pas supérieur strict."
+          "choice": "Non, car ZF=1",
+          "reason": "255 et 1 ne sont pas égaux ; ZF vaut 0, ce qui satisfait JA avec CF=0."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), signed and unsigned conditional jumps, CF/SF/OF/ZF and two's-complement data representation; Intel MCS-86 Assembly Language Reference Manual, condition codes."
@@ -424,24 +431,31 @@
     {
       "id": "C15-F-Q8",
       "status": "certified",
-      "rule": "jcc_signed_condition",
+      "rule": "jcc_signed_compare_trace",
       "inputs": {
-        "mnemonic": "JG"
+        "left": 255,
+        "right": 1,
+        "bits": 8,
+        "condition": "JG"
       },
       "expected": {
-        "condition": "ZF=0 && SF=OF",
-        "signed": true
+        "leftValue": -1,
+        "rightValue": 1,
+        "SF": 1,
+        "OF": 0,
+        "ZF": 0,
+        "branchTaken": false
       },
-      "correctAnswer": "JG",
-      "derivation": "JG exprime strictement supérieur en signé. Il exige des opérandes différents (ZF=0) et SF égal à OF pour corriger l'effet du signe en cas de débordement.",
+      "correctAnswer": "Non, car −1 n'est pas supérieur à 1",
+      "derivation": "En complément à deux sur huit bits, FFh vaut −1 et 01h vaut +1. La soustraction signée −1−1 donne −2, sans débordement : SF=1, OF=0, ZF=0. JG exige ZF=0 et SF=OF ; la condition est fausse.",
       "distractorRationales": [
         {
-          "choice": "JA",
-          "reason": "JA est supérieur strict non signé et utilise CF/ZF, pas SF/OF."
+          "choice": "Oui, car FFh vaut 255",
+          "reason": "255 est l'interprétation non signée de FFh ; la question demande une comparaison signée où FFh vaut −1."
         },
         {
-          "choice": "JB",
-          "reason": "JB exprime inférieur non signé via CF=1, pas supérieur signé."
+          "choice": "Oui, car CF=1",
+          "reason": "JG n'utilise pas CF ; il combine ZF et SF=OF pour comparer des valeurs signées."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), signed and unsigned conditional jumps, CF/SF/OF/ZF and two's-complement data representation; Intel MCS-86 Assembly Language Reference Manual, condition codes."
