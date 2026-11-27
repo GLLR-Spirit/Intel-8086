@@ -521,7 +521,7 @@
       "path": "docs/question-independent-review/chapter-01.json",
       "chapter": 1,
       "reviewedQuestions": 19,
-      "correctedQuestions": 4,
+      "correctedQuestions": 5,
       "blockedQuestions": 0,
       "officialCertificationCountBefore": 384,
       "officialCertificationCountAfter": 384,
