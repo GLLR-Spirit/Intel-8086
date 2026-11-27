@@ -125,3 +125,28 @@ Chaque exercice doit être évalué indépendamment sur les critères suivants. 
 - **6 familles d'écarts confirmées** : EX35, EX37, EX39, EX41, EX46, EX47 et EX48 (la famille E5 regroupe deux exercices).
 - **Certification éditoriale globale : non accordée** tant que les écarts ne sont pas corrigés et que les 48 exercices n'ont pas passé la grille complète.
 - Les corrections de contenu ne doivent pas être considérées comme terminées avant ajout des oracles manquants et nouvelle exécution des contrôles.
+
+
+## Mise à jour après corrections — 2026-11-27
+
+Les écarts de la première passe ont été corrigés sur cette branche :
+
+- **EX35** : l'oracle assemble le programme soumis et exige exactement les octets `B8 34 12 F4`.
+- **EX37** : l'oracle assemble puis désassemble le flux complet ; il vérifie les octets, les quatre frontières d'instructions et les tailles `2, 1, 3, 1`, y compris le NOP sauté à l'exécution.
+- **EX39** : l'interface recueille une justification écrite ; le contrôle refuse une réponse vide et exige les notions de cycles, BIU, prélecture, bus et limite de mesure du simulateur.
+- **EX41** : le validateur exige AX=10, SP restauré à FFFEh et pile logique vide.
+- **EX46** : le validateur exige AX=1234h, SP restauré à FFFEh et pile logique vide après IRET.
+- **EX47 et EX48** : BX est initialisé à BEEFh, sauvegardé, modifié, puis restauré ; les validateurs vérifient BX=BEEFh, SP=FFFEh et la pile logique vide. Les corrections guidées ont été alignées sur les mêmes programmes.
+
+### Preuves CI après corrections
+
+- CI principal : **simulator-smoke-tests réussi** et **course-browser-audit réussi**.
+- Audit navigateur de niveau 3 : **réussi**.
+- Corrections guidées : **48/48** chargées, exécutées et acceptées par leur validateur dans l'interface.
+- Comparaison source/binaire : **48/48** corrections comparées.
+- Oracles complémentaires : **7/7** corrections avancées acceptées ; trois contrôles négatifs rejettent une réponse écrite absente, un encodage différent mais fonctionnel et une pile déséquilibrée.
+- Filtres : **1 554/1 554** combinaisons, recherche dans le code, recherche combinée et réinitialisation réussies.
+
+### Statut de certification
+
+Ces preuves lèvent les six familles d'écarts techniques de la première passe. Elles ne remplacent pas la revue éditoriale complète de chacun des 48 exercices sur les critères de progression, prérequis, erreurs typiques, précision des explications et adéquation du niveau. **Le statut global reste donc « certification pédagogique complète en cours »**, et non « 48/48 certifiés ». Aucun changement n'est fusionné dans `main` et aucun déploiement n'a été effectué.
