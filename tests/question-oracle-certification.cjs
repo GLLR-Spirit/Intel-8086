@@ -491,6 +491,8 @@ function independentlyCompute(oracle) {
       return { mod: 0, rm: 6, displacementBits: 16, displacement: i.address };
     case "mov_memory_read_value":
       return { memoryRead: true, destination: i.destination, value: i.memoryWord };
+    case "mov_register_register":
+      return { operandKinds: ["register", "register"] };
     case "immediate_vs_direct_memory":
       return { immediateIsValue: true, directIsAddress: true };
     case "procedure_parameter_location":
