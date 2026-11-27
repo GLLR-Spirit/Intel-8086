@@ -472,8 +472,8 @@
         ],
         "samePhysical": true
       },
-      "correctAnswer": "Ils calculent tous deux 10010h",
-      "derivation": "1000h×10h+0010h=10010h et 1001h×10h+0000h=10010h. Les deux couples segment:offset sont différents mais désignent la même adresse physique.",
+      "correctAnswer": "La même adresse physique 10010h",
+      "derivation": "Dans le programme, DS:BX vaut 1000h×10h+0010h=10010h et ES:DI vaut 1001h×10h+0000h=10010h. Les deux références désignent le même octet physique.",
       "distractorRationales": [
         {
           "choice": "Leurs offsets sont égaux",
