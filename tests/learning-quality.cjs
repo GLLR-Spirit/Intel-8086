@@ -210,6 +210,21 @@ exerciseMetadataRows.forEach((metadata,index)=>{
   metadata.chapters.forEach(chapter=>exerciseChapters.add(chapter));
 });
 assert.equal(exerciseChapters.size,36,"Every one of the 36 chapters must have at least one relevant practical exercise.");
+for(const difficulty of allowedExerciseDifficulties){
+  const count=exerciseMetadataRows.filter(metadata=>metadata.difficulty===difficulty).length;
+  assert.ok(count>=3,"The "+difficulty+" filter must have at least three exercises.");
+}
+for(const type of allowedExerciseTypes){
+  const count=exerciseMetadataRows.filter(metadata=>metadata.type===type).length;
+  assert.ok(count>0,"The "+type+" exercise-type filter must not be empty.");
+}
+assert.equal(exerciseMetadataRows[2].difficulty,"Facile","The repeated-addition exercise is a basic guided task.");
+assert.equal(exerciseMetadataRows[4].difficulty,"Facile","The short sum-loop exercise is a basic guided task.");
+assert.equal(exerciseMetadataRows[11].difficulty,"Intermédiaire","Initialising DS is an introductory segment exercise, not an advanced challenge.");
+assert.equal(exerciseMetadataRows[12].difficulty,"Facile","The simple subtraction exercise belongs in the easy level.");
+assert.equal(exerciseMetadataRows[16].difficulty,"Facile","The single XOR-mask exercise belongs in the easy level.");
+assert.equal(exerciseMetadataRows[23].difficulty,"Avancé","The even-number accumulation program is advanced, not expert.");
+assert.equal(exerciseMetadataRows[34].difficulty,"Avancé","The MOV immediate encoding check is advanced, not expert.");
 assert.equal(exerciseMetadataRows[40].type,"application","The procedure exercise must be classified as a direct application.");
 assert.equal(exerciseMetadataRows[40].difficulty,"Avancé","The procedure exercise must retain its advanced difficulty.");
 assert.equal(exerciseMetadataRows[41].type,"application","The MUL/DIV exercise must be classified as a direct application.");
