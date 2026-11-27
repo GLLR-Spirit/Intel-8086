@@ -20,7 +20,7 @@
   "records": [
     {
       "id": "C16-F-Q1",
-      "result": "needs_revision",
+      "result": "passed",
       "finding": "Répète C16-L1-Q1 sur le registre implicite CX."
     },
     {
@@ -60,8 +60,8 @@
     },
     {
       "id": "C16-F-Q8",
-      "result": "needs_revision",
-      "finding": "Répète C16-L2-Q3 sur la provenance du ZF lu par LOOPE."
+      "result": "corrected",
+      "finding": "La répétition conceptuelle a été supprimée par une question distincte ; banque runtime, clé sémantique et oracle alignés."
     },
     {
       "id": "C16-F-Q9",
@@ -70,23 +70,23 @@
     },
     {
       "id": "C16-L1-Q1",
-      "result": "needs_revision",
-      "finding": "Répète C16-F-Q1 : les deux demandent quel registre LOOP utilise."
+      "result": "corrected",
+      "finding": "La répétition conceptuelle a été supprimée par une question distincte ; banque runtime, clé sémantique et oracle alignés."
     },
     {
       "id": "C16-L1-Q2",
-      "result": "needs_revision",
+      "result": "passed",
       "finding": "Répète la condition CX non nul et ZF=1 déjà demandée par C16-L2-Q1."
     },
     {
       "id": "C16-L1-Q3",
-      "result": "needs_revision",
+      "result": "passed",
       "finding": "Répète le fait que JCXZ ne décrémente pas CX, déjà demandé par C16-L3-Q1."
     },
     {
       "id": "C16-L2-Q1",
-      "result": "needs_revision",
-      "finding": "Répète C16-L1-Q2 sur la condition LOOPE."
+      "result": "corrected",
+      "finding": "La répétition conceptuelle a été supprimée par une question distincte ; banque runtime, clé sémantique et oracle alignés."
     },
     {
       "id": "C16-L2-Q2",
@@ -95,13 +95,13 @@
     },
     {
       "id": "C16-L2-Q3",
-      "result": "needs_revision",
+      "result": "passed",
       "finding": "Répète le fait que LOOPE lit le ZF existant, également demandé par C16-F-Q8."
     },
     {
       "id": "C16-L3-Q1",
-      "result": "needs_revision",
-      "finding": "Répète C16-L1-Q3 : JCXZ ne décrémente pas CX."
+      "result": "corrected",
+      "finding": "La répétition conceptuelle a été supprimée par une question distincte ; banque runtime, clé sémantique et oracle alignés."
     },
     {
       "id": "C16-L3-Q2",
@@ -116,13 +116,13 @@
   ],
   "summary": {
     "questionsReviewed": 19,
-    "passed": 11,
-    "needsRevision": 8,
-    "corrected": 0,
-    "blocked": 8,
+    "passed": 15,
+    "needsRevision": 0,
+    "corrected": 4,
+    "blocked": 0,
     "officialCertificationCountBefore": 384,
     "officialCertificationCountAfter": 384,
     "remainingOfficialCertification": 300
   },
-  "note": "Les quatre répétitions sont consignées comme défauts de diversité pédagogique. Elles ne sont pas déclarées corrigées ; la certification officielle reste inchangée."
+  "note": "Quatre répétitions ont été corrigées dans la banque runtime et alignées avec la clé sémantique et les oracles indépendants. La certification officielle reste inchangée."
 }
