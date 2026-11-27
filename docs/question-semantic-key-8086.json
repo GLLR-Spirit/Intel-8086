@@ -5143,7 +5143,7 @@
       ],
       "correctAnswer": "Lire au-delà de la dernière case",
       "explanation": "Les bornes doivent être contrôlées avant chaque lecture.",
-      "category": "Analyse de programme"
+      "category": "Analyse de résultat"
     },
     {
       "id": "C17-F-Q9",
@@ -5159,7 +5159,7 @@
       ],
       "correctAnswer": "Leur interprétation signée ou non signée",
       "explanation": "Le choix Jcc dépend de l'interprétation des valeurs.",
-      "category": "Raisonnement / débogage"
+      "category": "Débogage"
     },
     {
       "id": "C17-F-Q10",
@@ -5175,7 +5175,7 @@
       ],
       "correctAnswer": "Vérifier le nombre d'éléments restants avant chaque lecture",
       "explanation": "Le compteur restant doit empêcher tout accès au-delà du dernier élément.",
-      "category": "Raisonnement / débogage"
+      "category": "Raisonnement"
     },
     {
       "id": "C18-L1-Q1",
