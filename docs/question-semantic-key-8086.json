@@ -1,12 +1,13 @@
 {
   "schemaVersion": 1,
-  "reviewDate": "2026-11-25",
+  "reviewDate": "2026-11-27",
   "reviewBasis": [
     "Intel 8086 Family User's Manual (October 1979): instruction semantics, registers, flags, stack, control transfer, strings, interrupts, I/O, prefixes and encoding.",
     "Intel MCS-86 Assembly Language Reference Manual: operand forms and assembler syntax.",
-    "Independent arithmetic, address, little-endian and ModR/M calculations."
+    "Independent arithmetic, address, little-endian and ModR/M calculations.",
+    "Independent question oracles are maintained separately from this concordance key; unverified items must not be described as individually certified."
   ],
-  "reviewScope": "The answer key and explanation of each of the 684 current assessment items were reviewed individually against the stated architectural rules. This manifest pins the reviewed answer and explanation; it does not certify unsupported physical-hardware behavior of the simulator.",
+  "reviewScope": "684 assessment items are structurally indexed and cross-checked against the runtime bank. Independent semantic validation is tracked separately by question ID; only items with explicit independent oracle evidence are certified. Runtime-to-key agreement alone is not proof of technical correctness.",
   "questions": [
     {
       "id": "C01-L1-Q1",
@@ -510,7 +511,7 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "Quelle affirmation faut-il éviter au sujet de la file de prélecture du 8086 ?",
+      "stem": "Quelle affirmation est exacte au sujet de la file de prélecture du 8086 ?",
       "choices": [
         "Elle contient six octets et n'implique pas une exécution superscalaire",
         "Elle contient seize octets",
@@ -1118,14 +1119,14 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "Quelle limite explique pourquoi AL ne peut pas contenir 100h ?",
+      "stem": "Après une addition sur 8 bits dont le résultat mathématique vaut 100h, quel état obtient-on dans AL et CF ?",
       "choices": [
         "AL est limité à 8 bits et ne conserve que les 8 bits faibles",
         "AL est un registre de segment",
         "ADD refuse les valeurs hexadécimales"
       ],
       "correctAnswer": "AL est limité à 8 bits et ne conserve que les 8 bits faibles",
-      "explanation": "AL ne contient que huit bits ; 100h est tronqué à 00h et la retenue est signalée par CF.",
+      "explanation": "AL conserve les huit bits faibles, soit 00h ; la retenue sortante est signalée par CF=1. Cela décrit un résultat arithmétique, pas un MOV AL,100h qui serait un opérande immédiat invalide.",
       "category": "Restrictions"
     },
     {
@@ -5038,14 +5039,14 @@
       "kind": "final",
       "lesson": null,
       "number": 2,
-      "stem": "Pour remplacer le maximum non signé, on teste…",
+      "stem": "Pour remplacer le maximum uniquement si la nouvelle valeur non signée est strictement supérieure, on teste…",
       "choices": [
-        "JA ou JAE selon la règle d'égalité",
-        "JL uniquement",
-        "JS uniquement"
+        "JA",
+        "JAE",
+        "JL"
       ],
-      "correctAnswer": "JA ou JAE selon la règle d'égalité",
-      "explanation": "Les sauts au-dessus sont adaptés aux comparaisons non signées.",
+      "correctAnswer": "JA",
+      "explanation": "JA branche si CF=0 et ZF=0 : la nouvelle valeur non signée est strictement supérieure. JAE inclurait aussi l'égalité.",
       "category": "Compréhension"
     },
     {
@@ -7822,7 +7823,7 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Que donne SHR 81h,1 ?",
+      "stem": "Avec AL=81h, que donne SHR AL,1 ?",
       "choices": [
         "40h avec CF=1",
         "C0h avec CF=0",
@@ -7838,7 +7839,7 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Que donne SAR FCh,1 ?",
+      "stem": "Avec AL=FCh, que donne SAR AL,1 ?",
       "choices": [
         "FEh",
         "7Eh",
@@ -8462,14 +8463,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Que réalise REP STOSB avec AL=41h et CX=2 ?",
+      "stem": "Que réalise REP STOSB avec AL=41h, CX=2 et DF=0 ?",
       "choices": [
         "Écrit 41h deux fois à ES:DI et ES:DI+1",
         "Compare deux octets",
         "Copie AX vers DS:SI"
       ],
       "correctAnswer": "Écrit 41h deux fois à ES:DI et ES:DI+1",
-      "explanation": "STOSB stocke AL à ES:DI puis la répétition poursuit selon CX.",
+      "explanation": "STOSB stocke AL à ES:DI ; avec DF=0, DI augmente d'un octet après chaque itération. REP exécute deux stockages puis CX atteint zéro.",
       "category": "Analyse de programme"
     },
     {
