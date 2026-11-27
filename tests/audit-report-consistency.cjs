@@ -21,12 +21,12 @@ assert.match(tracker, /300 pending/i, "Remaining individual question reviews mus
 assert.match(report, /684\/684[\s\S]*automatisés/i,
   "Audit report must label 684/684 as automated oracle evaluation");
 assert.match(report, /384\/684/, "Audit report must preserve the official certification count");
-assert.match(report, /399 questions \(chapitres 1 à 21\)/i, "Audit report must report the 399 individually reviewed questions");
+assert.match(report, /437 questions \(chapitres 1 à 22\)/i, "Audit report must report the 437 individually reviewed questions");
 assert.match(report, /300 restent non certifiées/i, "Audit report must distinguish official pending certification from review records");
-assert.match(tracker, /399 questions across chapters 1–21/i, "Tracker must report all documented individual reviews");
+assert.match(tracker, /437 questions across chapters 1–22/i, "Tracker must report all documented individual reviews");
 assert.equal(oracleManifest.oracles.length, 684, "Manifest must expose all 684 registered question IDs");
-assert.equal(oracleManifest.oracleCoverageSummary.individuallyReviewedQuestions, 399, "Manifest review total must match the documented review set");
-assert.equal(oracleManifest.independentReviewBatches.length, 21, "Manifest must list all 21 individual review files");
+assert.equal(oracleManifest.oracleCoverageSummary.individuallyReviewedQuestions, 437, "Manifest review total must match the documented review set");
+assert.equal(oracleManifest.independentReviewBatches.length, 22, "Manifest must list all 22 individual review files");
 
 // The workflow label must not imply that an automated evaluator certifies questions independently.
 assert.match(workflow, /Validate question oracle evaluators \(automated; not independent certification\)/i,
