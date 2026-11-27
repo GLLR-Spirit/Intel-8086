@@ -3695,14 +3695,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 1,
-      "stem": "JO branche lorsque…",
+      "stem": "JNO branche lorsque…",
       "choices": [
+        "OF=0",
         "OF=1",
-        "CF=1",
-        "ZF=1"
+        "ZF=0"
       ],
-      "correctAnswer": "OF=1",
-      "explanation": "JO teste le drapeau de débordement.",
+      "correctAnswer": "OF=0",
+      "explanation": "JNO branche lorsque OF=0, condition opposée à JO.",
       "category": "Compréhension"
     },
     {
@@ -4591,14 +4591,14 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "JBE teste quelle condition ?",
+      "stem": "Après CMP 4,5 en non signé, JBE branche-t-il ?",
       "choices": [
-        "CF=1 ou ZF=1",
-        "CF=0 et ZF=0",
-        "SF=OF"
+        "Oui, car CF=1",
+        "Non, car ZF=0",
+        "Non, car OF=0"
       ],
-      "correctAnswer": "CF=1 ou ZF=1",
-      "explanation": "JBE exprime inférieur ou égal non signé.",
+      "correctAnswer": "Oui, car CF=1",
+      "explanation": "4 est inférieur à 5 en non signé ; CMP produit CF=1, donc JBE est pris.",
       "category": "Restrictions"
     },
     {
@@ -4607,14 +4607,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "JA teste quelle condition ?",
+      "stem": "Après CMP 6,4 en non signé, JA branche-t-il ?",
       "choices": [
-        "CF=0 et ZF=0",
-        "CF=1 ou ZF=1",
-        "SF différent de OF"
+        "Oui, CF=0 et ZF=0",
+        "Non, CF=1",
+        "Non, ZF=1"
       ],
-      "correctAnswer": "CF=0 et ZF=0",
-      "explanation": "JA exprime strictement supérieur non signé.",
+      "correctAnswer": "Oui, CF=0 et ZF=0",
+      "explanation": "6 est supérieur à 4 en non signé ; CMP produit CF=0 et ZF=0, donc JA est pris.",
       "category": "Prédiction"
     },
     {
@@ -4639,14 +4639,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "JP teste quel indicateur ?",
+      "stem": "Après AND AL,03h avec AL=03h, JP branche-t-il ?",
       "choices": [
-        "PF=1",
-        "CF=1",
-        "ZF=0"
+        "Oui, PF=1",
+        "Non, PF=0",
+        "Seulement si CF=1"
       ],
-      "correctAnswer": "PF=1",
-      "explanation": "JP teste la parité paire.",
+      "correctAnswer": "Oui, PF=1",
+      "explanation": "03h AND 03h vaut 03h, qui contient deux bits à 1 ; PF=1 et JP est pris.",
       "category": "Analyse de programme"
     },
     {
@@ -4655,14 +4655,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "JNO saute lorsque…",
+      "stem": "Après ADD AL,1 avec AL=7Fh, JO branche-t-il ?",
       "choices": [
-        "OF=0",
-        "OF=1",
-        "ZF=0"
+        "Oui, OF=1",
+        "Non, OF=0",
+        "Seulement si ZF=1"
       ],
-      "correctAnswer": "OF=0",
-      "explanation": "JNO est la condition de non-débordement.",
+      "correctAnswer": "Oui, OF=1",
+      "explanation": "7Fh+1 donne 80h, déborde la plage signée 8 bits et met OF=1 ; JO est pris.",
       "category": "Analyse de résultat"
     },
     {
