@@ -89,12 +89,18 @@ L'analyse préalable utilise une table centralisée des instructions prises en c
 
 Le moteur valide les formes d'adressage effectif 8086 : BX, BP, SI ou DI seuls ; BX+SI, BX+DI, BP+SI et BP+DI ; adressage direct et formes avec déplacement. Il refuse AX/CX/DX/SP, les doublons, les combinaisons base-base ou index-index, plus de deux registres et les déplacements hors plage représentable sur 16 bits (-32768 à 65535). Les overrides CS/DS/ES/SS sont acceptés sur les opérandes mémoire et les instructions de chaîne prévues ; FS/GS sont refusés. Le segment SS est sélectionné par défaut lorsqu'une adresse utilise BP, DS sinon. Les validations d'adressage sont distinguées des incompatibilités de taille BYTE/WORD. L'adresse physique est calculée sur 20 bits avec la formule segment × 16 + offset. Le moteur ne simule ni les cycles de bus, ni la prélecture BIU, ni les périphériques physiques, ni les interruptions matérielles/NMI. La directive non matérielle `VECTOR n, ETIQUETTE` associe un numéro d'interruption à une étiquette du programme source. En exécution source, les adresses de retour sont représentées par des indices d'instructions. En exécution binaire, le processeur dynamique utilise les offsets d'octets et lit la table IVT physique à l'adresse `n × 4`. Si le flux binaire est identique à l'assemblage du source courant, l'interface peut initialiser cette IVT à partir des directives `VECTOR`; sinon, les octets physiques doivent être saisis dans l'état mémoire initial. Les entrées IVT qui chevauchent le code chargé sont refusées. `INT` empile `FLAGS`, `CS`, `IP` et `IRET` les restaure dans l'ordre architectural. Les interruptions imbriquées sont prises en charge par la pile simulée. `CALL`/`RET` utilisent des indices d'instructions en exécution source et des offsets d'octets en exécution binaire. La pile écrit désormais les octets des mots empilés dans la mémoire simulée, en little-endian, à l'adresse physique calculée depuis `SS:SP` ; une structure de métadonnées distincte conserve le type des cadres `CALL`/`INT` pour détecter les retours incohérents. `PUSHF`/`POPF` utilisent cette mémoire. Les métadonnées sont contrôlées contre SS:SP et la mémoire à chaque empilement/dépilement ; les incohérences de segment, pointeur ou octets manquants sont signalées. La vue de pile affiche les mots et leurs deux octets avec leurs adresses physiques. La limite de 32 768 mots est une garde pédagogique ; le processeur 8086 matériel ne fournit pas lui-même une détection de débordement de pile. `STI` active immédiatement `IF` dans ce modèle ; le délai matériel d'inhibition de l'interruption après `STI` et l'ordonnancement des IRQ externes ne sont pas simulés.
 
-## Architecture et confidentialité
+## Architecture, confidentialité et sauvegardes
 
 - HTML, CSS et JavaScript natifs
 - Aucun backend, aucune inscription et aucune dépendance obligatoire
-- Les préférences, la progression, le code et les notes sont stockés dans le stockage local du navigateur
-- Effacer les données du navigateur peut supprimer ces sauvegardes
+- La progression, les scores, le projet personnel et le dernier code enregistré sont conservés dans le stockage local du navigateur
+- La section **Outils et références** permet d'exporter ces sept catégories dans un fichier JSON versionné, puis de les restaurer après validation et confirmation
+- L'import refuse les fichiers malformés, les versions inconnues et les données dont la structure ou les types ne correspondent pas au format attendu
+- La restauration remplace les sept catégories locales ; exporte d'abord l'état actuel si tu souhaites le conserver
+- Les modifications du code non encore enregistrées avec **Sauvegarder** ne figurent pas dans le fichier exporté
+- Le fichier JSON est téléchargé localement : il n'est transmis à aucun serveur
+- La sauvegarde n'est pas synchronisée entre appareils ; conserve une copie du fichier dans un emplacement sûr
+- Effacer les données du navigateur peut supprimer les données locales
 - Le dépôt étant public, le code source de la page est consultable
 
 ## Développement
