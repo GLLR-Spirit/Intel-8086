@@ -277,7 +277,7 @@
     {
       "id": "C03-F-Q2",
       "status": "certified",
-      "rule": "hex_digit_bit_width",
+      "rule": "hex_two_digit_byte_width",
       "inputs": {
         "base": 16,
         "symbolCount": 16
