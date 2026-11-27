@@ -28,12 +28,12 @@
       "derivation": "SHR décale les bits vers la droite. Le bit 0 initial est expulsé dans CF ; pour 81h, ce bit vaut 1 et le résultat décalé vaut 40h.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le bit de signe uniquement",
+          "reason": "CF reçoit le bit faible expulsé par SHR ; le bit de signe n'est pas le bit testé pour ce décalage logique."
         },
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le bit de poids fort avant décalage",
+          "reason": "Le bit de poids fort est déplacé vers la droite ; le bit expulsé vers CF est le bit de poids faible initial."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, shift/rotate forms."
@@ -55,12 +55,12 @@
       "derivation": "81h vaut 10000001b. SHR d'un bit donne 01000000b, soit 40h ; le bit 0 sortant vaut 1 et est copié dans CF.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "0"
+          "choice": "C0h avec CF=0",
+          "reason": "SHR 81h,1 donne 40h avec CF=1 ; C0h ne correspond pas au décalage du motif 10000001b."
         },
         {
-          "choice": "0",
-          "reason": "2"
+          "choice": "02h avec CF=1",
+          "reason": "02h ne correspond pas au résultat de 81h décalé d'un bit vers la droite."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, shift/rotate forms."
@@ -79,12 +79,12 @@
       "derivation": "SHR est un décalage logique à droite : le bit de poids fort libéré est rempli par zéro. Il ne propage pas le signe et ne réinjecte pas CF dans l'opérande.",
       "distractorRationales": [
         {
-          "choice": "I",
-          "reason": "l"
+          "choice": "Il conserve toujours le signe",
+          "reason": "SHR insère zéro dans le bit de poids fort ; il ne propage pas le signe."
         },
         {
-          "choice": "I",
-          "reason": "l"
+          "choice": "Il reçoit CF",
+          "reason": "CF reçoit le bit expulsé ; il n'est pas réinjecté dans le bit haut par SHR."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, shift/rotate forms."
@@ -106,12 +106,12 @@
       "derivation": "SAR réalise un décalage arithmétique à droite en recopiant le bit de poids fort. Pour un nombre négatif en complément à deux, cette propagation conserve le signe.",
       "distractorRationales": [
         {
-          "choice": "S",
-          "reason": "A"
+          "choice": "SAR insère toujours zéro",
+          "reason": "SAR propage le bit de signe ; il ne remplit pas systématiquement par zéro."
         },
         {
-          "choice": "S",
-          "reason": "A"
+          "choice": "SAR inverse tous les bits",
+          "reason": "SAR ne réalise pas un NOT ; il décale les bits et recopie le bit de signe."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, shift/rotate forms."
@@ -133,12 +133,12 @@
       "derivation": "FCh représente −4 sur huit bits. SAR d'un bit conserve le bit de signe à 1 et décale le reste, donnant FEh, soit −2 ; le bit expulsé était 0.",
       "distractorRationales": [
         {
-          "choice": "7",
-          "reason": "E"
+          "choice": "7Eh",
+          "reason": "7Eh correspondrait à un décalage logique de FCh ; SAR conserve le bit de signe et donne FEh."
         },
         {
-          "choice": "F",
-          "reason": "8"
+          "choice": "F8h",
+          "reason": "F8h n'est pas le résultat d'un décalage arithmétique d'un bit de FCh."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, shift/rotate forms."
@@ -160,12 +160,12 @@
       "derivation": "SAR recopie le bit de poids fort dans les nouvelles positions hautes. Cette propagation conserve l'interprétation signée en complément à deux lors du décalage à droite.",
       "distractorRationales": [
         {
-          "choice": "I",
-          "reason": "l"
+          "choice": "Il traite les valeurs comme des adresses",
+          "reason": "SAR traite le motif comme une valeur signée et propage son signe ; il ne traite pas les bits comme des adresses."
         },
         {
-          "choice": "I",
-          "reason": "l"
+          "choice": "Il efface CF à chaque étape",
+          "reason": "CF dépend du bit expulsé ; SAR ne l'efface pas systématiquement à chaque étape."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, shift/rotate forms."
@@ -185,12 +185,12 @@
       "derivation": "ROL effectue une rotation circulaire : le bit de poids fort sort et revient dans le bit de poids faible. Contrairement à un décalage, aucun bit n'est simplement perdu.",
       "distractorRationales": [
         {
-          "choice": "D",
-          "reason": "é"
+          "choice": "Décale à droite avec zéro",
+          "reason": "ROL tourne vers la gauche ; il ne réalise pas un SHR à droite avec insertion de zéro."
         },
         {
-          "choice": "É",
-          "reason": "c"
+          "choice": "Échange AX et BX",
+          "reason": "ROL ne permute pas AX et BX ; il fait circuler les bits dans l'opérande."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, shift/rotate forms."
@@ -212,12 +212,12 @@
       "derivation": "81h vaut 10000001b. ROL d'un bit fait sortir le bit 7 qui revient en bit 0 : le résultat devient 00000011b, soit 03h, et CF reçoit le bit sortant 1.",
       "distractorRationales": [
         {
-          "choice": "0",
-          "reason": "2"
+          "choice": "02h avec CF=0",
+          "reason": "ROL 81h,1 donne 03h et CF=1 ; 02h perdrait le bit sortant."
         },
         {
-          "choice": "C",
-          "reason": "0"
+          "choice": "C0h avec CF=1",
+          "reason": "C0h correspondrait à un décalage/rotation différent ; la rotation gauche donne 03h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, shift/rotate forms."
@@ -237,12 +237,12 @@
       "derivation": "Une rotation fait circuler le bit sortant vers l'autre extrémité de l'opérande. Un décalage, au contraire, remplit la position libérée et perd le bit sortant dans CF.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le décalage conserve toujours tous les bits",
+          "reason": "Une rotation réinjecte le bit sortant ; un décalage peut perdre ce bit dans CF."
         },
         {
-          "choice": "L",
-          "reason": "a"
+          "choice": "La rotation ne modifie jamais CF",
+          "reason": "CF reçoit le bit sortant dans une rotation ; il peut donc être modifié."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, shift/rotate forms."
@@ -264,12 +264,12 @@
       "derivation": "Le dernier bit expulsé par un décalage est placé dans CF. Pour SHR 81h,1, le bit 0 initial vaut 1 ; CF reçoit donc 1.",
       "distractorRationales": [
         {
-          "choice": "D",
-          "reason": "F"
+          "choice": "DF",
+          "reason": "DF contrôle la direction des chaînes, pas la retenue du décalage."
         },
         {
-          "choice": "I",
-          "reason": "F"
+          "choice": "IF",
+          "reason": "IF contrôle les interruptions masquables, pas le bit expulsé par SHR."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, shift/rotate forms."
@@ -289,12 +289,12 @@
       "derivation": "SHR effectue un décalage logique et remplit le bit haut par zéro. SAR effectue un décalage arithmétique et recopie le bit de signe ; les deux ne sont donc pas interchangeables pour des valeurs signées négatives.",
       "distractorRationales": [
         {
-          "choice": "S",
-          "reason": "H"
+          "choice": "SHR est signé ; SAR est non signé",
+          "reason": "SHR est logique avec insertion de zéro ; SAR est arithmétique avec propagation du signe."
         },
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Les deux inversent les bits",
+          "reason": "Ni SHR ni SAR n'inverse tous les bits ; ils décalent les bits vers la droite."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, shift/rotate forms."
@@ -317,12 +317,12 @@
       "derivation": "Sur le 8086, le compte de décalage est codé comme 1 ou fourni par CL. La forme SHR AL,1 est valide ; un registre 16 bits comme AX n'est pas le champ de compte.",
       "distractorRationales": [
         {
-          "choice": "S",
-          "reason": "H"
+          "choice": "SHR AL,AX",
+          "reason": "SHR AL,AX est invalide car le compte variable doit être dans CL, pas AX."
         },
         {
-          "choice": "S",
-          "reason": "H"
+          "choice": "SHR 1,AL",
+          "reason": "SHR 1,AL place l'immédiat à gauche et l'opérande à droite ; la destination doit être l'opérande AL."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, shift/rotate forms."
@@ -341,12 +341,12 @@
       "derivation": "Pour un compte variable, le 8086 utilise CL, l'octet faible de CX. CX entier ou DL ne constitue pas le registre de compte implicite de ces instructions.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "X"
+          "choice": "CX",
+          "reason": "Le compte variable est fourni dans CL, pas dans CX entier."
         },
         {
-          "choice": "D",
-          "reason": "L"
+          "choice": "DL",
+          "reason": "DL n'est pas le registre implicite de compte pour les décalages 8086."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, shift/rotate forms."
@@ -368,12 +368,12 @@
       "derivation": "81h décalé logiquement à droite d'un bit devient 40h. Le bit faible initial vaut 1 et sort dans CF ; cet oracle historique est repris sans créer un identifiant distinct.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "0"
+          "choice": "C0h avec CF=0",
+          "reason": "C0h avec CF=0 ne correspond pas au calcul SHR 81h,1 ; le résultat est 40h et CF=1."
         },
         {
-          "choice": "0",
-          "reason": "2"
+          "choice": "02h avec CF=1",
+          "reason": "02h avec CF=1 ne correspond pas au résultat 40h calculé pour SHR 81h,1."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, shift/rotate forms."
@@ -395,12 +395,12 @@
       "derivation": "FCh est −4 signé. SAR recopie le bit de signe 1 et décale vers la droite, ce qui donne FEh, soit −2 ; cet oracle historique est repris sans doublon.",
       "distractorRationales": [
         {
-          "choice": "7",
-          "reason": "E"
+          "choice": "7Eh",
+          "reason": "7Eh correspond à un décalage logique qui insère zéro ; SAR conserve le signe et donne FEh."
         },
         {
-          "choice": "F",
-          "reason": "8"
+          "choice": "F8h",
+          "reason": "F8h ne correspond pas au résultat d'un décalage arithmétique d'un bit de FCh."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, shift/rotate forms."
@@ -422,12 +422,12 @@
       "derivation": "Le bit 7 de 81h sort dans CF et est réinjecté en bit 0 par ROL. Les autres bits se déplacent d'une position vers la gauche, donnant 03h.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "L"
+          "choice": "AL=02h et CF=0",
+          "reason": "ROL 81h,1 donne 03h et CF=1 ; 02h/CF=0 ne conserve pas le bit haut expulsé."
         },
         {
-          "choice": "A",
-          "reason": "L"
+          "choice": "AL=C0h et CF=1",
+          "reason": "C0h n'est pas le résultat de la rotation gauche du motif 81h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, shift/rotate forms."
@@ -449,12 +449,12 @@
       "derivation": "SHR 81h,1 donne 40h et place le bit 0 initial, égal à 1, dans CF. Le résultat et le drapeau doivent être vérifiés ensemble.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "L"
+          "choice": "AL=40h, CF=0",
+          "reason": "CF reçoit le bit 0 initial de 81h, qui vaut 1 ; il ne vaut pas zéro."
         },
         {
-          "choice": "A",
-          "reason": "L"
+          "choice": "AL=81h, CF=1",
+          "reason": "Le résultat de SHR est 40h ; 81h n'est pas conservé comme valeur de destination."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, shift/rotate forms."
@@ -473,12 +473,12 @@
       "derivation": "Pour conserver le signe d'une valeur négative lors d'un décalage à droite, SAR recopie le bit de poids fort. SHR insère zéro et change donc l'interprétation signée du résultat.",
       "distractorRationales": [
         {
-          "choice": "U",
-          "reason": "t"
+          "choice": "Utiliser ROL",
+          "reason": "SHR insère zéro et ne conserve pas le signe d'une valeur négative ; SAR propage le bit de signe."
         },
         {
-          "choice": "R",
-          "reason": "e"
+          "choice": "Remplacer AL par CS",
+          "reason": "CS est un registre de segment et ne remplace pas l'instruction de décalage arithmétique."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, shift/rotate forms."
@@ -500,12 +500,12 @@
       "derivation": "Le résultat et CF dépendent des bits déplacés ou tournés. OF n'est défini que pour certains cas, notamment un compte de 1 pour plusieurs instructions ; pour d'autres comptes, il peut être indéfini et ne doit pas être supposé valide.",
       "distractorRationales": [
         {
-          "choice": "V",
-          "reason": "é"
+          "choice": "Vérifier uniquement la valeur initiale",
+          "reason": "La valeur initiale seule ne suffit pas ; il faut vérifier les bits expulsés et le résultat du décalage/rotation."
         },
         {
-          "choice": "S",
-          "reason": "u"
+          "choice": "Supposer OF défini pour tout compte",
+          "reason": "OF n'est pas défini pour tout compte ; il faut respecter les règles architecturales selon le nombre de positions."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects; Intel MCS-86 Assembly Language Reference Manual, shift/rotate forms."
