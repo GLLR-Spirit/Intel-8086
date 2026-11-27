@@ -194,7 +194,7 @@
       "distractorRationales": [
         {
           "choice": "Compare deux octets",
-          "reason": "Décrit SCASB, pas STOSB."
+          "reason": "SCASB compare AL avec l'octet en ES:DI et met à jour les indicateurs ; STOSB écrit AL en ES:DI sans effectuer de comparaison."
         },
         {
           "choice": "Copie AX vers DS:SI",
