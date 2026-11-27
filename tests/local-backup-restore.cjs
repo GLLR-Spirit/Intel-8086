@@ -137,4 +137,21 @@ const valid = makeData();
   const invalid = inRealm(sandbox, { ...makeData(), extra: "unexpected" });
   assert.match(sandbox.validateBackupData(invalid), /sept catégories/);
 }
-console.log("10 groupes de tests sauvegarde/restauration exécutés avec succès.");
+{
+  const store = makeStore({}, "i86-lessons-v2"), sandbox = load(store);
+  const before = Object.fromEntries(store.data);
+  const doc = { application: "Intel 8086 Lab", backupVersion: 1, createdAt: new Date().toISOString(), data: valid };
+  assert.throws(() => sandbox.restoreBackupDocument(inRealm(sandbox, doc)), /Écriture impossible/);
+  assert.deepEqual(Object.fromEntries(store.data), before);
+}
+{
+  const brokenStore = {
+    getItem() { throw new Error("SecurityError"); },
+    setItem() { throw new Error("SecurityError"); },
+    removeItem() {}
+  };
+  const sandbox = load(brokenStore);
+  const doc = { application: "Intel 8086 Lab", backupVersion: 1, createdAt: new Date().toISOString(), data: valid };
+  assert.throws(() => sandbox.restoreBackupDocument(inRealm(sandbox, doc)), /Impossible de lire les données actuelles/);
+}
+console.log("12 groupes de tests sauvegarde/restauration exécutés avec succès.");
