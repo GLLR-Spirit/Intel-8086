@@ -259,7 +259,7 @@ assert.deepEqual(disassembly.rows.map(row => row.offset), disassemblyAssembly.ro
   "EX37 disassembly must preserve every instruction boundary, including the skipped NOP.");
 assert.deepEqual(disassembly.rows.map(row => row.bytes), disassemblyAssembly.rows.map(row => row.bytes),
   "EX37 disassembly must preserve each encoded instruction's byte span.");
-assert.ok(disassembly.rows.some(row => /^JMP\\b/.test(row.instruction)), "EX37 must decode its relative jump.");
+assert.ok(disassembly.rows.some(row => /^JMP\b/.test(row.instruction)), "EX37 must decode its relative jump.");
 assert.ok(disassembly.rows.some(row => row.instruction === "NOP"), "EX37 must decode the NOP on the skipped execution path.");
 assert.ok(disassembly.rows.some(row => /^MOV AX, 1234h$/i.test(row.instruction)), "EX37 must decode MOV AX,1234h.");
 console.log("EX35 exact encoding oracle and EX37 disassembly-boundary oracle PASS.");
