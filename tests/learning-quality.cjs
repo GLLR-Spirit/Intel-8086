@@ -49,6 +49,11 @@ chapterVisuals.forEach((markup,index)=>{
   assert.ok(markup.includes("<b>"+expectedCourseVisualTitles[index]+"</b>"),
     "Chapter "+(index+1)+" must display its own topic-specific visual, not a neighboring chapter's visual.");
 });
+learning.chapterLearning.forEach((chapter,index)=>{
+  const requiredChapters=[...chapter.prereq.matchAll(/\\d+/g)].map(match=>Number(match[0]));
+  assert.ok(requiredChapters.every(required=>required>0&&required<=index),
+    "Chapter "+(index+1)+" must not require a future chapter.");
+});
 assert.match(match[1], /function annotateAssembly\(/, "Course examples must receive instruction-level annotations");
 assert.match(match[1], /function courseVisual\(/, "The course must include chapter-specific visualizations");
 assert.match(match[1], /courseVisual\(i\)/, "Chapter visualizations must be rendered in the lesson view");
