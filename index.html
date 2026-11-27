@@ -629,7 +629,7 @@ function renderExercises(){
  var visible=[];
  exercises.forEach(function(x,i){
   var g=x[4]||{level:i<5?"Débutant":"Intermédiaire",hint:"Relis l’objectif, exécute le programme pas à pas et compare les registres à la sortie attendue.",steps:["Identifie les registres utilisés et leur rôle.","Exécute une instruction à la fois et note les changements d’état.","Compare le résultat final à la condition de réussite."],solution:x[2]};
-  var m=exerciseMetadata(x,i),query=(x[0]+" "+x[1]+" "+exerciseTypeLabel(m.type)+" "+m.chapters.map(function(n){return lessons[n][0];}).join(" ")).toLowerCase();
+  var m=exerciseMetadata(x,i),query=[x[0],x[1],x[2],exerciseTypeLabel(m.type),m.chapters.map(function(n){return lessons[n][0];}).join(" "),g.hint,(g.steps||[]).join(" "),g.solution||""].join(" ").toLowerCase();
   if(exerciseFilterState.search&&!query.includes(exerciseFilterState.search))return;
   if(exerciseFilterState.chapter!=="all"&&m.chapters.indexOf(Number(exerciseFilterState.chapter))<0)return;
   if(exerciseFilterState.difficulty!=="all"&&m.difficulty!==exerciseFilterState.difficulty)return;
