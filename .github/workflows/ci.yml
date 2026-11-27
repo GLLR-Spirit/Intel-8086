@@ -36,6 +36,8 @@ jobs:
         run: node tests/audit-report-consistency.cjs
       - name: Validate learning path and guided exercises
         run: node tests/learning-quality.cjs
+      - name: Validate chapter 16 independent review inventory and open findings
+        run: node tests/chapter-16-independent-review.cjs
       - name: Validate question oracle evaluators (automated; not independent certification)
         run: node tests/question-oracle-certification.cjs
       - name: Compare 108 course examples and 48 corrections across source and binary execution
