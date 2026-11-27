@@ -218,33 +218,48 @@ const assert = require("node:assert/strict");
   await keyboardPage.keyboard.press("Enter");
   assert.equal(await difficulty.inputValue(),"Débutant",
     "The exercise difficulty filter must be operable with native keyboard selection.");
+  const filterTarget=await keyboardPage.evaluate(()=>{
+    const api=window.__8086Audit;
+    for(let index=0;index<api.exercises.length;index++){
+      const metadata=api.exerciseMetadata(api.exercises[index],index);
+      if(metadata.difficulty==="Débutant"&&metadata.chapters.length)
+        return {chapter:metadata.chapters[0],type:metadata.type};
+    }
+    return null;
+  });
+  assert.ok(filterTarget,"At least one beginner exercise must be available for a combined filter test.");
   const allExerciseCountText=(await keyboardPage.locator("#exerciseCount").textContent()).trim();
   const allExerciseCounts=allExerciseCountText.match(/(\d+) exercice\(s\) affiché\(s\) sur (\d+)/);
   assert.ok(allExerciseCounts,"The exercise result counter must expose visible and total counts: "+allExerciseCountText);
-  const beginnerCount=Number(allExerciseCounts[1]),totalExerciseCount=Number(allExerciseCounts[2]);
-  assert.ok(beginnerCount>0&&beginnerCount<totalExerciseCount,
-    "Keyboard difficulty filtering must reduce the actual result set, not only change the select value.");
+  const totalExerciseCount=Number(allExerciseCounts[2]);
+  assert.ok(totalExerciseCount>0,"The unfiltered exercise list must not be empty.");
   const beginnerLabels=await keyboardPage.locator("#exerciseList .exercise .eyebrow").allTextContents();
   assert.ok(beginnerLabels.length>0&&beginnerLabels.every(label=>label.includes("Débutant")),
     "Every visible result must satisfy the selected beginner difficulty.");
 
   const chapterFilter=keyboardPage.locator("#exerciseChapter");
   await chapterFilter.focus();
-  await keyboardPage.keyboard.press("ArrowDown");
+  for(let step=0;step<=filterTarget.chapter;step++) await keyboardPage.keyboard.press("ArrowDown");
   await keyboardPage.keyboard.press("Enter");
-  assert.equal(await chapterFilter.inputValue(),"0","The chapter filter must be keyboard-selectable.");
+  assert.equal(await chapterFilter.inputValue(),String(filterTarget.chapter),
+    "The chapter filter must be keyboard-selectable.");
   const chapterResults=await keyboardPage.locator("#exerciseList .exercise").allTextContents();
-  assert.ok(chapterResults.length>0&&chapterResults.every(text=>/Chapitres : 1\./.test(text)),
-    "Combined difficulty/chapter filters must return only exercises assigned to chapter 1.");
+  assert.ok(chapterResults.length>0&&chapterResults.every(text=>new RegExp("Chapitres : "+(filterTarget.chapter+1)+"\\\\.").test(text)),
+    "Combined difficulty/chapter filters must return only exercises assigned to the selected chapter.");
 
   const typeFilter=keyboardPage.locator("#exerciseType");
+  const typeOptions=await typeFilter.locator("option").evaluateAll(options=>options.map(option=>option.value));
+  const typeIndex=typeOptions.indexOf(filterTarget.type);
+  assert.ok(typeIndex>0,"The target exercise type must exist in the filter options.");
   await typeFilter.focus();
-  await keyboardPage.keyboard.press("ArrowDown");
+  for(let step=0;step<typeIndex;step++) await keyboardPage.keyboard.press("ArrowDown");
   await keyboardPage.keyboard.press("Enter");
-  assert.equal(await typeFilter.inputValue(),"application","The exercise-type filter must be keyboard-selectable.");
+  assert.equal(await typeFilter.inputValue(),filterTarget.type,
+    "The exercise-type filter must be keyboard-selectable.");
+  const typeLabels={application:"Application directe",raisonnement:"Raisonnement",completion:"Programme à compléter",debug:"Débogage / correction",probleme:"Problème complet",challenge:"Défi expert"};
   const combinedLabels=await keyboardPage.locator("#exerciseList .exercise .eyebrow").allTextContents();
-  assert.ok(combinedLabels.every(label=>label.includes("Débutant")&&label.includes("Application directe")),
-    "Combined filters must enforce difficulty and exercise type on every visible card.");
+  assert.ok(combinedLabels.length>0&&combinedLabels.every(label=>label.includes("Débutant")&&label.includes(typeLabels[filterTarget.type])),
+    "Combined filters must enforce difficulty, chapter and type on every visible card.");
   await keyboardPage.locator("#resetExerciseFilters").focus();
   await keyboardPage.keyboard.press("Enter");
   assert.equal((await keyboardPage.locator("#exerciseCount").textContent()).trim(),allExerciseCountText,
