@@ -430,6 +430,41 @@ const assert = require("node:assert/strict");
   const resetCount = (await page.locator("#exerciseCount").textContent()).trim();
   assert.match(resetCount, /^48 exercice\(s\) affiché\(s\) sur 48$/,
     "Reset must clear text search and all three structured filters.");
+  // Independent exercise oracles: functional execution alone must not certify encoding,
+  // disassembly, written reasoning, stack restoration or non-zero register preservation.
+  const advancedExerciseAudit = await page.evaluate(() => {
+    const api = window.__8086Audit;
+    const checks = [
+      {index:34,response:"",valid:true},
+      {index:36,response:"",valid:true},
+      {index:38,response:"Le simulateur ne mesure pas les cycles physiques : la BIU, la prélecture et les accès bus influencent le temps.",valid:true},
+      {index:40,response:"",valid:true},
+      {index:45,response:"",valid:true},
+      {index:46,response:"",valid:true},
+      {index:47,response:"",valid:true}
+    ];
+    const results = checks.map(item => {
+      const source = api.exercises[item.index][4].solution;
+      const state = api.executeAll(source);
+      return {index:item.index,valid:!state.error&&api.validateExercise(item.index,state,source,item.response)};
+    });
+    const missingWrittenAnswer = api.executeAll(api.exercises[38][4].solution);
+    const missingAnswerRejected = !api.validateExercise(38,missingWrittenAnswer,api.exercises[38][4].solution,"");
+    const wrongEncodingSource = "MOV AX, 1234h\nNOP\nHLT";
+    const wrongEncodingState = api.executeAll(wrongEncodingSource);
+    const wrongEncodingRejected = !api.validateExercise(34,wrongEncodingState,wrongEncodingSource,"");
+    const unbalancedStackSource = api.exercises[40][4].solution.replace("\nHLT","\nPUSH AX\nHLT");
+    const unbalancedStackState = api.executeAll(unbalancedStackSource);
+    const unbalancedStackRejected = !api.validateExercise(40,unbalancedStackState,unbalancedStackSource,"");
+    return {results,missingAnswerRejected,wrongEncodingRejected,unbalancedStackRejected};
+  });
+  assert.deepEqual(advancedExerciseAudit.results.map(item=>item.valid),[true,true,true,true,true,true,true],
+    "EX35/37/39/41/46/47/48 must pass their independent pedagogical oracles: "+JSON.stringify(advancedExerciseAudit));
+  assert.ok(advancedExerciseAudit.missingAnswerRejected,"EX39 must reject a missing written explanation.");
+  assert.ok(advancedExerciseAudit.wrongEncodingRejected,"EX35 must reject a functionally correct but differently encoded program.");
+  assert.ok(advancedExerciseAudit.unbalancedStackRejected,"EX41 must reject a program that leaves an extra stack word.");
+  console.log("Advanced exercise oracles: 7/7 valid corrections + 3 negative controls PASS.");
+
   await page.locator('[data-view="learn"]').click();
   console.log("Exercise filters: 1,554 combinations + source search + combined search + reset PASS.");
 
