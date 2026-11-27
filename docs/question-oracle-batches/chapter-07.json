@@ -17,15 +17,14 @@
       "rule": "lea_effective_offset",
       "inputs": {
         "base": 256,
-        "index": 32,
         "displacement": 4
       },
       "expected": {
-        "offset": 292,
+        "offset": 260,
         "memoryRead": false
       },
       "correctAnswer": "Charge l'offset BX+4 dans SI",
-      "derivation": "LEA calcule l'expression d'adresse effective et place son offset dans le registre destination. Elle ne lit pas la donnée située à cette adresse ; l'expression BX+4 est évaluée comme une adresse.",
+      "derivation": "Le programme initialise BX à 0100h puis exécute LEA SI,[BX+4]. LEA calcule 0100h+0004h=0104h et place cet offset dans SI. L'instruction ne lit pas le contenu mémoire à cette adresse.",
       "distractorRationales": [
         {
           "choice": "L",
@@ -146,18 +145,16 @@
     {
       "id": "C07-L2-Q3",
       "status": "certified",
-      "rule": "lea_effective_offset",
+      "rule": "lea_symbolic_expression",
       "inputs": {
-        "base": 256,
-        "index": 32,
-        "displacement": 6
+        "expression": "BX+SI+6"
       },
       "expected": {
-        "offset": 294,
+        "offsetExpression": "BX+SI+6",
         "memoryRead": false
       },
       "correctAnswer": "BX+SI+6",
-      "derivation": "LEA additionne les composantes de l'adresse effective : BX+SI+6. Le résultat numérique est placé dans DX ; le contenu mémoire à l'adresse calculée n'est pas chargé.",
+      "derivation": "La question ne fournit pas de valeurs numériques pour BX et SI. La réponse correcte doit donc rester l'expression symbolique BX+SI+6 : LEA calcule cette adresse effective sans déréférencer la mémoire.",
       "distractorRationales": [
         {
           "choice": "L",
