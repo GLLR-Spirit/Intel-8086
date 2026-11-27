@@ -251,7 +251,7 @@
     {
       "id": "C19-F-Q1",
       "status": "certified",
-      "rule": "effective_address_base_index",
+      "rule": "effective_address_general",
       "inputs": {
         "BX": 256,
         "SI": 32,
@@ -302,7 +302,7 @@
     {
       "id": "C19-F-Q3",
       "status": "certified",
-      "rule": "mov_direct_memory_word",
+      "rule": "mov_effective_memory_word",
       "inputs": {
         "instruction": "MOV AX, WORD PTR [BX+SI+4]",
         "base": 256,
