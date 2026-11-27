@@ -149,3 +149,14 @@ The mission remains in progress. Passing automated suites is evidence for the te
   - C06-F-Q7 now uses a complete labelled program trace; JMP FIN skips MOV AX,5678h and leaves AX=1234h at HLT.
 - Updated runtime bank, semantic key and chapter-06 oracle batch. Added an independent evaluator for the segment-to-segment MOV restriction and assertions for the trace result.
 - Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
+
+
+### Independent question review — chapter 7
+
+- Reviewed all 19 questions individually against the Intel 8086 Family User's Manual and MCS-86 assembly reference.
+- 16 items passed; three were corrected:
+  - C07-L1-Q3 now tests a memory write using MOV [BX],AX rather than repeating LEA/MOV read semantics.
+  - C07-F-Q6 now distinguishes the 16:16 far-pointer field order (offset then segment) from little-endian byte order within each word.
+  - C07-F-Q10 now distinguishes MOV memory read from XCHG register/memory exchange rather than repeating another LEA/MOV comparison.
+- Updated the runtime bank, semantic key and chapter-07 oracle batch. Added independent evaluators and CI assertions for memory-write and MOV/XCHG semantics.
+- Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
