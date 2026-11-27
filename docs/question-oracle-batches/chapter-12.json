@@ -403,7 +403,7 @@
         "ZF": 0
       },
       "correctAnswer": "0",
-      "derivation": "80h AND 80h vaut 80h, qui est non nul. TEST met donc ZF à 0.",
+      "derivation": "AL=80h et le masque 80h ont leur bit 7 actif ; le ET logique produit 80h. Comme le résultat n'est pas nul, TEST positionne ZF à 0. L'opérande AL n'est pas modifié par TEST.",
       "distractorRationales": [
         {
           "choice": "1",
