@@ -219,7 +219,7 @@ const assert = require("node:assert/strict");
   assert.equal(await difficulty.inputValue(),"Débutant",
     "The exercise difficulty filter must be operable with native keyboard selection.");
   const allExerciseCountText=(await keyboardPage.locator("#exerciseCount").textContent()).trim();
-  const allExerciseCounts=allExerciseCountText.match(/(\\d+) exercice\\(s\\) affiché\\(s\\) sur (\\d+)/);
+  const allExerciseCounts=allExerciseCountText.match(/(\d+) exercice\(s\) affiché\(s\) sur (\d+)/);
   assert.ok(allExerciseCounts,"The exercise result counter must expose visible and total counts: "+allExerciseCountText);
   const beginnerCount=Number(allExerciseCounts[1]),totalExerciseCount=Number(allExerciseCounts[2]);
   assert.ok(beginnerCount>0&&beginnerCount<totalExerciseCount,
@@ -234,7 +234,7 @@ const assert = require("node:assert/strict");
   await keyboardPage.keyboard.press("Enter");
   assert.equal(await chapterFilter.inputValue(),"0","The chapter filter must be keyboard-selectable.");
   const chapterResults=await keyboardPage.locator("#exerciseList .exercise").allTextContents();
-  assert.ok(chapterResults.length>0&&chapterResults.every(text=>/Chapitres : 1\\./.test(text)),
+  assert.ok(chapterResults.length>0&&chapterResults.every(text=>/Chapitres : 1\./.test(text)),
     "Combined difficulty/chapter filters must return only exercises assigned to chapter 1.");
 
   const typeFilter=keyboardPage.locator("#exerciseType");
@@ -272,7 +272,7 @@ const assert = require("node:assert/strict");
   await keyboardPage.locator("#disassemblyInput").fill("B8 34 12 F4");
   await keyboardPage.locator("#disassemble").focus();
   await keyboardPage.keyboard.press("Enter");
-  assert.match(await keyboardPage.locator("#disassemblerReport").textContent(),/MOV AX, 1234h[\\s\\S]*HLT/,
+  assert.match(await keyboardPage.locator("#disassemblerReport").textContent(),/MOV AX, 1234h[\s\S]*HLT/,
     "The disassembler action must be keyboard-operable and render decoded instructions.");
 
   await keyboardPage.close();
