@@ -1703,7 +1703,7 @@ for(var l3=0;l3<6;l3++){
   lesson.quiz=level3LessonQuestions[l3*3+li].map(function(q,qi){q[4]=level3Categories[qi];return rotateQuiz(q,l3+li+qi);});
  });
  chapter.theory=chapter.lessons.map(function(x){return x.theory;}).join(" ");
- chapter.quiz=level3FinalQuestions[l3].map(function(q,qi){q[4]=level3FinalCategories[qi];return rotateQuiz(q,l3+qi);});
+ var chapter17FinalCategories=["Définition","Syntaxe","Définition","Calcul / prédiction","Syntaxe","Calcul / prédiction","Analyse de programme","Analyse de programme","Raisonnement / débogage","Raisonnement / débogage"];chapter.quiz=level3FinalQuestions[l3].map(function(q,qi){q[4]=(l3===5?chapter17FinalCategories:level3FinalCategories)[qi];return rotateQuiz(q,l3+qi);});
 }
 
 
