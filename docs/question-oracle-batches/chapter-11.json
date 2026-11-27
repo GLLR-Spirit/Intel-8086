@@ -384,25 +384,27 @@
     {
       "id": "C11-F-Q6",
       "status": "certified",
-      "rule": "inc_preserves_cf_value",
+      "rule": "inc_overflow_and_cf",
       "inputs": {
-        "instruction": "INC AX",
-        "initialCF": 1
+        "initialAX": 32767,
+        "initialCF": 1,
+        "width": 16
       },
       "expected": {
-        "CFAfter": 1,
-        "CFModified": false
+        "result": 32768,
+        "OF": 1,
+        "CF": 1
       },
-      "correctAnswer": "Il reste à 1",
-      "derivation": "INC conserve CF sans le recalculer. La valeur antérieure de CF doit donc être vérifiée avant et après l'instruction ; les autres indicateurs peuvent évoluer selon le résultat.",
+      "correctAnswer": "OF=1 et CF=1",
+      "derivation": "INC AX calcule 7FFFh+1=8000h. L'interprétation signée passe de +32767 à un motif représentant −32768, donc OF=1. INC ne modifie pas CF ; sa valeur initiale 1 est préservée.",
       "distractorRationales": [
         {
-          "choice": "Il est remis à zéro",
-          "reason": "INC préserve CF ; il ne le remet pas à zéro."
+          "choice": "OF=0 et CF=0",
+          "reason": "Le résultat 8000h dépasse la borne signée +32767, donc OF=1 ; INC préserve aussi CF=1."
         },
         {
-          "choice": "Il est inversé",
-          "reason": "INC ne complète ni n'inverse CF ; il conserve exactement sa valeur précédente."
+          "choice": "OF=1 et CF=0",
+          "reason": "OF=1 est correct, mais INC ne remet pas CF à zéro ; il conserve la valeur antérieure 1."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -410,27 +412,27 @@
     {
       "id": "C11-F-Q7",
       "status": "certified",
-      "rule": "branch_paths_validation",
+      "rule": "conditional_branch_trace",
       "inputs": {
-        "condition": true,
-        "conditionFalseCase": true,
-        "IPChecked": true
+        "left": 1,
+        "right": 2,
+        "condition": "JZ"
       },
       "expected": {
-        "takenPathTested": true,
-        "notTakenPathTested": true,
-        "IPChecked": true
+        "ZF": 0,
+        "branchTaken": false,
+        "next": "fallthrough"
       },
-      "correctAnswer": "Tester les conditions vraie et fausse et relever IP",
-      "derivation": "Il faut exécuter le cas où la condition est vraie et celui où elle est fausse, puis relever IP pour confirmer la cible réellement suivie. Lire uniquement le résultat final peut masquer une branche incorrecte.",
+      "correctAnswer": "Le chemin non pris : l'instruction qui suit JZ",
+      "derivation": "CMP 1,2 calcule une différence non nulle et met ZF=0. JZ exige ZF=1 ; la condition est fausse, le saut n'est pas pris et l'exécution continue avec l'instruction suivante.",
       "distractorRationales": [
         {
-          "choice": "Lire uniquement le résultat final",
-          "reason": "Lire seulement le résultat final peut masquer une mauvaise cible ou un chemin non exécuté."
+          "choice": "La cible EGAL",
+          "reason": "La cible n'est suivie que si ZF=1 ; ici 1≠2, donc ZF=0 et JZ n'est pas pris."
         },
         {
-          "choice": "Changer le registre source au hasard",
-          "reason": "Changer le registre source au hasard ne valide pas les deux issues d'un branchement."
+          "choice": "Une interruption",
+          "reason": "Un JZ non pris poursuit le flot séquentiel ; il ne déclenche pas automatiquement une interruption."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -465,25 +467,24 @@
     {
       "id": "C11-F-Q9",
       "status": "certified",
-      "rule": "first_divergence_and_isolate",
+      "rule": "regression_test_purpose",
       "inputs": {
-        "statesCompared": true,
-        "changesIsolated": true
+        "previouslyFailingCaseRetained": true
       },
       "expected": {
-        "locatesEarliestDivergence": true,
-        "isolatesCause": true
+        "detectsRecurrence": true,
+        "retainsCase": true
       },
-      "correctAnswer": "Comparer la première divergence et isoler une cause",
-      "derivation": "Comparer l'état attendu et l'état observé instruction par instruction localise le premier écart. Une correction isolée permet ensuite de vérifier la cause sans masquer d'autres défauts.",
+      "correctAnswer": "Pour détecter la réapparition du défaut lors d'un changement ultérieur",
+      "derivation": "Un test de régression conserve le scénario qui a révélé le défaut et le rejoue après les corrections ou changements ultérieurs. Il détecte ainsi une réintroduction du même comportement incorrect.",
       "distractorRationales": [
         {
-          "choice": "Modifier plusieurs lignes au hasard",
-          "reason": "Modifier plusieurs lignes au hasard empêche d'isoler la cause et rend le diagnostic non reproductible."
+          "choice": "Pour empêcher toute modification future",
+          "reason": "Un test de régression n'interdit pas les changements ; il vérifie qu'ils ne réintroduisent pas un défaut."
         },
         {
-          "choice": "Supprimer le cas de test",
-          "reason": "Supprimer le test masque l'échec au lieu de corriger la première divergence."
+          "choice": "Pour remplacer l'analyse de la cause",
+          "reason": "Le test détecte une régression mais ne remplace pas le diagnostic de la cause initiale."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
