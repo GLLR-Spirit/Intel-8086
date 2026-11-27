@@ -8303,14 +8303,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 3,
-      "stem": "Quel état doit être vérifié après une répétition ?",
+      "stem": "Quel état faut-il vérifier après REPNE SCASB ?",
       "choices": [
-        "CX, SI/DI et FLAGS",
+        "CX, DI et ZF",
         "Seulement AX",
         "Seulement CS"
       ],
-      "correctAnswer": "CX, SI/DI et FLAGS",
-      "explanation": "Le compteur, les indices et les indicateurs dépendent de l'instruction de chaîne.",
+      "correctAnswer": "CX, DI et ZF",
+      "explanation": "REPNE SCASB décrémente CX, ajuste DI selon DF et utilise ZF pour décider si la répétition continue.",
       "category": "Vérification"
     },
     {
@@ -8335,14 +8335,14 @@
       "kind": "intermediate",
       "lesson": 3,
       "number": 2,
-      "stem": "Avec CX=2 et DF=0, de combien SI et DI avancent-ils ?",
+      "stem": "Avec REP MOVSW, CX=1 et DF=0, de combien SI et DI avancent-ils ?",
       "choices": [
         "+2 chacun",
         "+1 chacun",
         "-2 chacun"
       ],
       "correctAnswer": "+2 chacun",
-      "explanation": "Deux octets sont traités ; les deux indices augmentent de deux.",
+      "explanation": "MOVSW transfère un mot de deux octets ; avec DF=0 et une itération, chaque index avance de deux.",
       "category": "Application"
     },
     {
@@ -8499,10 +8499,10 @@
       "choices": [
         "Initialiser CX à une valeur non nulle et les index/segments",
         "Remplacer CX par IP",
-        "Effacer DF avec STD"
+        "Effacer DF avec CLD"
       ],
       "correctAnswer": "Initialiser CX à une valeur non nulle et les index/segments",
-      "explanation": "CX nul entraîne zéro itération ; les sources et destinations doivent aussi être initialisées.",
+      "explanation": "CX nul entraîne zéro itération ; CLD ne change que le sens des index et ne rend pas le compteur non nul.",
       "category": "Débogage"
     },
     {
@@ -8511,14 +8511,14 @@
       "kind": "final",
       "lesson": null,
       "number": 10,
-      "stem": "Quelle vérification couvre correctement une chaîne répétée ?",
+      "stem": "Quelle vérification couvre correctement REPNE SCASB ?",
       "choices": [
-        "Données copiées, CX, SI, DI, DF et FLAGS pertinents",
+        "Octet comparé, CX, DI, DF et ZF",
         "AX uniquement",
         "Le seul octet opcode"
       ],
-      "correctAnswer": "Données copiées, CX, SI, DI, DF et FLAGS pertinents",
-      "explanation": "Le comportement dépend des données, du compteur, des index, du sens et des conditions.",
+      "correctAnswer": "Octet comparé, CX, DI, DF et ZF",
+      "explanation": "SCASB compare AL à ES:DI ; REPNE décrémente CX, ajuste DI selon DF et utilise ZF comme condition d'arrêt.",
       "category": "Raisonnement"
     },
     {
