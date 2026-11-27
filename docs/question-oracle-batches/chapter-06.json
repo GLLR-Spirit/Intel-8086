@@ -1,0 +1,533 @@
+{
+  "schemaVersion": 1,
+  "batch": "chapter-06",
+  "title": "Oracles indépendants — chapitre 6 : langage assembleur, étiquettes et flot de contrôle",
+  "reviewDate": "2026-11-27",
+  "statusLegend": {
+    "certified": "Réponse, raisonnement et distracteurs contrôlés indépendamment"
+  },
+  "referenceBasis": [
+    "Intel MCS-86 Assembly Language Reference Manual, assembler directives, symbols, MOV/XCHG syntax and operand restrictions.",
+    "Intel 8086 Family User's Manual (October 1979), instruction execution, IP and control-transfer instructions."
+  ],
+  "oracles": [
+    {
+      "id": "C06-L1-Q1",
+      "status": "certified",
+      "rule": "source_comment_not_opcode",
+      "inputs": {
+        "sourceLine": "; commentaire"
+      },
+      "expected": {
+        "emitsOpcode": false,
+        "executedByCPU": false
+      },
+      "correctAnswer": "Un commentaire",
+      "derivation": "Un commentaire est une annotation destinée au lecteur. Il n'est pas traduit en opcode exécutable et n'est pas exécuté par le processeur ; il peut être retiré sans changer les opérations du programme.",
+      "distractorRationales": [
+        {
+          "choice": "U",
+          "reason": "n"
+        },
+        {
+          "choice": "U",
+          "reason": "n"
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
+    },
+    {
+      "id": "C06-L1-Q2",
+      "status": "certified",
+      "rule": "assembler_symbol_resolution",
+      "inputs": {
+        "tasks": [
+          "mnemonic_translation",
+          "symbol_resolution"
+        ]
+      },
+      "expected": {
+        "producesMachineBytes": true,
+        "resolvesSymbols": true,
+        "executesHardware": false
+      },
+      "correctAnswer": "Traduire les mnémoniques et résoudre les symboles",
+      "derivation": "L'assembleur traduit les mnémoniques et opérandes en encodages machine et calcule les adresses associées aux symboles. Il ne simule pas les cycles électriques et ne remplace pas les registres physiques.",
+      "distractorRationales": [
+        {
+          "choice": "E",
+          "reason": "x"
+        },
+        {
+          "choice": "R",
+          "reason": "e"
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
+    },
+    {
+      "id": "C06-L1-Q3",
+      "status": "certified",
+      "rule": "label_is_offset",
+      "inputs": {
+        "label": "DEBUT",
+        "address": 256
+      },
+      "expected": {
+        "isInstruction": false,
+        "denotesOffset": true,
+        "value": 256
+      },
+      "correctAnswer": "Non, elle nomme un offset",
+      "derivation": "Une étiquette associe un nom symbolique à une position du programme. Elle permet de référencer un offset ou une adresse résolue, mais ne constitue pas une instruction et ne modifie pas les registres.",
+      "distractorRationales": [
+        {
+          "choice": "O",
+          "reason": "u"
+        },
+        {
+          "choice": "O",
+          "reason": "u"
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
+    },
+    {
+      "id": "C06-L2-Q1",
+      "status": "certified",
+      "rule": "intel_operand_order",
+      "inputs": {
+        "instruction": "MOV AX,BX"
+      },
+      "expected": {
+        "destination": "AX",
+        "source": "BX"
+      },
+      "correctAnswer": "AX",
+      "derivation": "Dans la syntaxe Intel, MOV s'écrit destination,source. Pour MOV AX,BX, AX reçoit la valeur lue dans BX ; le premier opérande est donc AX.",
+      "distractorRationales": [
+        {
+          "choice": "B",
+          "reason": "X"
+        },
+        {
+          "choice": "L",
+          "reason": "e"
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
+    },
+    {
+      "id": "C06-L2-Q2",
+      "status": "certified",
+      "rule": "xchg_exchange",
+      "inputs": {
+        "leftRegister": "AX",
+        "rightRegister": "BX",
+        "initialAX": 4660,
+        "initialBX": 22136
+      },
+      "expected": {
+        "finalAX": 22136,
+        "finalBX": 4660
+      },
+      "correctAnswer": "XCHG",
+      "derivation": "XCHG échange les contenus des deux opérandes. Si AX vaut 1234h et BX vaut 5678h avant l'instruction, AX reçoit 5678h et BX reçoit 1234h.",
+      "distractorRationales": [
+        {
+          "choice": "M",
+          "reason": "O"
+        },
+        {
+          "choice": "L",
+          "reason": "E"
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
+    },
+    {
+      "id": "C06-L2-Q3",
+      "status": "certified",
+      "rule": "mov_memory_to_memory_validity",
+      "inputs": {
+        "destination": "memory",
+        "source": "memory"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "MOV_does_not_encode_memory_to_memory"
+      },
+      "correctAnswer": "MOV [BX],[SI]",
+      "derivation": "MOV sur le 8086 ne possède pas de forme directe mémoire-vers-mémoire. Il faut charger une des valeurs dans un registre, puis écrire ce registre vers l'autre emplacement mémoire.",
+      "distractorRationales": [
+        {
+          "choice": "M",
+          "reason": "O"
+        },
+        {
+          "choice": "M",
+          "reason": "O"
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
+    },
+    {
+      "id": "C06-L3-Q1",
+      "status": "certified",
+      "rule": "label_target_instruction",
+      "inputs": {
+        "program": [
+          [
+            "MOV",
+            "AX",
+            1
+          ],
+          [
+            "LABEL",
+            "FIN"
+          ],
+          [
+            "HLT"
+          ]
+        ],
+        "label": "FIN"
+      },
+      "expected": {
+        "targetInstruction": "HLT",
+        "targetIndex": 2
+      },
+      "correctAnswer": "L'offset de HLT",
+      "derivation": "L'étiquette FIN est placée immédiatement avant HLT. Elle résout donc l'offset de cette instruction, et non celui de l'instruction précédente ni une valeur de registre.",
+      "distractorRationales": [
+        {
+          "choice": "U",
+          "reason": "n"
+        },
+        {
+          "choice": "L",
+          "reason": "a"
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
+    },
+    {
+      "id": "C06-L3-Q2",
+      "status": "certified",
+      "rule": "jmp_control_transfer",
+      "inputs": {
+        "instruction": "JMP CIBLE",
+        "targetOffset": 288
+      },
+      "expected": {
+        "changesControlFlow": true,
+        "targetIP": 288
+      },
+      "correctAnswer": "Il modifie la cible du programme",
+      "derivation": "JMP transfère l'exécution à sa cible. Le flot de contrôle reprend à l'offset cible, ce qui modifie IP au lieu de comparer des registres ou de copier IP dans AX.",
+      "distractorRationales": [
+        {
+          "choice": "I",
+          "reason": "l"
+        },
+        {
+          "choice": "I",
+          "reason": "l"
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
+    },
+    {
+      "id": "C06-L3-Q3",
+      "status": "certified",
+      "rule": "control_flow_validation",
+      "inputs": {
+        "checks": [
+          "resolved_target",
+          "executed_instruction"
+        ]
+      },
+      "expected": {
+        "detectsWrongTarget": true,
+        "detectsUnexpectedLoop": true
+      },
+      "correctAnswer": "Pour détecter un saut erroné ou une boucle",
+      "derivation": "Une trace permet de comparer la cible résolue avec l'instruction réellement atteinte et de repérer un flot inattendu, notamment une branche erronée ou une boucle qui ne termine pas.",
+      "distractorRationales": [
+        {
+          "choice": "P",
+          "reason": "o"
+        },
+        {
+          "choice": "P",
+          "reason": "o"
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
+    },
+    {
+      "id": "C06-F-Q1",
+      "status": "certified",
+      "rule": "cpu_executes_machine_code",
+      "inputs": {
+        "sourceHasComments": true,
+        "assembledBytes": true
+      },
+      "expected": {
+        "executesMachineBytes": true,
+        "executesComments": false,
+        "executesLabelNames": false
+      },
+      "correctAnswer": "Le code machine chargé",
+      "derivation": "Le processeur récupère et exécute des octets machine en mémoire. Les commentaires et les noms d'étiquettes sont des éléments du source ou des métadonnées d'assemblage, pas des instructions exécutables.",
+      "distractorRationales": [
+        {
+          "choice": "L",
+          "reason": "e"
+        },
+        {
+          "choice": "L",
+          "reason": "e"
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
+    },
+    {
+      "id": "C06-F-Q2",
+      "status": "certified",
+      "rule": "assembler_symbol_resolution",
+      "inputs": {
+        "phase": "assembly_or_link"
+      },
+      "expected": {
+        "resolutionPhase": "assembly_or_link"
+      },
+      "correctAnswer": "À l'assemblage ou à l'édition de liens",
+      "derivation": "Les références symboliques sont résolues pendant l'assemblage lorsque la cible est connue, ou lors de l'édition de liens si une résolution différée est nécessaire. Elles ne sont pas recalculées à chaque addition exécutée.",
+      "distractorRationales": [
+        {
+          "choice": "À",
+          "reason": " "
+        },
+        {
+          "choice": "L",
+          "reason": "o"
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
+    },
+    {
+      "id": "C06-F-Q3",
+      "status": "certified",
+      "rule": "intel_operand_order",
+      "inputs": {
+        "instruction": "MOV AX,BX"
+      },
+      "expected": {
+        "destination": "AX",
+        "source": "BX"
+      },
+      "correctAnswer": "MOV AX,BX",
+      "derivation": "La syntaxe Intel place la destination en premier. MOV AX,BX copie le contenu de BX vers AX ; MOV BX,AX ferait l'opération inverse, tandis que XCHG échange les deux valeurs.",
+      "distractorRationales": [
+        {
+          "choice": "M",
+          "reason": "O"
+        },
+        {
+          "choice": "X",
+          "reason": "C"
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
+    },
+    {
+      "id": "C06-F-Q4",
+      "status": "certified",
+      "rule": "mov_memory_to_memory_validity",
+      "inputs": {
+        "destination": "memory",
+        "source": "memory"
+      },
+      "expected": {
+        "valid": false,
+        "reason": "MOV_does_not_encode_memory_to_memory"
+      },
+      "correctAnswer": "La forme mémoire vers mémoire n'est pas autorisée",
+      "derivation": "Le 8086 n'encode pas un MOV avec deux opérandes mémoire. Un registre intermédiaire doit recevoir la première valeur avant qu'elle soit écrite à la seconde adresse.",
+      "distractorRationales": [
+        {
+          "choice": "L",
+          "reason": "e"
+        },
+        {
+          "choice": "M",
+          "reason": "O"
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
+    },
+    {
+      "id": "C06-F-Q5",
+      "status": "certified",
+      "rule": "xchg_exchange",
+      "inputs": {
+        "leftRegister": "AX",
+        "rightRegister": "BX",
+        "initialAX": 4660,
+        "initialBX": 22136
+      },
+      "expected": {
+        "finalAX": 22136,
+        "finalBX": 4660
+      },
+      "correctAnswer": "5678h",
+      "derivation": "XCHG échange les contenus. Avec AX initialisé à 1234h et BX à 5678h, la valeur finale d'AX est l'ancienne valeur de BX, soit 5678h.",
+      "distractorRationales": [
+        {
+          "choice": "1",
+          "reason": "2"
+        },
+        {
+          "choice": "6",
+          "reason": "8"
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
+    },
+    {
+      "id": "C06-F-Q6",
+      "status": "certified",
+      "rule": "label_is_offset",
+      "inputs": {
+        "label": "CIBLE",
+        "address": 512
+      },
+      "expected": {
+        "isInstruction": false,
+        "denotesOffset": true,
+        "value": 512
+      },
+      "correctAnswer": "Non, pas en tant qu'étiquette seule",
+      "derivation": "Une étiquette seule ne génère pas d'octet d'opcode. Elle associe un identifiant à une position résolue ; l'instruction placée à cette position, si elle existe, produit son propre code machine.",
+      "distractorRationales": [
+        {
+          "choice": "T",
+          "reason": "o"
+        },
+        {
+          "choice": "T",
+          "reason": "o"
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
+    },
+    {
+      "id": "C06-F-Q7",
+      "status": "certified",
+      "rule": "jmp_control_transfer",
+      "inputs": {
+        "instruction": "JMP CIBLE",
+        "targetOffset": 288
+      },
+      "expected": {
+        "changesControlFlow": true,
+        "targetIP": 288
+      },
+      "correctAnswer": "Le flot de contrôle, via IP",
+      "derivation": "JMP modifie le flot d'exécution en transférant IP à l'offset cible (et CS aussi dans les formes far). Il ne modifie pas directement la valeur de AX et ne réalise pas une comparaison pour activer FLAGS.",
+      "distractorRationales": [
+        {
+          "choice": "L",
+          "reason": "a"
+        },
+        {
+          "choice": "L",
+          "reason": "e"
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
+    },
+    {
+      "id": "C06-F-Q8",
+      "status": "certified",
+      "rule": "control_flow_validation",
+      "inputs": {
+        "checks": [
+          "resolved_target",
+          "executed_instruction"
+        ]
+      },
+      "expected": {
+        "detectsWrongTarget": true,
+        "detectsUnexpectedLoop": true
+      },
+      "correctAnswer": "Exécuter une mauvaise zone ou boucler",
+      "derivation": "Une cible erronée peut diriger l'exécution vers une zone non prévue ; une branche mal conçue peut aussi créer une boucle inattendue. La validation doit donc suivre l'offset et l'instruction atteinte.",
+      "distractorRationales": [
+        {
+          "choice": "C",
+          "reason": "h"
+        },
+        {
+          "choice": "C",
+          "reason": "o"
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
+    },
+    {
+      "id": "C06-F-Q9",
+      "status": "certified",
+      "rule": "control_flow_validation",
+      "inputs": {
+        "checks": [
+          "resolved_target",
+          "executed_instruction"
+        ]
+      },
+      "expected": {
+        "detectsWrongTarget": true,
+        "detectsUnexpectedLoop": true
+      },
+      "correctAnswer": "Contrôler l'offset résolu et l'instruction atteinte",
+      "derivation": "La vérification d'un saut compare l'adresse calculée par l'assembleur avec l'adresse suivie à l'exécution, puis confirme que l'instruction attendue est atteinte. Lire uniquement les commentaires ou CF ne vérifie pas la cible.",
+      "distractorRationales": [
+        {
+          "choice": "L",
+          "reason": "i"
+        },
+        {
+          "choice": "R",
+          "reason": "e"
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
+    },
+    {
+      "id": "C06-F-Q10",
+      "status": "certified",
+      "rule": "directive_vs_instruction",
+      "inputs": {
+        "directive": "ORG",
+        "instruction": "NOP"
+      },
+      "expected": {
+        "directiveGuidesAssembler": true,
+        "instructionEmitsOpcode": true
+      },
+      "correctAnswer": "La directive guide l'assembleur ; l'instruction est exécutée par le CPU",
+      "derivation": "Une directive telle que ORG influence l'organisation ou l'assemblage du programme, mais n'est pas en elle-même une instruction exécutée par le processeur. NOP est une instruction machine qui possède un encodage et est exécutée.",
+      "distractorRationales": [
+        {
+          "choice": "L",
+          "reason": "a"
+        },
+        {
+          "choice": "L",
+          "reason": "'"
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, assembler syntax, symbols, directives and instruction operands; Intel 8086 Family User's Manual, instruction execution and control transfer."
+    }
+  ]
+}
