@@ -7135,14 +7135,14 @@
       "kind": "intermediate",
       "lesson": 3,
       "number": 3,
-      "stem": "Pourquoi vérifier simultanément DX:AX et CF/OF ?",
+      "stem": "Pourquoi vérifier simultanément DX:AX et CF/OF après MUL r/m16 ?",
       "choices": [
-        "Le produit complet et l'indication de dépassement répondent à deux contrôles différents",
+        "DX:AX contient le produit complet et CF/OF signalent si DX est non nul",
         "CF et OF contiennent les deux octets hauts",
         "DX est toujours indéfini"
       ],
-      "correctAnswer": "Le produit complet et l'indication de dépassement répondent à deux contrôles différents",
-      "explanation": "Le résultat est dans DX:AX ; CF/OF indiquent si la moitié haute est non nulle.",
+      "correctAnswer": "DX:AX contient le produit complet et CF/OF signalent si DX est non nul",
+      "explanation": "Pour MUL mot, DX:AX contient le produit 32 bits ; CF et OF indiquent si la moitié haute DX est non nulle.",
       "category": "Vérification"
     },
     {
@@ -7215,14 +7215,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Que donne 6×7 ?",
+      "stem": "Que produit MUL BL avec AL=80h et BL=02h en non signé ?",
       "choices": [
-        "42",
-        "13",
-        "36"
+        "0100h",
+        "FF00h",
+        "0080h"
       ],
-      "correctAnswer": "42",
-      "explanation": "Le produit est 42 décimal, soit 002Ah.",
+      "correctAnswer": "0100h",
+      "explanation": "80h vaut 128 en non signé ; 128×2=256, soit 0100h dans AX.",
       "category": "Prédiction"
     },
     {
@@ -7231,14 +7231,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Que vaut FFh×2 en non signé ?",
+      "stem": "Que produit IMUL BL avec AL=80h et BL=02h en signé ?",
       "choices": [
-        "01FEh",
-        "00FEh",
-        "0100h"
+        "FF00h (−256)",
+        "0100h (256)",
+        "FFFEh (−2)"
       ],
-      "correctAnswer": "01FEh",
-      "explanation": "255×2=510, soit 01FEh.",
+      "correctAnswer": "FF00h (−256)",
+      "explanation": "80h vaut −128 en signé sur 8 bits ; −128×2=−256, encodé FF00h sur 16 bits.",
       "category": "Calcul / prédiction"
     },
     {
@@ -7279,14 +7279,14 @@
       "kind": "final",
       "lesson": null,
       "number": 9,
-      "stem": "Comment interpréter CF=OF=1 après MUL ?",
+      "stem": "Après MUL r/m16, que signifie CF=OF=1 lorsque DX est non nul ?",
       "choices": [
         "La moitié haute du produit est non nulle",
         "Le produit est toujours négatif",
         "Le diviseur vaut zéro"
       ],
       "correctAnswer": "La moitié haute du produit est non nulle",
-      "explanation": "Pour MUL, CF et OF signalent que la moitié haute n'est pas nulle.",
+      "explanation": "Pour MUL mot, CF et OF signalent que DX, moitié haute du produit, est non nul.",
       "category": "Débogage"
     },
     {
