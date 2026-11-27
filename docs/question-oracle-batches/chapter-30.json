@@ -1,0 +1,534 @@
+{
+  "schemaVersion": 1,
+  "batch": "chapter-30",
+  "title": "Oracles indépendants — chapitre 30 : ports d'E/S, IN/OUT et contrôle des interruptions",
+  "reviewDate": "2026-11-27",
+  "statusLegend": {
+    "certified": "Formes d'opérandes, calculs de ports, état E/S, IF et limites du modèle vérifiés indépendamment"
+  },
+  "referenceBasis": [
+    "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT.",
+    "Intel MCS-86 Assembly Language Reference Manual, IN/OUT syntax and operand restrictions.",
+    "Documentation du laboratoire : ports représentés par un état logiciel configurable, sans périphérique physique."
+  ],
+  "oracles": [
+    {
+      "id": "C30-L1-Q1",
+      "status": "certified",
+      "rule": "io_port_register",
+      "inputs": {
+        "portAddressing": "indirect_16_bit"
+      },
+      "expected": {
+        "register": "DX"
+      },
+      "correctAnswer": "DX",
+      "derivation": "Les formes IN/OUT à adressage indirect utilisent DX pour contenir le numéro de port sur 16 bits. CX et SI peuvent servir à d'autres opérations, mais ne remplacent pas le registre de port imposé par cette forme 8086.",
+      "distractorRationales": [
+        {
+          "choice": "CX",
+          "reason": "CX n'est pas le registre implicite d'adresse de port pour les formes IN/OUT indirectes du 8086."
+        },
+        {
+          "choice": "SI",
+          "reason": "SI sert notamment d'index source pour les chaînes ; l'adresse de port indirecte est fournie par DX."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
+    },
+    {
+      "id": "C30-L1-Q2",
+      "status": "certified",
+      "rule": "mov_port_number",
+      "inputs": {
+        "immediate": 1016,
+        "width": 16
+      },
+      "expected": {
+        "DX": 1016,
+        "hex": "03F8h"
+      },
+      "correctAnswer": "03F8h",
+      "derivation": "MOV DX,03F8h copie l'immédiat 16 bits dans DX sans permutation d'octets. La valeur reste 03F8h ; 00F3h et F800h correspondent à des transformations erronées du motif.",
+      "distractorRationales": [
+        {
+          "choice": "00F3h",
+          "reason": "Cette valeur ne correspond pas à l'immédiat 03F8h et ne résulte pas d'un MOV ni d'une conversion de base correcte."
+        },
+        {
+          "choice": "F800h",
+          "reason": "F800h inverse et déplace les chiffres du motif ; MOV conserve la valeur immédiate 03F8h."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
+    },
+    {
+      "id": "C30-L1-Q3",
+      "status": "certified",
+      "rule": "io_address_space",
+      "inputs": {
+        "memoryAddressing": "segment_offset",
+        "ioAddressing": "port_number"
+      },
+      "expected": {
+        "separateAddressSpaces": true,
+        "usesSegmentOffset": false
+      },
+      "correctAnswer": "Non, c'est un espace d'adressage d'E/S distinct",
+      "derivation": "IN et OUT accèdent à l'espace de ports d'E/S du processeur, distinct de l'espace mémoire adressé par segment:offset. Un numéro de port n'est donc pas une adresse DS:offset ou CS:IP.",
+      "distractorRationales": [
+        {
+          "choice": "Oui, toujours DS:offset",
+          "reason": "DS:offset désigne une adresse mémoire ; les ports d'E/S utilisent leur propre espace d'adressage."
+        },
+        {
+          "choice": "Oui, toujours CS:IP",
+          "reason": "CS:IP désigne l'adresse de l'instruction en cours, pas un port d'E/S."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
+    },
+    {
+      "id": "C30-L2-Q1",
+      "status": "certified",
+      "rule": "out_transfer",
+      "inputs": {
+        "portRegister": "DX",
+        "DX": 16,
+        "sourceRegister": "AL",
+        "AL": 85
+      },
+      "expected": {
+        "port": 16,
+        "value": 85,
+        "direction": "register_to_port"
+      },
+      "correctAnswer": "Écrit AL vers le port indiqué par DX",
+      "derivation": "OUT DX,AL prend le numéro de port dans DX et écrit l'octet contenu dans AL vers ce port. Avec DX=10h et AL=55h, l'état du port 10h reçoit 55h.",
+      "distractorRationales": [
+        {
+          "choice": "Lit le port dans AL",
+          "reason": "Cette direction décrit IN ; OUT transfère au contraire le contenu de AL vers le port."
+        },
+        {
+          "choice": "Copie DX dans AX",
+          "reason": "OUT ne copie pas DX vers AX ; DX sélectionne le port et AL fournit l'octet écrit."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
+    },
+    {
+      "id": "C30-L2-Q2",
+      "status": "certified",
+      "rule": "in_transfer",
+      "inputs": {
+        "portRegister": "DX",
+        "DX": 16,
+        "portValue": 85,
+        "destinationRegister": "AL"
+      },
+      "expected": {
+        "port": 16,
+        "AL": 85,
+        "direction": "port_to_register"
+      },
+      "correctAnswer": "Lit le port DX dans AL",
+      "derivation": "IN AL,DX sélectionne le port dont le numéro est contenu dans DX et transfère son octet vers AL. Si l'état du port 10h contient 55h, AL reçoit 55h.",
+      "distractorRationales": [
+        {
+          "choice": "Écrit AL au port DX",
+          "reason": "Cette direction correspond à OUT ; IN lit le port et place la valeur dans AL."
+        },
+        {
+          "choice": "Efface DX",
+          "reason": "IN ne remet pas DX à zéro ; DX continue de contenir le numéro de port."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
+    },
+    {
+      "id": "C30-L2-Q3",
+      "status": "certified",
+      "rule": "io_model_state",
+      "inputs": {
+        "model": "configurable_port_state",
+        "physicalPeripheral": false
+      },
+      "expected": {
+        "representation": "configurable_software_state",
+        "physicalPins": false
+      },
+      "correctAnswer": "Par un état d'E/S configurable",
+      "derivation": "Le laboratoire représente les ports par un état logiciel configurable : des valeurs peuvent être préparées pour IN et observées après OUT. Cela permet de tester la sémantique sans prétendre piloter des broches ou un périphérique physique.",
+      "distractorRationales": [
+        {
+          "choice": "Par des broches électriques réelles",
+          "reason": "Le simulateur n'a pas accès à un bus physique ni aux broches électriques d'un composant externe."
+        },
+        {
+          "choice": "Par la file BIU",
+          "reason": "La file BIU contient des octets d'instructions préchargés ; elle ne représente pas les ports d'E/S."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
+    },
+    {
+      "id": "C30-L3-Q1",
+      "status": "certified",
+      "rule": "cli_interrupt_flag",
+      "inputs": {
+        "initialIF": 1
+      },
+      "expected": {
+        "finalIF": 0,
+        "maskableInterruptsEnabled": false
+      },
+      "correctAnswer": "IF est effacé",
+      "derivation": "CLI efface le bit IF (Interrupt Flag). Les interruptions masquables sont ainsi désactivées ; CLI ne modifie pas DF ni CF.",
+      "distractorRationales": [
+        {
+          "choice": "DF est effacé",
+          "reason": "DF contrôle le sens des instructions de chaîne et n'est pas la cible de CLI."
+        },
+        {
+          "choice": "CF est positionné",
+          "reason": "CF est l'indicateur de retenue ; CLI agit sur IF et ne positionne pas CF."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
+    },
+    {
+      "id": "C30-L3-Q2",
+      "status": "certified",
+      "rule": "sti_interrupt_flag",
+      "inputs": {
+        "initialIF": 0
+      },
+      "expected": {
+        "finalIF": 1,
+        "maskableInterruptsEnabled": true
+      },
+      "correctAnswer": "Positionne IF",
+      "derivation": "STI positionne IF à 1, ce qui réactive les interruptions masquables. Il ne l'efface pas et ne modifie pas le drapeau de direction DF.",
+      "distractorRationales": [
+        {
+          "choice": "Efface IF",
+          "reason": "Effacer IF est l'effet de CLI ; STI positionne au contraire IF."
+        },
+        {
+          "choice": "Positionne DF",
+          "reason": "DF commande le sens des chaînes et est modifié par STD/CLD, pas par STI."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
+    },
+    {
+      "id": "C30-L3-Q3",
+      "status": "certified",
+      "rule": "hlt_after_sti_model",
+      "inputs": {
+        "IFAfterSTI": 1,
+        "hardwareWakeupModeled": false
+      },
+      "expected": {
+        "executionHalts": true,
+        "electricalWakeupModeled": false
+      },
+      "correctAnswer": "Le modèle arrête l'exécution sans simuler le réveil électrique par interruption",
+      "derivation": "STI positionne IF, mais le laboratoire représente HLT comme un arrêt de l'exécution du modèle. Il ne reproduit pas tous les signaux, événements asynchrones et mécanismes matériels qui peuvent réveiller un 8086 réel après HLT.",
+      "distractorRationales": [
+        {
+          "choice": "HLT exécute une division",
+          "reason": "HLT arrête le flot d'instructions ; il ne réalise aucune opération arithmétique de division."
+        },
+        {
+          "choice": "STI modifie CS",
+          "reason": "STI agit sur IF dans FLAGS ; il ne charge ni ne modifie CS."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
+    },
+    {
+      "id": "C30-F-Q1",
+      "status": "certified",
+      "rule": "io_address_space",
+      "inputs": {
+        "memoryAddressing": "segment_offset",
+        "ioAddressing": "port_number"
+      },
+      "expected": {
+        "separateAddressSpaces": true,
+        "usesSegmentOffset": false
+      },
+      "correctAnswer": "L'espace de ports d'E/S",
+      "derivation": "IN et OUT ciblent l'espace d'adresses des ports d'E/S, séparé de l'espace mémoire. Les registres de segment et les offsets servent aux accès mémoire, pas à définir l'espace de ports.",
+      "distractorRationales": [
+        {
+          "choice": "La pile SS:SP",
+          "reason": "SS:SP désigne la pile en mémoire ; les ports d'E/S forment un espace distinct."
+        },
+        {
+          "choice": "La file d'instructions",
+          "reason": "La file d'instructions appartient à la BIU et ne constitue pas l'espace adressé par IN/OUT."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
+    },
+    {
+      "id": "C30-F-Q2",
+      "status": "certified",
+      "rule": "io_port_register",
+      "inputs": {
+        "portAddressing": "indirect_16_bit"
+      },
+      "expected": {
+        "register": "DX"
+      },
+      "correctAnswer": "DX",
+      "derivation": "La forme indirecte IN/OUT utilise DX comme numéro de port 16 bits. BP sert à l'adressage mémoire basé sur la pile et IP repère l'instruction ; aucun des deux ne remplace DX ici.",
+      "distractorRationales": [
+        {
+          "choice": "BP",
+          "reason": "BP participe au calcul d'adresses mémoire, notamment avec SS, mais n'est pas le registre de port de IN/OUT indirect."
+        },
+        {
+          "choice": "IP",
+          "reason": "IP contient l'offset de l'instruction suivante et n'est pas le registre d'adresse du port."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
+    },
+    {
+      "id": "C30-F-Q3",
+      "status": "certified",
+      "rule": "in_instruction_form",
+      "inputs": {
+        "instruction": "IN AL,DX",
+        "portRegister": "DX",
+        "destination": "AL"
+      },
+      "expected": {
+        "valid": true,
+        "mnemonic": "IN",
+        "destination": "AL",
+        "portSource": "DX"
+      },
+      "correctAnswer": "IN AL,DX",
+      "derivation": "IN AL,DX est la forme valide qui lit l'octet du port sélectionné par DX et le place dans AL. OUT écrit dans l'autre sens, et MOV AL,DX n'est pas une instruction valide entre ces registres de tailles différentes.",
+      "distractorRationales": [
+        {
+          "choice": "OUT DX,AL",
+          "reason": "OUT effectue un transfert du registre accumulateur vers le port, dans le sens opposé à la lecture demandée."
+        },
+        {
+          "choice": "MOV AL,DX",
+          "reason": "MOV ne peut pas transférer un registre 16 bits DX vers le registre 8 bits AL et n'accède pas à l'espace de ports."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
+    },
+    {
+      "id": "C30-F-Q4",
+      "status": "certified",
+      "rule": "out_operand_validity",
+      "inputs": {
+        "instruction": "OUT DX,BX",
+        "portOperand": "DX",
+        "dataOperand": "BX"
+      },
+      "expected": {
+        "valid": false,
+        "allowedDataRegisters": [
+          "AL",
+          "AX"
+        ]
+      },
+      "correctAnswer": "OUT DX,BX",
+      "derivation": "Sur le 8086, OUT accepte AL pour un transfert octet ou AX pour un transfert mot ; le numéro de port provient de DX ou d'un immédiat 8 bits. BX n'est pas un registre source autorisé pour OUT.",
+      "distractorRationales": [
+        {
+          "choice": "OUT DX,AL",
+          "reason": "OUT DX,AL est valide : AL est l'accumulateur octet autorisé pour OUT via DX."
+        },
+        {
+          "choice": "OUT 10h,AL",
+          "reason": "OUT 10h,AL est également valide : la forme immédiate utilise un numéro de port codé sur huit bits."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
+    },
+    {
+      "id": "C30-F-Q5",
+      "status": "certified",
+      "rule": "out_port_write",
+      "inputs": {
+        "DX": 16,
+        "AL": 85
+      },
+      "expected": {
+        "port": 16,
+        "value": 85,
+        "hexValue": "55h"
+      },
+      "correctAnswer": "55h",
+      "derivation": "MOV AL,55h place 55h dans AL. Avec DX=10h, OUT DX,AL écrit cette valeur dans le port 10h ; le numéro du port ne remplace pas la donnée écrite.",
+      "distractorRationales": [
+        {
+          "choice": "10h",
+          "reason": "10h est le numéro de port contenu dans DX, pas la valeur source envoyée par AL."
+        },
+        {
+          "choice": "00h",
+          "reason": "Aucune instruction de la séquence ne met AL à zéro ; la valeur envoyée est 55h."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
+    },
+    {
+      "id": "C30-F-Q6",
+      "status": "certified",
+      "rule": "hex_port_decimal",
+      "inputs": {
+        "hex": 1016,
+        "digits": [
+          3,
+          15,
+          8
+        ],
+        "base": 16
+      },
+      "expected": {
+        "decimal": 1016,
+        "hex": "03F8h"
+      },
+      "correctAnswer": "1016",
+      "derivation": "03F8h vaut 3×16³? Non : en base 16, 03F8h = 3×16² + 15×16 + 8 = 768+240+8 = 1016. Le zéro initial ne change pas la valeur.",
+      "distractorRationales": [
+        {
+          "choice": "248",
+          "reason": "248 correspond à F8h, c'est-à-dire aux deux chiffres faibles seulement ; le chiffre 3 des centaines hexadécimales est omis."
+        },
+        {
+          "choice": "398",
+          "reason": "398 ne correspond pas à la somme pondérée des chiffres hexadécimaux 0, 3, F et 8."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
+    },
+    {
+      "id": "C30-F-Q7",
+      "status": "certified",
+      "rule": "in_immediate_port_trace",
+      "inputs": {
+        "port": 16,
+        "portValue": 85,
+        "destination": "AL"
+      },
+      "expected": {
+        "AL": 85,
+        "hex": "55h",
+        "port": 16
+      },
+      "correctAnswer": "Charge 55h dans AL",
+      "derivation": "La forme IN AL,imm8 lit le port immédiat 10h. Dans le modèle, si ce port est préconfiguré à 55h, l'octet lu est chargé dans AL ; IN ne réécrit pas le port.",
+      "distractorRationales": [
+        {
+          "choice": "Écrit AL dans le port",
+          "reason": "L'écriture vers un port est l'effet de OUT, pas de IN."
+        },
+        {
+          "choice": "Modifie DX",
+          "reason": "La forme immédiate utilise directement le numéro de port dans l'instruction et ne modifie pas DX."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
+    },
+    {
+      "id": "C30-F-Q8",
+      "status": "certified",
+      "rule": "io_state_after_out",
+      "inputs": {
+        "operation": "OUT",
+        "port": 16,
+        "value": 85
+      },
+      "expected": {
+        "portState": 85,
+        "writtenValue": 85,
+        "observable": true
+      },
+      "correctAnswer": "L'état du port et la valeur écrite",
+      "derivation": "Après OUT, l'audit doit vérifier le port ciblé et la valeur effectivement écrite dans l'état d'E/S du simulateur. Contrôler DS ou CS ne prouve pas qu'une sortie a été dirigée vers le bon port.",
+      "distractorRationales": [
+        {
+          "choice": "Une adresse mémoire DS",
+          "reason": "DS sélectionne un segment mémoire ; il ne valide pas l'état d'un port d'E/S."
+        },
+        {
+          "choice": "Le contenu de CS",
+          "reason": "CS contient le segment de code et n'indique ni le port sélectionné ni la valeur transmise."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
+    },
+    {
+      "id": "C30-F-Q9",
+      "status": "certified",
+      "rule": "io_input_initialization",
+      "inputs": {
+        "configuredPorts": [],
+        "targetPort": 16
+      },
+      "expected": {
+        "requiresInitialization": true,
+        "targetPort": 16
+      },
+      "correctAnswer": "Initialiser la valeur du port dans l'état d'E/S",
+      "derivation": "Si aucune valeur d'entrée n'est configurée pour le port 10h, le modèle ne peut pas fournir une donnée d'entrée déterminée. Il faut initialiser explicitement l'état de ce port avant d'exécuter IN ; effacer AL ne configure pas la source.",
+      "distractorRationales": [
+        {
+          "choice": "Effacer AL",
+          "reason": "Effacer AL ne définit pas la valeur qui doit être lue depuis le port ; cela ne corrige pas l'absence de configuration d'entrée."
+        },
+        {
+          "choice": "Remplacer IN par CALL",
+          "reason": "CALL transfère le contrôle vers une procédure et ne lit pas l'état d'un port d'E/S."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
+    },
+    {
+      "id": "C30-F-Q10",
+      "status": "certified",
+      "rule": "io_model_scope",
+      "inputs": {
+        "modeled": [
+          "configurable_port_state",
+          "IN_OUT_transfers"
+        ],
+        "notModeled": [
+          "physical_peripheral",
+          "electrical_bus_signals"
+        ]
+      },
+      "expected": {
+        "softwarePortModel": true,
+        "realPeripheralModeled": false,
+        "electricalSignalsModeled": false
+      },
+      "correctAnswer": "Le modèle de ports ne remplace pas un périphérique matériel réel",
+      "derivation": "Le simulateur expose un état de ports configurable et vérifie les transferts IN/OUT, mais il ne commande aucun périphérique réel et ne reproduit pas les signaux électriques du bus. Cette distinction évite de confondre la sémantique logicielle avec une validation matérielle.",
+      "distractorRationales": [
+        {
+          "choice": "Les ports sont des registres 32 bits",
+          "reason": "Le 8086 utilise des numéros de port sur 16 bits via DX ; cette proposition attribue une largeur incorrecte."
+        },
+        {
+          "choice": "IN/OUT ne possèdent pas d'opcodes",
+          "reason": "IN et OUT sont des instructions 8086 encodées par des opcodes dédiés ; leur existence ne dépend pas du modèle logiciel."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), Input/Output Instructions, Interrupt Flag and HLT; Intel MCS-86 Assembly Language Reference Manual, IN/OUT operand forms. Laboratory port-state behavior is documented as a pedagogical software model."
+    }
+  ]
+}
