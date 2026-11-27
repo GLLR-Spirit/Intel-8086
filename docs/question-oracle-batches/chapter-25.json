@@ -132,7 +132,7 @@
           "reason": "00FCh est une extension par zéro ; CBW effectue une extension de signe pour une valeur négative."
         },
         {
-          "choice": "FC00h",
+          "choice": "F C00h",
           "reason": "FC00h place FCh dans l'octet haut au lieu de propager le signe dans AH."
         }
       ],
