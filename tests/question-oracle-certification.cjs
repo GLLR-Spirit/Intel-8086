@@ -1388,6 +1388,115 @@ function independentlyCompute(oracle) {
         hexMaximum: maximum.toString(16).toUpperCase().padStart(5, "0") + "h"
       };
     }
+
+    case "rep_movsb_memory_copy": {
+      const count = i.initialCX;
+      const step = i.DF ? -1 : 1;
+      return {
+        CX: 0,
+        SI: (i.initialSI + count * step) & 0xffff,
+        DI: (i.initialDI + count * step) & 0xffff,
+        destinationBytes: i.sourceBytes.slice(0, count)
+      };
+    }
+    case "interrupt_stack_pointer_after_frame": {
+      const bytesPushed = i.words.length * i.wordBytes;
+      return {
+        bytesPushed,
+        finalSP: (i.initialSP - bytesPushed) & 0xffff,
+        finalSPHex: ((i.initialSP - bytesPushed) & 0xffff).toString(16).toUpperCase().padStart(4, "0") + "h",
+        topFirst: i.words.slice().reverse()
+      };
+    }
+    case "iret_concrete_context_restore": {
+      const sp = (i.initial.SP + i.handlerNetStackDelta) & 0xffff;
+      return {
+        CS: i.frame.CS, IP: i.frame.IP, FLAGS: i.frame.FLAGS, SP: sp,
+        CSHex: i.frame.CS.toString(16).toUpperCase().padStart(4, "0") + "h",
+        IPHex: i.frame.IP.toString(16).toUpperCase().padStart(4, "0") + "h",
+        FLAGSHex: i.frame.FLAGS.toString(16).toUpperCase().padStart(4, "0") + "h",
+        SPHex: sp.toString(16).toUpperCase().padStart(4, "0") + "h"
+      };
+    }
+    case "instruction_boundary_after_immediate_mov": {
+      const offset = (i.startIP + i.firstInstructionLength) & 0xffff;
+      const opcode = i.bytes[i.firstInstructionLength];
+      return {
+        nextOpcodeOffset: offset,
+        nextOpcodeOffsetHex: offset.toString(16).toUpperCase().padStart(4, "0") + "h",
+        nextOpcode: opcode,
+        nextOpcodeHex: opcode.toString(16).toUpperCase().padStart(2, "0") + "h"
+      };
+    }
+    case "segment_offset_to_physical_address": {
+      const physicalAddress = ((i.DS << 4) + i.EA) & 0xfffff;
+      return { physicalAddress, hex: physicalAddress.toString(16).toUpperCase() + "h" };
+    }
+    case "modrm_disp8_encode_negative": {
+      const modrm = ((i.mod & 3) << 6) | ((i.reg & 7) << 3) | (i.rm & 7);
+      const displacement = i.displacement & ((2 ** i.width) - 1);
+      return {
+        modrm, modrmHex: modrm.toString(16).toUpperCase().padStart(2, "0") + "h",
+        displacement, displacementHex: displacement.toString(16).toUpperCase().padStart(2, "0") + "h",
+        bytes: [modrm.toString(16).toUpperCase().padStart(2, "0") + "h", displacement.toString(16).toUpperCase().padStart(2, "0") + "h"]
+      };
+    }
+    case "modrm_decode_bp_disp8_zero": {
+      const mod = (i.modrm >>> 6) & 3;
+      const reg = (i.modrm >>> 3) & 7;
+      const rm = i.modrm & 7;
+      const base = mod === 1 && rm === 6 ? "BP" : null;
+      return {
+        mod, reg, rm, base,
+        effectiveAddressExpression: base ? base + "+0" : null,
+        operand: base ? "[" + base + "+0]" : null
+      };
+    }
+    case "linear_disassembly_opcode_offset": {
+      const hltOffset = (i.startOffset + i.firstInstructionLength) & 0xffff;
+      const opcode = i.bytes[i.firstInstructionLength];
+      return {
+        hltOffset,
+        hltOffsetHex: hltOffset.toString(16).toUpperCase().padStart(4, "0") + "h",
+        hltOpcode: opcode,
+        hltOpcodeHex: opcode.toString(16).toUpperCase().padStart(2, "0") + "h"
+      };
+    }
+    case "rep_movsb_backward_index_trace": {
+      const delta = i.elementWidth * i.CX;
+      return {
+        SI: (i.SI - delta) & 0xffff,
+        DI: (i.DI - delta) & 0xffff,
+        CX: 0,
+        SIHex: ((i.SI - delta) & 0xffff).toString(16).toUpperCase().padStart(4, "0") + "h",
+        DIHex: ((i.DI - delta) & 0xffff).toString(16).toUpperCase().padStart(4, "0") + "h"
+      };
+    }
+    case "prefetch_queue_occupancy": {
+      const occupancy = i.queueOccupancyBefore + i.fetchBytes;
+      return { queueOccupancyAfter: occupancy, queueHasCapacity: occupancy <= i.queueCapacity ? i.queueCapacity : occupancy };
+    }
+    case "conditional_branch_not_taken_prefetch": {
+      const branchTaken = i.mnemonic === "JNZ" ? i.ZF === 0 : i.mnemonic === "JZ" ? i.ZF === 1 : false;
+      return {
+        branchTaken,
+        nextIP: branchTaken ? i.targetIP : i.fallThroughIP,
+        queueDiscarded: branchTaken,
+        sequentialQueueUsable: !branchTaken && i.queueContainsSequentialBytes
+      };
+    }
+    case "near_call_concrete_return_frame": {
+      const returnIP = (i.startIP + i.instructionLength) & 0xffff;
+      const finalSP = (i.initialSP - i.wordBytes) & 0xffff;
+      return {
+        returnIP,
+        returnIPHex: returnIP.toString(16).toUpperCase().padStart(4, "0") + "h",
+        stackTopValue: returnIP,
+        finalSP,
+        finalSPHex: finalSP.toString(16).toUpperCase().padStart(4, "0") + "h",
+        bytesPushed: i.wordBytes
+      };
+    }
     default:
       throw new Error("No independent evaluator registered for rule " + oracle.rule);
   }
