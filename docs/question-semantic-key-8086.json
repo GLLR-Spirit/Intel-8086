@@ -1121,11 +1121,11 @@
       "number": 4,
       "stem": "Après une addition sur 8 bits dont le résultat mathématique vaut 100h, quel état obtient-on dans AL et CF ?",
       "choices": [
-        "AL est limité à 8 bits et ne conserve que les 8 bits faibles",
-        "AL est un registre de segment",
-        "ADD refuse les valeurs hexadécimales"
+        "AL=00h et CF=1",
+        "AL=00h et CF=0",
+        "AL=100h et CF=0"
       ],
-      "correctAnswer": "AL est limité à 8 bits et ne conserve que les 8 bits faibles",
+      "correctAnswer": "AL=00h et CF=1",
       "explanation": "AL conserve les huit bits faibles, soit 00h ; la retenue sortante est signalée par CF=1. Cela décrit un résultat arithmétique, pas un MOV AL,100h qui serait un opérande immédiat invalide.",
       "category": "Restrictions"
     },
