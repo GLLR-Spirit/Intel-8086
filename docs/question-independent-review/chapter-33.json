@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue pédagogique indépendante — chapitre 33",
+  "reviewDate": "2026-11-27",
+  "scope": "Examen individuel des 19 questions sur les tables de symboles, l'assemblage en deux passes, les transferts relatifs, le désassemblage séquentiel et la préservation des octets non décodés.",
+  "sources": [
+    {
+      "id": "intel-8086-family-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "sections": "Instruction encodings; relative control transfers; HLT."
+    },
+    {
+      "id": "intel-mcs86-reference",
+      "title": "Intel MCS-86 Assembly Language Reference Manual",
+      "edition": "1979",
+      "sections": "Labels, symbols, assembler passes and DB directive."
+    },
+    {
+      "id": "lab-disassembler-contract",
+      "title": "Intel-8086 Lab disassembler contract",
+      "sections": "Sequential decoding, raw-byte fallback and uncertainty at synchronization boundaries."
+    }
+  ],
+  "records": [
+    {
+      "id": "C33-L1-Q1",
+      "result": "passed",
+      "finding": "La table des symboles associe les étiquettes à des offsets résolus.",
+      "basis": "Recalcul indépendant des offsets, longueurs et déplacements relatifs ; distinction entre données brutes et instructions décodées."
+    },
+    {
+      "id": "C33-L1-Q2",
+      "result": "passed",
+      "finding": "Les deux passes séparent établissement des offsets et résolution/encodage des références.",
+      "basis": "Recalcul indépendant des offsets, longueurs et déplacements relatifs ; distinction entre données brutes et instructions décodées."
+    },
+    {
+      "id": "C33-L1-Q3",
+      "result": "passed",
+      "finding": "JMP NEAR FIN est un transfert relatif near résolu depuis le symbole FIN.",
+      "basis": "Recalcul indépendant des offsets, longueurs et déplacements relatifs ; distinction entre données brutes et instructions décodées."
+    },
+    {
+      "id": "C33-L2-Q1",
+      "result": "passed",
+      "finding": "Le désassembleur séquentiel consomme les octets selon les longueurs décodées à partir d'un point de départ.",
+      "basis": "Recalcul indépendant des offsets, longueurs et déplacements relatifs ; distinction entre données brutes et instructions décodées."
+    },
+    {
+      "id": "C33-L2-Q2",
+      "result": "passed",
+      "finding": "B8 34 12 décode MOV AX,1234h puis F4 décode HLT.",
+      "basis": "Recalcul indépendant des offsets, longueurs et déplacements relatifs ; distinction entre données brutes et instructions décodées."
+    },
+    {
+      "id": "C33-L2-Q3",
+      "result": "passed",
+      "finding": "Le point de départ détermine l'alignement et peut faire interpréter des données comme opcodes.",
+      "basis": "Recalcul indépendant des offsets, longueurs et déplacements relatifs ; distinction entre données brutes et instructions décodées."
+    },
+    {
+      "id": "C33-L3-Q1",
+      "result": "passed",
+      "finding": "DB préserve un octet inconnu sans prétendre connaître sa signification dans le source original.",
+      "basis": "Recalcul indépendant des offsets, longueurs et déplacements relatifs ; distinction entre données brutes et instructions décodées."
+    },
+    {
+      "id": "C33-L3-Q2",
+      "result": "passed",
+      "finding": "DB 64h représente un octet brut de valeur 64h.",
+      "basis": "Recalcul indépendant des offsets, longueurs et déplacements relatifs ; distinction entre données brutes et instructions décodées."
+    },
+    {
+      "id": "C33-L3-Q3",
+      "result": "passed",
+      "finding": "La conservation des octets évite la perte de données ; la resynchronisation reste explicitement incertaine.",
+      "basis": "Recalcul indépendant des offsets, longueurs et déplacements relatifs ; distinction entre données brutes et instructions décodées."
+    },
+    {
+      "id": "C33-F-Q1",
+      "result": "passed",
+      "finding": "L'offset est une position relative au début du segment, distincte de l'adresse physique.",
+      "basis": "Recalcul indépendant des offsets, longueurs et déplacements relatifs ; distinction entre données brutes et instructions décodées."
+    },
+    {
+      "id": "C33-F-Q2",
+      "result": "passed",
+      "finding": "Le schéma deux passes est correctement décrit.",
+      "basis": "Recalcul indépendant des offsets, longueurs et déplacements relatifs ; distinction entre données brutes et instructions décodées."
+    },
+    {
+      "id": "C33-F-Q3",
+      "result": "passed",
+      "finding": "JMP NEAR FIN résout le symbole et encode le déplacement relatif depuis l'instruction suivante.",
+      "basis": "Recalcul indépendant des offsets, longueurs et déplacements relatifs ; distinction entre données brutes et instructions décodées."
+    },
+    {
+      "id": "C33-F-Q4",
+      "result": "passed",
+      "finding": "Les noms de symboles ne sont pas nécessairement présents dans les octets machine.",
+      "basis": "Recalcul indépendant des offsets, longueurs et déplacements relatifs ; distinction entre données brutes et instructions décodées."
+    },
+    {
+      "id": "C33-F-Q5",
+      "result": "corrected",
+      "finding": "L'ancienne question demandait seulement la fonction de F4h, déjà couverte par le décodage de flux en leçon. Elle calcule désormais l'offset réel de HLT dans le flux.",
+      "basis": "Recalcul indépendant des offsets, longueurs et déplacements relatifs ; distinction entre données brutes et instructions décodées."
+    },
+    {
+      "id": "C33-F-Q6",
+      "result": "passed",
+      "finding": "JMP short EB 01 occupe deux octets ; NOP ajoute un octet et FIN se trouve à 0003h.",
+      "basis": "Recalcul indépendant des offsets, longueurs et déplacements relatifs ; distinction entre données brutes et instructions décodées."
+    },
+    {
+      "id": "C33-F-Q7",
+      "result": "passed",
+      "finding": "Le flux séquentiel est correctement décodé en MOV AX,1234h puis HLT.",
+      "basis": "Recalcul indépendant des offsets, longueurs et déplacements relatifs ; distinction entre données brutes et instructions décodées."
+    },
+    {
+      "id": "C33-F-Q8",
+      "result": "passed",
+      "finding": "DB préserve la valeur brute sans lui attribuer arbitrairement un mnémonique.",
+      "basis": "Recalcul indépendant des offsets, longueurs et déplacements relatifs ; distinction entre données brutes et instructions décodées."
+    },
+    {
+      "id": "C33-F-Q9",
+      "result": "passed",
+      "finding": "L'incertitude de synchronisation après un octet non décodé est correctement signalée.",
+      "basis": "Recalcul indépendant des offsets, longueurs et déplacements relatifs ; distinction entre données brutes et instructions décodées."
+    },
+    {
+      "id": "C33-F-Q10",
+      "result": "passed",
+      "finding": "La comparaison doit inclure octets fixes, désassemblage et assembleur indépendant.",
+      "basis": "Recalcul indépendant des offsets, longueurs et déplacements relatifs ; distinction entre données brutes et instructions décodées."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 18,
+    "corrected": 1,
+    "needsRevision": 0,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  },
+  "openFindings": []
+}
