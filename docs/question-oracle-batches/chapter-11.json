@@ -198,7 +198,7 @@
     {
       "id": "C11-L3-Q2",
       "status": "certified",
-      "rule": "inc_preserves_cf",
+      "rule": "inc_preserves_cf_value",
       "inputs": {
         "instruction": "INC AX",
         "initialCF": 1
@@ -384,7 +384,7 @@
     {
       "id": "C11-F-Q6",
       "status": "certified",
-      "rule": "inc_preserves_cf",
+      "rule": "inc_preserves_cf_value",
       "inputs": {
         "instruction": "INC AX",
         "initialCF": 1
