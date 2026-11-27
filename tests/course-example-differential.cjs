@@ -21,7 +21,7 @@ const context = {
 };
 const injection = [
   "globalThis.__courseDifferentialApi = {",
-  " curriculum, exercises, exerciseMetadata, executeAll, executeBinary, assembleProgram, parseProgram",
+  " curriculum, exercises, exerciseMetadata, executeAll, executeBinary, assembleProgram, parseProgram, disassembleBytes",
   "};",
   "})();"
 ].join("\n");
@@ -243,4 +243,25 @@ if (exerciseFailures.length) console.error("Correction differential failures:\n"
 assert.equal(api.exercises.length, 48, "The exercise correction audit must cover all 48 exercises.");
 assert.equal(exercisesCompared, 48, "Every guided correction must pass source/binary parity.");
 assert.deepEqual(exerciseFailures, [], "All 48 source and binary corrections must agree and satisfy their validators.");
+
+const encodingExercise = api.exercises[34];
+assert.equal(encodingExercise[0], "Encodage : vérifier MOV immédiat", "EX35 identity must remain stable.");
+const encodingSolution = encodingExercise[4].solution;
+const encodingAssembly = api.assembleProgram(encodingSolution);
+assert.deepEqual(Array.from(encodingAssembly.bytes), [0xB8,0x34,0x12,0xF4],
+  "EX35 must independently verify the exact B8 34 12 F4 encoding, not only AX.");
+const disassemblyExercise = api.exercises[36];
+assert.equal(disassemblyExercise[0], "Assembleur et désassembleur : branchement symbolique", "EX37 identity must remain stable.");
+const disassemblyAssembly = api.assembleProgram(disassemblyExercise[4].solution);
+const disassembly = api.disassembleBytes(disassemblyAssembly.bytes);
+assert.equal(disassembly.size, disassemblyAssembly.bytes.length, "EX37 disassembly must consume the complete byte stream.");
+assert.deepEqual(disassembly.rows.map(row => row.offset), disassemblyAssembly.rows.map(row => row.offset),
+  "EX37 disassembly must preserve every instruction boundary, including the skipped NOP.");
+assert.deepEqual(disassembly.rows.map(row => row.bytes), disassemblyAssembly.rows.map(row => row.bytes),
+  "EX37 disassembly must preserve each encoded instruction's byte span.");
+assert.ok(disassembly.rows.some(row => /^JMP\\b/.test(row.instruction)), "EX37 must decode its relative jump.");
+assert.ok(disassembly.rows.some(row => row.instruction === "NOP"), "EX37 must decode the NOP on the skipped execution path.");
+assert.ok(disassembly.rows.some(row => /^MOV AX, 1234h$/i.test(row.instruction)), "EX37 must decode MOV AX,1234h.");
+console.log("EX35 exact encoding oracle and EX37 disassembly-boundary oracle PASS.");
+
 console.log("Course and exercise source/binary differential audit PASS: 108 examples + 48 corrections.");
