@@ -185,7 +185,7 @@ for (let index = 0; index < api.exercises.length; index++) {
   }
 }
 console.log("Guided correction source/binary differential: " + exercisesCompared + "/" + api.exercises.length + " solutions compared.");
-if (exerciseFailures.length) console.error("Correction differential failures:\\n" + exerciseFailures.join("\\n"));
+if (exerciseFailures.length) console.error("Correction differential failures:\n" + exerciseFailures.join("\n"));
 assert.equal(api.exercises.length, 48, "The exercise correction audit must cover all 48 exercises.");
 assert.equal(exercisesCompared, 48, "Every guided correction must pass source/binary parity.");
 assert.deepEqual(exerciseFailures, [], "All 48 source and binary corrections must agree and satisfy their validators.");
