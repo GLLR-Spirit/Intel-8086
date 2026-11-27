@@ -10097,12 +10097,12 @@
       "number": 1,
       "stem": "Quel effet le préfixe LOCK demande-t-il sur le 8086 ?",
       "choices": [
-        "L'assertion du signal de verrouillage du bus pendant l'instruction suivante",
+        "L'assertion du signal LOCK du bus pendant l'instruction suivante en mode maximum",
         "Le verrouillage permanent d'un registre",
         "La répétition de CX fois"
       ],
-      "correctAnswer": "L'assertion du signal de verrouillage du bus pendant l'instruction suivante",
-      "explanation": "Le préfixe demande l'activation du signal LOCK pendant l'opération de l'instruction suivante ; il est utile lorsque celle-ci accède à une ressource partagée.",
+      "correctAnswer": "L'assertion du signal LOCK du bus pendant l'instruction suivante en mode maximum",
+      "explanation": "En mode maximum du 8086, le préfixe demande l'assertion du signal LOCK pendant l'exécution de l'instruction suivante. Il est pertinent lorsque cette instruction réalise un accès mémoire modificateur qui doit protéger une ressource partagée.",
       "category": "Compréhension"
     },
     {
