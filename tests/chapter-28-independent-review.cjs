@@ -25,7 +25,7 @@ for (const group of categoryGroups) assert.equal(finalQuestions.filter(q => grou
   "Chapter 28 final assessment must contain exactly two items in " + group.join("/"));
 const f8 = key.questions.find(q => q.id === "C28-F-Q8");
 assert.equal(f8.correctAnswer, "41h puis 42h");
-assert.match(f8.stem, /DS:0100h=41h.*DS:0101h=42h/);
+assert.match(f8.stem, /\[DS:0100h\]=41h.*\[DS:0101h\]=42h/);
 const oracle = batch.oracles.find(q => q.id === "C28-F-Q8");
 assert.deepEqual(oracle.expected, { CX: 0, SI: 258, DI: 514, destinationBytes: [65,66] });
 assert.deepEqual(oracle.inputs.sourceBytes, [65,66]);
