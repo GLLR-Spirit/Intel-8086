@@ -316,23 +316,28 @@
     {
       "id": "C05-F-Q4",
       "status": "certified",
-      "rule": "bp_default_segment",
+      "rule": "mov_operand_size_compatibility",
       "inputs": {
-        "effectiveAddress": "[BP+SI]"
+        "destination": "AX",
+        "destinationBits": 16,
+        "source": "AL",
+        "sourceBits": 8
       },
       "expected": {
-        "segment": "SS"
+        "valid": false,
+        "destinationBits": 16,
+        "sourceBits": 8
       },
-      "correctAnswer": "SS",
-      "derivation": "La présence de BP dans l'adresse effective sélectionne SS par défaut. SI peut participer au calcul de l'offset, mais ne change pas la sélection du segment par défaut imposée par BP.",
+      "correctAnswer": "AX est un registre 16 bits et AL un registre 8 bits : les tailles diffèrent",
+      "derivation": "La forme MOV exige que la destination et la source aient la même largeur. AX est un registre de 16 bits, tandis que AL est un sous-registre de 8 bits ; MOV AX,AL est donc invalide pour incompatibilité de taille.",
       "distractorRationales": [
         {
-          "choice": "DS",
-          "reason": "DS est le segment par défaut de nombreuses références, mais l'utilisation de BP impose SS par défaut."
+          "choice": "AX et AL ne peuvent jamais être utilisés dans la même instruction",
+          "reason": "Des registres de même largeur peuvent être utilisés ensemble ; par exemple MOV AH,AL copie un octet vers un autre."
         },
         {
-          "choice": "ES",
-          "reason": "ES est le segment destination des chaînes ; BP ne le sélectionne pas par défaut."
+          "choice": "AL est un registre de segment",
+          "reason": "AL est l'octet faible du registre général AX ; ce n'est pas un registre de segment."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -416,26 +421,26 @@
     {
       "id": "C05-F-Q7",
       "status": "certified",
-      "rule": "write_low_byte_preserve_high",
+      "rule": "write_high_byte_preserve_low",
       "inputs": {
         "initialAX": 4660,
-        "newAL": 86
+        "newAH": 86
       },
       "expected": {
-        "finalAX": 4694,
-        "finalAH": 18,
-        "finalAL": 86
+        "finalAX": 22068,
+        "finalAH": 86,
+        "finalAL": 52
       },
-      "correctAnswer": "AH",
-      "derivation": "MOV AL,56h remplace seulement AL. La partie AH n'est pas écrite et conserve donc 12h ; c'est l'octet AH qui reste inchangé.",
+      "correctAnswer": "AL",
+      "derivation": "AX commence à 1234h. L'écriture de 56h dans AH remplace les bits 15 à 8 ; AL n'est pas ciblé et conserve 34h. Le mot final vaut 5634h.",
       "distractorRationales": [
         {
-          "choice": "AL",
-          "reason": "MOV AL remplace AL, pas AH ; l'octet faible n'est donc pas celui qui reste inchangé."
+          "choice": "AH",
+          "reason": "AH est précisément l'octet écrit par MOV AH,56h ; il ne reste donc pas inchangé."
         },
         {
           "choice": "Aucun octet",
-          "reason": "Un octet reste inchangé : AH conserve 12h pendant que AL reçoit 56h."
+          "reason": "L'écriture dans AH ne modifie pas AL ; l'octet faible 34h reste inchangé."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -466,24 +471,24 @@
     {
       "id": "C05-F-Q9",
       "status": "certified",
-      "rule": "mov_cs_destination_invalid",
+      "rule": "string_destination_index_default",
       "inputs": {
-        "instruction": "MOV CS,AX"
+        "instruction": "MOVSB"
       },
       "expected": {
-        "valid": false,
-        "reason": "CS_cannot_be_destination_of_MOV"
+        "register": "DI",
+        "segment": "ES"
       },
-      "correctAnswer": "CS ne peut pas être destination de MOV sur le 8086",
-      "derivation": "La forme MOV CS,AX est interdite sur le 8086. Le chargement de CS est lié aux transferts de contrôle qui établissent également l'offset IP ; un MOV ordinaire ne peut pas écrire CS.",
+      "correctAnswer": "La source est DS:SI et la destination ES:DI",
+      "derivation": "MOVSB lit la source à l'adresse DS:SI par défaut et écrit la destination à ES:DI. SI et DI sont des offsets distincts ; ES est le segment destination imposé pour cette opération de chaîne.",
       "distractorRationales": [
         {
-          "choice": "AX doit être un registre 8 bits",
-          "reason": "AX n'a pas à être un registre 8 bits ; l'interdiction porte sur CS comme destination de MOV."
+          "choice": "La source et la destination utilisent CS:IP",
+          "reason": "CS:IP désigne le flot d'instructions ; il ne sert pas de paire source/destination pour MOVSB."
         },
         {
-          "choice": "MOV ne peut pas copier entre registres",
-          "reason": "MOV peut copier entre certains registres ; c'est spécifiquement l'écriture de CS par MOV qui est interdite."
+          "choice": "MOVSB n'accède pas à la mémoire",
+          "reason": "MOVSB lit un octet en mémoire et l'écrit à une autre adresse mémoire, puis ajuste SI et DI selon DF."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
