@@ -147,7 +147,7 @@ Les écarts de la première passe ont été corrigés sur cette branche :
 - Audit navigateur de niveau 3 : **réussi**.
 - Corrections guidées : **48/48** chargées, exécutées et acceptées par leur validateur dans l'interface.
 - Comparaison source/binaire : **48/48** corrections comparées.
-- Oracles complémentaires : **7/7** corrections avancées acceptées ; trois contrôles négatifs rejettent une réponse écrite absente, un encodage différent mais fonctionnel et une pile déséquilibrée.
+- Oracles complémentaires : **9/9** corrections avancées acceptées (EX33, EX35, EX37, EX39, EX41, EX43, EX46, EX47, EX48) ; trois contrôles négatifs rejettent une réponse écrite absente, un encodage différent mais fonctionnel et une pile déséquilibrée.
 - Filtres : **1 554/1 554** combinaisons, recherche dans le code, recherche combinée et réinitialisation réussies.
 
 ### Statut de certification
@@ -179,3 +179,6 @@ Ces assertions sont des invariants du modèle pédagogique exécuté par le simu
 ### Correction d'un oracle trop strict sur IP
 
 Le premier contrôle avait comparé l'IP après HLT à la taille totale du programme. Le test a montré que cette attente était incorrecte : HLT arrête l'exécution après l'incrément séquentiel de l'IP, lequel pointe donc vers la routine placée immédiatement après HLT. Les oracles EX41, EX47 et EX48 vérifient désormais respectivement les symboles `DOUBLE` et `HANDLER`, et non la fin du flux. Le contrôle est conservé uniquement après vérification CI.
+
+
+Le test navigateur indépendant a été étendu aux invariants ajoutés de EX33 et EX43. Il exécute maintenant neuf corrections ciblées (EX33, EX35, EX37, EX39, EX41, EX43, EX46, EX47, EX48) et conserve trois contrôles négatifs.
