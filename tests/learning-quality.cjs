@@ -182,7 +182,10 @@ for (const oracle of independentQuestionAudit.oracles) {
     case "unsigned_strict_greater":{
       const greater=oracle.inputs.candidate>oracle.inputs.currentMaximum;
       const equal=oracle.inputs.equalCase.candidate===oracle.inputs.equalCase.currentMaximum;
-      computed={condition:"JA",strictComparison:greater,equalityReplaces:equal};
+      const carry=oracle.inputs.candidate<oracle.inputs.currentMaximum?1:0;
+      const zero=equal?1:0;
+      const jaTaken=carry===0&&zero===0;
+      computed={condition:"JA",strictComparison:jaTaken,equalityReplaces:zero===1&&jaTaken};
       break;
     }
     case "logical_shift_right_8":{
