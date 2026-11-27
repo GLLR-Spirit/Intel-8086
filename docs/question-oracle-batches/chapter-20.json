@@ -341,7 +341,7 @@
     {
       "id": "C20-F-Q4",
       "status": "certified",
-      "rule": "stack_lifo_order",
+      "rule": "stack_lifo_wrong_order",
       "inputs": {
         "sequence": [
           "PUSH AX",
