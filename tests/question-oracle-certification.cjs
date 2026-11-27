@@ -139,11 +139,12 @@ for (const oracle of batch.oracles) {
   else if (oracle.status === "blocked") {
     blocked++;
     assert.ok(oracle.blocker && oracle.blocker.length >= 30, oracle.id + " blocked status must explain the required correction");
-    assert.match(keyed.explanation, /instruction encodée/i, "Blocked source-vs-machine-code explanation must remain explicitly identified until corrected");
+
   } else {
     assert.fail("Unknown oracle status for " + oracle.id + ": " + oracle.status);
   }
 }
-assert.equal(certified, 18, "18 Chapter 1 items are currently certified");
-assert.equal(blocked, 1, "One Chapter 1 item remains blocked pending correction of its explanation");
+assert.equal(certified, 19, "All 19 Chapter 1 items are certified");
+assert.equal(blocked, 0, "No Chapter 1 item remains blocked");
+assert.match(keyMap.get("C01-L1-Q2").explanation, /octets machine distincts/i, "Source assembly must be distinguished from its encoded machine bytes");
 console.log("Question oracle certification: chapter 1 — " + certified + "/19 certified; " + blocked + " blocked; runtime/key alignment and independent evaluators passed.");
