@@ -206,9 +206,11 @@ function createBackupDocument(){
 }
 function restoreBackupDocument(doc){
  var issue=validateBackupDocument(doc);if(issue)throw new Error(issue);
- var store=window.localStorage,snapshot={};
- try{BACKUP_KEYS.forEach(function(key){snapshot[key]=store.getItem(key);});}
- catch(error){throw new Error("Impossible de lire les données actuelles : restauration annulée.");}
+ var store,snapshot={};
+ try{
+  store=window.localStorage;
+  BACKUP_KEYS.forEach(function(key){snapshot[key]=store.getItem(key);});
+ }catch(error){throw new Error("Impossible de lire les données actuelles : restauration annulée.");}
  var written=[];
  try{
   BACKUP_KEYS.forEach(function(key){
