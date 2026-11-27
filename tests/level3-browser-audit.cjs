@@ -345,11 +345,11 @@ const assert = require("node:assert/strict");
   await page.locator("#calcSegmentAddress").click();
   assert.match(await page.locator("#segmentDemoResult").textContent(), /10010h/);
 
-  await page.locator('[data-lesson="19"]').click();
+  await page.locator('[data-lesson="18"]').click();
   await page.locator("#calcEffectiveAddress").click();
   assert.match(await page.locator("#eaDemoResult").textContent(), /EA=0106h/);
 
-  await page.locator('[data-lesson="20"]').click();
+  await page.locator('[data-lesson="19"]').click();
   await page.locator("#stackPush1111").click();
   await page.locator("#stackPush2222").click();
   assert.match(await page.locator("#stackDemoResult").textContent(), /Sommet=2222h/);
@@ -380,7 +380,7 @@ const assert = require("node:assert/strict");
   await page.locator("#calcSegmentAddress").click();
   assert.match(await page.locator("#segmentDemoResult").textContent(),/mots hexadécimaux/i);
 
-  await page.locator('[data-lesson="19"]').click();
+  await page.locator('[data-lesson="18"]').click();
   await page.locator("#eaBX").fill("01G0");
   await page.locator("#calcEffectiveAddress").click();
   assert.match(await page.locator("#eaDemoResult").textContent(),/mots hexadécimaux/i);
