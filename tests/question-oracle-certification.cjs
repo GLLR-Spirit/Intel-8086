@@ -3,7 +3,8 @@ const vm = require("node:vm");
 const assert = require("node:assert/strict");
 
 const key = JSON.parse(fs.readFileSync("docs/question-semantic-key-8086.json", "utf8"));
-const batches = ["chapter-01", "chapter-02"].map(name => JSON.parse(fs.readFileSync("docs/question-oracle-batches/" + name + ".json", "utf8")));
+const manifest = JSON.parse(fs.readFileSync("docs/question-independent-oracles-8086.json", "utf8"));
+const batches = ["chapter-01", "chapter-02", "chapter-03"].map(name => JSON.parse(fs.readFileSync("docs/question-oracle-batches/" + name + ".json", "utf8")));
 const html = fs.readFileSync("index.html", "utf8");
 const match = html.match(/<script>([\s\S]*?)<\/script>/);
 assert.ok(match, "Inline application script must exist");
@@ -70,6 +71,50 @@ function independentlyCompute(oracle) {
     case "prefetch_queue_capacity":
     case "eu_biu_work_split":
       return fact[oracle.rule];
+    case "prefetch_queue_8086":
+      return { queueBytes: 6, overlap: true, superscalarExecution: false };
+    case "radix_power_of_two":
+      return { property: "positional_weights_are_powers_of_two" };
+    case "hex_digit_bit_width":
+      return { bitsPerDigit: Math.log2(i.symbolCount) };
+    case "hex_two_digit_byte_width":
+      return { bitsPerDigit: Math.log2(i.symbolCount), bitsForTwoDigits: 2 * Math.log2(i.symbolCount) };
+    case "binary_to_decimal": {
+      const terms = [...i.bits].reverse().map((bit, index) => bit === "1" ? 2 ** index : 0).filter(value => value !== 0);
+      return { decimal: terms.reduce((sum, value) => sum + value, 0), terms };
+    }
+    case "binary_bit_weight":
+      return { exponent: i.positionFromRight, weight: 2 ** i.positionFromRight };
+    case "hex_to_decimal": {
+      const value = Number.parseInt(i.hex, 16);
+      const digits = [...i.hex.toUpperCase()].reverse();
+      const terms = digits.map((digit, index) => Number.parseInt(digit, 16) * (16 ** index)).filter(value => value !== 0).reverse();
+      return { decimal: value, terms };
+    }
+    case "hex_digit_to_binary": {
+      const value = Number.parseInt(i.digit, 16);
+      return { decimal: value, binary: value.toString(2).padStart(4, "0") };
+    }
+    case "unsigned_byte_range":
+      return { minimum: 0, maximum: (2 ** i.bits) - 1, minHex: "00h", maxHex: "FFh" };
+    case "immediate_literal_fit": {
+      const value = Number.parseInt(i.literal, i.radix);
+      const maximum = (2 ** i.registerBits) - 1;
+      return { fits: value <= maximum, value, maximum, requiredBits: Math.max(1, Math.ceil(Math.log2(value + 1))) };
+    }
+    case "load_byte_immediate_into_word": {
+      const value = Number.parseInt(i.literal, i.radix);
+      return { value, wordHex: value.toString(16).toUpperCase().padStart(4, "0") + "h", highByte: (value >>> 8) & 0xff, lowByte: value & 0xff };
+    }
+    case "hex_to_binary_decimal": {
+      const value = Number.parseInt(i.hex, 16);
+      return { binary: value.toString(2).padStart(i.hex.length * 4, "0"), decimal: value };
+    }
+    case "binary_nibble_grouping": {
+      const padded = i.bits.padStart(Math.ceil(i.bits.length / 4) * 4, "0");
+      const groups = padded.match(/.{4}/g);
+      return { groups, hex: Number.parseInt(padded, 2).toString(16).toUpperCase() };
+    }
     case "intel_operand_order":
       if (i.instruction) {
         const operands = i.instruction.replace(/^MOV\s+/i, "").split(",");
@@ -157,13 +202,18 @@ function independentlyCompute(oracle) {
 }
 
 const keyMap = new Map(key.questions.map(q => [q.id, q]));
-assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02"]);
-assert.ok(batches.every(batch => batch.oracles.length === 19), "Each certified chapter batch must contain 19 oracle records");
+assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03"]);
+assert.deepEqual(batches.map(batch => batch.oracles.length), [19, 18, 19], "Chapter 2 reuses one historical oracle rather than duplicating its ID");
+const historicalChapter2 = manifest.oracles.filter(oracle => oracle.id === "C02-F-Q4");
+assert.equal(historicalChapter2.length, 1, "The historical chapter 2 final question oracle must be reused exactly once");
+const allOracleRecords = [...batches.flatMap(batch => batch.oracles), ...historicalChapter2];
+const allIds = allOracleRecords.map(oracle => oracle.id);
+assert.equal(new Set(allIds).size, allIds.length, "Certified oracle IDs must be globally unique across supplemental batches and reused historical records");
 const seen = new Set();
 let certified = 0;
 let blocked = 0;
 
-for (const oracle of batches.flatMap(batch => batch.oracles)) {
+for (const oracle of allOracleRecords) {
   assert.ok(!seen.has(oracle.id), "Duplicate oracle ID: " + oracle.id);
   seen.add(oracle.id);
   const keyed = keyMap.get(oracle.id);
@@ -195,7 +245,13 @@ for (const oracle of batches.flatMap(batch => batch.oracles)) {
     assert.fail("Unknown oracle status for " + oracle.id + ": " + oracle.status);
   }
 }
-assert.equal(certified, 38, "All 38 questions in chapters 1 and 2 are certified");
+assert.equal(certified, 57, "All 57 questions across chapters 1 to 3 are certified, including the reused historical chapter 2 oracle");
 assert.equal(blocked, 0, "No question in the certified batches remains blocked");
+for (const chapter of [1, 2, 3]) {
+  const prefix = "C" + String(chapter).padStart(2, "0") + "-";
+  const expectedIds = key.questions.filter(question => question.id.startsWith(prefix)).map(question => question.id);
+  assert.equal(expectedIds.length, 19, "Each audited chapter must contain exactly 19 keyed questions");
+  for (const id of expectedIds) assert.ok(allIds.includes(id), "Missing independent oracle for " + id);
+}
 assert.match(keyMap.get("C01-L1-Q2").explanation, /octets machine distincts/i, "Source assembly must be distinguished from its encoded machine bytes");
-console.log("Question oracle certification: chapters 1–2 — " + certified + "/38 certified; " + blocked + " blocked; runtime/key alignment and independent evaluators passed.");
+console.log("Question oracle certification: chapters 1–3 — " + certified + "/57 certified; " + blocked + " blocked; runtime/key alignment and independent evaluators passed.");
