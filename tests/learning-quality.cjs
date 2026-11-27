@@ -181,10 +181,13 @@ for (const oracle of independentQuestionAudit.oracles) {
     }
     case "unsigned_strict_greater":{
       const equal=oracle.inputs.equalCase.candidate===oracle.inputs.equalCase.currentMaximum;
-      const carry=oracle.inputs.candidate<oracle.inputs.currentMaximum?1:0;
-      const zero=equal?1:0;
-      const jaTaken=carry===0&&zero===0;
-      computed={condition:"JA",strictComparison:jaTaken,equalityReplaces:zero===1&&jaTaken};
+      const candidateCarry=oracle.inputs.candidate<oracle.inputs.currentMaximum?1:0;
+      const candidateZero=oracle.inputs.candidate===oracle.inputs.currentMaximum?1:0;
+      const strictJaTaken=candidateCarry===0&&candidateZero===0;
+      const equalCaseCarry=oracle.inputs.equalCase.candidate<oracle.inputs.equalCase.currentMaximum?1:0;
+      const equalCaseZero=equal?1:0;
+      const equalCaseJaTaken=equalCaseCarry===0&&equalCaseZero===0;
+      computed={condition:"JA",strictComparison:strictJaTaken,equalityReplaces:equalCaseJaTaken};
       break;
     }
     case "logical_shift_right_8":{
