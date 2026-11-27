@@ -833,6 +833,10 @@ const assert = require("node:assert/strict");
   assert.equal(editorialNotes.length,48,"Every exercise must have an individual prerequisite and common-error note.");
   assert.ok(editorialNotes.every(note=>note&&note.prerequisites.trim()&&note.pitfall.trim()),
     "All 48 editorial records must contain non-empty prerequisites and a specific common pitfall.");
+  const difficultyRationales=await page.evaluate(()=>window.__8086Audit.exerciseDifficultyRationales);
+  assert.equal(difficultyRationales.length,48,"Every exercise must have an individual difficulty rationale.");
+  assert.ok(difficultyRationales.every(value=>typeof value==="string"&&value.trim()),
+    "All 48 difficulty rationales must be non-empty.");
   for(const exercise of allExerciseSolutions){
     const card=page.locator("#exerciseList .exercise").nth(exercise.index);
     await card.locator("details.exercise-guide > summary").click();
