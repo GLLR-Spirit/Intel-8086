@@ -55,6 +55,19 @@ const fact = {
 };
 
 function independentlyCompute(oracle) {
+  if (oracle.rule === "audit_checklist_coverage") {
+    const requirements = {
+      effective_address: ["effective_address", "default_segment", "segment_override", "operand_width"],
+      stack: ["LIFO_order", "word_values", "SP_before_after", "memory_bounds"],
+      string_instruction: ["source_data", "destination_data", "SI", "DI", "DF", "segments", "FLAGS"],
+      repeated_string: ["copied_data", "CX", "SI", "DI", "DF", "FLAGS"]
+    };
+    const requiredChecks = requirements[oracle.inputs.domain];
+    assert.ok(requiredChecks, "Unknown checklist domain: " + oracle.inputs.domain);
+    const supplied = new Set(oracle.inputs.checks);
+    const missingChecks = requiredChecks.filter(check => !supplied.has(check));
+    return { requiredChecks, missingChecks, complete: missingChecks.length === 0 };
+  }
   const i = oracle.inputs;
   switch (oracle.rule) {
     case "microprocessor_role":
@@ -675,7 +688,7 @@ function independentlyCompute(oracle) {
     case "movsb_source_override":
       return { sourceSegment: i.override, sourceOffset: i.sourceOffset, destinationSegment: "ES" };
     case "string_instruction_validation":
-      return { checksAll: true };
+      throw new Error("Deprecated checklist placeholder; use audit_checklist_coverage with domain-specific requirements");
     case "rep_counter_register":
       return { counter: "CX" };
     case "direction_flag_control":
@@ -720,9 +733,9 @@ function independentlyCompute(oracle) {
     case "rep_initialization":
       return { mustInitializeCXNonzero: true, segmentsAndIndexesRequired: true };
     case "rep_audit":
-      return { checksAll: true };
+      throw new Error("Deprecated checklist placeholder; use audit_checklist_coverage with domain-specific requirements");
     case "memory_address_components":
-      return { checksAll: true };
+      throw new Error("Deprecated checklist placeholder; use audit_checklist_coverage with domain-specific requirements");
     case "stack_lifo_order":
       return { order: "last_in_first_out" };
     case "stack_lifo_wrong_order":
@@ -744,7 +757,7 @@ function independentlyCompute(oracle) {
     case "stack_missing_pop":
       return { requiredCorrection: "POP_corresponding_register", stackWordsRemaining: i.pushWords - i.popWords };
     case "stack_validation":
-      return { checksAll: true };
+      throw new Error("Deprecated checklist placeholder; use audit_checklist_coverage with domain-specific requirements");
     case "near_call_stack":
       return { saved: "IP", CSChanged: false, SPDecrement: 2 };
     case "call_return_address":
