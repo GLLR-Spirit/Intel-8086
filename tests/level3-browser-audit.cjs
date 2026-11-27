@@ -245,9 +245,18 @@ const assert = require("node:assert/strict");
   await keyboardPage.keyboard.press("Enter");
   assert.equal(await chapterFilter.inputValue(),String(filterTarget.chapter),
     "The chapter filter must be keyboard-selectable.");
-  const chapterResults=await keyboardPage.locator("#exerciseList .exercise").allTextContents();
-  assert.ok(chapterResults.length>0&&chapterResults.every(text=>new RegExp("Chapitres : "+(filterTarget.chapter+1)+"\\.").test(text)),
-    "Combined difficulty/chapter filters must return only exercises assigned to the selected chapter.");
+  const chapterFilterAudit=await keyboardPage.evaluate(()=>{
+    const api=window.__8086Audit;
+    const selectedChapter=Number(document.querySelector("#exerciseChapter").value);
+    const expected=api.exercises.map((exercise,index)=>({exercise,index,metadata:api.exerciseMetadata(exercise,index)}))
+      .filter(item=>item.metadata.chapters.includes(selectedChapter)&&item.metadata.difficulty==="Débutant")
+      .map(item=>(item.index+1)+". "+item.exercise[0]);
+    const actual=[...document.querySelectorAll("#exerciseList .exercise b")].map(node=>node.textContent.trim());
+    return {selectedChapter,expected,actual};
+  });
+  assert.ok(chapterFilterAudit.actual.length>0,"The selected chapter and difficulty must produce visible exercises.");
+  assert.deepEqual(chapterFilterAudit.actual,chapterFilterAudit.expected,
+    "Combined difficulty/chapter filters must return exactly the exercises assigned to the selected chapter.");
 
   const typeFilter=keyboardPage.locator("#exerciseType");
   const typeOptions=await typeFilter.locator("option").evaluateAll(options=>options.map(option=>option.value));
