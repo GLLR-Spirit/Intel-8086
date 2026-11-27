@@ -160,3 +160,15 @@ The mission remains in progress. Passing automated suites is evidence for the te
   - C07-F-Q10 now distinguishes MOV memory read from XCHG register/memory exchange rather than repeating another LEA/MOV comparison.
 - Updated the runtime bank, semantic key and chapter-07 oracle batch. Added independent evaluators and CI assertions for memory-write and MOV/XCHG semantics.
 - Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
+
+
+### Independent question review — chapter 8
+
+- Reviewed all 19 questions individually against the Intel 8086 Family User's Manual and independent arithmetic traces.
+- 15 items passed; four were corrected to reduce repeated examples and improve flag coverage:
+  - C08-L1-Q3 now traces 12FFh + 1 across AL/AH using ADD then ADC, producing 1300h.
+  - C08-L2-Q3 now tests SBB with an incoming borrow: 10h−1−1=0Eh.
+  - C08-L3-Q3 now tests NEG 01h (FFh, CF=1, OF=0), distinct from the final NEG 80h overflow case.
+  - C08-F-Q2 now tests the complete INC flag set: OF/SF/ZF/AF/PF updated, CF preserved.
+- Updated runtime bank, semantic key and chapter-08 oracle batch; added independent evaluators and CI assertions for carry propagation and INC flag effects.
+- Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
