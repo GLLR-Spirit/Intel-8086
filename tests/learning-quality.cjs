@@ -236,6 +236,11 @@ for (const oracle of independentQuestionAudit.oracles) {
       computed={writes,finalCX:cx,finalDI:di};
       break;
     }
+    case "intel_operand_order": {
+      const operands=oracle.inputs.instruction.replace(/^[A-Z]+\\s+/i,"").split(",");
+      computed={destination:operands[0].trim(),source:operands[1].trim()};
+      break;
+    }
     default: throw new Error("Unknown independent question oracle rule: "+oracle.rule);
   }
   assert.deepEqual(computed,oracle.expected,oracle.id+" independently recomputed architectural result.");
