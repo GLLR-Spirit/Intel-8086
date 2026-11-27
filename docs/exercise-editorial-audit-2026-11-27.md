@@ -134,9 +134,11 @@ Les écarts de la première passe ont été corrigés sur cette branche :
 - **EX35** : l'oracle assemble le programme soumis et exige exactement les octets `B8 34 12 F4`.
 - **EX37** : l'oracle assemble puis désassemble le flux complet ; il vérifie les octets, les quatre frontières d'instructions et les tailles `2, 1, 3, 1`, y compris le NOP sauté à l'exécution.
 - **EX39** : l'interface recueille une justification écrite ; le contrôle refuse une réponse vide et exige les notions de cycles, BIU, prélecture, bus et limite de mesure du simulateur.
-- **EX41** : le validateur exige AX=10, SP restauré à FFFEh et pile logique vide.
+- **EX33** : le validateur exige AX=1234h, SP=FFFEh, pile logique vide et IP final à 0006h après le retour IRET et l'exécution de HLT.
+- **EX41** : le validateur exige AX=10, SP restauré à FFFEh, pile logique vide et IP final égal à la taille assemblée du programme après HLT.
 - **EX43** : le validateur exige désormais CF=1, SP restauré à FFFEh et pile logique vide après PUSHF/POPF.
 - **EX46** : le validateur exige désormais AX=1234h, SP restauré à FFFEh, pile logique vide et IP final à 0006h. Cette valeur correspond à la reprise après INT, à l'exécution de HLT, puis à l'adresse immédiatement après HLT dans le programme de l'exercice.
+- **EX47 et EX48** : les oracles exigent aussi IP final égal à la taille assemblée du programme, en plus des invariants de registres, mémoire, FLAGS et pile.
 - **EX47 et EX48** : BX est initialisé à BEEFh, sauvegardé, modifié, puis restauré ; les validateurs vérifient BX=BEEFh, SP=FFFEh et la pile logique vide. Les corrections guidées ont été alignées sur les mêmes programmes.
 
 ### Preuves CI après corrections
@@ -161,3 +163,14 @@ Une seconde vérification du prédicat a relevé deux assertions encore trop fai
 - **EX46** : l'état AX et la pile vide ne démontraient pas que le flot avait repris après INT. Le prédicat exige maintenant SP=FFFEh et IP=0006h après l'exécution de HLT. Le test sera considéré comme validé uniquement si le CI confirme cette valeur sur l'exécution réelle.
 
 La revue éditoriale des 48 fiches se poursuit séparément : la présence d'une correction et d'un oracle ne suffit pas à prouver que tous les chemins de branchement, toutes les consignes de méthode et toutes les réponses conceptuelles sont évalués.
+
+
+### Reprise du flot de contrôle : assertions renforcées
+
+La vérification des exercices d'appel et d'interruption ne s'arrête plus à la pile logique :
+
+- EX33 et EX46 vérifient l'IP final après IRET et HLT (0006h).
+- EX41 vérifie l'IP final après CALL/RET et HLT par rapport à la taille assemblée.
+- EX47 et EX48 vérifient également la fin effective du programme après le retour d'interruption, en comparant IP à la taille du flux assemblé.
+
+Ces assertions sont des invariants du modèle pédagogique exécuté par le simulateur ; elles ne prétendent pas démontrer les timings ou les signaux électriques d'un processeur physique.
