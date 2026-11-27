@@ -3391,14 +3391,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 3,
-      "stem": "TEST AL,04h avec AL=05h modifie-t-il AL ?",
+      "stem": "Avec AL=05h, que vaut ZF après TEST AL,04h ?",
       "choices": [
-        "Non, TEST ne stocke pas le ET logique",
-        "Oui, AL devient 04h",
-        "Oui, AL devient 00h"
+        "0",
+        "1",
+        "Indéfini"
       ],
-      "correctAnswer": "Non, TEST ne stocke pas le ET logique",
-      "explanation": "TEST met à jour les FLAGS mais conserve l'opérande.",
+      "correctAnswer": "0",
+      "explanation": "05h AND 04h vaut 04h, un résultat non nul ; ZF=0.",
       "category": "Vérification"
     },
     {
@@ -3439,14 +3439,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 3,
-      "stem": "Après CMP 3,5 sur 8 bits, quel est le résultat tronqué ?",
+      "stem": "Après CMP 5,3 sur 8 bits, quel est le résultat tronqué ?",
       "choices": [
+        "02h",
         "FEh",
-        "FDh",
-        "02h"
+        "00h"
       ],
-      "correctAnswer": "FEh",
-      "explanation": "03h−05h donne FEh sur 8 bits.",
+      "correctAnswer": "02h",
+      "explanation": "05h−03h donne 02h sur huit bits, sans emprunt non signé.",
       "category": "Vérification"
     },
     {
@@ -3455,14 +3455,14 @@
       "kind": "intermediate",
       "lesson": 3,
       "number": 1,
-      "stem": "Avec AL=05h, que calcule TEST AL,04h ?",
+      "stem": "Quel indicateur reste indéfini après TEST sur 8086 ?",
       "choices": [
-        "04h pour les indicateurs, sans modifier AL",
-        "04h stocké dans AL",
-        "00h stocké dans AL"
+        "AF",
+        "CF",
+        "OF"
       ],
-      "correctAnswer": "04h pour les indicateurs, sans modifier AL",
-      "explanation": "TEST calcule un AND logique uniquement pour les indicateurs.",
+      "correctAnswer": "AF",
+      "explanation": "TEST remet CF et OF à zéro ; AF reste indéfini sur le 8086.",
       "category": "Compréhension"
     },
     {
@@ -4303,14 +4303,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Après TEST AL,01h avec AL=02h, ZF vaut…",
+      "stem": "Après TEST AL,80h avec AL=80h, ZF vaut…",
       "choices": [
-        "1",
         "0",
+        "1",
         "Toujours indéfini"
       ],
-      "correctAnswer": "1",
-      "explanation": "02h AND 01h vaut zéro.",
+      "correctAnswer": "0",
+      "explanation": "80h AND 80h vaut 80h, un résultat non nul ; ZF=0.",
       "category": "Calcul / prédiction"
     },
     {
@@ -4319,14 +4319,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Quel effet TEST a-t-elle sur CF et OF sur 8086 ?",
+      "stem": "Après MOV AL,03h / TEST AL,03h / HLT, quels indicateurs sont obtenus ?",
       "choices": [
-        "Les remet à zéro",
-        "Les inverse",
-        "Les préserve toujours"
+        "CF=0, OF=0, PF=1",
+        "CF=1, OF=0, PF=0",
+        "CF=0, OF=1, PF=0"
       ],
-      "correctAnswer": "Les remet à zéro",
-      "explanation": "TEST suit les effets des opérations logiques : CF et OF sont remis à zéro.",
+      "correctAnswer": "CF=0, OF=0, PF=1",
+      "explanation": "03h AND 03h vaut 03h : CF=0, OF=0 et l'octet faible contient deux bits à 1, donc PF=1.",
       "category": "Analyse de programme"
     },
     {
@@ -4351,14 +4351,14 @@
       "kind": "final",
       "lesson": null,
       "number": 9,
-      "stem": "SF seul suffit-il pour une comparaison signée ?",
+      "stem": "Après CMP signé, quelle condition exprime supérieur ou égal ?",
       "choices": [
-        "Non, il faut aussi OF",
-        "Oui dans tous les cas",
-        "Non, il faut CF uniquement"
+        "SF=OF",
+        "SF différent de OF",
+        "CF=0"
       ],
-      "correctAnswer": "Non, il faut aussi OF",
-      "explanation": "Les relations signées combinent SF et OF.",
+      "correctAnswer": "SF=OF",
+      "explanation": "La condition signée supérieur ou égal est vraie lorsque SF=OF ; inférieur signé utilise SF différent de OF.",
       "category": "Débogage"
     },
     {
