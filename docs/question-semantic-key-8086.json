@@ -1855,14 +1855,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 3,
-      "stem": "Après AL=FFh puis ADD AL,1, quel état obtient-on ?",
+      "stem": "Si AX=12FFh, puis ADD AL,1 / ADC AH,0, que vaut AX ?",
       "choices": [
-        "AL=00h et CF=1",
-        "AL=FFh et CF=0",
-        "AL=01h et CF=0"
+        "1300h",
+        "1200h",
+        "12FFh"
       ],
-      "correctAnswer": "AL=00h et CF=1",
-      "explanation": "Le résultat sur huit bits est nul avec retenue.",
+      "correctAnswer": "1300h",
+      "explanation": "ADD AL,1 donne AL=00h et CF=1 ; ADC AH,0 ajoute ensuite cette retenue à AH, qui passe de 12h à 13h.",
       "category": "Vérification"
     },
     {
@@ -1903,14 +1903,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 3,
-      "stem": "Après AL=00h puis SUB AL,1, quel état obtient-on ?",
+      "stem": "Après AL=10h, CF=1 puis SBB AL,1, quelle valeur obtient-on ?",
       "choices": [
-        "AL=FFh et CF=1",
-        "AL=00h et CF=0",
-        "AL=01h et CF=1"
+        "0Eh",
+        "0Fh",
+        "10h"
       ],
-      "correctAnswer": "AL=FFh et CF=1",
-      "explanation": "La soustraction emprunte et le résultat sur huit bits est FFh.",
+      "correctAnswer": "0Eh",
+      "explanation": "SBB calcule 10h−1−1=0Eh ; l'emprunt entrant CF est soustrait en plus de la source.",
       "category": "Vérification"
     },
     {
@@ -1951,14 +1951,14 @@
       "kind": "intermediate",
       "lesson": 3,
       "number": 3,
-      "stem": "Quel est le résultat de NEG 80h sur 8 bits ?",
+      "stem": "Quel est le résultat de NEG 01h sur 8 bits ?",
       "choices": [
-        "80h avec OF=1",
-        "7Fh avec OF=0",
-        "00h avec CF=0"
+        "FFh avec CF=1 et OF=0",
+        "01h avec CF=0",
+        "00h avec OF=1"
       ],
-      "correctAnswer": "80h avec OF=1",
-      "explanation": "−(−128) déborde la plage signée ; le motif reste 80h.",
+      "correctAnswer": "FFh avec CF=1 et OF=0",
+      "explanation": "NEG 01h calcule 00h−01h=FFh ; l'opérande n'étant pas nul, CF=1, et il n'y a pas de débordement signé, donc OF=0.",
       "category": "Vérification"
     },
     {
@@ -2735,14 +2735,14 @@
       "kind": "final",
       "lesson": null,
       "number": 2,
-      "stem": "Quel indicateur est préservé par INC ?",
+      "stem": "Quels indicateurs arithmétiques INC met-il à jour ?",
       "choices": [
-        "CF",
-        "OF",
-        "ZF"
+        "OF, SF, ZF, AF et PF ; CF est préservé",
+        "CF uniquement",
+        "Aucun indicateur"
       ],
-      "correctAnswer": "CF",
-      "explanation": "INC préserve CF, contrairement à ADD.",
+      "correctAnswer": "OF, SF, ZF, AF et PF ; CF est préservé",
+      "explanation": "INC met à jour OF, SF, ZF, AF et PF ; contrairement à ADD, il laisse CF inchangé.",
       "category": "Compréhension"
     },
     {
