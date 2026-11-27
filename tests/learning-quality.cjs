@@ -258,6 +258,9 @@ if (exampleAudit.length) console.log(JSON.stringify(exampleAudit, null, 2));
 assert.equal(exampleAudit.length, 0, "All 108 course examples must execute without simulator errors.");
 
 const courseExampleOracles = JSON.parse(fs.readFileSync("docs/course-example-oracles-8086.json", "utf8"));
+assert.equal(courseExampleOracles.schema, "intel-8086-course-example-oracles-v1", "The course-example oracle schema must be versioned.");
+assert.ok(courseExampleOracles.examples.every(example => example.kind !== "conceptual" || typeof example.note === "string"),
+  "Conceptual-only examples must explain why no CPU calculation is claimed.");
 assert.equal(courseExampleOracles.examples.length, 108, "The independent course-example oracle must cover all 108 lessons.");
 const checkedExampleIds = new Set();
 for (const oracle of courseExampleOracles.examples) {
