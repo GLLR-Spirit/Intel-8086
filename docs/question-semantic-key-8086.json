@@ -10271,14 +10271,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Quel indicateur de FLAGS détermine le sens de progression des chaînes ?",
+      "stem": "REP MOVSB commence avec SI=1000h, DI=2000h, CX=3 et DF=1. Quelles valeurs SI et DI obtient-on après trois transferts ?",
       "choices": [
-        "DF",
-        "IF",
-        "OF"
+        "0FFDh et 1FFDh",
+        "1003h et 2003h",
+        "0FFEh et 1FFEh"
       ],
-      "correctAnswer": "DF",
-      "explanation": "DF est le Direction Flag dans FLAGS. DF=0 incrémente SI et DI après chaque opération de chaîne ; DF=1 les décrémente.",
+      "correctAnswer": "0FFDh et 1FFDh",
+      "explanation": "DF=1 décrémente SI et DI d'un octet après chaque MOVSB. Après trois transferts, les deux index ont reculé de trois : SI=0FFDh et DI=1FFDh ; CX atteint zéro.",
       "category": "Calcul / prédiction"
     },
     {
