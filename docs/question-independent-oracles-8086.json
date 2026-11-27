@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "title": "Oracles sémantiques indépendants — tranche initiale",
+  "scope": "Six questions corrigées et recalculées indépendamment. Ce fichier ne certifie pas les 678 autres questions.",
+  "referenceBasis": [
+    "Intel 8086 Family User's Manual (October 1979), architecture EU/BIU, file de prélecture, arithmétique, instructions de décalage, instructions de chaîne et indicateurs.",
+    "Intel MCS-86 Assembly Language Reference Manual, formes d'opérandes et syntaxe assembleur."
+  ],
+  "oracles": [
+    {
+      "id": "C02-F-Q4",
+      "rule": "prefetch_queue_8086",
+      "inputs": {
+        "processor": "8086"
+      },
+      "expected": {
+        "queueBytes": 6,
+        "overlap": true,
+        "superscalarExecution": false
+      },
+      "correctAnswer": "Elle contient six octets et n'implique pas une exécution superscalaire",
+      "derivation": "La file de prélecture du 8086 contient 6 octets. La BIU peut récupérer des octets pendant que l'EU exécute ; ce chevauchement ne signifie pas que plusieurs instructions sont exécutées simultanément.",
+      "distractorRationales": [
+        {
+          "choice": "Elle contient seize octets",
+          "reason": "Confond la capacité de la file 8086 avec une capacité plus grande non applicable à ce processeur."
+        },
+        {
+          "choice": "Elle exécute plusieurs instructions simultanément",
+          "reason": "Confond le chevauchement BIU/EU avec une exécution superscalaire."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual — Bus Interface Unit and instruction queue."
+    },
+    {
+      "id": "C04-F-Q4",
+      "rule": "unsigned_byte_add",
+      "inputs": {
+        "left": 255,
+        "right": 1,
+        "width": 8
+      },
+      "expected": {
+        "mathematicalSum": 256,
+        "result": 0,
+        "carry": 1
+      },
+      "correctAnswer": "AL=00h et CF=1",
+      "derivation": "255 + 1 = 256 (100h). Sur 8 bits, le résultat conservé est 256 modulo 256 = 0 ; le dépassement de la capacité non signée active CF.",
+      "distractorRationales": [
+        {
+          "choice": "AL=00h et CF=0",
+          "reason": "Le résultat octet est correct, mais cette proposition oublie la retenue sortante."
+        },
+        {
+          "choice": "AL=100h et CF=0",
+          "reason": "Ignore la largeur de 8 bits du registre AL et traite le résultat mathématique comme s'il pouvait y être stocké intégralement."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual — ADD operation and CF definition."
+    },
+    {
+      "id": "C17-F-Q2",
+      "rule": "unsigned_strict_greater",
+      "inputs": {
+        "candidate": 9,
+        "currentMaximum": 8,
+        "equalCase": {
+          "candidate": 8,
+          "currentMaximum": 8
+        }
+      },
+      "expected": {
+        "condition": "JA",
+        "strictComparison": true,
+        "equalityReplaces": false
+      },
+      "correctAnswer": "JA",
+      "derivation": "Après CMP candidate,currentMaximum, JA branche si CF=0 et ZF=0, donc si candidate est strictement supérieur en non signé. JAE inclut l'égalité.",
+      "distractorRationales": [
+        {
+          "choice": "JAE",
+          "reason": "Teste supérieur ou égal ; il remplace aussi le maximum lorsque les deux valeurs sont égales."
+        },
+        {
+          "choice": "JL",
+          "reason": "Teste une relation signée, alors que l'énoncé impose une comparaison non signée."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual — conditional transfer instructions JA/JAE/JL."
+    },
+    {
+      "id": "C26-F-Q5",
+      "rule": "logical_shift_right_8",
+      "inputs": {
+        "value": 129,
+        "width": 8,
+        "count": 1
+      },
+      "expected": {
+        "result": 64,
+        "carry": 1
+      },
+      "correctAnswer": "40h avec CF=1",
+      "derivation": "81h = 10000001b. SHR insère zéro à gauche : 01000000b = 40h ; le bit sortant de poids faible vaut 1 et est copié dans CF.",
+      "distractorRationales": [
+        {
+          "choice": "C0h avec CF=0",
+          "reason": "Ne correspond pas au décalage logique à droite d'un bit de 81h."
+        },
+        {
+          "choice": "02h avec CF=1",
+          "reason": "Ne correspond ni à la direction ni au résultat binaire du décalage demandé."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual — SHR operation."
+    },
+    {
+      "id": "C26-F-Q6",
+      "rule": "arithmetic_shift_right_8",
+      "inputs": {
+        "value": 252,
+        "width": 8,
+        "count": 1
+      },
+      "expected": {
+        "result": 254,
+        "carry": 0
+      },
+      "correctAnswer": "FEh",
+      "derivation": "FCh représente 11111100b. SAR conserve le bit de signe à 1 et décale les autres bits vers la droite : 11111110b = FEh.",
+      "distractorRationales": [
+        {
+          "choice": "7Eh",
+          "reason": "Insère un zéro en tête, ce qui correspond au principe de SHR et non à la conservation du signe de SAR."
+        },
+        {
+          "choice": "F8h",
+          "reason": "Décale de deux positions au lieu d'une."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual — SAR operation."
+    },
+    {
+      "id": "C28-F-Q7",
+      "rule": "rep_stosb_forward",
+      "inputs": {
+        "al": 65,
+        "count": 2,
+        "directionFlag": 0,
+        "initialDI": 256
+      },
+      "expected": {
+        "writes": [
+          {
+            "segment": "ES",
+            "offset": 256,
+            "value": 65
+          },
+          {
+            "segment": "ES",
+            "offset": 257,
+            "value": 65
+          }
+        ],
+        "finalCX": 0,
+        "finalDI": 258
+      },
+      "correctAnswer": "Écrit 41h deux fois à ES:DI et ES:DI+1",
+      "derivation": "STOSB écrit AL à ES:DI. Avec DF=0, DI augmente de 1 après chaque stockage. REP répète CX=2 fois : deux octets 41h sont écrits, CX devient 0 et DI avance de 2.",
+      "distractorRationales": [
+        {
+          "choice": "Compare deux octets",
+          "reason": "Décrit SCASB, pas STOSB."
+        },
+        {
+          "choice": "Copie AX vers DS:SI",
+          "reason": "STOSB utilise AL comme source et ES:DI comme destination ; cette proposition confond registres, segment et direction du transfert."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual — STOSB, REP and direction flag semantics."
+    }
+  ]
+}
