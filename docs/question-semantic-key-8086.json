@@ -3503,14 +3503,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 1,
-      "stem": "Quelle plage de déplacement utilise JMP short ?",
+      "stem": "Si IP après JMP vaut 0100h et la cible 00F0h, quel déplacement rel8 faut-il encoder ?",
       "choices": [
-        "−128 à +127 octets",
-        "−32768 à +32767 octets",
-        "0 à 255 octets"
+        "−16 (F0h)",
+        "+16 (10h)",
+        "−128 (80h)"
       ],
-      "correctAnswer": "−128 à +127 octets",
-      "explanation": "Le déplacement relatif short est un entier signé sur 8 bits.",
+      "correctAnswer": "−16 (F0h)",
+      "explanation": "Le déplacement vaut cible moins IP après l'instruction : 00F0h−0100h=−0010h, encodé F0h sur huit bits.",
       "category": "Compréhension"
     },
     {
@@ -3551,14 +3551,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 1,
-      "stem": "Quel opcode encode JMP direct relatif near ?",
+      "stem": "Quel opcode encode JMP far direct avec pointeur immédiat 16:16 ?",
       "choices": [
-        "E9 rel16",
-        "EB rel8",
-        "FF /4"
+        "EA ptr16:16",
+        "FF /5",
+        "E9 rel16"
       ],
-      "correctAnswer": "E9 rel16",
-      "explanation": "E9 est le saut direct relatif avec déplacement 16 bits.",
+      "correctAnswer": "EA ptr16:16",
+      "explanation": "EA encode le saut far direct avec un offset et un segment immédiats.",
       "category": "Compréhension"
     },
     {
@@ -3583,14 +3583,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 3,
-      "stem": "Depuis quel offset calcule-t-on la cible relative ?",
+      "stem": "Si IP après l'instruction vaut 2000h et le déplacement rel16 vaut +0030h, quelle est la cible ?",
       "choices": [
-        "Depuis l'IP après l'instruction",
-        "Depuis le début de CS",
-        "Depuis l'adresse de l'étiquette précédente"
+        "2030h",
+        "1FD0h",
+        "0030h"
       ],
-      "correctAnswer": "Depuis l'IP après l'instruction",
-      "explanation": "Le déplacement est ajouté à l'IP suivant l'instruction.",
+      "correctAnswer": "2030h",
+      "explanation": "La cible relative est IP après l'instruction plus le déplacement : 2000h+0030h=2030h.",
       "category": "Vérification"
     },
     {
@@ -4447,14 +4447,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Quel élément reste inchangé lors d'un JMP near ?",
+      "stem": "Avec CS=1000h, IP=0020h et BX=1234h, quels CS:IP obtient-on après JMP BX ?",
       "choices": [
-        "CS",
-        "IP",
-        "Le flot d'exécution"
+        "1000h:1234h",
+        "1234h:0020h",
+        "1000h:0020h"
       ],
-      "correctAnswer": "CS",
-      "explanation": "Un saut near change IP dans le segment courant.",
+      "correctAnswer": "1000h:1234h",
+      "explanation": "JMP BX charge IP depuis BX et conserve CS ; le couple devient 1000h:1234h.",
       "category": "Prédiction"
     },
     {
@@ -4463,14 +4463,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Quelle est la base du déplacement relatif ?",
+      "stem": "Si IP après JMP vaut 1000h et la cible 0FFCh, quel octet rel8 faut-il encoder ?",
       "choices": [
-        "L'adresse suivant l'instruction",
-        "Le début du segment",
-        "La cible elle-même"
+        "FCh",
+        "04h",
+        "ECh"
       ],
-      "correctAnswer": "L'adresse suivant l'instruction",
-      "explanation": "Le déplacement est relatif à l'IP après le saut.",
+      "correctAnswer": "FCh",
+      "explanation": "0FFCh−1000h vaut −4 ; le déplacement signé sur huit bits s'encode FCh.",
       "category": "Calcul / prédiction"
     },
     {
@@ -4479,14 +4479,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Quel encodage correspond à JMP r/m16 near ?",
+      "stem": "Quel opcode groupe encode JMP indirect far r/m16:16 ?",
       "choices": [
-        "FF /4",
         "FF /5",
-        "E8"
+        "FF /4",
+        "EA ptr16:16"
       ],
-      "correctAnswer": "FF /4",
-      "explanation": "Le groupe FF /4 est le saut indirect near.",
+      "correctAnswer": "FF /5",
+      "explanation": "FF /5 encode le saut indirect far à travers un pointeur mémoire 16:16.",
       "category": "Analyse de programme"
     },
     {
@@ -4527,14 +4527,14 @@
       "kind": "final",
       "lesson": null,
       "number": 10,
-      "stem": "Pourquoi l'exemple JMP BX ne prouve-t-il pas E9 ?",
+      "stem": "Pourquoi JMP BX n'est-il pas un saut far ?",
       "choices": [
-        "Parce que BX fournit une cible indirecte",
-        "Parce que BX est un registre 8 bits",
-        "Parce que JMP ne change pas IP"
+        "BX ne fournit qu'un offset ; un saut far doit charger aussi un segment",
+        "BX contient un registre de 8 bits",
+        "JMP ne modifie jamais IP"
       ],
-      "correctAnswer": "Parce que BX fournit une cible indirecte",
-      "explanation": "L'encodage indirect est différent du déplacement relatif direct.",
+      "correctAnswer": "BX ne fournit qu'un offset ; un saut far doit charger aussi un segment",
+      "explanation": "BX fournit un offset de 16 bits pour un saut near ; un saut far doit aussi obtenir et charger un nouveau segment CS.",
       "category": "Raisonnement"
     },
     {
