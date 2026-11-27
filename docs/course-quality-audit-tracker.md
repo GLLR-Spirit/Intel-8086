@@ -219,3 +219,17 @@ The mission remains in progress. Passing automated suites is evidence for the te
   - C12-F-Q9 now checks signed greater-or-equal (SF=OF), complementary to signed less (SF≠OF).
 - Added independent evaluators and CI assertions for AF, parity and signed greater-or-equal.
 - Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
+
+
+### Independent question review — chapter 13
+
+- Reviewed all 19 questions individually against the Intel 8086 Family User's Manual and MCS-86 assembly reference.
+- 12 items passed; seven were diversified to cover displacement calculations and distinct near/far encodings:
+  - C13-L1-Q1 and C13-F-Q6 now calculate concrete backward rel8 displacements.
+  - C13-L2-Q1 now checks the far-direct opcode EA ptr16:16 rather than repeating E9 rel16.
+  - C13-L2-Q3 now calculates a concrete rel16 target from IP after instruction.
+  - C13-F-Q5 traces the CS:IP state after JMP BX.
+  - C13-F-Q7 checks FF /5 far-indirect, distinct from FF /4 near-indirect.
+  - C13-F-Q10 distinguishes a 16-bit near offset from a far pointer that also supplies CS.
+- Added independent evaluators for relative displacement, relative target, direct/indirect far JMP and near-register target state.
+- Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
