@@ -25,11 +25,12 @@
       "derivation": "AX appartient aux registres généraux du 8086 et sa largeur architecturale est de 16 bits. Il peut contenir un mot complet ; ses sous-registres AH et AL exposent séparément ses deux octets.",
       "distractorRationales": [
         {
-          "choice": "8"
+          "choice": "8",
+          "reason": "Les registres généraux AX, BX, CX et DX ont une largeur de 16 bits, pas 8 bits."
         },
         {
-          "choice": "3",
-          "reason": "2"
+          "choice": "32",
+          "reason": "32 bits dépasse la largeur architecturale des registres généraux du 8086."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -50,12 +51,12 @@
       "derivation": "AX est un registre de 16 bits partagé en deux parties accessibles : AH contient les bits 15 à 8 et AL les bits 7 à 0. AL est donc l'octet faible.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "H"
+          "choice": "AH",
+          "reason": "AH est l'octet fort, constitué des bits 15 à 8 ; AL est l'octet faible."
         },
         {
-          "choice": "A",
-          "reason": "X"
+          "choice": "AXH",
+          "reason": "AXH n'est pas un nom de sous-registre défini dans l'architecture 8086."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -77,12 +78,12 @@
       "derivation": "AX commence à 1234h. L'écriture de 56h dans AL remplace uniquement les huit bits faibles ; AH conserve 12h. Le mot final est donc 1256h.",
       "distractorRationales": [
         {
-          "choice": "5",
-          "reason": "6"
+          "choice": "5634h",
+          "reason": "5634h remplacerait l'octet fort par 56h et ne correspond pas à une écriture dans AL seul."
         },
         {
-          "choice": "0",
-          "reason": "0"
+          "choice": "0056h",
+          "reason": "0056h mettrait l'octet fort à zéro, alors que AH doit conserver 12h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -102,12 +103,12 @@
       "derivation": "Pour les instructions de chaîne, SI est l'index source implicite et DS le segment source par défaut. DI est l'index destination, généralement associé à ES.",
       "distractorRationales": [
         {
-          "choice": "D",
-          "reason": "I"
+          "choice": "DI",
+          "reason": "DI est l'index destination des instructions de chaîne ; SI est l'index source."
         },
         {
-          "choice": "B",
-          "reason": "P"
+          "choice": "BP",
+          "reason": "BP sert notamment à l'adressage de la pile et n'est pas l'index source implicite des chaînes."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -126,12 +127,12 @@
       "derivation": "Une adresse effective utilisant BP sélectionne SS par défaut sur le 8086. Ce choix correspond à l'usage de BP pour accéder aux données de pile ; un préfixe de segment peut toutefois le remplacer.",
       "distractorRationales": [
         {
-          "choice": "D",
-          "reason": "S"
+          "choice": "DS",
+          "reason": "DS est le segment par défaut de nombreuses références ordinaires, mais BP sélectionne SS."
         },
         {
-          "choice": "E",
-          "reason": "S"
+          "choice": "ES",
+          "reason": "ES est notamment utilisé pour la destination des chaînes ; BP seul sélectionne SS par défaut."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -153,12 +154,12 @@
       "derivation": "SP contient l'offset du sommet courant de la pile. L'adresse logique complète est formée avec SS comme segment et SP comme offset ; SP seul n'est pas une adresse physique.",
       "distractorRationales": [
         {
-          "choice": "I",
-          "reason": "P"
+          "choice": "IP",
+          "reason": "SP désigne le sommet de pile ; IP contient l'offset d'instruction dans CS."
         },
         {
-          "choice": "D",
-          "reason": "I"
+          "choice": "DI",
+          "reason": "DI est un index destination, pas le pointeur de pile."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -176,12 +177,12 @@
       "derivation": "CS désigne le segment de code et IP l'offset de la prochaine instruction. Le couple CS:IP identifie donc l'emplacement logique du flot d'instructions.",
       "distractorRationales": [
         {
-          "choice": "D",
-          "reason": "S"
+          "choice": "DS:SI",
+          "reason": "DS:SI sert couramment aux données et aux chaînes source, pas à l'adresse de l'instruction courante."
         },
         {
-          "choice": "S",
-          "reason": "S"
+          "choice": "SS:SP",
+          "reason": "SS:SP désigne le sommet de pile, pas le flot d'instructions."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -200,12 +201,12 @@
       "derivation": "Pour la plupart des références mémoire ordinaires, DS est le segment par défaut. Les formes utilisant BP font exception avec SS ; les destinations des instructions de chaîne utilisent ES.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "S"
+          "choice": "CS",
+          "reason": "CS est le segment de code, pas le segment de données par défaut des références ordinaires."
         },
         {
-          "choice": "S",
-          "reason": "S"
+          "choice": "SS",
+          "reason": "SS est sélectionné par défaut pour les références qui utilisent BP ; il n'est pas le segment général par défaut."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -225,12 +226,12 @@
       "derivation": "Sur le 8086, MOV ne permet pas de charger CS comme destination. Le changement de segment de code se fait par des transferts de contrôle appropriés qui mettent à jour CS:IP.",
       "distractorRationales": [
         {
-          "choice": "O",
-          "reason": "u"
+          "choice": "Oui",
+          "reason": "MOV ne peut pas charger CS comme destination ; la réponse affirmative est donc incorrecte."
         },
         {
-          "choice": "S",
-          "reason": "e"
+          "choice": "Seulement si AX vaut zéro",
+          "reason": "La valeur zéro dans AX ne rend pas valide une destination CS interdite."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -249,12 +250,12 @@
       "derivation": "AX, BX, CX et DX sont les quatre registres généraux du 8086 ; chacun a une largeur de 16 bits. Les registres de segment et les registres d'index ont eux aussi 16 bits, mais remplissent d'autres rôles.",
       "distractorRationales": [
         {
-          "choice": "8",
-          "reason": " "
+          "choice": "8 bits",
+          "reason": "Les registres généraux du 8086 sont des registres de 16 bits, pas de 8 bits."
         },
         {
-          "choice": "2",
-          "reason": "0"
+          "choice": "20 bits",
+          "reason": "20 bits correspond à la largeur du bus d'adresses, pas à celle d'AX/BX/CX/DX."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -275,12 +276,12 @@
       "derivation": "AH et AL ne sont pas deux registres généraux indépendants de 16 bits. Ils donnent accès respectivement à l'octet fort et à l'octet faible du même registre AX de 16 bits.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "H"
+          "choice": "AH et AL sont deux registres 16 bits indépendants",
+          "reason": "AH et AL sont deux parties de 8 bits du même registre AX, pas deux registres indépendants de 16 bits."
         },
         {
-          "choice": "A",
-          "reason": "L"
+          "choice": "AL contient les bits de signe uniquement",
+          "reason": "AL contient les bits 7 à 0 ; il ne contient pas exclusivement un bit de signe."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -302,12 +303,12 @@
       "derivation": "MOV AL,56h écrit la constante dans l'octet faible de AX. AH n'est pas ciblé et conserve donc sa valeur initiale ; BX ne fait pas partie de la paire AH/AL.",
       "distractorRationales": [
         {
-          "choice": "M",
-          "reason": "O"
+          "choice": "MOV AH,56h",
+          "reason": "MOV AH,56h modifie l'octet fort, pas l'octet faible demandé."
         },
         {
-          "choice": "M",
-          "reason": "O"
+          "choice": "MOV BX,56h",
+          "reason": "MOV BX,56h écrit dans BX et ne modifie pas la partie AL de AX."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -326,12 +327,12 @@
       "derivation": "La présence de BP dans l'adresse effective sélectionne SS par défaut. SI peut participer au calcul de l'offset, mais ne change pas la sélection du segment par défaut imposée par BP.",
       "distractorRationales": [
         {
-          "choice": "D",
-          "reason": "S"
+          "choice": "DS",
+          "reason": "DS est le segment par défaut de nombreuses références, mais l'utilisation de BP impose SS par défaut."
         },
         {
-          "choice": "E",
-          "reason": "S"
+          "choice": "ES",
+          "reason": "ES est le segment destination des chaînes ; BP ne le sélectionne pas par défaut."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -374,12 +375,12 @@
       "derivation": "Chaque instruction MOV charge sa constante dans le registre explicitement nommé. Aucune de ces instructions ne copie une valeur d'un registre vers les autres ; les quatre résultats restent donc distincts et correspondent aux constantes du programme.",
       "distractorRationales": [
         {
-          "choice": "T",
-          "reason": "o"
+          "choice": "Tous les registres valent 0400h",
+          "reason": "Cette proposition attribue la valeur 0400h à chaque registre, alors que chaque MOV cible un registre différent."
         },
         {
-          "choice": "S",
-          "reason": "I"
+          "choice": "SI et DI sont échangés",
+          "reason": "SI et DI reçoivent des constantes distinctes ; aucune instruction ne les échange."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -402,12 +403,12 @@
       "derivation": "La base du segment vaut 1000h×10h=10000h. En ajoutant l'offset 0020h, on obtient l'adresse 10020h. Elle est déjà dans l'espace d'adressage de 20 bits du 8086.",
       "distractorRationales": [
         {
-          "choice": "1",
-          "reason": "0"
+          "choice": "10002h",
+          "reason": "10002h inverse ou déplace incorrectement les chiffres de l'offset ; le calcul donne 10020h."
         },
         {
-          "choice": "1",
-          "reason": "0"
+          "choice": "10000h",
+          "reason": "10000h est seulement la base du segment ; il faut encore ajouter l'offset 0020h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -429,12 +430,12 @@
       "derivation": "MOV AL,56h remplace seulement AL. La partie AH n'est pas écrite et conserve donc 12h ; c'est l'octet AH qui reste inchangé.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "L"
+          "choice": "AL",
+          "reason": "MOV AL remplace AL, pas AH ; l'octet faible n'est donc pas celui qui reste inchangé."
         },
         {
-          "choice": "A",
-          "reason": "u"
+          "choice": "Aucun octet",
+          "reason": "Un octet reste inchangé : AH conserve 12h pendant que AL reçoit 56h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -452,12 +453,12 @@
       "derivation": "CS:IP forme l'adresse logique utilisée pour récupérer les instructions. SS:SP forme l'adresse logique du sommet de pile ; les deux couples ont des rôles distincts et ne doivent pas être inversés.",
       "distractorRationales": [
         {
-          "choice": "D",
-          "reason": "S"
+          "choice": "DS:IP pour le code, CS:SP pour la pile",
+          "reason": "DS:IP n'est pas le couple d'exécution du code et CS ne constitue pas le segment de pile par défaut."
         },
         {
-          "choice": "E",
-          "reason": "S"
+          "choice": "ES:AX pour le code, DS:BP pour IP",
+          "reason": "ES:AX et DS:BP ne correspondent ni au couple code CS:IP ni au couple pile SS:SP."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -477,12 +478,12 @@
       "derivation": "La forme MOV CS,AX est interdite sur le 8086. Le chargement de CS est lié aux transferts de contrôle qui établissent également l'offset IP ; un MOV ordinaire ne peut pas écrire CS.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "X"
+          "choice": "AX doit être un registre 8 bits",
+          "reason": "AX n'a pas à être un registre 8 bits ; l'interdiction porte sur CS comme destination de MOV."
         },
         {
-          "choice": "M",
-          "reason": "O"
+          "choice": "MOV ne peut pas copier entre registres",
+          "reason": "MOV peut copier entre certains registres ; c'est spécifiquement l'écriture de CS par MOV qui est interdite."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
@@ -511,12 +512,12 @@
       "derivation": "Les noms et usages implicites des registres reflètent des conventions architecturales : par exemple SI/DI pour les chaînes, CX pour certains comptages, BP/SP pour la pile. Cela n'interdit pas de les employer explicitement dans d'autres instructions compatibles.",
       "distractorRationales": [
         {
-          "choice": "S",
-          "reason": "I"
+          "choice": "SI ne peut jamais servir autrement qu'aux chaînes",
+          "reason": "SI peut servir dans d'autres formes d'adressage et instructions ; son usage chaîne est conventionnel ou implicite, pas exclusif."
         },
         {
-          "choice": "A",
-          "reason": "X"
+          "choice": "AX est le seul registre général modifiable",
+          "reason": "AX n'est pas le seul registre général modifiable ; BX, CX et DX le sont aussi."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), programmer-visible registers, segment registers, stack and default segment selection; Intel MCS-86 Assembly Language Reference Manual, MOV restrictions."
