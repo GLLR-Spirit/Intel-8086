@@ -419,7 +419,7 @@
         "CF": 1
       },
       "correctAnswer": "AL=01h et CF=1",
-      "derivation": "Le bit 7 de 80h sort dans CF et revient en bit 0 ; le résultat devient 01h.",
+      "derivation": "ROL fait circuler le bit de poids fort vers le bit de poids faible. Pour 80h (10000000b), le bit 7 sort dans CF=1 et revient en bit 0 ; AL devient 01h. Le résultat et CF sont donc vérifiés séparément.",
       "distractorRationales": [
         {
           "choice": "AL=00h et CF=1",
@@ -446,7 +446,7 @@
         "CF": 0
       },
       "correctAnswer": "AL=06h, CF=0",
-      "derivation": "ROL 81h,1 donne 03h et CF=1 ; la seconde rotation donne 06h et CF=0.",
+      "derivation": "Première rotation : 81h devient 03h et le bit sortant vaut 1, donc CF=1. Deuxième rotation : 03h devient 06h et le bit sortant vaut 0, donc CF=0. Chaque rotation réinjecte le bit expulsé à l'autre extrémité.",
       "distractorRationales": [
         {
           "choice": "AL=03h, CF=1",
