@@ -475,8 +475,9 @@
     {
       "id": "C27-F-Q10",
       "status": "certified",
-      "rule": "string_instruction_validation",
+      "rule": "audit_checklist_coverage",
       "inputs": {
+        "domain": "string_instruction",
         "checks": [
           "source_data",
           "destination_data",
@@ -488,18 +489,28 @@
         ]
       },
       "expected": {
-        "checksAll": true
+        "requiredChecks": [
+          "source_data",
+          "destination_data",
+          "SI",
+          "DI",
+          "DF",
+          "segments",
+          "FLAGS"
+        ],
+        "missingChecks": [],
+        "complete": true
       },
       "correctAnswer": "Données source/destination, index, DF, segments et FLAGS pertinents",
-      "derivation": "Les instructions de chaîne utilisent des opérandes implicites et mettent à jour les index selon DF. Une validation doit vérifier les données transférées, les segments, SI/DI et les indicateurs pertinents, pas seulement l'opcode ou AL.",
+      "derivation": "Les instructions de chaîne utilisent des opérandes implicites : source DS:SI (avec possibilité de surcharge du segment source) et destination ES:DI. SI et/ou DI évoluent selon la taille de l'élément et DF. Les comparaisons de chaîne affectent notamment les indicateurs pertinents, et les formes répétées interagissent avec CX et ZF. Une vérification limitée à AL ou à l'octet opcode omet l'état architectural qui détermine le résultat.",
       "distractorRationales": [
         {
           "choice": "Seulement le résultat dans AL",
-          "reason": "AL seul ne décrit pas les données source/destination, les index, les segments et les effets FLAGS."
+          "reason": "AL seul ne décrit ni les octets source/destination, ni les index SI/DI, ni le sens DF et les effets sur les indicateurs."
         },
         {
           "choice": "Uniquement l'opcode",
-          "reason": "L'opcode seul ne suffit pas : les opérandes implicites et DF déterminent le comportement réel."
+          "reason": "L'opcode identifie l'opération mais ne vérifie pas les valeurs transférées, les segments, l'évolution des index ou les indicateurs."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
