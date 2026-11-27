@@ -421,7 +421,7 @@
     {
       "id": "C04-F-Q8",
       "status": "certified",
-      "rule": "signed_add_flags",
+      "rule": "signed_add_flag_pair",
       "inputs": {
         "left": 127,
         "right": 1,
