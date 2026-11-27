@@ -251,7 +251,7 @@ const assert = require("node:assert/strict");
     const expected=api.exercises.map((exercise,index)=>({exercise,index,metadata:api.exerciseMetadata(exercise,index)}))
       .filter(item=>item.metadata.chapters.includes(selectedChapter)&&item.metadata.difficulty==="Débutant")
       .map(item=>(item.index+1)+". "+item.exercise[0]);
-    const actual=[...document.querySelectorAll("#exerciseList .exercise b")].map(node=>node.textContent.trim());
+    const actual=[...document.querySelectorAll("#exerciseList .exercise > b")].map(node=>node.textContent.trim());
     return {selectedChapter,expected,actual};
   });
   assert.ok(chapterFilterAudit.actual.length>0,"The selected chapter and difficulty must produce visible exercises.");
