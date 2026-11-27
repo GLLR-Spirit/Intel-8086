@@ -297,30 +297,6 @@
       "status": "certified"
     },
     {
-      "id": "C02-F-Q4",
-      "rule": "prefetch_queue_capacity",
-      "inputs": {
-        "processor": "8086"
-      },
-      "expected": {
-        "bytes": 6
-      },
-      "correctAnswer": "Elle contient six octets et n'implique pas une exécution superscalaire",
-      "derivation": "La file 8086 contient six octets. Elle autorise la BIU à précharger pendant que l'EU travaille ; cela ne signifie pas que plusieurs instructions sont exécutées simultanément.",
-      "distractorRationales": [
-        {
-          "choice": "Elle contient seize octets",
-          "reason": "Seize octets n'est pas la capacité de la file du 8086."
-        },
-        {
-          "choice": "Elle exécute plusieurs instructions simultanément",
-          "reason": "La file stocke des octets préchargés ; elle n'exécute pas les instructions."
-        }
-      ],
-      "reference": "Intel 8086 Family User's Manual, instruction queue and EU/BIU overlap.",
-      "status": "certified"
-    },
-    {
       "id": "C02-F-Q5",
       "rule": "alu_add_trace",
       "inputs": {
