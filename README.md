@@ -94,7 +94,7 @@ Le moteur valide les formes d'adressage effectif 8086 : BX, BP, SI ou DI seuls ;
 - HTML, CSS et JavaScript natifs
 - Aucun backend, aucune inscription et aucune dépendance obligatoire
 - La progression, les scores, le projet personnel et le dernier code enregistré sont conservés dans le stockage local du navigateur
-- La section **Outils et références** permet d'exporter ces sept catégories dans un fichier JSON versionné, puis de les restaurer après validation et confirmation
+- La section **Outils et références** permet d'exporter ces sept catégories dans un fichier JSON versionné (limite d'import : 10 Mio), puis de les restaurer après validation et confirmation
 - L'import refuse les fichiers malformés, les versions inconnues et les données dont la structure ou les types ne correspondent pas au format attendu
 - La restauration remplace les sept catégories locales ; exporte d'abord l'état actuel si tu souhaites le conserver
 - Les modifications du code non encore enregistrées avec **Sauvegarder** ne figurent pas dans le fichier exporté
