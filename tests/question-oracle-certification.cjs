@@ -149,6 +149,8 @@ function independentlyCompute(oracle) {
       const sign = 2 ** (i.bits - 1);
       return { unsignedValue: i.value, signedValue: i.value >= sign ? i.value - (2 ** i.bits) : i.value };
     }
+    case "mov_operand_size_compatibility":
+      return { valid: i.destinationBits === i.sourceBits, destinationBits: i.destinationBits, sourceBits: i.sourceBits };
     case "memory_register_mov_validity":
       return { valid: (i.destination === "memory" && i.source === "register") || (i.destination === "register" && i.source === "memory"), memoryToMemory: false };
     case "overflow_byte_conclusion":
@@ -157,6 +159,8 @@ function independentlyCompute(oracle) {
       return { bits: 16 };
     case "register_byte_parts":
       return { highByte: "AH", lowByte: "AL", bitsPerPart: 8 };
+    case "string_destination_index_default":
+      return { register: "DI", segment: "ES" };
     case "string_source_index_default":
       return { register: "SI", segment: "DS" };
     case "bp_default_segment":
@@ -1214,6 +1218,10 @@ function independentlyCompute(oracle) {
         requiredBits: Math.ceil(Math.log2(i.immediate + 1))
       };
     }
+    case "write_high_byte_preserve_low": {
+      const finalAX = (i.initialAX & 0x00ff) | ((i.newAH & 0xff) << 8);
+      return { finalAX, finalAH: (finalAX >>> 8) & 0xff, finalAL: finalAX & 0xff };
+    }
     case "write_low_byte_preserve_high": {
       const finalAX = (i.initialAX & 0xff00) | (i.newAL & 0xff);
       return { finalAX, finalAH: finalAX >>> 8, finalAL: finalAX & 0xff };
@@ -1376,5 +1384,22 @@ assert.equal(chapter4Review.summary.officialCertificationCountAfter, 384, "Chapt
 assert.equal(chapter4Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C04-F-Q8").inputs, { left: 128, right: 128, width: 8 }, "Chapter 4 must exercise the case where CF and OF are both set");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C04-F-Q8").expected, { OF: 1, CF: 1 }, "80h+80h must set both CF and OF");
+
+
+const chapter5Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-05.json", "utf8"));
+const chapter5Ids = key.questions.filter(question => question.chapter === 5).map(question => question.id).sort();
+const reviewedChapter5Ids = chapter5Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter5Ids, chapter5Ids, "Chapter 5 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter5Ids).size, 19, "Chapter 5 review must not duplicate question IDs");
+assert.equal(chapter5Review.summary.questionsReviewed, 19, "Chapter 5 review count must match the complete question bank");
+assert.equal(chapter5Review.summary.passed, 16, "Chapter 5 review must report 16 passed questions");
+assert.equal(chapter5Review.summary.corrected, 3, "Chapter 5 review must record operand-width, high-byte, and string-destination corrections");
+assert.equal(chapter5Review.summary.blocked, 0, "Chapter 5 review must have no unresolved blockers");
+assert.equal(chapter5Review.summary.officialCertificationCountBefore, 384, "Chapter 5 review starts from the official 384-question ledger");
+assert.equal(chapter5Review.summary.officialCertificationCountAfter, 384, "Chapter 5 review must not silently advance official certification");
+assert.equal(chapter5Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C05-F-Q4").expected, { valid: false, destinationBits: 16, sourceBits: 8 }, "MOV AX,AL must be rejected for operand-width mismatch");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C05-F-Q7").expected, { finalAX: 22068, finalAH: 86, finalAL: 52 }, "Writing AH must preserve the low byte AL");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C05-F-Q9").expected, { register: "DI", segment: "ES" }, "MOVSB destination must use ES:DI by default");
 
 console.log("Question oracle evaluator: chapters 1–36 — " + oracleRecordsChecked + "/684 oracle records passed automated checks; official certification ledger remains " + manifest.oracleCoverageSummary.officialCertificationCount + "/684 (" + manifest.oracleCoverageSummary.remainingOfficialCertification + " pending); " + blocked + " blocked.");
