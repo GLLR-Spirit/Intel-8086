@@ -291,6 +291,15 @@ function independentlyCompute(oracle) {
       return { finalAL: i.initialAL, logicalResult: i.initialAL & i.mask, destinationModified: false, flagsUpdated: true };
     case "test_preserves_destination":
       return { destinationModified: false, flagsUpdated: true };
+    case "test_undefined_af":
+      return { AF: "undefined", CF: 0, OF: 0 };
+    case "test_flags_trace": {
+      const logicalResult = i.AL & i.mask;
+      let bits = logicalResult & 0xff;
+      let ones = 0;
+      while (bits) { ones += bits & 1; bits >>>= 1; }
+      return { logicalResult, CF: 0, OF: 0, PF: ones % 2 === 0 ? 1 : 0, AF: "undefined" };
+    }
     case "test_zero_flag": {
       const logicalResult = (i.value & i.mask) & ((2 ** i.width) - 1);
       return { logicalResult, ZF: logicalResult === 0 ? 1 : 0 };
@@ -383,6 +392,8 @@ function independentlyCompute(oracle) {
       return { operandsModified: false, flagsUpdated: true };
     case "zero_flag_on_equal":
       return { difference: i.left - i.right, ZF: i.left === i.right ? 1 : 0, equal: i.left === i.right };
+    case "signed_greater_equal_condition":
+      return { condition: i.SF === i.OF ? "SF==OF" : "SF!=OF", signed: true };
     case "signed_less_condition":
       return { condition: "SF!=OF", signed: true };
     case "test_logic_result_no_store": {
@@ -1540,5 +1551,22 @@ assert.equal(chapter11Review.summary.remainingOfficialCertification, 300, "The o
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C11-F-Q6").expected, { result: 32768, OF: 1, CF: 1 }, "INC 7FFFh must set OF and preserve CF=1");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C11-F-Q7").expected, { ZF: 0, branchTaken: false, next: "fallthrough" }, "JZ must not be taken after CMP 1,2");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C11-F-Q9").expected, { detectsRecurrence: true, retainsCase: true }, "A regression test must retain and replay the previously failing case");
+
+
+const chapter12Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-12.json", "utf8"));
+const chapter12Ids = key.questions.filter(question => question.chapter === 12).map(question => question.id).sort();
+const reviewedChapter12Ids = chapter12Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter12Ids, chapter12Ids, "Chapter 12 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter12Ids).size, 19, "Chapter 12 review must not duplicate question IDs");
+assert.equal(chapter12Review.summary.questionsReviewed, 19, "Chapter 12 review count must match the complete question bank");
+assert.equal(chapter12Review.summary.passed, 13, "Chapter 12 review must report 13 passed questions");
+assert.equal(chapter12Review.summary.corrected, 6, "Chapter 12 review must record six diversity and flag-semantics corrections");
+assert.equal(chapter12Review.summary.blocked, 0, "Chapter 12 review must have no unresolved blockers");
+assert.equal(chapter12Review.summary.officialCertificationCountBefore, 384, "Chapter 12 review starts from the official 384-question ledger");
+assert.equal(chapter12Review.summary.officialCertificationCountAfter, 384, "Chapter 12 review must not silently advance official certification");
+assert.equal(chapter12Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C12-L3-Q1").expected, { AF: "undefined", CF: 0, OF: 0 }, "TEST must leave AF undefined while clearing CF and OF");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C12-F-Q7").expected, { logicalResult: 3, CF: 0, OF: 0, PF: 1, AF: "undefined" }, "TEST 03h must set PF=1 and clear CF/OF");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C12-F-Q9").expected, { condition: "SF==OF", signed: true }, "Signed greater-or-equal must use SF=OF");
 
 console.log("Question oracle evaluator: chapters 1–36 — " + oracleRecordsChecked + "/684 oracle records passed automated checks; official certification ledger remains " + manifest.oracleCoverageSummary.officialCertificationCount + "/684 (" + manifest.oracleCoverageSummary.remainingOfficialCertification + " pending); " + blocked + " blocked.");
