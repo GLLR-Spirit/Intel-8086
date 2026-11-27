@@ -342,22 +342,22 @@
       "inputs": {
         "SI": 256,
         "DI": 512,
-        "DF": 0
+        "DF": 1
       },
       "expected": {
-        "SI": 257,
-        "DI": 513
+        "SI": 255,
+        "DI": 511
       },
-      "correctAnswer": "SI=0101h, DI=0201h",
-      "derivation": "Avec DF effacé, un transfert octet avance les deux index d'une unité. À partir de 0100h et 0200h, les nouvelles valeurs sont 0101h et 0201h.",
+      "correctAnswer": "SI=00FFh et DI=01FFh",
+      "derivation": "Avec DF=1, MOVSB décrémente SI et DI d'un octet après le transfert : 0100h devient 00FFh et 0200h devient 01FFh.",
       "distractorRationales": [
         {
-          "choice": "SI=00FFh, DI=01FFh",
-          "reason": "Avec DF=0, les index sont incrémentés et non décrémentés."
+          "choice": "SI=0101h et DI=0201h",
+          "reason": "Ces valeurs correspondent à DF=0 ; DF=1 impose une décrémentation."
         },
         {
-          "choice": "SI=0100h, DI=0200h",
-          "reason": "Les index sont mis à jour après le transfert ; ils ne restent pas à leurs valeurs initiales."
+          "choice": "Ils restent inchangés",
+          "reason": "MOVSB ajuste les deux index après le transfert, même lorsque DF=1."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
@@ -365,26 +365,24 @@
     {
       "id": "C27-F-Q6",
       "status": "certified",
-      "rule": "stosb_write",
+      "rule": "stosb_index_update",
       "inputs": {
-        "AL": 65,
-        "ES": 4096,
-        "DI": 256
+        "DI": 0,
+        "DF": 1
       },
       "expected": {
-        "value": 65,
-        "destination": "ES:0100h"
+        "DI": 65535
       },
-      "correctAnswer": "41h à ES:0100h",
-      "derivation": "STOSB stocke l'octet contenu dans AL à l'adresse ES:DI. Avec AL=41h et DI=0100h, l'octet écrit est 41h à ES:0100h.",
+      "correctAnswer": "FFFFh",
+      "derivation": "STOSB écrit à l'adresse ES:DI courante puis décrémente DI d'un octet lorsque DF=1. Le calcul 0000h−1 se replie sur FFFFh sur 16 bits.",
       "distractorRationales": [
         {
-          "choice": "41h à DS:0100h",
-          "reason": "STOSB utilise ES:DI comme destination ; DS:0100h ne correspond pas à son segment destination implicite."
+          "choice": "0001h",
+          "reason": "0001h correspondrait à une incrémentation, donc à DF=0."
         },
         {
-          "choice": "0100h dans AL",
-          "reason": "AL contient la donnée à écrire ; DI est l'offset destination et ne doit pas être remplacé par AL."
+          "choice": "0000h",
+          "reason": "STOSB met à jour DI après l'écriture ; il ne reste pas inchangé."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
@@ -395,22 +393,22 @@
       "rule": "scasb_equal_flags",
       "inputs": {
         "AL": 65,
-        "memoryByte": 65
+        "memoryByte": 66
       },
       "expected": {
-        "ZF": 1,
-        "equal": true
+        "ZF": 0,
+        "equal": false
       },
-      "correctAnswer": "Compare les octets et positionne ZF=1",
-      "derivation": "SCASB compare AL à l'octet mémoire ES:DI. Dans le cas d'égalité, le résultat conceptuel est nul et ZF=1 ; l'instruction ne réalise pas une copie de AL.",
+      "correctAnswer": "Compare les octets et positionne ZF=0",
+      "derivation": "SCASB compare 41h à 42h. Les valeurs sont différentes, la soustraction de comparaison n'est pas nulle et ZF=0.",
       "distractorRationales": [
         {
           "choice": "Copie AL vers ES:DI",
-          "reason": "SCASB compare les octets et met à jour FLAGS ; elle ne copie pas AL vers la mémoire."
+          "reason": "SCASB compare les octets ; elle ne copie pas AL dans la mémoire."
         },
         {
           "choice": "Charge ES:DI dans AX",
-          "reason": "SCASB n'effectue pas un chargement de l'adresse ES:DI dans AX ; elle compare AL au contenu mémoire."
+          "reason": "SCASB n'effectue pas de chargement dans AX ; elle compare AL au contenu mémoire."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects; Intel MCS-86 Assembly Language Reference Manual, string instruction forms."
@@ -450,16 +448,16 @@
       "rule": "movsb_source_override",
       "inputs": {
         "defaultSourceSegment": "DS",
-        "override": "FS",
+        "override": "CS",
         "sourceOffset": 256
       },
       "expected": {
-        "sourceSegment": "FS",
+        "sourceSegment": "CS",
         "sourceOffset": 256,
         "destinationSegment": "ES"
       },
       "correctAnswer": "Vérifier DS, SI et tout override de segment source",
-      "derivation": "La source de MOVSB est DS:SI par défaut, mais un préfixe de segment peut la remplacer. Il faut vérifier le segment réellement sélectionné et SI ; ES:DI reste la destination.",
+      "derivation": "Le segment source par défaut est DS, mais le préfixe CS peut le remplacer pour la lecture source de MOVSB. ES reste le segment destination imposé.",
       "distractorRationales": [
         {
           "choice": "Modifier uniquement AX",
