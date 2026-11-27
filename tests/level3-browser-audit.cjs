@@ -450,6 +450,32 @@ const assert = require("node:assert/strict");
       const state = api.executeAll(source);
       return {index:item.index,valid:!state.error&&api.validateExercise(item.index,state,source,item.response)};
     });
+    const branchVariants = [
+      {index:3,from:"MOV AX, 15",to:"MOV AX, 14",register:"CX",expected:0},
+      {index:18,from:"MOV AX, 8",to:"MOV AX, 2",register:"DX",expected:0},
+      {index:20,from:"MOV AX, 17",to:"MOV AX, 30",register:"DX",expected:30},
+      {index:20,from:"MOV AX, 17",to:"MOV AX, 23",register:"DX",expected:23}
+    ].map(item => {
+      const source = api.exercises[item.index][4].solution.replace(item.from,item.to);
+      const state = api.executeAll(source);
+      return {index:item.index,register:item.register,expected:item.expected,actual:state.error?null:state.reg[item.register],valid:!state.error&&state.reg[item.register]===item.expected};
+    });
+    const requiredTechniques = [
+      [1,[/MOV\\s+DX\\s*,\\s*AX/i,/MOV\\s+AX\\s*,\\s*BX/i,/MOV\\s+BX\\s*,\\s*DX/i]],
+      [2,[/\\bCX\\b/i,/\\bLOOP\\b/i]],
+      [4,[/\\bCX\\b/i,/\\bLOOP\\b/i]],
+      [24,[/\\bSTD\\b/i,/REP\\s+MOVSW/i,/\\bCLD\\b/i]],
+      [32,[/INT\\s+30h/i,/\\bIRET\\b/i]],
+      [33,[/\\bIN\\s+AL\\s*,\\s*DX/i]],
+      [42,[/\\bPUSHF\\b/i,/\\bPOPF\\b/i]],
+      [44,[/REPNE\\s+SCASB/i]],
+      [45,[/INT\\s+30h/i,/\\bIRET\\b/i]],
+      [46,[/PUSH\\s+BX/i,/POP\\s+BX/i,/INT\\s+30h/i]],
+      [47,[/\\bSTD\\b/i,/REP\\s+MOVSW/i,/\\bCLD\\b/i,/PUSH\\s+BX/i,/POP\\s+BX/i,/INT\\s+31h/i]]
+    ].map(([index,patterns]) => {
+      const source = api.exercises[index][4].solution;
+      return {index,valid:patterns.every(pattern=>pattern.test(source))};
+    });
     const missingWrittenAnswer = api.executeAll(api.exercises[38][4].solution);
     const missingAnswerRejected = !api.validateExercise(38,missingWrittenAnswer,api.exercises[38][4].solution,"");
     const wrongEncodingSource = "MOV AX, 1234h\nNOP\nHLT";
@@ -458,10 +484,14 @@ const assert = require("node:assert/strict");
     const unbalancedStackSource = api.exercises[40][4].solution.replace("\nHLT","\nPUSH AX\nHLT");
     const unbalancedStackState = api.executeAll(unbalancedStackSource);
     const unbalancedStackRejected = !api.validateExercise(40,unbalancedStackState,unbalancedStackSource,"");
-    return {results,missingAnswerRejected,wrongEncodingRejected,unbalancedStackRejected};
+    return {results,branchVariants,requiredTechniques,missingAnswerRejected,wrongEncodingRejected,unbalancedStackRejected};
   });
   assert.deepEqual(advancedExerciseAudit.results.map(item=>item.valid),[true,true,true,true,true,true,true,true,true],
     "EX33/35/37/39/41/43/46/47/48 must pass their independent pedagogical oracles: "+JSON.stringify(advancedExerciseAudit));
+  assert.deepEqual(advancedExerciseAudit.branchVariants.map(item=>item.valid),[true,true,true,true],
+    "EX04, EX19 and EX21 must exercise their alternate/equality branch paths: "+JSON.stringify(advancedExerciseAudit.branchVariants));
+  assert.ok(advancedExerciseAudit.requiredTechniques.every(item=>item.valid),
+    "Explicitly required techniques must appear in the guided corrections: "+JSON.stringify(advancedExerciseAudit.requiredTechniques));
   assert.ok(advancedExerciseAudit.missingAnswerRejected,"EX39 must reject a missing written explanation.");
   assert.ok(advancedExerciseAudit.wrongEncodingRejected,"EX35 must reject a functionally correct but differently encoded program.");
   assert.ok(advancedExerciseAudit.unbalancedStackRejected,"EX41 must reject a program that leaves an extra stack word.");
