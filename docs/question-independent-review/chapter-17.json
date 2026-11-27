@@ -76,12 +76,12 @@
     {
       "id": "C17-F-Q3",
       "result": "corrected",
-      "finding": "La répétition conceptuelle a été supprimée par une question distincte et un oracle recalculé."
+      "finding": "AX est le registre accumulateur de l'exemple ; CS et IP servent au contrôle du flot de code."
     },
     {
       "id": "C17-F-Q4",
       "result": "corrected",
-      "finding": "La répétition conceptuelle a été supprimée par une question distincte et un oracle recalculé."
+      "finding": "Une somme multi-mots doit propager la retenue au mot haut avec ADC."
     },
     {
       "id": "C17-F-Q5",
@@ -96,12 +96,12 @@
     {
       "id": "C17-F-Q7",
       "result": "corrected",
-      "finding": "La répétition conceptuelle a été supprimée par une question distincte et un oracle recalculé."
+      "finding": "Une recherche infructueuse doit produire un état explicite non trouvé, distinct d'un index valide."
     },
     {
       "id": "C17-F-Q8",
       "result": "corrected",
-      "finding": "La répétition conceptuelle a été supprimée par une question distincte et un oracle recalculé."
+      "finding": "L'index égal à la longueur est hors limites et doit être rejeté avant lecture."
     },
     {
       "id": "C17-F-Q9",
@@ -111,7 +111,7 @@
     {
       "id": "C17-F-Q10",
       "result": "corrected",
-      "finding": "La répétition conceptuelle a été supprimée par une question distincte et un oracle recalculé."
+      "finding": "Le nombre d'éléments restants doit être vérifié avant chaque lecture mémoire."
     }
   ],
   "summary": {
