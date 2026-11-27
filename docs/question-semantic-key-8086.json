@@ -22,7 +22,7 @@
       ],
       "correctAnswer": "Exécuter les instructions d'un programme",
       "explanation": "Le microprocesseur récupère, décode et exécute les instructions.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C01-L1-Q2",
@@ -38,7 +38,7 @@
       ],
       "correctAnswer": "MOV AX,1234h",
       "explanation": "MOV AX,1234h est une instruction encodée ; 1234h est ici son opérande immédiat.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C01-L1-Q3",
@@ -54,7 +54,7 @@
       ],
       "correctAnswer": "Elles ont des rôles différents même si elles peuvent résider en mémoire",
       "explanation": "Les instructions décrivent les opérations ; les données sont les valeurs manipulées.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C01-L2-Q1",
@@ -70,7 +70,7 @@
       ],
       "correctAnswer": "20",
       "explanation": "Le bus d'adresses du 8086 comporte 20 lignes.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C01-L2-Q2",
@@ -86,7 +86,7 @@
       ],
       "correctAnswer": "1 Mio",
       "explanation": "2^20 adresses d'octets correspondent à 1 048 576 octets, soit 1 Mio.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C01-L2-Q3",
@@ -102,7 +102,7 @@
       ],
       "correctAnswer": "16 bits",
       "explanation": "Le 8086 possède un bus externe de données de 16 bits ; ses adresses physiques font 20 bits.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C01-L3-Q1",
@@ -118,7 +118,7 @@
       ],
       "correctAnswer": "Le 8088 a un bus externe de données de 8 bits",
       "explanation": "Le 8088 partage le modèle logiciel général mais son bus externe de données est de 8 bits.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C01-L3-Q2",
@@ -134,7 +134,7 @@
       ],
       "correctAnswer": "Une filiation architecturale et logicielle, pas des bus identiques sur tous les modèles",
       "explanation": "Les générations x86 diffèrent fortement par leurs bus, leurs modes et leur microarchitecture.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C01-L3-Q3",
@@ -150,7 +150,7 @@
       ],
       "correctAnswer": "Un modèle logiciel pédagogique",
       "explanation": "Le laboratoire simule des états et instructions ; il ne reproduit pas les signaux et temporisations électriques.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C01-F-Q1",
@@ -182,7 +182,7 @@
       ],
       "correctAnswer": "Il peut sélectionner 2^20 adresses d'octets",
       "explanation": "Les 20 lignes d'adresse permettent de sélectionner 1 048 576 adresses d'octets, soit 1 Mio.",
-      "category": "Compréhension"
+      "category": "Définition"
     },
     {
       "id": "C01-F-Q3",
@@ -198,7 +198,7 @@
       ],
       "correctAnswer": "Destination",
       "explanation": "La syntaxe Intel place la destination en premier ; AX reçoit la constante 1234h.",
-      "category": "Syntaxe"
+      "category": "Définition"
     },
     {
       "id": "C01-F-Q4",
@@ -214,7 +214,7 @@
       ],
       "correctAnswer": "La constante dépasse la capacité de 8 bits de AL",
       "explanation": "AL accepte une valeur immédiate de 8 bits au maximum, soit FFh ; 1234h exige 16 bits.",
-      "category": "Restrictions"
+      "category": "Définition"
     },
     {
       "id": "C01-F-Q5",
@@ -230,7 +230,7 @@
       ],
       "correctAnswer": "1256h",
       "explanation": "AL remplace seulement l'octet faible ; AH conserve 12h, donc AX vaut 1256h.",
-      "category": "Prédiction"
+      "category": "Définition"
     },
     {
       "id": "C01-F-Q6",
@@ -246,7 +246,7 @@
       ],
       "correctAnswer": "1 048 576",
       "explanation": "2^20 = 1 048 576 adresses d'octets, soit 1 Mio d'espace adressable.",
-      "category": "Calcul / prédiction"
+      "category": "Définition"
     },
     {
       "id": "C01-F-Q7",
@@ -262,7 +262,7 @@
       ],
       "correctAnswer": "Il place 5 dans AX puis arrête l'exécution",
       "explanation": "MOV charge la constante dans AX ; HLT arrête ensuite l'exécution du processeur simulé.",
-      "category": "Analyse de programme"
+      "category": "Définition"
     },
     {
       "id": "C01-F-Q8",
@@ -278,7 +278,7 @@
       ],
       "correctAnswer": "00000h à FFFFFh",
       "explanation": "Une adresse physique 20 bits varie de 0 à 2^20−1, soit 00000h à FFFFFh.",
-      "category": "Analyse de résultat"
+      "category": "Définition"
     },
     {
       "id": "C01-F-Q9",
@@ -294,7 +294,7 @@
       ],
       "correctAnswer": "Distinguer largeur des registres et largeur d'adresse physique : le bus d'adresses a 20 bits",
       "explanation": "La largeur générale 16 bits et le bus d'adresses 20 bits décrivent des propriétés différentes.",
-      "category": "Débogage"
+      "category": "Définition"
     },
     {
       "id": "C01-F-Q10",
@@ -310,7 +310,7 @@
       ],
       "correctAnswer": "Le 8086 a des registres généraux 16 bits, un bus de données 16 bits et un bus d'adresses 20 bits",
       "explanation": "Il faut distinguer les trois largeurs : registres, bus de données et bus d'adresses.",
-      "category": "Raisonnement"
+      "category": "Définition"
     },
     {
       "id": "C02-L1-Q1",
@@ -326,7 +326,7 @@
       ],
       "correctAnswer": "EU",
       "explanation": "L'EU (Execution Unit) décode et exécute les instructions.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C02-L1-Q2",
@@ -342,7 +342,7 @@
       ],
       "correctAnswer": "ALU",
       "explanation": "L'ALU réalise les opérations arithmétiques et logiques commandées par l'EU.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C02-L1-Q3",
@@ -358,7 +358,7 @@
       ],
       "correctAnswer": "Non, la BIU gère l'interface de bus",
       "explanation": "La BIU gère les transferts externes et la génération des adresses ; l'EU traite les instructions.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C02-L2-Q1",
@@ -374,7 +374,7 @@
       ],
       "correctAnswer": "BIU",
       "explanation": "La BIU (Bus Interface Unit) gère les accès au bus et la file de prélecture.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C02-L2-Q2",
@@ -390,7 +390,7 @@
       ],
       "correctAnswer": "segment × 10h + offset",
       "explanation": "Le segment est multiplié par 16 (décalage de quatre bits), puis l'offset est ajouté.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C02-L2-Q3",
@@ -406,7 +406,7 @@
       ],
       "correctAnswer": "6 octets",
       "explanation": "La file de prélecture du 8086 contient six octets ; celle du 8088 en contient quatre.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C02-L3-Q1",
@@ -422,7 +422,7 @@
       ],
       "correctAnswer": "La file de prélecture est invalidée puis réalimentée à la cible",
       "explanation": "Un transfert de contrôle rend les octets préchargés du chemin séquentiel inutilisables.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C02-L3-Q2",
@@ -438,7 +438,7 @@
       ],
       "correctAnswer": "Non, elle chevauche la récupération des octets et l'exécution",
       "explanation": "Le chevauchement BIU/EU n'est pas une exécution superscalaire de plusieurs instructions.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C02-L3-Q3",
@@ -454,7 +454,7 @@
       ],
       "correctAnswer": "Elle effectue l'addition",
       "explanation": "L'ALU effectue l'addition et le résultat est placé dans AX.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C02-F-Q1",
@@ -470,7 +470,7 @@
       ],
       "correctAnswer": "Décoder et exécuter les instructions",
       "explanation": "L'EU décode les instructions et commande leur exécution à l'aide de l'ALU et des registres.",
-      "category": "Définition"
+      "category": "Compréhension"
     },
     {
       "id": "C02-F-Q2",
@@ -502,7 +502,7 @@
       ],
       "correctAnswer": "AX",
       "explanation": "La destination est le premier opérande ; AX reçoit la constante 4.",
-      "category": "Syntaxe"
+      "category": "Compréhension"
     },
     {
       "id": "C02-F-Q4",
@@ -518,7 +518,7 @@
       ],
       "correctAnswer": "Elle contient six octets et n'implique pas une exécution superscalaire",
       "explanation": "La file du 8086 contient six octets ; elle chevauche la récupération et l'exécution sans exécution superscalaire.",
-      "category": "Restrictions"
+      "category": "Compréhension"
     },
     {
       "id": "C02-F-Q5",
@@ -534,7 +534,7 @@
       ],
       "correctAnswer": "7",
       "explanation": "L'EU fait exécuter l'addition par l'ALU : 4+3 donne 7.",
-      "category": "Prédiction"
+      "category": "Compréhension"
     },
     {
       "id": "C02-F-Q6",
@@ -550,7 +550,7 @@
       ],
       "correctAnswer": "10020h",
       "explanation": "1000h × 10h + 0020h = 10000h + 0020h = 10020h.",
-      "category": "Calcul / prédiction"
+      "category": "Compréhension"
     },
     {
       "id": "C02-F-Q7",
@@ -566,7 +566,7 @@
       ],
       "correctAnswer": "MOV AX,2 est sauté et AX reste 1",
       "explanation": "JMP transfère le contrôle à SUITE ; l'instruction qui suit immédiatement le saut n'est pas exécutée.",
-      "category": "Analyse de programme"
+      "category": "Compréhension"
     },
     {
       "id": "C02-F-Q8",
@@ -582,7 +582,7 @@
       ],
       "correctAnswer": "Les octets préchargés appartiennent au chemin séquentiel abandonné",
       "explanation": "Le changement de IP rend inutilisables les octets de prélecture du chemin précédent.",
-      "category": "Analyse de résultat"
+      "category": "Compréhension"
     },
     {
       "id": "C02-F-Q9",
@@ -598,7 +598,7 @@
       ],
       "correctAnswer": "Les rôles sont inversés : EU exécute, BIU gère l'interface de bus",
       "explanation": "L'EU contient l'ALU et la logique d'exécution ; la BIU gère les échanges externes.",
-      "category": "Débogage"
+      "category": "Compréhension"
     },
     {
       "id": "C02-F-Q10",
@@ -614,7 +614,7 @@
       ],
       "correctAnswer": "Chevauchement de récupération des octets et d'exécution, sans exécution superscalaire de plusieurs instructions",
       "explanation": "La file permet à BIU et EU de travailler en chevauchement ; elle ne transforme pas le 8086 en processeur superscalaire.",
-      "category": "Raisonnement"
+      "category": "Compréhension"
     },
     {
       "id": "C03-L1-Q1",
@@ -630,7 +630,7 @@
       ],
       "correctAnswer": "10",
       "explanation": "Les bits actifs valent 8 et 2 ; leur somme est 10.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C03-L1-Q2",
@@ -646,7 +646,7 @@
       ],
       "correctAnswer": "2^0",
       "explanation": "Le bit le plus à droite a le poids 2^0, soit 1.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C03-L1-Q3",
@@ -662,7 +662,7 @@
       ],
       "correctAnswer": "8 + 2",
       "explanation": "1010b vaut 2^3 + 2^1 = 8 + 2 = 10.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C03-L2-Q1",
@@ -678,7 +678,7 @@
       ],
       "correctAnswer": "4",
       "explanation": "La base 16 nécessite quatre bits pour coder ses seize symboles.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C03-L2-Q2",
@@ -694,7 +694,7 @@
       ],
       "correctAnswer": "42",
       "explanation": "2 × 16 + 10 = 42.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C03-L2-Q3",
@@ -710,7 +710,7 @@
       ],
       "correctAnswer": "1010",
       "explanation": "A vaut 10 en décimal, soit 1010b sur quatre bits.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C03-L3-Q1",
@@ -726,7 +726,7 @@
       ],
       "correctAnswer": "255",
       "explanation": "FFh = 15 × 16 + 15 = 255.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C03-L3-Q2",
@@ -742,7 +742,7 @@
       ],
       "correctAnswer": "00h à FFh",
       "explanation": "AL est un registre de 8 bits ; sa plage non signée est 0 à 255.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C03-L3-Q3",
@@ -758,7 +758,7 @@
       ],
       "correctAnswer": "255",
       "explanation": "0FFh = 15 × 16 + 15 = 255.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C03-F-Q1",
@@ -774,7 +774,7 @@
       ],
       "correctAnswer": "Une puissance de deux",
       "explanation": "Chaque position en base 2 porte le poids 2^n, en partant de 2^0 à droite.",
-      "category": "Définition"
+      "category": "Syntaxe"
     },
     {
       "id": "C03-F-Q2",
@@ -790,7 +790,7 @@
       ],
       "correctAnswer": "Chaque chiffre code quatre bits, donc deux chiffres codent huit bits",
       "explanation": "Un chiffre hexadécimal représente quatre bits ; deux chiffres forment huit bits.",
-      "category": "Compréhension"
+      "category": "Syntaxe"
     },
     {
       "id": "C03-F-Q3",
@@ -822,7 +822,7 @@
       ],
       "correctAnswer": "100h nécessite neuf bits alors que AL en contient huit",
       "explanation": "AL accepte au maximum FFh ; 100h vaut 256 et nécessite plus de huit bits.",
-      "category": "Restrictions"
+      "category": "Syntaxe"
     },
     {
       "id": "C03-F-Q5",
@@ -838,7 +838,7 @@
       ],
       "correctAnswer": "60",
       "explanation": "3Ch = 3×16 + 12 = 60 en décimal.",
-      "category": "Prédiction"
+      "category": "Syntaxe"
     },
     {
       "id": "C03-F-Q6",
@@ -854,7 +854,7 @@
       ],
       "correctAnswer": "45",
       "explanation": "101101b = 32 + 8 + 4 + 1 = 45.",
-      "category": "Calcul / prédiction"
+      "category": "Syntaxe"
     },
     {
       "id": "C03-F-Q7",
@@ -870,7 +870,7 @@
       ],
       "correctAnswer": "00FFh dans AX",
       "explanation": "La constante 0FFh vaut 255 ; le registre AX reçoit 00FFh, avec son octet fort à zéro.",
-      "category": "Analyse de programme"
+      "category": "Syntaxe"
     },
     {
       "id": "C03-F-Q8",
@@ -886,7 +886,7 @@
       ],
       "correctAnswer": "2Ah = 00101010b = 42",
       "explanation": "2Ah se décompose en 2×16+10=42 et en binaire 0010 1010.",
-      "category": "Analyse de résultat"
+      "category": "Syntaxe"
     },
     {
       "id": "C03-F-Q9",
@@ -902,7 +902,7 @@
       ],
       "correctAnswer": "Ajouter 10 au produit 2×16 : le chiffre A vaut 10",
       "explanation": "En base 16, A vaut 10 ; la conversion correcte est 2×16+10=42.",
-      "category": "Débogage"
+      "category": "Syntaxe"
     },
     {
       "id": "C03-F-Q10",
@@ -918,7 +918,7 @@
       ],
       "correctAnswer": "Regrouper les bits par paquets de quatre depuis la droite",
       "explanation": "Chaque paquet de quatre bits correspond exactement à un chiffre hexadécimal.",
-      "category": "Raisonnement"
+      "category": "Syntaxe"
     },
     {
       "id": "C04-L1-Q1",
@@ -934,7 +934,7 @@
       ],
       "correctAnswer": "L'octet",
       "explanation": "L'espace mémoire est adressé par octet ; un mot occupe deux adresses consécutives.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C04-L1-Q2",
@@ -950,7 +950,7 @@
       ],
       "correctAnswer": "34h est à l'adresse la plus basse",
       "explanation": "L'octet faible 34h est stocké à l'adresse la plus basse.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C04-L1-Q3",
@@ -966,7 +966,7 @@
       ],
       "correctAnswer": "Parce qu'il ne réalise aucune écriture mémoire",
       "explanation": "L'ordre little-endian concerne l'ordre des octets en mémoire, pas l'affichage d'un registre.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C04-L2-Q1",
@@ -982,7 +982,7 @@
       ],
       "correctAnswer": "0 à 255",
       "explanation": "Un octet non signé représente 2^8 valeurs, de 0 à 255.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C04-L2-Q2",
@@ -998,7 +998,7 @@
       ],
       "correctAnswer": "AL=00h, CF=1",
       "explanation": "Le résultat 256 déborde de l'octet : AL conserve 00h et CF signale la retenue.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C04-L2-Q3",
@@ -1014,7 +1014,7 @@
       ],
       "correctAnswer": "Non, CF concerne la retenue non signée et OF le débordement signé",
       "explanation": "CF et OF répondent à deux interprétations différentes du même motif binaire.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C04-L3-Q1",
@@ -1030,7 +1030,7 @@
       ],
       "correctAnswer": "−128 à +127",
       "explanation": "La plage signée est −2^7 à 2^7−1, soit −128 à +127.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C04-L3-Q2",
@@ -1046,7 +1046,7 @@
       ],
       "correctAnswer": "−128",
       "explanation": "En complément à deux sur 8 bits, 80h représente −128.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C04-L3-Q3",
@@ -1062,7 +1062,7 @@
       ],
       "correctAnswer": "OF",
       "explanation": "+127 + 1 sort de la plage signée et active OF ; CF reste nul dans ce cas.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C04-F-Q1",
@@ -1078,7 +1078,7 @@
       ],
       "correctAnswer": "L'octet faible d'un mot est stocké à l'adresse la plus basse",
       "explanation": "Le little-endian fixe l'ordre des octets en mémoire : le poids faible précède le poids fort.",
-      "category": "Définition"
+      "category": "Restrictions"
     },
     {
       "id": "C04-F-Q2",
@@ -1094,7 +1094,7 @@
       ],
       "correctAnswer": "La mémoire est adressée par octet et un mot contient deux octets",
       "explanation": "L'espace mémoire du 8086 est adressé par octet ; deux octets consécutifs composent un mot.",
-      "category": "Compréhension"
+      "category": "Restrictions"
     },
     {
       "id": "C04-F-Q3",
@@ -1110,7 +1110,7 @@
       ],
       "correctAnswer": "MOV [0100h],AX",
       "explanation": "La mémoire est la destination et AX la source ; la taille est déduite du registre AX.",
-      "category": "Syntaxe"
+      "category": "Restrictions"
     },
     {
       "id": "C04-F-Q4",
@@ -1142,7 +1142,7 @@
       ],
       "correctAnswer": "80h",
       "explanation": "7Fh+1 donne 80h sur huit bits ; ce motif représente −128 en signé.",
-      "category": "Prédiction"
+      "category": "Restrictions"
     },
     {
       "id": "C04-F-Q6",
@@ -1158,7 +1158,7 @@
       ],
       "correctAnswer": "−128 à +127",
       "explanation": "La formule est −2^7 à 2^7−1, soit −128 à +127.",
-      "category": "Calcul / prédiction"
+      "category": "Restrictions"
     },
     {
       "id": "C04-F-Q7",
@@ -1174,7 +1174,7 @@
       ],
       "correctAnswer": "Écrit 34h à 0100h puis 12h à 0101h",
       "explanation": "Le 8086 stocke les mots en little-endian : l'octet faible 34h est à l'adresse la plus basse.",
-      "category": "Analyse de programme"
+      "category": "Restrictions"
     },
     {
       "id": "C04-F-Q8",
@@ -1190,7 +1190,7 @@
       ],
       "correctAnswer": "OF=1 et CF=0",
       "explanation": "La somme signée +127+1 déborde (OF=1), mais il n'y a pas de retenue hors de l'octet (CF=0).",
-      "category": "Analyse de résultat"
+      "category": "Restrictions"
     },
     {
       "id": "C04-F-Q9",
@@ -1206,7 +1206,7 @@
       ],
       "correctAnswer": "Conclure que le résultat mathématique 256 est stocké dans AL",
       "explanation": "AL ne peut stocker que huit bits ; le résultat 256 n'est pas conservé intégralement dans AL.",
-      "category": "Débogage"
+      "category": "Restrictions"
     },
     {
       "id": "C04-F-Q10",
@@ -1222,7 +1222,7 @@
       ],
       "correctAnswer": "CF signale une retenue/emprunt non signé ; OF un débordement signé",
       "explanation": "Les indicateurs répondent à des interprétations différentes de l'opération binaire.",
-      "category": "Raisonnement"
+      "category": "Restrictions"
     },
     {
       "id": "C05-L1-Q1",
@@ -1238,7 +1238,7 @@
       ],
       "correctAnswer": "16",
       "explanation": "AX est un registre général de 16 bits.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C05-L1-Q2",
@@ -1254,7 +1254,7 @@
       ],
       "correctAnswer": "AL",
       "explanation": "AL est l'octet faible ; AH contient les bits 15 à 8.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C05-L1-Q3",
@@ -1270,7 +1270,7 @@
       ],
       "correctAnswer": "1256h",
       "explanation": "L'écriture dans AL remplace uniquement l'octet faible ; AH reste 12h.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C05-L2-Q1",
@@ -1286,7 +1286,7 @@
       ],
       "correctAnswer": "SI",
       "explanation": "SI est l'index source par défaut pour les instructions de chaîne.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C05-L2-Q2",
@@ -1302,7 +1302,7 @@
       ],
       "correctAnswer": "SS",
       "explanation": "Une adresse utilisant BP sélectionne SS par défaut.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C05-L2-Q3",
@@ -1318,7 +1318,7 @@
       ],
       "correctAnswer": "SP",
       "explanation": "SP contient l'offset du sommet courant de la pile dans SS.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C05-L3-Q1",
@@ -1334,7 +1334,7 @@
       ],
       "correctAnswer": "CS:IP",
       "explanation": "CS sélectionne le segment de code et IP l'offset de l'instruction.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C05-L3-Q2",
@@ -1350,7 +1350,7 @@
       ],
       "correctAnswer": "DS",
       "explanation": "DS est le segment par défaut pour la plupart des références mémoire ordinaires.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C05-L3-Q3",
@@ -1366,7 +1366,7 @@
       ],
       "correctAnswer": "Non",
       "explanation": "MOV ne peut pas avoir CS comme destination ; les transferts de contrôle changent CS:IP selon leur forme.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C05-F-Q1",
@@ -1382,7 +1382,7 @@
       ],
       "correctAnswer": "16 bits",
       "explanation": "Les quatre registres généraux sont des registres 16 bits du 8086.",
-      "category": "Définition"
+      "category": "Prédiction"
     },
     {
       "id": "C05-F-Q2",
@@ -1398,7 +1398,7 @@
       ],
       "correctAnswer": "AX est divisé en deux octets accessibles séparément",
       "explanation": "AH représente les bits 15 à 8 et AL les bits 7 à 0 du même registre AX.",
-      "category": "Compréhension"
+      "category": "Prédiction"
     },
     {
       "id": "C05-F-Q3",
@@ -1414,7 +1414,7 @@
       ],
       "correctAnswer": "MOV AL,56h",
       "explanation": "Une écriture dans AL modifie les bits 7 à 0 sans changer AH.",
-      "category": "Syntaxe"
+      "category": "Prédiction"
     },
     {
       "id": "C05-F-Q4",
@@ -1430,7 +1430,7 @@
       ],
       "correctAnswer": "SS",
       "explanation": "Les formes d'adressage utilisant BP sélectionnent SS par défaut sur le 8086.",
-      "category": "Restrictions"
+      "category": "Prédiction"
     },
     {
       "id": "C05-F-Q5",
@@ -1462,7 +1462,7 @@
       ],
       "correctAnswer": "10020h",
       "explanation": "1000h×10h+0020h=10020h : CS:IP désigne l'instruction en cours.",
-      "category": "Calcul / prédiction"
+      "category": "Prédiction"
     },
     {
       "id": "C05-F-Q7",
@@ -1478,7 +1478,7 @@
       ],
       "correctAnswer": "AH",
       "explanation": "AL est remplacé par 56h tandis que AH conserve 12h.",
-      "category": "Analyse de programme"
+      "category": "Prédiction"
     },
     {
       "id": "C05-F-Q8",
@@ -1494,7 +1494,7 @@
       ],
       "correctAnswer": "CS:IP pour le code, SS:SP pour le sommet de pile",
       "explanation": "CS:IP forme l'adresse logique d'instruction ; SS:SP désigne le sommet de pile.",
-      "category": "Analyse de résultat"
+      "category": "Prédiction"
     },
     {
       "id": "C05-F-Q9",
@@ -1510,7 +1510,7 @@
       ],
       "correctAnswer": "CS ne peut pas être destination de MOV sur le 8086",
       "explanation": "Le chargement direct de CS par MOV est interdit ; les transferts de contrôle modifient CS:IP selon leur forme.",
-      "category": "Débogage"
+      "category": "Prédiction"
     },
     {
       "id": "C05-F-Q10",
@@ -1526,7 +1526,7 @@
       ],
       "correctAnswer": "Leur rôle courant guide leur usage, mais plusieurs registres peuvent être manipulés explicitement selon les instructions",
       "explanation": "Les noms reflètent des usages conventionnels ou implicites de certaines instructions, pas une exclusivité absolue.",
-      "category": "Raisonnement"
+      "category": "Prédiction"
     },
     {
       "id": "C06-L1-Q1",
@@ -1542,7 +1542,7 @@
       ],
       "correctAnswer": "Un commentaire",
       "explanation": "Les commentaires sont destinés au lecteur et ne deviennent pas des opérations.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C06-L1-Q2",
@@ -1558,7 +1558,7 @@
       ],
       "correctAnswer": "Traduire les mnémoniques et résoudre les symboles",
       "explanation": "L'assembleur produit les octets machine et résout les références symboliques.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C06-L1-Q3",
@@ -1574,7 +1574,7 @@
       ],
       "correctAnswer": "Non, elle nomme un offset",
       "explanation": "Une étiquette est une information symbolique, pas une instruction.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C06-L2-Q1",
@@ -1590,7 +1590,7 @@
       ],
       "correctAnswer": "AX",
       "explanation": "La première opérande est la destination.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C06-L2-Q2",
@@ -1606,7 +1606,7 @@
       ],
       "correctAnswer": "XCHG",
       "explanation": "XCHG échange les valeurs au lieu de réaliser une copie.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C06-L2-Q3",
@@ -1622,7 +1622,7 @@
       ],
       "correctAnswer": "MOV [BX],[SI]",
       "explanation": "MOV ne permet pas un transfert direct mémoire vers mémoire.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C06-L3-Q1",
@@ -1638,7 +1638,7 @@
       ],
       "correctAnswer": "L'offset de HLT",
       "explanation": "L'étiquette nomme l'adresse de l'instruction qui suit.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C06-L3-Q2",
@@ -1654,7 +1654,7 @@
       ],
       "correctAnswer": "Il modifie la cible du programme",
       "explanation": "JMP transfère le contrôle vers sa cible.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C06-L3-Q3",
@@ -1670,7 +1670,7 @@
       ],
       "correctAnswer": "Pour détecter un saut erroné ou une boucle",
       "explanation": "Une cible incorrecte peut dérouter le flot d'exécution.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C07-L1-Q1",
@@ -1686,7 +1686,7 @@
       ],
       "correctAnswer": "Charge l'offset BX+4 dans SI",
       "explanation": "LEA calcule l'adresse effective sans lire la donnée.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C07-L1-Q2",
@@ -1702,7 +1702,7 @@
       ],
       "correctAnswer": "XCHG [BX],[SI]",
       "explanation": "XCHG n'autorise pas deux opérandes mémoire.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C07-L1-Q3",
@@ -1718,7 +1718,7 @@
       ],
       "correctAnswer": "Oui",
       "explanation": "La source mémoire est lue et transférée dans AX.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C07-L2-Q1",
@@ -1734,7 +1734,7 @@
       ],
       "correctAnswer": "BX+SI",
       "explanation": "BX+SI est une combinaison autorisée.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C07-L2-Q2",
@@ -1750,7 +1750,7 @@
       ],
       "correctAnswer": "Non",
       "explanation": "LEA calcule une adresse sans modifier les indicateurs.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C07-L2-Q3",
@@ -1766,7 +1766,7 @@
       ],
       "correctAnswer": "BX+SI+6",
       "explanation": "LEA place la somme des registres et du déplacement dans DX.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C07-L3-Q1",
@@ -1782,7 +1782,7 @@
       ],
       "correctAnswer": "4 octets",
       "explanation": "Un pointeur 16:16 comprend deux mots.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C07-L3-Q2",
@@ -1798,7 +1798,7 @@
       ],
       "correctAnswer": "SI",
       "explanation": "Le premier mot contient l'offset chargé dans SI.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C07-L3-Q3",
@@ -1814,7 +1814,7 @@
       ],
       "correctAnswer": "Le second mot",
       "explanation": "Le mot suivant l'offset contient le segment.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C08-L1-Q1",
@@ -1830,7 +1830,7 @@
       ],
       "correctAnswer": "ADC ajoute aussi CF entrant",
       "explanation": "ADC additionne la source et l'ancienne retenue CF.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C08-L1-Q2",
@@ -1846,7 +1846,7 @@
       ],
       "correctAnswer": "Pour propager la retenue",
       "explanation": "La retenue du mot faible contribue au mot fort.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C08-L1-Q3",
@@ -1862,7 +1862,7 @@
       ],
       "correctAnswer": "AL=00h et CF=1",
       "explanation": "Le résultat sur huit bits est nul avec retenue.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C08-L2-Q1",
@@ -1878,7 +1878,7 @@
       ],
       "correctAnswer": "SBB soustrait aussi CF entrant",
       "explanation": "SBB calcule destination−source−CF.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C08-L2-Q2",
@@ -1894,7 +1894,7 @@
       ],
       "correctAnswer": "Le mot faible",
       "explanation": "L'emprunt est déterminé sur le mot faible puis propagé.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C08-L2-Q3",
@@ -1910,7 +1910,7 @@
       ],
       "correctAnswer": "AL=FFh et CF=1",
       "explanation": "La soustraction emprunte et le résultat sur huit bits est FFh.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C08-L3-Q1",
@@ -1926,7 +1926,7 @@
       ],
       "correctAnswer": "Non, CF est conservé",
       "explanation": "INC préserve CF sur le 8086.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C08-L3-Q2",
@@ -1942,7 +1942,7 @@
       ],
       "correctAnswer": "0−AL",
       "explanation": "NEG calcule le complément à deux.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C08-L3-Q3",
@@ -1958,7 +1958,7 @@
       ],
       "correctAnswer": "80h avec OF=1",
       "explanation": "−(−128) déborde la plage signée ; le motif reste 80h.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C09-L1-Q1",
@@ -1974,7 +1974,7 @@
       ],
       "correctAnswer": "AND",
       "explanation": "AND produit 1 uniquement si les deux bits valent 1.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C09-L1-Q2",
@@ -1990,7 +1990,7 @@
       ],
       "correctAnswer": "Conserver le quartet faible",
       "explanation": "Le masque 0Fh conserve les quatre bits faibles.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C09-L1-Q3",
@@ -2006,7 +2006,7 @@
       ],
       "correctAnswer": "OR",
       "explanation": "OR active les bits présents dans le masque.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C09-L2-Q1",
@@ -2022,7 +2022,7 @@
       ],
       "correctAnswer": "0Fh",
       "explanation": "XOR inverse les bits indiqués par le masque.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C09-L2-Q2",
@@ -2038,7 +2038,7 @@
       ],
       "correctAnswer": "NOT",
       "explanation": "NOT complète chaque bit de l'opérande.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C09-L2-Q3",
@@ -2054,7 +2054,7 @@
       ],
       "correctAnswer": "XOR",
       "explanation": "XOR avec un masque inverse les bits dont le masque vaut 1.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C09-L3-Q1",
@@ -2070,7 +2070,7 @@
       ],
       "correctAnswer": "Non",
       "explanation": "TEST actualise les FLAGS sans stocker le résultat.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C09-L3-Q2",
@@ -2086,7 +2086,7 @@
       ],
       "correctAnswer": "1",
       "explanation": "Le ET logique vaut zéro, donc ZF=1.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C09-L3-Q3",
@@ -2102,7 +2102,7 @@
       ],
       "correctAnswer": "TEST",
       "explanation": "TEST ne conserve pas le résultat logique dans l'opérande.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C10-L1-Q1",
@@ -2118,7 +2118,7 @@
       ],
       "correctAnswer": "CF",
       "explanation": "CF signale la retenue ou l'emprunt non signé.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C10-L1-Q2",
@@ -2134,7 +2134,7 @@
       ],
       "correctAnswer": "CF non signé, OF signé",
       "explanation": "Les deux indicateurs décrivent des interprétations différentes.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C10-L1-Q3",
@@ -2150,7 +2150,7 @@
       ],
       "correctAnswer": "Parité paire de l'octet faible",
       "explanation": "PF vaut 1 si l'octet faible contient un nombre pair de bits à 1.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C10-L2-Q1",
@@ -2166,7 +2166,7 @@
       ],
       "correctAnswer": "IF",
       "explanation": "IF contrôle les interruptions masquables.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C10-L2-Q2",
@@ -2182,7 +2182,7 @@
       ],
       "correctAnswer": "Positionne DF à 1",
       "explanation": "STD configure l'avancement décroissant des index.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C10-L2-Q3",
@@ -2198,7 +2198,7 @@
       ],
       "correctAnswer": "IF",
       "explanation": "CLI efface IF.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C10-L3-Q1",
@@ -2214,7 +2214,7 @@
       ],
       "correctAnswer": "PUSHF",
       "explanation": "PUSHF sauvegarde le mot FLAGS sur la pile.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C10-L3-Q2",
@@ -2230,7 +2230,7 @@
       ],
       "correctAnswer": "1",
       "explanation": "POPF restaure le mot sauvegardé.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C10-L3-Q3",
@@ -2246,7 +2246,7 @@
       ],
       "correctAnswer": "SS:SP",
       "explanation": "Les opérations de pile utilisent SS et SP.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C11-L1-Q1",
@@ -2262,7 +2262,7 @@
       ],
       "correctAnswer": "Les états machine pertinents dans l'ordre",
       "explanation": "Une trace suit les états avant et après les instructions.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C11-L1-Q2",
@@ -2278,7 +2278,7 @@
       ],
       "correctAnswer": "Elle localise la cause initiale",
       "explanation": "Les erreurs ultérieures peuvent découler de la première divergence.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C11-L1-Q3",
@@ -2294,7 +2294,7 @@
       ],
       "correctAnswer": "IP",
       "explanation": "IP indique l'offset de l'instruction courante.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C11-L2-Q1",
@@ -2310,7 +2310,7 @@
       ],
       "correctAnswer": "Initialisation et taille des opérandes",
       "explanation": "Une valeur initiale ou une taille incorrecte fausse les opérations.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C11-L2-Q2",
@@ -2326,7 +2326,7 @@
       ],
       "correctAnswer": "Non",
       "explanation": "La correction logique doit être démontrée par des résultats et des tests.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C11-L2-Q3",
@@ -2342,7 +2342,7 @@
       ],
       "correctAnswer": "Pour isoler l'effet de chaque changement",
       "explanation": "Une modification isolée rend le diagnostic reproductible.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C11-L3-Q1",
@@ -2358,7 +2358,7 @@
       ],
       "correctAnswer": "FFh+1",
       "explanation": "FFh+1 dépasse la capacité non signée d'un octet.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C11-L3-Q2",
@@ -2374,7 +2374,7 @@
       ],
       "correctAnswer": "Il conserve sa valeur antérieure",
       "explanation": "INC préserve CF.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C11-L3-Q3",
@@ -2390,7 +2390,7 @@
       ],
       "correctAnswer": "Pour valider les deux chemins",
       "explanation": "Les chemins pris et non pris peuvent comporter des erreurs distinctes.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C06-F-Q1",
@@ -2406,7 +2406,7 @@
       ],
       "correctAnswer": "Le code machine chargé",
       "explanation": "Le processeur exécute les octets machine, pas les annotations du source.",
-      "category": null
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C06-F-Q2",
@@ -2422,7 +2422,7 @@
       ],
       "correctAnswer": "À l'assemblage ou à l'édition de liens",
       "explanation": "L'assembleur calcule les offsets des symboles.",
-      "category": null
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C06-F-Q3",
@@ -2438,7 +2438,7 @@
       ],
       "correctAnswer": "MOV AX,BX",
       "explanation": "La destination est le premier opérande.",
-      "category": null
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C06-F-Q4",
@@ -2454,7 +2454,7 @@
       ],
       "correctAnswer": "La forme mémoire vers mémoire n'est pas autorisée",
       "explanation": "Un registre intermédiaire est requis pour transférer entre deux cases mémoire.",
-      "category": null
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C06-F-Q5",
@@ -2470,7 +2470,7 @@
       ],
       "correctAnswer": "5678h",
       "explanation": "XCHG échange les contenus des registres.",
-      "category": null
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C06-F-Q6",
@@ -2486,7 +2486,7 @@
       ],
       "correctAnswer": "Non, pas en tant qu'étiquette seule",
       "explanation": "Le symbole sert à calculer une adresse ; il ne correspond pas à un opcode.",
-      "category": null
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C06-F-Q7",
@@ -2502,7 +2502,7 @@
       ],
       "correctAnswer": "Le flot de contrôle, via IP",
       "explanation": "JMP transfère l'exécution à la cible.",
-      "category": null
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C06-F-Q8",
@@ -2518,7 +2518,7 @@
       ],
       "correctAnswer": "Exécuter une mauvaise zone ou boucler",
       "explanation": "La cible détermine l'adresse de reprise du programme.",
-      "category": null
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C06-F-Q9",
@@ -2534,7 +2534,7 @@
       ],
       "correctAnswer": "Contrôler l'offset résolu et l'instruction atteinte",
       "explanation": "Il faut comparer la cible assemblée et le flot effectivement suivi.",
-      "category": null
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C06-F-Q10",
@@ -2550,7 +2550,7 @@
       ],
       "correctAnswer": "La directive guide l'assembleur ; l'instruction est exécutée par le CPU",
       "explanation": "Les directives organisent l'assemblage et ne sont pas nécessairement du code exécutable.",
-      "category": null
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C07-F-Q1",
@@ -2566,7 +2566,7 @@
       ],
       "correctAnswer": "L'offset calculé d'une expression d'adresse",
       "explanation": "LEA calcule une adresse effective sans charger la donnée pointée.",
-      "category": null
+      "category": "Analyse de programme"
     },
     {
       "id": "C07-F-Q2",
@@ -2582,7 +2582,7 @@
       ],
       "correctAnswer": "Recevoir l'offset du pointeur",
       "explanation": "Le premier mot du pointeur far est l'offset.",
-      "category": null
+      "category": "Analyse de programme"
     },
     {
       "id": "C07-F-Q3",
@@ -2598,7 +2598,7 @@
       ],
       "correctAnswer": "XCHG AX,[BX]",
       "explanation": "XCHG autorise une forme registre-mémoire, mais pas mémoire-mémoire.",
-      "category": null
+      "category": "Analyse de programme"
     },
     {
       "id": "C07-F-Q4",
@@ -2614,7 +2614,7 @@
       ],
       "correctAnswer": "LEA calcule l'offset ; MOV lit le mot mémoire",
       "explanation": "Les deux instructions ont des effets différents sur l'accès mémoire.",
-      "category": null
+      "category": "Analyse de programme"
     },
     {
       "id": "C07-F-Q5",
@@ -2630,7 +2630,7 @@
       ],
       "correctAnswer": "0124h",
       "explanation": "0100h+0020h+0004h=0124h.",
-      "category": null
+      "category": "Analyse de programme"
     },
     {
       "id": "C07-F-Q6",
@@ -2646,7 +2646,7 @@
       ],
       "correctAnswer": "Le mot segment",
       "explanation": "La représentation en mémoire est offset puis segment.",
-      "category": null
+      "category": "Analyse de programme"
     },
     {
       "id": "C07-F-Q7",
@@ -2662,7 +2662,7 @@
       ],
       "correctAnswer": "DI et ES",
       "explanation": "LES charge l'offset dans DI et le segment dans ES.",
-      "category": null
+      "category": "Analyse de programme"
     },
     {
       "id": "C07-F-Q8",
@@ -2678,7 +2678,7 @@
       ],
       "correctAnswer": "Non",
       "explanation": "LEA ne lit pas le contenu mémoire.",
-      "category": null
+      "category": "Analyse de programme"
     },
     {
       "id": "C07-F-Q9",
@@ -2694,7 +2694,7 @@
       ],
       "correctAnswer": "Initialiser les quatre octets du pointeur en mémoire",
       "explanation": "LDS lit un offset et un segment à partir de quatre octets.",
-      "category": null
+      "category": "Analyse de programme"
     },
     {
       "id": "C07-F-Q10",
@@ -2710,7 +2710,7 @@
       ],
       "correctAnswer": "Identifier si l'instruction calcule un offset ou lit le contenu mémoire",
       "explanation": "Les crochets désignent un accès mémoire ; LEA est l'exception de calcul d'adresse.",
-      "category": null
+      "category": "Analyse de programme"
     },
     {
       "id": "C08-F-Q1",
@@ -2726,7 +2726,7 @@
       ],
       "correctAnswer": "CF",
       "explanation": "ADC additionne l'ancienne retenue.",
-      "category": null
+      "category": "Analyse de résultat"
     },
     {
       "id": "C08-F-Q2",
@@ -2742,7 +2742,7 @@
       ],
       "correctAnswer": "CF",
       "explanation": "INC préserve CF, contrairement à ADD.",
-      "category": null
+      "category": "Analyse de résultat"
     },
     {
       "id": "C08-F-Q3",
@@ -2758,7 +2758,7 @@
       ],
       "correctAnswer": "ADC AX,BX",
       "explanation": "ADC inclut CF dans la somme.",
-      "category": null
+      "category": "Analyse de résultat"
     },
     {
       "id": "C08-F-Q4",
@@ -2774,7 +2774,7 @@
       ],
       "correctAnswer": "La retenue du mot faible doit être propagée au mot fort",
       "explanation": "La retenue est générée lors du calcul du mot faible.",
-      "category": null
+      "category": "Analyse de résultat"
     },
     {
       "id": "C08-F-Q5",
@@ -2790,7 +2790,7 @@
       ],
       "correctAnswer": "FFh avec CF=1",
       "explanation": "Le résultat est modulo 256 et nécessite un emprunt.",
-      "category": null
+      "category": "Analyse de résultat"
     },
     {
       "id": "C08-F-Q6",
@@ -2806,7 +2806,7 @@
       ],
       "correctAnswer": "4",
       "explanation": "SBB soustrait aussi CF : 5−0−1=4.",
-      "category": null
+      "category": "Analyse de résultat"
     },
     {
       "id": "C08-F-Q7",
@@ -2822,7 +2822,7 @@
       ],
       "correctAnswer": "NEG 80h",
       "explanation": "Le négatif de −128 n'est pas représentable sur 8 bits signés.",
-      "category": null
+      "category": "Analyse de résultat"
     },
     {
       "id": "C08-F-Q8",
@@ -2838,7 +2838,7 @@
       ],
       "correctAnswer": "L'opération 8 bits ne met à jour que AL ; AH n'est pas la retenue",
       "explanation": "La retenue est dans CF, pas automatiquement dans AH.",
-      "category": null
+      "category": "Analyse de résultat"
     },
     {
       "id": "C08-F-Q9",
@@ -2854,7 +2854,7 @@
       ],
       "correctAnswer": "Exécuter une instruction qui modifie CF avant ADC",
       "explanation": "ADC doit consommer la retenue produite par le calcul précédent.",
-      "category": null
+      "category": "Analyse de résultat"
     },
     {
       "id": "C08-F-Q10",
@@ -2870,7 +2870,7 @@
       ],
       "correctAnswer": "Cas sans retenue et cas avec retenue, en vérifiant chaque mot",
       "explanation": "Les deux chemins de propagation doivent être vérifiés.",
-      "category": null
+      "category": "Analyse de résultat"
     },
     {
       "id": "C09-F-Q1",
@@ -2886,7 +2886,7 @@
       ],
       "correctAnswer": "AND",
       "explanation": "AND conserve les bits dont le masque vaut 1.",
-      "category": null
+      "category": "Débogage"
     },
     {
       "id": "C09-F-Q2",
@@ -2902,7 +2902,7 @@
       ],
       "correctAnswer": "F0h",
       "explanation": "F0h contient quatre uns dans le quartet fort.",
-      "category": null
+      "category": "Débogage"
     },
     {
       "id": "C09-F-Q3",
@@ -2918,7 +2918,7 @@
       ],
       "correctAnswer": "OR",
       "explanation": "OR active les bits présents dans au moins un opérande.",
-      "category": null
+      "category": "Débogage"
     },
     {
       "id": "C09-F-Q4",
@@ -2934,7 +2934,7 @@
       ],
       "correctAnswer": "XOR avec un masque",
       "explanation": "XOR inverse les bits où le masque contient des uns.",
-      "category": null
+      "category": "Débogage"
     },
     {
       "id": "C09-F-Q5",
@@ -2950,7 +2950,7 @@
       ],
       "correctAnswer": "NOT AL",
       "explanation": "NOT complète chaque bit de l'octet.",
-      "category": null
+      "category": "Débogage"
     },
     {
       "id": "C09-F-Q6",
@@ -2966,7 +2966,7 @@
       ],
       "correctAnswer": "1000b",
       "explanation": "Les bits communs à 1 sont seulement le bit de poids 3.",
-      "category": null
+      "category": "Débogage"
     },
     {
       "id": "C09-F-Q7",
@@ -2982,7 +2982,7 @@
       ],
       "correctAnswer": "Non",
       "explanation": "TEST actualise les indicateurs sans modifier la destination.",
-      "category": null
+      "category": "Débogage"
     },
     {
       "id": "C09-F-Q8",
@@ -2998,7 +2998,7 @@
       ],
       "correctAnswer": "Au moins un bit commun au masque est actif",
       "explanation": "ZF=0 indique un résultat logique non nul.",
-      "category": null
+      "category": "Débogage"
     },
     {
       "id": "C09-F-Q9",
@@ -3014,7 +3014,7 @@
       ],
       "correctAnswer": "AND modifie l'opérande",
       "explanation": "TEST est préférable lorsque l'opérande doit rester intact.",
-      "category": null
+      "category": "Débogage"
     },
     {
       "id": "C09-F-Q10",
@@ -3030,7 +3030,7 @@
       ],
       "correctAnswer": "CF et OF",
       "explanation": "Les opérations logiques remettent CF et OF à zéro.",
-      "category": null
+      "category": "Débogage"
     },
     {
       "id": "C10-F-Q1",
@@ -3046,7 +3046,7 @@
       ],
       "correctAnswer": "PF",
       "explanation": "PF décrit la parité paire de l'octet faible.",
-      "category": null
+      "category": "Raisonnement"
     },
     {
       "id": "C10-F-Q2",
@@ -3062,7 +3062,7 @@
       ],
       "correctAnswer": "OF",
       "explanation": "OF signale que le résultat signé sort de la plage représentable.",
-      "category": null
+      "category": "Raisonnement"
     },
     {
       "id": "C10-F-Q3",
@@ -3078,7 +3078,7 @@
       ],
       "correctAnswer": "STI",
       "explanation": "STI active les interruptions masquables en positionnant IF.",
-      "category": null
+      "category": "Raisonnement"
     },
     {
       "id": "C10-F-Q4",
@@ -3094,7 +3094,7 @@
       ],
       "correctAnswer": "Une instruction peut définir, préserver ou laisser indéfinis certains bits",
       "explanation": "Les effets dépendent de la spécification de chaque instruction.",
-      "category": null
+      "category": "Raisonnement"
     },
     {
       "id": "C10-F-Q5",
@@ -3110,7 +3110,7 @@
       ],
       "correctAnswer": "DF=0",
       "explanation": "CLD efface le drapeau de direction.",
-      "category": null
+      "category": "Raisonnement"
     },
     {
       "id": "C10-F-Q6",
@@ -3126,7 +3126,7 @@
       ],
       "correctAnswer": "Empiler FLAGS puis le dépiler plus tard",
       "explanation": "POPF restaure le mot précédemment empilé.",
-      "category": null
+      "category": "Raisonnement"
     },
     {
       "id": "C10-F-Q7",
@@ -3142,7 +3142,7 @@
       ],
       "correctAnswer": "TF",
       "explanation": "TF est le Trap Flag.",
-      "category": null
+      "category": "Raisonnement"
     },
     {
       "id": "C10-F-Q8",
@@ -3158,7 +3158,7 @@
       ],
       "correctAnswer": "Il restaure le mot FLAGS et peut aussi affecter des bits de contrôle",
       "explanation": "POPF restaure plusieurs indicateurs, avec des effets sur l'état de contrôle.",
-      "category": null
+      "category": "Raisonnement"
     },
     {
       "id": "C10-F-Q9",
@@ -3174,7 +3174,7 @@
       ],
       "correctAnswer": "Une restauration depuis le mauvais mot et une corruption de l'état",
       "explanation": "LIFO et SP doivent rester cohérents.",
-      "category": null
+      "category": "Raisonnement"
     },
     {
       "id": "C10-F-Q10",
@@ -3190,7 +3190,7 @@
       ],
       "correctAnswer": "Le bit représenté ne prouve pas l'émulation des événements matériels",
       "explanation": "La représentation d'un bit ne simule pas l'ensemble du matériel d'interruption.",
-      "category": null
+      "category": "Raisonnement"
     },
     {
       "id": "C11-F-Q1",
@@ -3206,7 +3206,7 @@
       ],
       "correctAnswer": "IP",
       "explanation": "IP contient l'offset de la prochaine instruction dans le segment de code.",
-      "category": null
+      "category": "Définition"
     },
     {
       "id": "C11-F-Q2",
@@ -3222,7 +3222,7 @@
       ],
       "correctAnswer": "Pour relier chaque changement à l'instruction qui l'a causé",
       "explanation": "L'ordre permet d'isoler la cause et la première divergence.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C11-F-Q3",
@@ -3238,7 +3238,7 @@
       ],
       "correctAnswer": "L'adresse effective et les octets concernés",
       "explanation": "Une erreur d'adresse peut produire une donnée incorrecte sans erreur de syntaxe.",
-      "category": null
+      "category": "Syntaxe"
     },
     {
       "id": "C11-F-Q4",
@@ -3254,7 +3254,7 @@
       ],
       "correctAnswer": "Une erreur logique possible",
       "explanation": "Un programme peut s'exécuter normalement tout en produisant un mauvais résultat.",
-      "category": null
+      "category": "Restrictions"
     },
     {
       "id": "C11-F-Q5",
@@ -3270,7 +3270,7 @@
       ],
       "correctAnswer": "7Fh+1 sur 8 bits",
       "explanation": "+127+1 dépasse la plage signée 8 bits.",
-      "category": null
+      "category": "Prédiction"
     },
     {
       "id": "C11-F-Q6",
@@ -3286,7 +3286,7 @@
       ],
       "correctAnswer": "Il reste à 1",
       "explanation": "INC préserve la valeur antérieure de CF sans la modifier.",
-      "category": null
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C11-F-Q7",
@@ -3302,7 +3302,7 @@
       ],
       "correctAnswer": "Tester les conditions vraie et fausse et relever IP",
       "explanation": "Les deux chemins doivent être testés et le flot vérifié.",
-      "category": null
+      "category": "Analyse de programme"
     },
     {
       "id": "C11-F-Q8",
@@ -3318,7 +3318,7 @@
       ],
       "correctAnswer": "AX vaut exactement 0005h après la séquence attendue",
       "explanation": "Une assertion vérifie un état précis, pas seulement l'absence d'erreur.",
-      "category": null
+      "category": "Analyse de résultat"
     },
     {
       "id": "C11-F-Q9",
@@ -3334,7 +3334,7 @@
       ],
       "correctAnswer": "Comparer la première divergence et isoler une cause",
       "explanation": "Le diagnostic doit être progressif et reproductible.",
-      "category": null
+      "category": "Débogage"
     },
     {
       "id": "C11-F-Q10",
@@ -3350,7 +3350,7 @@
       ],
       "correctAnswer": "Les erreurs de taille et de condition apparaissent souvent aux frontières",
       "explanation": "Les cas limites révèlent les erreurs que les valeurs ordinaires ne montrent pas.",
-      "category": null
+      "category": "Raisonnement"
     },
     {
       "id": "C12-L1-Q1",
@@ -3366,7 +3366,7 @@
       ],
       "correctAnswer": "Les deux opérandes, seuls les FLAGS changent",
       "explanation": "CMP met à jour les FLAGS sans écrire le résultat de la soustraction.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C12-L1-Q2",
@@ -3382,7 +3382,7 @@
       ],
       "correctAnswer": "CF",
       "explanation": "La soustraction 3−5 emprunte : CF=1.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C12-L1-Q3",
@@ -3398,7 +3398,7 @@
       ],
       "correctAnswer": "Non, TEST ne stocke pas le ET logique",
       "explanation": "TEST met à jour les FLAGS mais conserve l'opérande.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C12-L2-Q1",
@@ -3414,7 +3414,7 @@
       ],
       "correctAnswer": "Les opérandes sont égaux",
       "explanation": "ZF=1 indique que le résultat de la soustraction est nul.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C12-L2-Q2",
@@ -3430,7 +3430,7 @@
       ],
       "correctAnswer": "SF différent de OF",
       "explanation": "La comparaison signée utilise SF≠OF.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C12-L2-Q3",
@@ -3446,7 +3446,7 @@
       ],
       "correctAnswer": "FEh",
       "explanation": "03h−05h donne FEh sur 8 bits.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C12-L3-Q1",
@@ -3462,7 +3462,7 @@
       ],
       "correctAnswer": "04h pour les indicateurs, sans modifier AL",
       "explanation": "TEST calcule un AND logique uniquement pour les indicateurs.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C12-L3-Q2",
@@ -3478,7 +3478,7 @@
       ],
       "correctAnswer": "1",
       "explanation": "02h AND 01h vaut zéro, donc ZF=1.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C12-L3-Q3",
@@ -3494,7 +3494,7 @@
       ],
       "correctAnswer": "CF et OF",
       "explanation": "TEST, comme les opérations logiques, efface CF et OF.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C13-L1-Q1",
@@ -3510,7 +3510,7 @@
       ],
       "correctAnswer": "−128 à +127 octets",
       "explanation": "Le déplacement relatif short est un entier signé sur 8 bits.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C13-L1-Q2",
@@ -3526,7 +3526,7 @@
       ],
       "correctAnswer": "L'adresse de l'instruction qui suit le saut",
       "explanation": "Le déplacement est relatif à l'IP après l'instruction.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C13-L1-Q3",
@@ -3542,7 +3542,7 @@
       ],
       "correctAnswer": "Saut indirect near par registre",
       "explanation": "JMP r/m16 utilise un offset fourni par l'opérande et conserve CS.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C13-L2-Q1",
@@ -3558,7 +3558,7 @@
       ],
       "correctAnswer": "E9 rel16",
       "explanation": "E9 est le saut direct relatif avec déplacement 16 bits.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C13-L2-Q2",
@@ -3574,7 +3574,7 @@
       ],
       "correctAnswer": "−32768 à +32767",
       "explanation": "Le déplacement near est un entier signé sur 16 bits.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C13-L2-Q3",
@@ -3590,7 +3590,7 @@
       ],
       "correctAnswer": "Depuis l'IP après l'instruction",
       "explanation": "Le déplacement est ajouté à l'IP suivant l'instruction.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C13-L3-Q1",
@@ -3606,7 +3606,7 @@
       ],
       "correctAnswer": "FF /4",
       "explanation": "FF /4 encode JMP indirect near.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C13-L3-Q2",
@@ -3622,7 +3622,7 @@
       ],
       "correctAnswer": "Non, CS reste inchangé",
       "explanation": "Un saut near change IP sans changer le segment de code.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C13-L3-Q3",
@@ -3638,7 +3638,7 @@
       ],
       "correctAnswer": "JMP far",
       "explanation": "Un saut far charge un nouveau segment et un nouvel offset.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C14-L1-Q1",
@@ -3654,7 +3654,7 @@
       ],
       "correctAnswer": "ZF=1",
       "explanation": "JE et JZ sont des alias qui testent ZF=1.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C14-L1-Q2",
@@ -3670,7 +3670,7 @@
       ],
       "correctAnswer": "OF=1",
       "explanation": "JO teste le drapeau de débordement signé.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C14-L1-Q3",
@@ -3686,7 +3686,7 @@
       ],
       "correctAnswer": "SF différent de OF",
       "explanation": "JL teste SF≠OF, ce qui correspond à inférieur signé.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C14-L2-Q1",
@@ -3702,7 +3702,7 @@
       ],
       "correctAnswer": "OF=1",
       "explanation": "JO teste le drapeau de débordement.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C14-L2-Q2",
@@ -3718,7 +3718,7 @@
       ],
       "correctAnswer": "PF=1, parité paire de l'octet faible",
       "explanation": "JP et JPE testent la parité paire.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C14-L2-Q3",
@@ -3734,7 +3734,7 @@
       ],
       "correctAnswer": "SF=0",
       "explanation": "JNS teste l'absence du bit de signe.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C14-L3-Q1",
@@ -3750,7 +3750,7 @@
       ],
       "correctAnswer": "CF=0 et ZF=0",
       "explanation": "JA signifie strictement supérieur en non signé.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C14-L3-Q2",
@@ -3766,7 +3766,7 @@
       ],
       "correctAnswer": "CF=1 ou ZF=1",
       "explanation": "JBE signifie inférieur ou égal en non signé.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C14-L3-Q3",
@@ -3782,7 +3782,7 @@
       ],
       "correctAnswer": "ZF=0 et SF=OF",
       "explanation": "JG signifie strictement supérieur en signé.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C15-L1-Q1",
@@ -3798,7 +3798,7 @@
       ],
       "correctAnswer": "JB (CF=1)",
       "explanation": "JB utilise CF et exprime inférieur non signé.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C15-L1-Q2",
@@ -3814,7 +3814,7 @@
       ],
       "correctAnswer": "JL",
       "explanation": "JL teste SF différent de OF.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C15-L1-Q3",
@@ -3830,7 +3830,7 @@
       ],
       "correctAnswer": "−1",
       "explanation": "En complément à deux sur 8 bits, FFh représente −1.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C15-L2-Q1",
@@ -3846,7 +3846,7 @@
       ],
       "correctAnswer": "−1",
       "explanation": "FFh représente −1 en complément à deux.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C15-L2-Q2",
@@ -3862,7 +3862,7 @@
       ],
       "correctAnswer": "JL",
       "explanation": "JL utilise SF≠OF.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C15-L2-Q3",
@@ -3878,7 +3878,7 @@
       ],
       "correctAnswer": "Pour corriger l'interprétation du signe en cas de débordement",
       "explanation": "SF seul peut être trompeur lorsqu'une soustraction signée déborde.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C15-L3-Q1",
@@ -3894,7 +3894,7 @@
       ],
       "correctAnswer": "FFh est supérieur à 01h",
       "explanation": "FFh vaut 255 en non signé.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C15-L3-Q2",
@@ -3910,7 +3910,7 @@
       ],
       "correctAnswer": "−1 est inférieur à 1",
       "explanation": "FFh vaut −1 en signé sur 8 bits.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C15-L3-Q3",
@@ -3926,7 +3926,7 @@
       ],
       "correctAnswer": "Si les données sont non signées ou signées",
       "explanation": "JA est non signé ; JG est signé.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C16-L1-Q1",
@@ -3942,7 +3942,7 @@
       ],
       "correctAnswer": "CX",
       "explanation": "LOOP décrémente implicitement CX.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C16-L1-Q2",
@@ -3958,7 +3958,7 @@
       ],
       "correctAnswer": "CX≠0 et ZF=1 après décrémentation",
       "explanation": "LOOPE combine le compteur non nul et ZF=1.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C16-L1-Q3",
@@ -3974,7 +3974,7 @@
       ],
       "correctAnswer": "Non, elle teste CX sans le décrémenter",
       "explanation": "JCXZ effectue uniquement le test CX=0.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C16-L2-Q1",
@@ -3990,7 +3990,7 @@
       ],
       "correctAnswer": "CX après décrémentation est non nul et ZF=1",
       "explanation": "LOOPE combine le compteur et ZF.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C16-L2-Q2",
@@ -4006,7 +4006,7 @@
       ],
       "correctAnswer": "CX après décrémentation est non nul et ZF=0",
       "explanation": "LOOPNE continue tant que le compteur est non nul et que ZF reste nul.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C16-L2-Q3",
@@ -4022,7 +4022,7 @@
       ],
       "correctAnswer": "Non, elle lit le ZF existant",
       "explanation": "Le ZF provient de l'instruction précédente.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C16-L3-Q1",
@@ -4038,7 +4038,7 @@
       ],
       "correctAnswer": "Non",
       "explanation": "JCXZ teste CX=0 sans modifier le compteur.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C16-L3-Q2",
@@ -4054,7 +4054,7 @@
       ],
       "correctAnswer": "FFFFh",
       "explanation": "Le décrémentement 16 bits boucle modulo 65536.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C16-L3-Q3",
@@ -4070,7 +4070,7 @@
       ],
       "correctAnswer": "E3 rel8",
       "explanation": "JCXZ est un branchement relatif court.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C17-L1-Q1",
@@ -4086,7 +4086,7 @@
       ],
       "correctAnswer": "Pour éviter une sentinelle qui pourrait être incorrecte",
       "explanation": "L'initialisation depuis les données garantit une base valide.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C17-L1-Q2",
@@ -4102,7 +4102,7 @@
       ],
       "correctAnswer": "AX",
       "explanation": "AX peut accumuler une somme de mots dans cet exemple.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C17-L1-Q3",
@@ -4118,7 +4118,7 @@
       ],
       "correctAnswer": "Cible début, milieu, absente et tableau vide",
       "explanation": "Ces cas couvrent les principaux chemins de la recherche séquentielle.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C17-L2-Q1",
@@ -4134,7 +4134,7 @@
       ],
       "correctAnswer": "6",
       "explanation": "0+2+2+2 donne 6.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C17-L2-Q2",
@@ -4150,7 +4150,7 @@
       ],
       "correctAnswer": "DX",
       "explanation": "DX est incrémenté à chaque itération pour compter les éléments.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C17-L2-Q3",
@@ -4166,7 +4166,7 @@
       ],
       "correctAnswer": "Propager la retenue dans un mot haut, par exemple avec ADC",
       "explanation": "Une somme multi-mots doit conserver la retenue.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C17-L3-Q1",
@@ -4182,7 +4182,7 @@
       ],
       "correctAnswer": "Comparer chaque élément jusqu'à trouver la cible ou atteindre la fin",
       "explanation": "La recherche séquentielle avance élément par élément.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C17-L3-Q2",
@@ -4198,7 +4198,7 @@
       ],
       "correctAnswer": "Avant chaque lecture mémoire",
       "explanation": "Le contrôle préalable évite de lire au-delà du tableau.",
-      "category": null
+      "category": "Application"
     },
     {
       "id": "C17-L3-Q3",
@@ -4214,7 +4214,7 @@
       ],
       "correctAnswer": "Un résultat explicite non trouvé",
       "explanation": "Le programme doit distinguer une absence d'une position valide.",
-      "category": null
+      "category": "Vérification"
     },
     {
       "id": "C12-F-Q1",
@@ -4230,7 +4230,7 @@
       ],
       "correctAnswer": "Non",
       "explanation": "CMP ne stocke pas le résultat.",
-      "category": null
+      "category": "Définition"
     },
     {
       "id": "C12-F-Q2",
@@ -4246,7 +4246,7 @@
       ],
       "correctAnswer": "AX et BX",
       "explanation": "Les opérandes ne sont pas modifiés.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C12-F-Q3",
@@ -4262,7 +4262,7 @@
       ],
       "correctAnswer": "CF",
       "explanation": "CF est le drapeau de retenue/emprunt non signé.",
-      "category": null
+      "category": "Syntaxe"
     },
     {
       "id": "C12-F-Q4",
@@ -4278,7 +4278,7 @@
       ],
       "correctAnswer": "ZF",
       "explanation": "L'égalité donne un résultat nul conceptuel et ZF=1.",
-      "category": null
+      "category": "Restrictions"
     },
     {
       "id": "C12-F-Q5",
@@ -4294,7 +4294,7 @@
       ],
       "correctAnswer": "Un ET logique pour FLAGS sans stocker le résultat",
       "explanation": "TEST effectue un AND non destructif.",
-      "category": null
+      "category": "Prédiction"
     },
     {
       "id": "C12-F-Q6",
@@ -4310,7 +4310,7 @@
       ],
       "correctAnswer": "1",
       "explanation": "02h AND 01h vaut zéro.",
-      "category": null
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C12-F-Q7",
@@ -4326,7 +4326,7 @@
       ],
       "correctAnswer": "Les remet à zéro",
       "explanation": "TEST suit les effets des opérations logiques : CF et OF sont remis à zéro.",
-      "category": null
+      "category": "Analyse de programme"
     },
     {
       "id": "C12-F-Q8",
@@ -4342,7 +4342,7 @@
       ],
       "correctAnswer": "TEST",
       "explanation": "TEST conserve la valeur de l'opérande.",
-      "category": null
+      "category": "Analyse de résultat"
     },
     {
       "id": "C12-F-Q9",
@@ -4358,7 +4358,7 @@
       ],
       "correctAnswer": "Non, il faut aussi OF",
       "explanation": "Les relations signées combinent SF et OF.",
-      "category": null
+      "category": "Débogage"
     },
     {
       "id": "C12-F-Q10",
@@ -4374,7 +4374,7 @@
       ],
       "correctAnswer": "Établir les FLAGS que le saut va tester",
       "explanation": "Jcc teste les indicateurs produits par l'instruction précédente.",
-      "category": null
+      "category": "Raisonnement"
     },
     {
       "id": "C13-F-Q1",
@@ -4390,7 +4390,7 @@
       ],
       "correctAnswer": "−128 à +127 octets",
       "explanation": "Le déplacement est signé sur 8 bits.",
-      "category": null
+      "category": "Définition"
     },
     {
       "id": "C13-F-Q2",
@@ -4406,7 +4406,7 @@
       ],
       "correctAnswer": "EB rel8",
       "explanation": "EB encode le saut court relatif.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C13-F-Q3",
@@ -4422,7 +4422,7 @@
       ],
       "correctAnswer": "E9 rel16",
       "explanation": "E9 encode le déplacement relatif 16 bits.",
-      "category": null
+      "category": "Syntaxe"
     },
     {
       "id": "C13-F-Q4",
@@ -4438,7 +4438,7 @@
       ],
       "correctAnswer": "Non, c'est un saut indirect near",
       "explanation": "Le registre fournit l'offset cible.",
-      "category": null
+      "category": "Restrictions"
     },
     {
       "id": "C13-F-Q5",
@@ -4454,7 +4454,7 @@
       ],
       "correctAnswer": "CS",
       "explanation": "Un saut near change IP dans le segment courant.",
-      "category": null
+      "category": "Prédiction"
     },
     {
       "id": "C13-F-Q6",
@@ -4470,7 +4470,7 @@
       ],
       "correctAnswer": "L'adresse suivant l'instruction",
       "explanation": "Le déplacement est relatif à l'IP après le saut.",
-      "category": null
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C13-F-Q7",
@@ -4486,7 +4486,7 @@
       ],
       "correctAnswer": "FF /4",
       "explanation": "Le groupe FF /4 est le saut indirect near.",
-      "category": null
+      "category": "Analyse de programme"
     },
     {
       "id": "C13-F-Q8",
@@ -4502,7 +4502,7 @@
       ],
       "correctAnswer": "Non",
       "explanation": "Le déplacement doit tenir dans l'intervalle signé.",
-      "category": null
+      "category": "Analyse de résultat"
     },
     {
       "id": "C13-F-Q9",
@@ -4518,7 +4518,7 @@
       ],
       "correctAnswer": "Charge aussi un nouveau CS",
       "explanation": "Un saut far change CS et IP.",
-      "category": null
+      "category": "Débogage"
     },
     {
       "id": "C13-F-Q10",
@@ -4534,7 +4534,7 @@
       ],
       "correctAnswer": "Parce que BX fournit une cible indirecte",
       "explanation": "L'encodage indirect est différent du déplacement relatif direct.",
-      "category": null
+      "category": "Raisonnement"
     },
     {
       "id": "C14-F-Q1",
@@ -4550,7 +4550,7 @@
       ],
       "correctAnswer": "Oui",
       "explanation": "Ils testent tous deux ZF=1.",
-      "category": null
+      "category": "Définition"
     },
     {
       "id": "C14-F-Q2",
@@ -4566,7 +4566,7 @@
       ],
       "correctAnswer": "ZF=0",
       "explanation": "JNE/JNZ testent ZF=0.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C14-F-Q3",
@@ -4582,7 +4582,7 @@
       ],
       "correctAnswer": "CF=1",
       "explanation": "JC teste le drapeau de retenue.",
-      "category": null
+      "category": "Syntaxe"
     },
     {
       "id": "C14-F-Q4",
@@ -4598,7 +4598,7 @@
       ],
       "correctAnswer": "CF=1 ou ZF=1",
       "explanation": "JBE exprime inférieur ou égal non signé.",
-      "category": null
+      "category": "Restrictions"
     },
     {
       "id": "C14-F-Q5",
@@ -4614,7 +4614,7 @@
       ],
       "correctAnswer": "CF=0 et ZF=0",
       "explanation": "JA exprime strictement supérieur non signé.",
-      "category": null
+      "category": "Prédiction"
     },
     {
       "id": "C14-F-Q6",
@@ -4630,7 +4630,7 @@
       ],
       "correctAnswer": "SF=1",
       "explanation": "JS teste le signe du résultat précédent.",
-      "category": null
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C14-F-Q7",
@@ -4646,7 +4646,7 @@
       ],
       "correctAnswer": "PF=1",
       "explanation": "JP teste la parité paire.",
-      "category": null
+      "category": "Analyse de programme"
     },
     {
       "id": "C14-F-Q8",
@@ -4662,7 +4662,7 @@
       ],
       "correctAnswer": "OF=0",
       "explanation": "JNO est la condition de non-débordement.",
-      "category": null
+      "category": "Analyse de résultat"
     },
     {
       "id": "C14-F-Q9",
@@ -4678,7 +4678,7 @@
       ],
       "correctAnswer": "SF=OF",
       "explanation": "JGE signifie supérieur ou égal signé.",
-      "category": null
+      "category": "Débogage"
     },
     {
       "id": "C14-F-Q10",
@@ -4694,7 +4694,7 @@
       ],
       "correctAnswer": "Non, il teste les FLAGS existants",
       "explanation": "Le branchement conditionnel ne fait que lire les indicateurs.",
-      "category": null
+      "category": "Raisonnement"
     },
     {
       "id": "C15-F-Q1",
@@ -4710,7 +4710,7 @@
       ],
       "correctAnswer": "256",
       "explanation": "Huit bits offrent 2^8 combinaisons distinctes ; l’interprétation signée ou non signée change les valeurs associées, pas le nombre de motifs.",
-      "category": null
+      "category": "Définition"
     },
     {
       "id": "C15-F-Q2",
@@ -4726,7 +4726,7 @@
       ],
       "correctAnswer": "−128 à 127",
       "explanation": "La représentation signée 8 bits utilise −128 à +127.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C15-F-Q3",
@@ -4742,7 +4742,7 @@
       ],
       "correctAnswer": "AL inférieur à BL en non signé",
       "explanation": "JB teste CF=1.",
-      "category": null
+      "category": "Syntaxe"
     },
     {
       "id": "C15-F-Q4",
@@ -4758,7 +4758,7 @@
       ],
       "correctAnswer": "Inférieur signé",
       "explanation": "JL teste SF≠OF.",
-      "category": null
+      "category": "Restrictions"
     },
     {
       "id": "C15-F-Q5",
@@ -4774,7 +4774,7 @@
       ],
       "correctAnswer": "255",
       "explanation": "FFh vaut 255 en non signé.",
-      "category": null
+      "category": "Prédiction"
     },
     {
       "id": "C15-F-Q6",
@@ -4790,7 +4790,7 @@
       ],
       "correctAnswer": "−1",
       "explanation": "FFh vaut −1 en complément à deux.",
-      "category": null
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C15-F-Q7",
@@ -4806,7 +4806,7 @@
       ],
       "correctAnswer": "JA",
       "explanation": "JA combine CF=0 et ZF=0.",
-      "category": null
+      "category": "Analyse de programme"
     },
     {
       "id": "C15-F-Q8",
@@ -4822,7 +4822,7 @@
       ],
       "correctAnswer": "JG",
       "explanation": "JG combine ZF=0 et SF=OF.",
-      "category": null
+      "category": "Analyse de résultat"
     },
     {
       "id": "C15-F-Q9",
@@ -4838,7 +4838,7 @@
       ],
       "correctAnswer": "Les deux familles interprètent différemment les bits",
       "explanation": "JB utilise CF pour le non signé ; JL utilise SF et OF pour le signé.",
-      "category": null
+      "category": "Débogage"
     },
     {
       "id": "C15-F-Q10",
@@ -4854,7 +4854,7 @@
       ],
       "correctAnswer": "Le type logique des données",
       "explanation": "Le même motif binaire peut être interprété signé ou non signé.",
-      "category": null
+      "category": "Raisonnement"
     },
     {
       "id": "C16-F-Q1",
@@ -4870,7 +4870,7 @@
       ],
       "correctAnswer": "CX",
       "explanation": "CX est implicite.",
-      "category": null
+      "category": "Définition"
     },
     {
       "id": "C16-F-Q2",
@@ -4886,7 +4886,7 @@
       ],
       "correctAnswer": "CX≠0",
       "explanation": "LOOP ne dépend que de CX.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C16-F-Q3",
@@ -4902,7 +4902,7 @@
       ],
       "correctAnswer": "CX≠0 et ZF=1",
       "explanation": "LOOPE combine CX et ZF.",
-      "category": null
+      "category": "Syntaxe"
     },
     {
       "id": "C16-F-Q4",
@@ -4918,7 +4918,7 @@
       ],
       "correctAnswer": "CX≠0 et ZF=0",
       "explanation": "LOOPNE poursuit lorsque le résultat précédent n'est pas égal.",
-      "category": null
+      "category": "Restrictions"
     },
     {
       "id": "C16-F-Q5",
@@ -4934,7 +4934,7 @@
       ],
       "correctAnswer": "JCXZ",
       "explanation": "JCXZ teste le compteur sans le décrémenter.",
-      "category": null
+      "category": "Prédiction"
     },
     {
       "id": "C16-F-Q6",
@@ -4950,7 +4950,7 @@
       ],
       "correctAnswer": "−128 à +127 octets",
       "explanation": "LOOP utilise un déplacement relatif signé sur 8 bits, comme les autres branchements courts.",
-      "category": null
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C16-F-Q7",
@@ -4966,7 +4966,7 @@
       ],
       "correctAnswer": "Non",
       "explanation": "LOOP ne modifie pas les FLAGS.",
-      "category": null
+      "category": "Analyse de programme"
     },
     {
       "id": "C16-F-Q8",
@@ -4982,7 +4982,7 @@
       ],
       "correctAnswer": "De l'instruction précédente qui l'a défini",
       "explanation": "LOOPE teste le ZF déjà présent.",
-      "category": null
+      "category": "Analyse de résultat"
     },
     {
       "id": "C16-F-Q9",
@@ -4998,7 +4998,7 @@
       ],
       "correctAnswer": "Relatif short signé 8 bits",
       "explanation": "JCXZ est un saut court.",
-      "category": null
+      "category": "Débogage"
     },
     {
       "id": "C16-F-Q10",
@@ -5014,7 +5014,7 @@
       ],
       "correctAnswer": "Tester CX=0 avant LOOP",
       "explanation": "JCXZ permet de sortir avant le premier décrémentement.",
-      "category": null
+      "category": "Raisonnement"
     },
     {
       "id": "C17-F-Q1",
@@ -5030,7 +5030,7 @@
       ],
       "correctAnswer": "Prendre le premier élément comme maximum initial",
       "explanation": "Une sentinelle arbitraire peut échouer selon le domaine des données.",
-      "category": null
+      "category": "Définition"
     },
     {
       "id": "C17-F-Q2",
@@ -5046,7 +5046,7 @@
       ],
       "correctAnswer": "JA ou JAE selon la règle d'égalité",
       "explanation": "Les sauts au-dessus sont adaptés aux comparaisons non signées.",
-      "category": null
+      "category": "Compréhension"
     },
     {
       "id": "C17-F-Q3",
@@ -5062,7 +5062,7 @@
       ],
       "correctAnswer": "AX",
       "explanation": "AX reçoit les additions successives.",
-      "category": null
+      "category": "Syntaxe"
     },
     {
       "id": "C17-F-Q4",
@@ -5078,7 +5078,7 @@
       ],
       "correctAnswer": "Débordement de la capacité et perte de retenue si elle n'est pas propagée",
       "explanation": "Une somme multi-mots doit traiter la retenue avec ADC.",
-      "category": null
+      "category": "Restrictions"
     },
     {
       "id": "C17-F-Q5",
@@ -5094,7 +5094,7 @@
       ],
       "correctAnswer": "CX",
       "explanation": "LOOP décrémente CX.",
-      "category": null
+      "category": "Prédiction"
     },
     {
       "id": "C17-F-Q6",
@@ -5110,7 +5110,7 @@
       ],
       "correctAnswer": "Tableau vide",
       "explanation": "Une recherche sur tableau vide ne doit effectuer aucun accès.",
-      "category": null
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C17-F-Q7",
@@ -5126,7 +5126,7 @@
       ],
       "correctAnswer": "Un état trouvé/non trouvé explicite",
       "explanation": "Le programme doit distinguer l'échec de recherche d'une position valide.",
-      "category": null
+      "category": "Analyse de programme"
     },
     {
       "id": "C17-F-Q8",
@@ -5142,7 +5142,7 @@
       ],
       "correctAnswer": "Lire au-delà de la dernière case",
       "explanation": "Les bornes doivent être contrôlées avant chaque lecture.",
-      "category": null
+      "category": "Analyse de résultat"
     },
     {
       "id": "C17-F-Q9",
@@ -5158,7 +5158,7 @@
       ],
       "correctAnswer": "Leur interprétation signée ou non signée",
       "explanation": "Le choix Jcc dépend de l'interprétation des valeurs.",
-      "category": null
+      "category": "Débogage"
     },
     {
       "id": "C17-F-Q10",
@@ -5174,7 +5174,7 @@
       ],
       "correctAnswer": "Vérifier le nombre d'éléments restants avant chaque lecture",
       "explanation": "Le compteur restant doit empêcher tout accès au-delà du dernier élément.",
-      "category": null
+      "category": "Raisonnement"
     },
     {
       "id": "C18-L1-Q1",
