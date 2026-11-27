@@ -132,7 +132,7 @@ function storageSet(key,value){try{window.localStorage.setItem(key,value);return
 function storageRemove(key){try{window.localStorage.removeItem(key);return true;}catch(error){return false;}}
 var completed=new Set(storageList("i86-lessons-v2")),passed=new Set(storageList("i86-exercises")),mode="free";
 var currentChapterIndex=0,currentSublessonIndex=0;
-function navigate(v){document.querySelectorAll(".view").forEach(function(x){x.classList.toggle("active",x.id==="view-"+v);});document.querySelectorAll(".nav").forEach(function(x){var active=x.dataset.view===v;x.classList.toggle("active",active);if(active)x.setAttribute("aria-current","page");else x.removeAttribute("aria-current");});}
+function navigate(v){var activeElement=document.activeElement,sourceView=activeElement&&activeElement.closest?activeElement.closest(".view"):null;document.querySelectorAll(".view").forEach(function(x){x.classList.toggle("active",x.id==="view-"+v);});document.querySelectorAll(".nav").forEach(function(x){var active=x.dataset.view===v;x.classList.toggle("active",active);if(active)x.setAttribute("aria-current","page");else x.removeAttribute("aria-current");});if(sourceView&&sourceView.id!=="view-"+v){var target=document.querySelector("#view-"+v+" h2");if(target){if(!target.hasAttribute("tabindex"))target.setAttribute("tabindex","-1");target.focus();}}}
 document.querySelectorAll(".nav").forEach(function(b){b.onclick=function(){navigate(b.dataset.view);};});$("openLab").onclick=function(){navigate("editor");};
 document.querySelectorAll("[data-mode]").forEach(function(b){b.onclick=function(){mode=b.dataset.mode;document.querySelectorAll("[data-mode]").forEach(function(x){var active=x===b;x.classList.toggle("active",active);x.setAttribute("aria-pressed",String(active));});renderLessons();};});
 function stats(){$("lessonCount").textContent=completed.size;$("passCount").textContent=passed.size;}
@@ -399,6 +399,7 @@ function evaluateQuiz(questions,prefix,scoreNode,storage,key){
 }
 function parseHexInput(value,max){var raw=String(value).trim();if(!/^[0-9A-F]+$/i.test(raw))return null;var parsed=parseInt(raw,16);return Number.isInteger(parsed)&&parsed>=0&&parsed<=max?parsed:null;}
 function showLesson(i,lessonIndex){
+ var restoreSublessonFocus=!!(document.activeElement&&document.activeElement.hasAttribute("data-sublesson"));
  if(!Number.isInteger(i)||i<0||i>=lessons.length)return;
  var c=chapterLearning[i];
  if(!c||!Array.isArray(c.lessons)||!c.lessons.length)return;
@@ -411,6 +412,7 @@ function showLesson(i,lessonIndex){
  var lessonTabs=c.lessons.map(function(x,n){var active=n===lessonIndex;return '<button type="button" class="btn '+(active?"primary":"")+'" data-sublesson="'+n+'" aria-controls="lessonDetail" aria-pressed="'+(active?"true":"false")+'"'+(active?' aria-current="step"':"")+'>'+(n+1)+'. '+x.title+'</button>';}).join("");
  $("lessonDetail").innerHTML='<div class="eyebrow">'+l[1]+' · Chapitre '+(i+1)+'/36</div><h3 aria-live="polite" aria-atomic="true">'+l[0]+'</h3><div class="course-meta"><span><b>Prérequis :</b> '+c.prereq+'</span><span><b>Objectif :</b> '+c.goal+'</span></div>'+courseVisual(i)+'<div class="course-tabs" role="group" aria-label="Leçons du chapitre">'+lessonTabs+'</div><section class="lesson-deep"><h4 aria-live="polite" aria-atomic="true">Leçon '+((lessonIndex||0)+1)+' — '+lesson.title+'</h4><p>'+lesson.theory+'</p><h4>Exemple assembleur commenté</h4><pre class="course-code">'+escapeCourseHtml(annotateAssembly(lesson.example))+'</pre><p><b>Résultat attendu :</b> '+lesson.expected+'</p><p class="muted">Chaque ligne est annotée. Pour observer les valeurs exactes des registres, de la mémoire et des FLAGS, charge le programme dans l’atelier et utilise le mode pas à pas.</p><button class="btn" id="lessonExample">Charger l’exemple dans l’atelier (pas à pas)</button></section><section class="lesson-quiz"><h4>Vérification immédiate — 3 questions</h4><p class="muted">Ces questions portent uniquement sur la leçon affichée.</p>'+buildQuizHtml(lesson.quiz,"micro")+'<div class="toolbar"><button class="btn primary" id="checkMicro">Vérifier les 3 réponses</button><span class="status" id="micro-score" role="status" aria-live="polite">'+(lessonSaved!==undefined?"Meilleur score : "+lessonSaved+"/3":"Aucune évaluation")+'</span></div></section><section class="lesson-final"><h4>Évaluation finale du chapitre — 10 questions</h4><p class="muted">Questions distinctes des vérifications intermédiaires : compréhension, règles, prédiction, analyse et raisonnement.</p>'+buildQuizHtml(c.quiz,"final")+'<div class="toolbar"><button class="btn primary" id="checkFinal">Évaluer le chapitre</button><span class="status" id="final-score" role="status" aria-live="polite">'+(saved!==undefined?"Meilleur score : "+saved+"/10":"Aucune évaluation")+'</span></div></section><section class="lesson-exercise-link"><p class="muted">Les exercices pratiques sont regroupés dans la page <strong>Exercices</strong>, séparément du cours.</p><button class="btn" id="goExercises">Consulter les exercices</button></section><div class="toolbar"><button class="btn" id="markLesson">'+(completed.has(i)?"Chapitre consulté ✓":"Marquer le chapitre comme consulté")+'</button></div>';
  document.querySelectorAll("[data-sublesson]").forEach(function(b){b.onclick=function(){showLesson(i,+b.dataset.sublesson);};});
+ if(restoreSublessonFocus){var restoredTab=document.querySelector('[data-sublesson="'+lessonIndex+'"]');if(restoredTab)restoredTab.focus();}
  if(i===4){
  var axInput=$("axDemoValue"),axOut=$("axDemoResult");
  function readAX(){return parseHexInput(axInput.value,0xffff);}
@@ -458,7 +460,7 @@ if(i===31){
 }
  $("lessonExample").onclick=function(){$("code").value=lesson.example;navigate("editor");resetCPU();};
  $("goExercises").onclick=function(){navigate("exercises");};
- $("markLesson").onclick=function(){completed.add(i);storageSet("i86-lessons-v2",JSON.stringify(Array.from(completed)));renderLessons();showLesson(i,lessonIndex||0);stats();};
+ $("markLesson").onclick=function(){var restoreMarkFocus=document.activeElement&&document.activeElement.id==="markLesson";completed.add(i);storageSet("i86-lessons-v2",JSON.stringify(Array.from(completed)));renderLessons();showLesson(i,lessonIndex||0);stats();if(restoreMarkFocus){var restoredMark=$("markLesson");if(restoredMark)restoredMark.focus();}};
  $("checkMicro").onclick=function(){evaluateQuiz(lesson.quiz,"micro","micro-score",lessonScores,lessonKey);};
  $("checkFinal").onclick=function(){evaluateQuiz(c.quiz,"final","final-score",chapterScores,i);};
 }
