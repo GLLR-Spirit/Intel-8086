@@ -205,3 +205,17 @@ The mission remains in progress. Passing automated suites is evidence for the te
   - C11-F-Q9 now tests the purpose of retaining regression cases after a correction.
 - Added `docs/question-independent-review/chapter-11.json`, independent evaluators and CI assertions for all 19 questions and the three corrected cases.
 - Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
+
+
+### Independent question review — chapter 12
+
+- Reviewed all 19 questions individually against the Intel 8086 Family User's Manual and MCS-86 assembly reference.
+- 13 items passed; six were corrected to reduce repeated questions and strengthen flag coverage:
+  - C12-L1-Q3 now calculates ZF for 05h AND 04h.
+  - C12-L2-Q3 now tests the opposite subtraction direction, 05h−03h=02h, without borrow.
+  - C12-L3-Q1 now checks AF being undefined after TEST, while CF/OF are cleared.
+  - C12-F-Q6 now tests a nonzero TEST result (80h AND 80h), distinct from the zero-result lesson case.
+  - C12-F-Q7 now traces PF=1, CF=0 and OF=0 for TEST 03h,03h.
+  - C12-F-Q9 now checks signed greater-or-equal (SF=OF), complementary to signed less (SF≠OF).
+- Added independent evaluators and CI assertions for AF, parity and signed greater-or-equal.
+- Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
