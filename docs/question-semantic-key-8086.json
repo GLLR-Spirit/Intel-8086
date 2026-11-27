@@ -9343,14 +9343,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Quel IP suit MOV AX,1234h placé à 0000h ?",
+      "stem": "Les octets B8 34 12 89 D8 commencent à l'offset 0100h. À quel offset commence le second opcode ?",
       "choices": [
-        "0003h",
-        "0002h",
-        "0004h"
+        "0103h",
+        "0102h",
+        "0105h"
       ],
-      "correctAnswer": "0003h",
-      "explanation": "L'instruction de trois octets fait avancer IP de trois.",
+      "correctAnswer": "0103h",
+      "explanation": "B8 34 12 forme une instruction de trois octets ; le second opcode 89h commence donc à 0100h+3=0103h.",
       "category": "Prédiction"
     },
     {
