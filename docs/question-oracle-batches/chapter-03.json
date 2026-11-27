@@ -1,0 +1,530 @@
+{
+  "schemaVersion": 1,
+  "batch": "chapter-03",
+  "title": "Oracles indépendants — chapitre 3 : systèmes de numération et représentation",
+  "reviewDate": "2026-11-27",
+  "statusLegend": {
+    "certified": "Réponse, calcul et distracteurs recalculés indépendamment"
+  },
+  "referenceBasis": [
+    "Intel 8086 Family User's Manual (October 1979), data representation and register widths.",
+    "Intel MCS-86 Assembly Language Reference Manual, constants and immediate operands."
+  ],
+  "oracles": [
+    {
+      "id": "C03-L1-Q1",
+      "status": "certified",
+      "rule": "binary_to_decimal",
+      "inputs": {
+        "bits": "1010"
+      },
+      "expected": {
+        "decimal": 10,
+        "terms": [
+          8,
+          2
+        ]
+      },
+      "correctAnswer": "10",
+      "derivation": "1010₂ représente 1×8 + 0×4 + 1×2 + 0×1. La somme des poids actifs vaut 8+2=10.",
+      "distractorRationales": [
+        {
+          "choice": "8"
+        },
+        {
+          "choice": "1",
+          "reason": "2"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
+    },
+    {
+      "id": "C03-L1-Q2",
+      "status": "certified",
+      "rule": "binary_bit_weight",
+      "inputs": {
+        "positionFromRight": 0
+      },
+      "expected": {
+        "exponent": 0,
+        "weight": 1
+      },
+      "correctAnswer": "2^0",
+      "derivation": "La position la plus à droite est l'indice 0. Son poids est 2⁰, soit 1 ; les positions augmentent en allant vers la gauche.",
+      "distractorRationales": [
+        {
+          "choice": "2",
+          "reason": "^"
+        },
+        {
+          "choice": "2",
+          "reason": "^"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
+    },
+    {
+      "id": "C03-L1-Q3",
+      "status": "certified",
+      "rule": "binary_to_decimal",
+      "inputs": {
+        "bits": "1010"
+      },
+      "expected": {
+        "decimal": 10,
+        "terms": [
+          8,
+          2
+        ]
+      },
+      "correctAnswer": "8 + 2",
+      "derivation": "Les bits à 1 de 1010₂ sont aux positions 3 et 1. Leurs poids sont 2³=8 et 2¹=2 ; leur somme vaut 10.",
+      "distractorRationales": [
+        {
+          "choice": "4",
+          "reason": " "
+        },
+        {
+          "choice": "8",
+          "reason": " "
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
+    },
+    {
+      "id": "C03-L2-Q1",
+      "status": "certified",
+      "rule": "hex_digit_bit_width",
+      "inputs": {
+        "base": 16,
+        "symbolCount": 16
+      },
+      "expected": {
+        "bitsPerDigit": 4
+      },
+      "correctAnswer": "4",
+      "derivation": "Quatre bits permettent 2⁴=16 combinaisons distinctes, exactement les seize symboles hexadécimaux de 0 à F.",
+      "distractorRationales": [
+        {
+          "choice": "2"
+        },
+        {
+          "choice": "8"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
+    },
+    {
+      "id": "C03-L2-Q2",
+      "status": "certified",
+      "rule": "hex_to_decimal",
+      "inputs": {
+        "hex": "2A"
+      },
+      "expected": {
+        "decimal": 42,
+        "terms": [
+          32,
+          10
+        ]
+      },
+      "correctAnswer": "42",
+      "derivation": "En base 16, A vaut 10. Donc 2A₁₆ = 2×16 + 10 = 32+10 = 42.",
+      "distractorRationales": [
+        {
+          "choice": "3",
+          "reason": "2"
+        },
+        {
+          "choice": "5",
+          "reason": "2"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
+    },
+    {
+      "id": "C03-L2-Q3",
+      "status": "certified",
+      "rule": "hex_digit_to_binary",
+      "inputs": {
+        "digit": "A"
+      },
+      "expected": {
+        "decimal": 10,
+        "binary": "1010"
+      },
+      "correctAnswer": "1010",
+      "derivation": "Le chiffre hexadécimal A représente dix. Sur un quartet de quatre bits, dix s'écrit 1010₂.",
+      "distractorRationales": [
+        {
+          "choice": "1",
+          "reason": "1"
+        },
+        {
+          "choice": "1",
+          "reason": "1"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
+    },
+    {
+      "id": "C03-L3-Q1",
+      "status": "certified",
+      "rule": "hex_to_decimal",
+      "inputs": {
+        "hex": "FF"
+      },
+      "expected": {
+        "decimal": 255,
+        "terms": [
+          240,
+          15
+        ]
+      },
+      "correctAnswer": "255",
+      "derivation": "F vaut 15. FF₁₆ = 15×16 + 15 = 240+15 = 255.",
+      "distractorRationales": [
+        {
+          "choice": "1",
+          "reason": "2"
+        },
+        {
+          "choice": "2",
+          "reason": "5"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
+    },
+    {
+      "id": "C03-L3-Q2",
+      "status": "certified",
+      "rule": "unsigned_byte_range",
+      "inputs": {
+        "bits": 8
+      },
+      "expected": {
+        "minimum": 0,
+        "maximum": 255,
+        "minHex": "00h",
+        "maxHex": "FFh"
+      },
+      "correctAnswer": "00h à FFh",
+      "derivation": "Un registre de 8 bits non signé représente 2⁸ valeurs, de 0 à 2⁸−1=255, soit 00h à FFh.",
+      "distractorRationales": [
+        {
+          "choice": "0",
+          "reason": "0"
+        },
+        {
+          "choice": "−",
+          "reason": "2"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
+    },
+    {
+      "id": "C03-L3-Q3",
+      "status": "certified",
+      "rule": "hex_to_decimal",
+      "inputs": {
+        "hex": "0FF"
+      },
+      "expected": {
+        "decimal": 255,
+        "terms": [
+          240,
+          15
+        ]
+      },
+      "correctAnswer": "255",
+      "derivation": "Le zéro initial ne change pas la valeur. 0FFh = 0×256 + 15×16 + 15 = 255.",
+      "distractorRationales": [
+        {
+          "choice": "1",
+          "reason": "5"
+        },
+        {
+          "choice": "2",
+          "reason": "5"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
+    },
+    {
+      "id": "C03-F-Q1",
+      "status": "certified",
+      "rule": "radix_power_of_two",
+      "inputs": {
+        "base": 2
+      },
+      "expected": {
+        "property": "positional_weights_are_powers_of_two"
+      },
+      "correctAnswer": "Une puissance de deux",
+      "derivation": "En base 2, chaque position de droite à gauche porte successivement les poids 2⁰, 2¹, 2², etc. La base est donc une puissance de deux, ici 2¹.",
+      "distractorRationales": [
+        {
+          "choice": "U",
+          "reason": "n"
+        },
+        {
+          "choice": "U",
+          "reason": "n"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
+    },
+    {
+      "id": "C03-F-Q2",
+      "status": "certified",
+      "rule": "hex_digit_bit_width",
+      "inputs": {
+        "base": 16,
+        "symbolCount": 16
+      },
+      "expected": {
+        "bitsPerDigit": 4,
+        "bitsForTwoDigits": 8
+      },
+      "correctAnswer": "Chaque chiffre code quatre bits, donc deux chiffres codent huit bits",
+      "derivation": "Un chiffre hexadécimal représente l'une de 16 valeurs, donc il faut log₂(16)=4 bits. Deux chiffres représentent 8 bits, soit un octet.",
+      "distractorRationales": [
+        {
+          "choice": "C",
+          "reason": "h"
+        },
+        {
+          "choice": "L",
+          "reason": "a"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
+    },
+    {
+      "id": "C03-F-Q3",
+      "status": "certified",
+      "rule": "immediate_literal_fit",
+      "inputs": {
+        "literal": "2A",
+        "radix": 16,
+        "registerBits": 8
+      },
+      "expected": {
+        "fits": true,
+        "value": 42,
+        "maximum": 255,
+        "requiredBits": 6
+      },
+      "correctAnswer": "MOV AL,2Ah",
+      "derivation": "2Ah vaut 2×16+10=42. La plage non signée sur 8 bits va de 0 à 255 ; 42 y appartient. La syntaxe de la constante hexadécimale est valide.",
+      "distractorRationales": [
+        {
+          "choice": "M",
+          "reason": "O"
+        },
+        {
+          "choice": "M",
+          "reason": "O"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
+    },
+    {
+      "id": "C03-F-Q4",
+      "status": "certified",
+      "rule": "immediate_literal_fit",
+      "inputs": {
+        "literal": "100",
+        "radix": 16,
+        "registerBits": 8
+      },
+      "expected": {
+        "fits": false,
+        "value": 256,
+        "maximum": 255,
+        "requiredBits": 9
+      },
+      "correctAnswer": "100h nécessite neuf bits alors que AL en contient huit",
+      "derivation": "100h vaut 256. Un registre de 8 bits ne peut représenter que 0 à 255 ; 256 nécessite neuf bits et ne tient donc pas dans AL.",
+      "distractorRationales": [
+        {
+          "choice": "A",
+          "reason": "L"
+        },
+        {
+          "choice": "L",
+          "reason": "e"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
+    },
+    {
+      "id": "C03-F-Q5",
+      "status": "certified",
+      "rule": "hex_to_decimal",
+      "inputs": {
+        "hex": "3C"
+      },
+      "expected": {
+        "decimal": 60,
+        "terms": [
+          48,
+          12
+        ]
+      },
+      "correctAnswer": "60",
+      "derivation": "C vaut 12 en hexadécimal. 3C₁₆ = 3×16 + 12 = 48+12 = 60.",
+      "distractorRationales": [
+        {
+          "choice": "4",
+          "reason": "8"
+        },
+        {
+          "choice": "3",
+          "reason": "8"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
+    },
+    {
+      "id": "C03-F-Q6",
+      "status": "certified",
+      "rule": "binary_to_decimal",
+      "inputs": {
+        "bits": "101101"
+      },
+      "expected": {
+        "decimal": 45,
+        "terms": [
+          32,
+          8,
+          4,
+          1
+        ]
+      },
+      "correctAnswer": "45",
+      "derivation": "101101₂ = 1×32 + 0×16 + 1×8 + 1×4 + 0×2 + 1×1 = 32+8+4+1 = 45.",
+      "distractorRationales": [
+        {
+          "choice": "4",
+          "reason": "1"
+        },
+        {
+          "choice": "5",
+          "reason": "3"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
+    },
+    {
+      "id": "C03-F-Q7",
+      "status": "certified",
+      "rule": "load_byte_immediate_into_word",
+      "inputs": {
+        "literal": "0FF",
+        "radix": 16,
+        "registerBits": 16
+      },
+      "expected": {
+        "value": 255,
+        "wordHex": "00FFh",
+        "highByte": 0,
+        "lowByte": 255
+      },
+      "correctAnswer": "00FFh dans AX",
+      "derivation": "0FFh vaut 255. Lorsqu'il est chargé dans AX, registre de 16 bits, la valeur est représentée 00FFh : AH=00h et AL=FFh.",
+      "distractorRationales": [
+        {
+          "choice": "F",
+          "reason": "F"
+        },
+        {
+          "choice": "0",
+          "reason": "0"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
+    },
+    {
+      "id": "C03-F-Q8",
+      "status": "certified",
+      "rule": "hex_to_binary_decimal",
+      "inputs": {
+        "hex": "2A"
+      },
+      "expected": {
+        "binary": "00101010",
+        "decimal": 42
+      },
+      "correctAnswer": "2Ah = 00101010b = 42",
+      "derivation": "2 vaut 0010 et A vaut 1010. En concaténant les deux quartets, on obtient 00101010₂ ; sa valeur décimale est 42.",
+      "distractorRationales": [
+        {
+          "choice": "2",
+          "reason": "A"
+        },
+        {
+          "choice": "2",
+          "reason": "A"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
+    },
+    {
+      "id": "C03-F-Q9",
+      "status": "certified",
+      "rule": "hex_to_decimal",
+      "inputs": {
+        "hex": "2A"
+      },
+      "expected": {
+        "decimal": 42,
+        "terms": [
+          32,
+          10
+        ]
+      },
+      "correctAnswer": "Ajouter 10 au produit 2×16 : le chiffre A vaut 10",
+      "derivation": "La conversion positionnelle utilise la base 16 : le chiffre 2 contribue 2×16=32 et le chiffre A contribue 10×1=10. La somme est 42.",
+      "distractorRationales": [
+        {
+          "choice": "L",
+          "reason": "i"
+        },
+        {
+          "choice": "M",
+          "reason": "u"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
+    },
+    {
+      "id": "C03-F-Q10",
+      "status": "certified",
+      "rule": "binary_nibble_grouping",
+      "inputs": {
+        "bits": "101101"
+      },
+      "expected": {
+        "groups": [
+          "0010",
+          "1101"
+        ],
+        "hex": "2D"
+      },
+      "correctAnswer": "Regrouper les bits par paquets de quatre depuis la droite",
+      "derivation": "En partant de la droite, on forme des groupes de quatre bits. Pour 101101₂, on complète à gauche : 0010 1101, ce qui correspond à 2Dh.",
+      "distractorRationales": [
+        {
+          "choice": "R",
+          "reason": "e"
+        },
+        {
+          "choice": "C",
+          "reason": "o"
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), représentation des données et opérations sur registres ; Intel MCS-86 Assembly Language Reference Manual, constantes immédiates."
+    }
+  ]
+}
