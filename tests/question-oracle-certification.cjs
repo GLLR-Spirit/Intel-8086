@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 
 const key = JSON.parse(fs.readFileSync("docs/question-semantic-key-8086.json", "utf8"));
 const manifest = JSON.parse(fs.readFileSync("docs/question-independent-oracles-8086.json", "utf8"));
+const manifest = JSON.parse(fs.readFileSync("docs/question-independent-oracles-8086.json", "utf8"));
 const batches = ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23", "chapter-24", "chapter-25", "chapter-26", "chapter-27"].map(name => JSON.parse(fs.readFileSync("docs/question-oracle-batches/" + name + ".json", "utf8")));
 const html = fs.readFileSync("index.html", "utf8");
 const match = html.match(/<script>([\s\S]*?)<\/script>/);
@@ -939,6 +940,12 @@ for (const oracle of allOracleRecords) {
   }
 }
 assert.equal(certified, 514, "All 514 unique questions and historical oracles are certified through chapter 27, including three historical records not duplicated in batches");
+assert.equal(manifest.certificationSummary.questionCount, 684, "Manifest total must match the full assessment bank");
+assert.equal(manifest.certificationSummary.historicalOracles, 6, "All six historical oracles must remain registered");
+assert.equal(manifest.certificationSummary.supplementalBatchRecords, batches.reduce((sum, batch) => sum + batch.oracles.length, 0), "Manifest batch-record count must match the loaded files");
+assert.equal(manifest.certificationSummary.newSupplementalOracles, batches.reduce((sum, batch) => sum + batch.oracles.length - (batch.batch === "chapter-02" || batch.batch === "chapter-04" || batch.batch === "chapter-17" ? 1 : batch.batch === "chapter-26" ? 2 : 0), 0), "Manifest new-oracle count must exclude historical IDs reused inside batches");
+assert.equal(manifest.certificationSummary.uniqueCertifiedQuestions, certified, "Manifest unique coverage must match the executable certification test");
+assert.equal(manifest.certificationSummary.remainingUncertified, 684 - certified, "Manifest remaining count must be arithmetically consistent");
 assert.equal(blocked, 0, "No question in the certified batches remains blocked");
 for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27]) {
   const prefix = "C" + String(chapter).padStart(2, "0") + "-";
