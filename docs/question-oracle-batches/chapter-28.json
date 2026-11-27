@@ -143,26 +143,25 @@
       "status": "certified",
       "rule": "rep_effects",
       "inputs": {
-        "instruction": "REP MOVSB"
+        "instruction": "REPNE SCASB"
       },
       "expected": {
         "stateAffected": [
           "CX",
-          "SI",
           "DI",
-          "FLAGS"
+          "ZF"
         ]
       },
-      "correctAnswer": "CX, SI/DI et FLAGS",
-      "derivation": "REP modifie CX et l'instruction de chaîne met à jour les index selon DF. Les indicateurs dépendent de l'instruction de chaîne ; il faut donc suivre l'état de contrôle et les registres impliqués.",
+      "correctAnswer": "CX, DI et ZF",
+      "derivation": "REPNE SCASB décrémente CX, met à jour DI selon DF et utilise ZF pour décider si la répétition continue. MOVSB, en revanche, ne modifie pas FLAGS.",
       "distractorRationales": [
         {
           "choice": "Seulement AX",
-          "reason": "AX seul ne décrit pas le compteur, les index et les effets de l'instruction de chaîne."
+          "reason": "SCASB utilise AL comme opérande implicite, mais l'état de répétition comprend aussi CX, DI et ZF."
         },
         {
           "choice": "Seulement CS",
-          "reason": "CS est le segment de code et n'est pas le seul état modifié par une répétition de chaîne."
+          "reason": "CS n'est pas le compteur ni l'index de SCASB ; le contrôle dépend de CX, DI et ZF."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
@@ -453,8 +452,8 @@
           "reason": "CX=0 signifie aucune itération ; il faut donc un compte non nul ainsi que des segments et index valides."
         },
         {
-          "choice": "Effacer DF avec STD",
-          "reason": "IP n'est pas le compteur REP ; CX contrôle la répétition."
+          "choice": "Effacer DF avec CLD",
+          "reason": "CLD efface DF et choisit le sens croissant, mais ne change pas CX. Si CX vaut zéro, REP n'effectue toujours aucune itération."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
@@ -464,38 +463,36 @@
       "status": "certified",
       "rule": "audit_checklist_coverage",
       "inputs": {
-        "domain": "repeated_string",
+        "domain": "conditional_repeated_string",
         "checks": [
-          "copied_data",
+          "compared_data",
           "CX",
-          "SI",
           "DI",
           "DF",
-          "FLAGS"
+          "ZF"
         ]
       },
       "expected": {
         "requiredChecks": [
-          "copied_data",
+          "compared_data",
           "CX",
-          "SI",
           "DI",
           "DF",
-          "FLAGS"
+          "ZF"
         ],
         "missingChecks": [],
         "complete": true
       },
-      "correctAnswer": "Données copiées, CX, SI, DI, DF et FLAGS pertinents",
-      "derivation": "Une chaîne répétée combine l'effet de l'instruction de chaîne et le contrôle par préfixe REP/REPE/REPNE. Il faut vérifier les données effectivement copiées ou traitées, la décrémentation de CX, l'évolution de SI/DI selon DF, et les indicateurs utilisés par les variantes conditionnelles. L'usage de CX=0 comme état final après une répétition terminée doit être distingué des cas où une condition ZF arrête REPE/REPNE. AX seul ou l'octet opcode ne suffit pas.",
+      "correctAnswer": "Octet comparé, CX, DI, DF et ZF",
+      "derivation": "Pour REPNE SCASB, il faut vérifier l'octet comparé, CX, DI selon DF et ZF qui commande la poursuite ou l'arrêt de la répétition.",
       "distractorRationales": [
         {
           "choice": "AX uniquement",
-          "reason": "AX seul ne permet pas de savoir quelles données ont été traitées, combien d'itérations ont eu lieu ni comment SI, DI et CX ont évolué."
+          "reason": "AX seul ne décrit pas le compteur, l'index DI ni la condition ZF utilisée par REPNE."
         },
         {
           "choice": "Le seul octet opcode",
-          "reason": "L'octet opcode seul ne représente pas l'effet du préfixe de répétition, la condition ZF, les données transférées ni l'état final des index et du compteur."
+          "reason": "Le résultat dépend des données comparées et de l'état CX/DI/DF/ZF, pas seulement de l'opcode."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
