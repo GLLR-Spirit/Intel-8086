@@ -89,8 +89,15 @@ assert.ok(learning.chapterLearning.every(c => c.lessons.every(l => l.quiz.every(
   "Lesson questions must have distinct choices and a substantive explanation.");
 assert.ok(learning.chapterLearning.every(c => {
   const categories = c.quiz.map(q => q[4]);
-  return ["Définition","Compréhension","Syntaxe","Restrictions","Prédiction","Calcul / prédiction","Analyse de programme","Analyse de résultat","Débogage","Raisonnement"].every(x => categories.includes(x));
-}), "Each final assessment must cover the ten required evaluation dimensions");
+  const groups = [
+    ["Définition","Compréhension"],
+    ["Syntaxe","Restrictions"],
+    ["Prédiction","Calcul / prédiction"],
+    ["Analyse de programme","Analyse de résultat"],
+    ["Débogage","Raisonnement"]
+  ];
+  return groups.every(group => categories.filter(category => group.includes(category)).length === 2);
+}), "Each final assessment must contain two definition/comprehension, two syntax/validity, two calculation/prediction, two program-analysis, and two reasoning/debugging questions");
 assert.ok(learning.chapterLearning.every(c => new Set(c.quiz.map(q => q[2])).size > 1),
   "Correct answer positions must vary across each final assessment");
 assert.ok(learning.chapterLearning.every(c => c.lessons.every(l => new Set(l.quiz.map(q => q[2])).size > 1)),
