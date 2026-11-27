@@ -834,6 +834,7 @@ const assert = require("node:assert/strict");
     assert.equal(await page.locator("#code").inputValue(),exercise.solution,
       "Exercise "+(exercise.index+1)+" must load its complete correction into the editor.");
     await page.locator('[data-view="exercises"]').click();
+    if(exercise.index===38){await page.locator("#exerciseResponse-38").fill("Le simulateur ne mesure pas les cycles physiques : la BIU, la prélecture et les accès bus influencent le temps.");}
     await page.locator("#exerciseList [data-check]").nth(exercise.index).click();
     assert.match(await page.locator("#exerciseList .exercise").nth(exercise.index).textContent(),/Réussi/,
       "Exercise "+(exercise.index+1)+" correction must pass its own UI validator.");
