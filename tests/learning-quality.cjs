@@ -280,6 +280,7 @@ for (const oracle of courseExampleOracles.examples) {
   for (const [flag, expected] of Object.entries(oracle.flags || {})) {
     assert.equal(state.flags[flag], expected, id + " FLAGS." + flag + " expected " + expected);
   }
+  // Memory oracle keys are physical 20-bit addresses; BP-based effective addresses resolve through SS.
   for (const [address, expected] of Object.entries(oracle.memory || {})) {
     assert.equal(state.mem[address], expected, id + " physical memory[" + Number(address).toString(16) + "h] expected " + expected.toString(16) + "h");
   }
