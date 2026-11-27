@@ -18,11 +18,11 @@
       "stem": "Quel est le rôle central d'un microprocesseur ?",
       "choices": [
         "Exécuter les instructions d'un programme",
-        "Fabriquer les données stockées",
-        "Remplacer la mémoire"
+        "Conserver durablement les programmes et les données",
+        "Produire le signal d'horloge du système"
       ],
       "correctAnswer": "Exécuter les instructions d'un programme",
-      "explanation": "Le microprocesseur récupère, décode et exécute les instructions.",
+      "explanation": "Le microprocesseur récupère, décode et exécute les instructions. La conservation durable relève de la mémoire et l'horloge est fournie par un circuit dédié.",
       "category": "Compréhension"
     },
     {
@@ -79,15 +79,15 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 2,
-      "stem": "Quelle capacité théorique correspond à 20 bits d'adresse ?",
+      "stem": "Quelle unité de mémoire une adresse désigne-t-elle sur le 8086 ?",
       "choices": [
-        "64 Kio",
-        "1 Mio",
-        "16 Mio"
+        "Un octet",
+        "Un mot de 16 bits",
+        "Un bloc de quatre octets"
       ],
-      "correctAnswer": "1 Mio",
-      "explanation": "2^20 adresses d'octets correspondent à 1 048 576 octets, soit 1 Mio.",
-      "category": "Application"
+      "correctAnswer": "Un octet",
+      "explanation": "La mémoire du 8086 est adressée par octet : une adresse identifie un octet de 8 bits. Un mot de 16 bits occupe deux octets à des adresses consécutives.",
+      "category": "Compréhension"
     },
     {
       "id": "C01-L2-Q3",
@@ -159,14 +159,14 @@
       "kind": "final",
       "lesson": null,
       "number": 1,
-      "stem": "Quelle est la fonction fondamentale du microprocesseur ?",
+      "stem": "Quel est le rôle de l'assembleur dans la chaîne de traitement ?",
       "choices": [
-        "Exécuter les instructions du programme",
-        "Conserver durablement tous les fichiers",
-        "Fournir l'alimentation électrique"
+        "Traduire le code source assembleur en code machine",
+        "Exécuter directement le texte source à la place du processeur",
+        "Gérer les signaux électriques du bus"
       ],
-      "correctAnswer": "Exécuter les instructions du programme",
-      "explanation": "Le microprocesseur récupère, décode et exécute les instructions, en coordonnant les transferts et les calculs.",
+      "correctAnswer": "Traduire le code source assembleur en code machine",
+      "explanation": "L'assembleur analyse les instructions et les symboles du programme source, puis produit les octets de code machine que le processeur pourra exécuter.",
       "category": "Définition"
     },
     {
@@ -175,15 +175,15 @@
       "kind": "final",
       "lesson": null,
       "number": 2,
-      "stem": "Que signifie la largeur de 20 bits du bus d'adresses du 8086 ?",
+      "stem": "Lors d'un accès mémoire, que transporte le bus d'adresses ?",
       "choices": [
-        "Il peut sélectionner 2^20 adresses d'octets",
-        "Chaque registre général contient 20 bits",
-        "Le bus de données transporte 20 bits par transfert"
+        "L'adresse physique de l'emplacement mémoire ciblé",
+        "La valeur qui sera lue ou écrite",
+        "Le résultat de l'opération arithmétique"
       ],
-      "correctAnswer": "Il peut sélectionner 2^20 adresses d'octets",
-      "explanation": "Les 20 lignes d'adresse permettent de sélectionner 1 048 576 adresses d'octets, soit 1 Mio.",
-      "category": "Compréhension"
+      "correctAnswer": "L'adresse physique de l'emplacement mémoire ciblé",
+      "explanation": "Le bus d'adresses sélectionne l'emplacement mémoire ciblé. Le bus de données transporte la valeur échangée avec cet emplacement.",
+      "category": "Définition"
     },
     {
       "id": "C01-F-Q3",
@@ -215,7 +215,7 @@
       ],
       "correctAnswer": "La constante dépasse la capacité de 8 bits de AL",
       "explanation": "AL accepte une valeur immédiate de 8 bits au maximum, soit FFh ; 1234h exige 16 bits.",
-      "category": "Restrictions"
+      "category": "Syntaxe"
     },
     {
       "id": "C01-F-Q5",
