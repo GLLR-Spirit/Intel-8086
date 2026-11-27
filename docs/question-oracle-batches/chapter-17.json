@@ -312,58 +312,52 @@
     {
       "id": "C17-F-Q3",
       "status": "certified",
-      "rule": "adc_syntax",
+      "rule": "sum_accumulator_register",
       "inputs": {
-        "mnemonic": "ADC",
-        "destination": "AX",
-        "source": "BX"
+        "algorithm": "word_sum"
       },
       "expected": {
-        "mnemonic": "ADC",
-        "destination": "AX",
-        "source": "BX",
-        "includesCarryIn": true
+        "register": "AX"
       },
-      "correctAnswer": "ADC AX,BX",
-      "derivation": "La forme Intel est ADC destination,source. ADC AX,BX ajoute le mot source et CF à AX ; contrairement à ADD, elle consomme la retenue entrante.",
+      "correctAnswer": "AX",
+      "derivation": "Dans l'exemple de somme, AX conserve le total courant et reçoit les additions successives. CS identifie le segment de code et IP suit l'offset de l'instruction ; aucun des deux ne sert d'accumulateur de données.",
       "distractorRationales": [
         {
-          "choice": "ADD AX,BX puis oublier CF",
-          "reason": "ADD n'ajoute pas le CF entrant ; pour propager une retenue multi-mots, l'instruction appropriée est ADC."
+          "choice": "CS",
+          "reason": "CS désigne le segment de code ; il ne stocke pas le total arithmétique de l'exemple."
         },
         {
-          "choice": "CMP AX,BX",
-          "reason": "CMP calcule une différence pour les indicateurs sans stocker une somme dans AX."
+          "choice": "IP",
+          "reason": "IP indique l'offset de l'instruction suivante ; il ne sert pas d'accumulateur de somme."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
+      "reference": "Intel 8086 Family User's Manual (1979), register roles, arithmetic/ADC and CMP/Jcc semantics; independent algorithm trace and array-bound calculations."
     },
     {
       "id": "C17-F-Q4",
       "status": "certified",
-      "rule": "word_add_carry_trace",
+      "rule": "multiword_sum_overflow",
       "inputs": {
-        "initialAX": 65535,
-        "addend": 1,
+        "lowWordCarry": 1,
         "width": 16
       },
       "expected": {
-        "result": 0,
-        "CF": 1
+        "carryPropagated": true,
+        "instruction": "ADC"
       },
-      "correctAnswer": "AX=0000h et CF=1",
-      "derivation": "La somme mathématique vaut 65536 (10000h). Sur 16 bits, AX reçoit les 16 bits faibles 0000h et la retenue sortante est reportée dans CF=1.",
+      "correctAnswer": "Débordement de la capacité et perte de retenue si elle n'est pas propagée",
+      "derivation": "Une somme dépassant 16 bits peut produire une retenue sortante. Pour additionner plusieurs mots, le mot haut doit incorporer cette retenue avec ADC ; l'ignorer perd une partie du résultat.",
       "distractorRationales": [
         {
-          "choice": "AX=FFFFh et CF=0",
-          "reason": "FFFFh+1 déborde le mot et produit AX=0000h avec CF=1."
+          "choice": "DF est toujours modifié",
+          "reason": "DF contrôle le sens de progression des instructions de chaîne ; une addition arithmétique ne le modifie pas systématiquement."
         },
         {
-          "choice": "AX=0001h et CF=1",
-          "reason": "Le bit de retenue ne devient pas le bit faible ; le mot faible du résultat 10000h est 0000h."
+          "choice": "La pile s'inverse",
+          "reason": "Une retenue arithmétique ne renverse pas l'ordre LIFO de la pile."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
+      "reference": "Intel 8086 Family User's Manual (1979), register roles, arithmetic/ADC and CMP/Jcc semantics; independent algorithm trace and array-bound calculations."
     },
     {
       "id": "C17-F-Q5",
@@ -418,58 +412,53 @@
     {
       "id": "C17-F-Q7",
       "status": "certified",
-      "rule": "search_index_trace",
+      "rule": "found_status_explicit",
       "inputs": {
-        "values": [
-          3,
-          8,
-          11
-        ],
-        "target": 11
+        "targetPresent": false
       },
       "expected": {
-        "found": true,
-        "index": 2,
-        "checks": 3
+        "found": false,
+        "result": "explicit_not_found"
       },
-      "correctAnswer": "2",
-      "derivation": "La recherche examine 3 à l'index 0, puis 8 à l'index 1, puis trouve 11 à l'index 2. L'index est donc 2 avec trois comparaisons.",
+      "correctAnswer": "Un état trouvé/non trouvé explicite",
+      "derivation": "Lorsque la cible est absente, l'algorithme doit retourner un état explicite non trouvé. Cela distingue l'échec de recherche d'un index valide et évite de traiter un registre de segment ou un pointeur comme un résultat.",
       "distractorRationales": [
         {
-          "choice": "3",
-          "reason": "3 est le nombre d'éléments examinés, pas l'index base zéro de la cible."
+          "choice": "La valeur du segment CS",
+          "reason": "CS identifie le segment de code et n'indique pas si la cible a été trouvée dans le tableau."
         },
         {
-          "choice": "1",
-          "reason": "L'index 1 correspond à la valeur 8 ; la cible 11 est au troisième élément, index 2."
+          "choice": "IP",
+          "reason": "IP suit le flot d'instructions ; sa valeur ne représente pas un état de recherche trouvé/non trouvé."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
+      "reference": "Intel 8086 Family User's Manual (1979), register roles, arithmetic/ADC and CMP/Jcc semantics; independent algorithm trace and array-bound calculations."
     },
     {
       "id": "C17-F-Q8",
       "status": "certified",
-      "rule": "last_valid_index",
+      "rule": "bounds_violation",
       "inputs": {
-        "arrayLength": 3
+        "arrayLength": 3,
+        "index": 3
       },
       "expected": {
-        "arrayLength": 3,
-        "lastValidIndex": 2
+        "readAllowed": false,
+        "violation": "index_equals_length"
       },
-      "correctAnswer": "2",
-      "derivation": "Pour une longueur n et un index base zéro, les positions valides vont de 0 à n−1. Avec n=3, le dernier index valide est 2.",
+      "correctAnswer": "Lire au-delà de la dernière case",
+      "derivation": "Pour un tableau de longueur 3 indexé à zéro, seuls les indices 0, 1 et 2 sont valides. L'index 3 est égal à la longueur et doit être refusé avant toute lecture.",
       "distractorRationales": [
         {
-          "choice": "3",
-          "reason": "3 est égal à la longueur et constitue le premier index hors limites, pas un index valide."
+          "choice": "Utiliser CMP",
+          "reason": "CMP peut aider à comparer un index à la borne, mais l'instruction seule ne décrit pas le risque à éviter ; le contrôle doit empêcher l'accès hors limites."
         },
         {
-          "choice": "1",
-          "reason": "1 est valide mais désigne le deuxième élément ; l'index valide maximal est 2."
+          "choice": "Initialiser un index",
+          "reason": "Initialiser l'index ne garantit pas qu'il reste dans les limites pendant tout le parcours."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
+      "reference": "Intel 8086 Family User's Manual (1979), register roles, arithmetic/ADC and CMP/Jcc semantics; independent algorithm trace and array-bound calculations."
     },
     {
       "id": "C17-F-Q9",
@@ -498,27 +487,27 @@
     {
       "id": "C17-F-Q10",
       "status": "certified",
-      "rule": "sequential_search_worst_case",
+      "rule": "remaining_elements_guard",
       "inputs": {
-        "length": "n"
+        "remaining": 3
       },
       "expected": {
-        "maxComparisons": "n",
-        "complexity": "O(n)"
+        "readAllowed": true,
+        "checkBeforeRead": true
       },
-      "correctAnswer": "n",
-      "derivation": "Dans le pire cas, la cible est absente ou se trouve au dernier élément. L'algorithme doit alors examiner les n éléments ; le nombre maximal de comparaisons est n et la complexité est O(n).",
+      "correctAnswer": "Vérifier le nombre d'éléments restants avant chaque lecture",
+      "derivation": "Le nombre d'éléments restants doit être vérifié avant chaque lecture. Si ce compteur est nul, aucune lecture ne doit être effectuée ; sinon, l'accès courant est autorisé puis le compteur est décrémenté.",
       "distractorRationales": [
         {
-          "choice": "n−1",
-          "reason": "Si la cible est absente, il faut aussi comparer le dernier élément avant de conclure qu'elle n'existe pas."
+          "choice": "Lire systématiquement une case supplémentaire",
+          "reason": "Une lecture supplémentaire peut dépasser la dernière adresse valide, précisément ce que le contrôle doit éviter."
         },
         {
-          "choice": "1",
-          "reason": "Une seule comparaison suffit uniquement si la cible est au premier élément ; ce n'est pas le pire cas."
+          "choice": "Continuer après avoir trouvé la cible",
+          "reason": "Poursuivre après avoir trouvé la cible ajoute des lectures inutiles et peut dépasser la borne du tableau."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual (1979), arithmetic, CMP/Jcc and LOOP instruction semantics; algorithmic array bounds and independent trace calculations."
+      "reference": "Intel 8086 Family User's Manual (1979), register roles, arithmetic/ADC and CMP/Jcc semantics; independent algorithm trace and array-bound calculations."
     }
   ]
 }
