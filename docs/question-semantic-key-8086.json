@@ -9951,14 +9951,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Quel rôle joue F4h dans le flux B8 34 12 F4 ?",
+      "stem": "Le flux B8 34 12 F4 commence à l'offset 0100h. À quel offset se trouve l'opcode HLT ?",
       "choices": [
-        "Il code HLT",
-        "Il code NOP",
-        "Il code INT 4"
+        "0103h",
+        "0102h",
+        "0104h"
       ],
-      "correctAnswer": "Il code HLT",
-      "explanation": "Après les trois octets de MOV AX,1234h, F4h termine le programme avec HLT.",
+      "correctAnswer": "0103h",
+      "explanation": "MOV AX,1234h occupe trois octets à partir de 0100h ; F4h se trouve donc à 0103h.",
       "category": "Prédiction"
     },
     {
