@@ -1711,14 +1711,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 3,
-      "stem": "MOV AX,[BX] effectue-t-elle une lecture mémoire ?",
+      "stem": "MOV [BX],AX effectue-t-elle une écriture mémoire ?",
       "choices": [
         "Oui",
         "Non, elle calcule seulement BX",
         "Seulement si CF=1"
       ],
       "correctAnswer": "Oui",
-      "explanation": "La source mémoire est lue et transférée dans AX.",
+      "explanation": "La destination mémoire reçoit le mot AX à l'adresse DS:BX.",
       "category": "Vérification"
     },
     {
@@ -2639,14 +2639,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Dans un pointeur far stocké en little-endian, quel mot suit le mot offset ?",
+      "stem": "Dans la représentation mémoire d'un pointeur far 16:16 utilisé par LDS/LES, quel mot suit le mot offset ?",
       "choices": [
         "Le mot segment",
         "Le mot FLAGS",
         "Le mot opcode"
       ],
       "correctAnswer": "Le mot segment",
-      "explanation": "La représentation en mémoire est offset puis segment.",
+      "explanation": "La structure du pointeur far place le mot offset en premier, puis le mot segment ; little-endian décrit l'ordre des octets à l'intérieur de chaque mot.",
       "category": "Calcul / prédiction"
     },
     {
@@ -2703,14 +2703,14 @@
       "kind": "final",
       "lesson": null,
       "number": 10,
-      "stem": "Quelle règle évite de confondre adresse et donnée ?",
+      "stem": "Quelle distinction faut-il retenir entre MOV AX,[BX] et XCHG AX,[BX] ?",
       "choices": [
-        "Identifier si l'instruction calcule un offset ou lit le contenu mémoire",
-        "Considérer tous les opérandes entre crochets comme des constantes",
-        "Ignorer la taille de l'opérande"
+        "MOV lit la mémoire dans AX ; XCHG échange AX et la case mémoire",
+        "Les deux ne font qu'une lecture mémoire",
+        "XCHG calcule l'offset sans accéder à la mémoire"
       ],
-      "correctAnswer": "Identifier si l'instruction calcule un offset ou lit le contenu mémoire",
-      "explanation": "Les crochets désignent un accès mémoire ; LEA est l'exception de calcul d'adresse.",
+      "correctAnswer": "MOV lit la mémoire dans AX ; XCHG échange AX et la case mémoire",
+      "explanation": "MOV AX,[BX] copie le mot mémoire vers AX ; XCHG AX,[BX] échange la valeur d'AX avec le mot mémoire et écrit les deux nouvelles valeurs.",
       "category": "Raisonnement"
     },
     {
