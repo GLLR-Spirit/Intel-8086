@@ -127,6 +127,18 @@ const path = require("node:path");
     const finalCount=final.reduce((n,g)=>n+g.length,0);
     if(intermediateCount!==54) failures.push("Questions intermédiaires : "+intermediateCount+"/54");
     if(finalCount!==60) failures.push("Questions finales : "+finalCount+"/60");
+    const requiredTraceChecks=Object.entries(api.exerciseTraceContracts).map(([rawIndex,sequence])=>{
+      const index=Number(rawIndex),source=api.exercises[index][4].solution,state=api.executeAll(source);
+      return {index,sequence,valid:!state.error&&api.exerciseMethodSatisfied(index,state)};
+    });
+    if(requiredTraceChecks.length!==21||requiredTraceChecks.some(item=>!item.valid))
+      failures.push("Les 21 contrats de méthode doivent être observés dans la trace réellement exécutée : "+JSON.stringify(requiredTraceChecks));
+    const callSource=api.exercises[26][4].solution,callState=api.executeAll(callSource);
+    const callWithoutExecutionRejected=!api.exerciseMethodSatisfied(26,{...callState,instructionTrace:callState.instructionTrace.filter(item=>item.op!=="CALL")});
+    const retSource=api.exercises[40][4].solution,retState=api.executeAll(retSource);
+    const retWithoutExecutionRejected=!api.exerciseMethodSatisfied(40,{...retState,instructionTrace:retState.instructionTrace.filter(item=>item.op!=="RET")});
+    if(!callWithoutExecutionRejected)failures.push("EX27 doit refuser un état final identique si CALL n'a pas été exécuté.");
+    if(!retWithoutExecutionRejected)failures.push("EX41 doit refuser un état final identique si RET n'a pas été exécuté.");
     return {failures,examples:programs.length,jccConditions:conditions.length,jccTruthCases:conditions.length*2,intermediateCount,finalCount};
   });
 
