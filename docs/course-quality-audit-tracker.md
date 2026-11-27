@@ -257,3 +257,12 @@ The mission remains in progress. Passing automated suites is evidence for the te
   - C15-F-Q7 and FQ8 now trace concrete unsigned and signed comparisons using the same FFh/01h bit patterns, proving their different interpretations.
 - Added an independent signed comparison trace evaluator and CI assertions for both branch outcomes.
 - Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
+
+
+### Independent question review — chapter 16
+
+- Inspected all 19 questions in chapter 16 against the Intel 8086 Family User's Manual and the MCS-86 assembly reference.
+- 11 items passed the technical check; eight question entries remain flagged because four concepts are repeated across paired items: implicit CX counter (C16-L1-Q1/C16-F-Q1), LOOPE condition (C16-L1-Q2/C16-L2-Q1), JCXZ preserving CX (C16-L1-Q3/C16-L3-Q1), and LOOPE reading the existing ZF (C16-L2-Q3/C16-F-Q8).
+- No question is marked corrected: the current runtime bank has not yet been changed. The findings are deliberately left open rather than claiming a documentary review fixed the product.
+- Added `docs/question-independent-review/chapter-16.json` and a CI regression test that requires all 19 unique question IDs and preserves the open findings.
+- Official individual certification remains 384/684; 300 remain. This review does not advance the official ledger.
