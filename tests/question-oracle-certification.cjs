@@ -71,6 +71,12 @@ function independentlyCompute(oracle) {
     case "prefetch_queue_capacity":
     case "eu_biu_work_split":
       return fact[oracle.rule];
+    case "intel_operand_order":
+      if (i.instruction) {
+        const operands = i.instruction.replace(/^MOV\\s+/i, "").split(",");
+        return { destination: operands[0].trim(), source: operands[1].trim() };
+      }
+      return fact[oracle.rule];
     case "source_instruction_vs_data":
       return "assembly_statement_is_instruction";
     case "intel_operand_order_generic": {
