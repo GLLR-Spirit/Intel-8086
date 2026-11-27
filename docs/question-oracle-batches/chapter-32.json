@@ -400,7 +400,7 @@
         "hex": "20106h"
       },
       "correctAnswer": "20106h",
-      "derivation": "L'adresse physique est DS×16+EA. 2000h×10h=20000h ; 20000h+0106h=20106h.",
+      "derivation": "Sur 8086, l'adresse physique se calcule en décalant le segment de quatre bits vers la gauche, puis en ajoutant le déplacement effectif : DS×10h+EA. Avec DS=2000h, la base physique du segment vaut 20000h. On ajoute ensuite EA=0106h : 20000h+0106h=20106h. L'adresse obtenue est donc 20106h, dans l'espace d'adressage physique de 20 bits.",
       "distractorRationales": [
         {
           "choice": "200106h",
