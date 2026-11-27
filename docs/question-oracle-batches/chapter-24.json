@@ -123,7 +123,7 @@
         "unsignedValue": 254,
         "signedValue": -2
       },
-      "correctAnswer": "−2",
+      "correctAnswer": "-2",
       "derivation": "FEh vaut 254 en non signé. En complément à deux sur huit bits, le bit de signe est actif et la valeur est 254−256=−2.",
       "distractorRationales": [
         {
@@ -366,7 +366,7 @@
         },
         {
           "choice": "36",
-          "reason": "6×7 vaut 42, pas 36."
+          "reason": "La multiplication de 6 par 7 donne 42 ; 36 correspondrait à 6×6 et ne suit pas les opérandes de l'exemple."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -413,7 +413,7 @@
         "product": -4,
         "resultAX": 65532
       },
-      "correctAnswer": "Produit signé −4 dans AX",
+      "correctAnswer": "Produit signé -4 dans AX",
       "derivation": "FEh est −2 en complément à deux sur huit bits. IMUL avec 2 produit −4, représenté FFFCh sur seize bits dans AX.",
       "distractorRationales": [
         {
