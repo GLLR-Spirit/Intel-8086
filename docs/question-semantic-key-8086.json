@@ -9647,14 +9647,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Quelle EA donne BX=0100h, SI=2, disp8=4 ?",
+      "stem": "Avec DS=2000h et EA=0106h, quelle adresse physique correspond à DS:EA ?",
       "choices": [
-        "0106h",
-        "0102h",
-        "0104h"
+        "20106h",
+        "200106h",
+        "0106h"
       ],
-      "correctAnswer": "0106h",
-      "explanation": "La somme 0100h+0002h+0004h vaut 0106h.",
+      "correctAnswer": "20106h",
+      "explanation": "L'adresse physique vaut DS×10h+EA : 2000h×10h+0106h=20106h.",
       "category": "Prédiction"
     },
     {
@@ -9663,14 +9663,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Quelle valeur binaire vaut 40h ?",
+      "stem": "Pour MOV AX,[BX+SI-2], quel couple ModR/M puis disp8 encode l'opérande mémoire ?",
       "choices": [
-        "01000000b",
-        "10000000b",
-        "00000100b"
+        "40h FEh",
+        "40h 02h",
+        "80h FEh"
       ],
-      "correctAnswer": "01000000b",
-      "explanation": "40h correspond à 01000000b.",
+      "correctAnswer": "40h FEh",
+      "explanation": "Mod=01, Reg=000 (AX), R/M=000 ([BX+SI]) donne 40h ; le déplacement signé −2 est encodé FEh.",
       "category": "Calcul / prédiction"
     },
     {
@@ -9711,14 +9711,14 @@
       "kind": "final",
       "lesson": null,
       "number": 9,
-      "stem": "Comment encoder [BP] sans le confondre avec [disp16] ?",
+      "stem": "Dans l'encodage 8B 46 00, quel opérande mémoire est désigné par ModR/M et disp8 ?",
       "choices": [
-        "Mod=01,R/M=110,disp8=00h",
-        "Mod=00,R/M=110",
-        "Mod=11,R/M=110"
+        "[BP+0]",
+        "[disp16]",
+        "[SI+0]"
       ],
-      "correctAnswer": "Mod=01,R/M=110,disp8=00h",
-      "explanation": "Le cas [BP] utilise un déplacement nul explicite en disp8.",
+      "correctAnswer": "[BP+0]",
+      "explanation": "46h vaut 01 000 110 : Mod=01, Reg=000, R/M=110 désigne BP ; le disp8 00h donne [BP+0].",
       "category": "Débogage"
     },
     {
