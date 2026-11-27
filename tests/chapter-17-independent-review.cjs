@@ -25,4 +25,4 @@ const categoryGroups = [
 for (const group of categoryGroups) assert.equal(finalQuestions.filter(q => group.includes(q.category)).length, 2,
   "Chapter 17 final assessment must contain exactly two items in category group " + group.join("/"));
 assert.deepEqual(review.openFindings, [], "Chapter 17 final-assessment blueprint must be closed");
-console.log("Chapter 17 independent review: 19/19 inspected; 13 passed; 6 corrections aligned; final-assessment blueprint remains open; official certification remains 384/684.");
+console.log("Chapter 17 independent review: 19/19 inspected; 13 passed; 6 corrections aligned; final-assessment blueprint balanced; official ledger unchanged at 384/684.");
