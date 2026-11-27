@@ -602,7 +602,7 @@ exercises[46][5]={type:"probleme",difficulty:"Avancé"};
 exercises[47][5]={type:"challenge",difficulty:"Expert"};
 // Oracles pédagogiques indépendants pour les exigences non couvertes par le seul état final.
 exercises[34][6]=function(state,source){var result=assembleProgram(source);return state.reg.AX===0x1234&&result.bytes.join(",")==="184,52,18,244";};
-exercises[36][6]=function(state,source){var result=assembleProgram(source),rows=disassembleBytes(result.bytes);return state.reg.AX===0x1234&&result.bytes.join(",")==="235,1,144,184,52,18,244"&&rows.length===4&&rows.map(function(r){return r.size;}).join(",")==="2,1,3,1"&&/^JMP/.test(rows[0].instruction)&&/^NOP$/.test(rows[1].instruction)&&/^MOV AX, 1234h$/i.test(rows[2].instruction)&&/^HLT$/.test(rows[3].instruction);};
+exercises[36][6]=function(state,source){var result=assembleProgram(source),decoded=disassembleBytes(result.bytes),rows=decoded.rows;return state.reg.AX===0x1234&&result.bytes.join(",")==="235,1,144,184,52,18,244"&&rows.length===4&&rows.map(function(r){return r.size;}).join(",")==="2,1,3,1"&&/^JMP/.test(rows[0].instruction)&&/^NOP$/.test(rows[1].instruction)&&/^MOV AX, 1234h$/i.test(rows[2].instruction)&&/^HLT$/.test(rows[3].instruction);};
 exercises[38][6]=function(state,source,response){var a=String(response||"").toLowerCase();return state.reg.AX===8&&/cycles/.test(a)&&/biu/.test(a)&&/prélecture|prefetch/.test(a)&&/bus/.test(a)&&/simulateur|modélise|mesure/.test(a);};
 exercises[40][6]=function(state){return state.reg.AX===10&&state.reg.SP===0xFFFE&&state.stack.length===0;};
 exercises[45][6]=function(state){return state.reg.AX===0x1234&&state.reg.SP===0xFFFE&&state.stack.length===0;};
