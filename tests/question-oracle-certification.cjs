@@ -225,6 +225,15 @@ function independentlyCompute(oracle) {
       const borrowFromLow = i.lowA < i.lowB ? 1 : 0;
       return { lowWordFirst: true, borrowFromLow, highWordIncludesBorrow: true, highResult: (i.highA - i.highB - borrowFromLow) & 0xffff };
     }
+    case "byte_carry_propagation": {
+      const lowSum = i.lowA + i.lowB;
+      const lowResult = lowSum & 0xff;
+      const carryFromLow = lowSum > 0xff ? 1 : 0;
+      const highResult = (i.highA + i.highB + carryFromLow) & 0xff;
+      return { lowResult, carryFromLow, highResult, combined: (highResult << 8) | lowResult };
+    }
+    case "inc_flag_set":
+      return { updated: ["OF", "SF", "ZF", "AF", "PF"], preserved: ["CF"] };
     case "unsigned_subtract_flags": {
       const mask = (2 ** i.width) - 1;
       const difference = i.left - i.right;
@@ -1439,5 +1448,22 @@ assert.equal(chapter7Review.summary.officialCertificationCountAfter, 384, "Chapt
 assert.equal(chapter7Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C07-L1-Q3").expected, { readsMemory: false, writesMemory: true, sourceRegister: "AX" }, "MOV [BX],AX must be validated as a memory write");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C07-F-Q10").expected, { movReadsMemory: true, xchgReadsMemory: true, xchgWritesMemory: true, exchanges: true }, "MOV and XCHG memory semantics must remain distinct");
+
+
+const chapter8Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-08.json", "utf8"));
+const chapter8Ids = key.questions.filter(question => question.chapter === 8).map(question => question.id).sort();
+const reviewedChapter8Ids = chapter8Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter8Ids, chapter8Ids, "Chapter 8 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter8Ids).size, 19, "Chapter 8 review must not duplicate question IDs");
+assert.equal(chapter8Review.summary.questionsReviewed, 19, "Chapter 8 review count must match the complete question bank");
+assert.equal(chapter8Review.summary.passed, 15, "Chapter 8 review must report 15 passed questions");
+assert.equal(chapter8Review.summary.corrected, 4, "Chapter 8 review must record carry propagation, borrow, NEG and INC flag corrections");
+assert.equal(chapter8Review.summary.blocked, 0, "Chapter 8 review must have no unresolved blockers");
+assert.equal(chapter8Review.summary.officialCertificationCountBefore, 384, "Chapter 8 review starts from the official 384-question ledger");
+assert.equal(chapter8Review.summary.officialCertificationCountAfter, 384, "Chapter 8 review must not silently advance official certification");
+assert.equal(chapter8Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C08-L1-Q3").expected, { lowResult: 0, carryFromLow: 1, highResult: 19, combined: 4864 }, "The 8-bit carry must propagate from AL to AH");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C08-L3-Q3").expected, { result: 255, OF: 0, CF: 1 }, "NEG 01h must yield FFh with CF=1 and OF=0");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C08-F-Q2").expected, { updated: ["OF", "SF", "ZF", "AF", "PF"], preserved: ["CF"] }, "INC must update arithmetic flags except CF");
 
 console.log("Question oracle evaluator: chapters 1–36 — " + oracleRecordsChecked + "/684 oracle records passed automated checks; official certification ledger remains " + manifest.oracleCoverageSummary.officialCertificationCount + "/684 (" + manifest.oracleCoverageSummary.remainingOfficialCertification + " pending); " + blocked + " blocked.");
