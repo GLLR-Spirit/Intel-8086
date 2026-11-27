@@ -9217,12 +9217,12 @@
       "number": 3,
       "stem": "Quel élément détermine la longueur d'une instruction ?",
       "choices": [
-        "Opcode, ModR/M éventuel, déplacement et immédiat",
+        "Préfixes éventuels, opcode, ModR/M, déplacement et immédiat",
         "Seulement le mnémonique",
         "Seulement le registre AX"
       ],
-      "correctAnswer": "Opcode, ModR/M éventuel, déplacement et immédiat",
-      "explanation": "La longueur dépend de tous les champs encodés présents.",
+      "correctAnswer": "Préfixes éventuels, opcode, ModR/M, déplacement et immédiat",
+      "explanation": "La longueur est la somme des champs effectivement présents : préfixes éventuels, opcode, ModR/M éventuel, déplacement et immédiat.",
       "category": "Vérification"
     },
     {
