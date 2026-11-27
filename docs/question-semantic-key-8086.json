@@ -9775,14 +9775,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 3,
-      "stem": "Que désigne JMP FIN ?",
+      "stem": "Que désigne JMP NEAR FIN ?",
       "choices": [
-        "Une cible symbolique résolue en déplacement",
+        "Une cible symbolique résolue en déplacement relatif",
         "Une donnée immédiate toujours égale à FIN",
         "Un accès mémoire indirect obligatoire"
       ],
-      "correctAnswer": "Une cible symbolique résolue en déplacement",
-      "explanation": "FIN est une étiquette dont l'offset est résolu par l'assembleur.",
+      "correctAnswer": "Une cible symbolique résolue en déplacement relatif",
+      "explanation": "NEAR impose un transfert dans le segment courant ; FIN est une étiquette dont l'offset est résolu par l'assembleur en déplacement relatif.",
       "category": "Vérification"
     },
     {
@@ -9839,14 +9839,14 @@
       "kind": "intermediate",
       "lesson": 3,
       "number": 1,
-      "stem": "Que doit faire le désassembleur face à un octet inconnu ?",
+      "stem": "Que doit faire le désassembleur face à un octet isolé non reconnu dont la longueur d'instruction ne peut pas être établie ?",
       "choices": [
         "Le conserver comme donnée brute DB",
         "Inventer une instruction valide",
         "Supprimer l'octet"
       ],
       "correctAnswer": "Le conserver comme donnée brute DB",
-      "explanation": "Un octet non pris en charge doit rester visible et ne pas être perdu.",
+      "explanation": "Le listing peut émettre DB pour préserver l'octet brut ; cela ne prouve pas qu'il s'agissait d'une donnée dans le source original, et la synchronisation du flux peut rester incertaine.",
       "category": "Compréhension"
     },
     {
@@ -9878,7 +9878,7 @@
         "Pour changer les adresses"
       ],
       "correctAnswer": "Pour conserver l'alignement et permettre l'analyse du flux",
-      "explanation": "Perdre un octet décale toutes les instructions suivantes.",
+      "explanation": "Préserver l'octet évite une perte de données ; si sa longueur sémantique est inconnue, l'alignement des instructions suivantes doit rester marqué comme incertain.",
       "category": "Vérification"
     },
     {
@@ -9919,14 +9919,14 @@
       "kind": "final",
       "lesson": null,
       "number": 3,
-      "stem": "Que fait JMP FIN lorsque FIN est une étiquette ?",
+      "stem": "Que fait JMP NEAR FIN lorsque FIN est une étiquette ?",
       "choices": [
-        "Transfère le contrôle vers l'offset de FIN",
+        "Transfère le contrôle vers l'offset relatif de FIN",
         "Charge le texte FIN dans AX",
         "Lit un pointeur far en mémoire"
       ],
-      "correctAnswer": "Transfère le contrôle vers l'offset de FIN",
-      "explanation": "L'assembleur résout l'étiquette en déplacement relatif.",
+      "correctAnswer": "Transfère le contrôle vers l'offset relatif de FIN",
+      "explanation": "L'assembleur résout FIN en offset cible et encode le déplacement relatif à l'instruction suivante.",
       "category": "Syntaxe"
     },
     {
@@ -9967,14 +9967,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Quel est l'offset de FIN après JMP FIN / NOP si JMP est short ?",
+      "stem": "Dans JMP FIN, puis NOP, puis l'étiquette FIN:, quel est l'offset de FIN si JMP est encodé en short et si le premier octet est à 0000h ?",
       "choices": [
         "3",
         "2",
         "4"
       ],
       "correctAnswer": "3",
-      "explanation": "EB 01 occupe deux octets puis NOP un octet ; FIN commence à offset 3.",
+      "explanation": "JMP short est encodé par EB 01 et occupe deux octets ; NOP occupe un octet. L'étiquette FIN commence donc à l'offset 0003h.",
       "category": "Calcul / prédiction"
     },
     {
@@ -9999,14 +9999,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Pourquoi un octet inconnu doit-il être affiché comme DB ?",
+      "stem": "Pourquoi un octet non décodé doit-il être représenté comme DB dans le listing ?",
       "choices": [
-        "Pour ne pas perdre l'octet ni désaligner la suite",
+        "Pour préserver l'octet brut et signaler l'incertitude du décodage",
         "Pour le transformer en NOP",
         "Pour effacer les données"
       ],
-      "correctAnswer": "Pour ne pas perdre l'octet ni désaligner la suite",
-      "explanation": "DB préserve les octets non interprétés comme instructions.",
+      "correctAnswer": "Pour préserver l'octet brut et signaler l'incertitude du décodage",
+      "explanation": "DB conserve la valeur brute sans prétendre connaître sa signification originale ; la frontière de la prochaine instruction peut rester incertaine.",
       "category": "Analyse de résultat"
     },
     {
@@ -10015,14 +10015,14 @@
       "kind": "final",
       "lesson": null,
       "number": 9,
-      "stem": "Comment corriger un désassemblage décalé après un octet inconnu ?",
+      "stem": "Comment un balayage linéaire doit-il signaler un octet non décodé lorsque la synchronisation suivante n'est pas certaine ?",
       "choices": [
-        "Conserver l'octet brut et reprendre au byte suivant",
+        "Conserver l'octet en DB et marquer la suite comme incertaine",
         "Supprimer l'octet inconnu",
         "Forcer un opcode supposé"
       ],
-      "correctAnswer": "Conserver l'octet brut et reprendre au byte suivant",
-      "explanation": "La consommation exacte des octets préserve l'alignement du flux.",
+      "correctAnswer": "Conserver l'octet en DB et marquer la suite comme incertaine",
+      "explanation": "Émettre DB préserve l'octet ; marquer la suite comme incertaine évite d'affirmer à tort que le point de resynchronisation correspond à une vraie frontière d'instruction.",
       "category": "Débogage"
     },
     {
