@@ -29,12 +29,12 @@
       "derivation": "ADC calcule destination+source+CF entrant. Avec 5, 3 et CF=1, le résultat est 5+3+1=9 ; CF est une entrée de l'opération, pas une soustraction ni un indicateur ignoré.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "D"
+          "choice": "ADC soustrait CF",
+          "reason": "ADC ne soustrait pas la retenue ; il l'ajoute à la destination et à la source."
         },
         {
-          "choice": "A",
-          "reason": "D"
+          "choice": "ADC ignore la source",
+          "reason": "ADC inclut bien la source dans la somme ; il ne l'ignore pas."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -60,12 +60,12 @@
       "derivation": "Le mot faible doit être additionné en premier afin de produire CF. Le mot fort est ensuite traité avec ADC pour incorporer cette retenue ; ici 2+3+1 donne 6.",
       "distractorRationales": [
         {
-          "choice": "P",
-          "reason": "o"
+          "choice": "Pour effacer CF",
+          "reason": "Le mot fort doit intégrer la retenue issue du mot faible ; effacer CF ferait perdre une unité."
         },
         {
-          "choice": "P",
-          "reason": "o"
+          "choice": "Pour convertir en BCD",
+          "reason": "La propagation de retenue est un calcul binaire multi-mots, pas une conversion BCD."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -89,12 +89,12 @@
       "derivation": "FFh+1 donne 100h mathématiquement. Sur huit bits, AL conserve 00h et CF reçoit la retenue sortante. L'interprétation signée ne déborde pas pour −1+1.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "L"
+          "choice": "AL=FFh et CF=0",
+          "reason": "Après FFh+1, AL devient 00h ; FFh n'est pas conservé."
         },
         {
-          "choice": "A",
-          "reason": "L"
+          "choice": "AL=01h et CF=0",
+          "reason": "Le résultat modulo 256 est 00h, pas 01h, et la retenue sortante met CF à 1."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -117,12 +117,12 @@
       "derivation": "SBB calcule destination−source−CF entrant. Avec 5, 0 et CF=1, le résultat est 5−0−1=4 ; la retenue entrante est interprétée comme emprunt à propager.",
       "distractorRationales": [
         {
-          "choice": "S",
-          "reason": "B"
+          "choice": "SBB additionne",
+          "reason": "SBB soustrait l'emprunt entrant CF ; il ne réalise pas une addition."
         },
         {
-          "choice": "S",
-          "reason": "U"
+          "choice": "SUB préserve toujours CF",
+          "reason": "SUB ne préserve pas toujours CF ; la soustraction peut modifier l'indicateur d'emprunt."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -148,12 +148,12 @@
       "derivation": "La soustraction du mot faible détermine d'abord l'emprunt. Le mot fort doit ensuite être calculé avec SBB pour soustraire cet emprunt ; commencer par le mot fort perdrait cette dépendance.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le mot fort",
+          "reason": "L'emprunt doit être calculé sur le mot faible avant d'être propagé au mot fort."
         },
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Les deux simultanément",
+          "reason": "Les deux mots ne sont pas soustraits indépendamment et simultanément si l'on veut propager l'emprunt."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -176,12 +176,12 @@
       "derivation": "Sur huit bits, 00h−01h produit FFh modulo 256. Comme la soustraction non signée nécessite un emprunt, CF est mis à 1.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "L"
+          "choice": "AL=00h et CF=0",
+          "reason": "La différence 00h−01h modulo 256 donne FFh et non 00h."
         },
         {
-          "choice": "A",
-          "reason": "L"
+          "choice": "AL=01h et CF=1",
+          "reason": "00h−01h donne FFh avec emprunt CF=1 ; 01h avec CF=1 n'est pas le résultat."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -202,12 +202,12 @@
       "derivation": "Sur le 8086, INC met à jour les indicateurs arithmétiques concernés par l'incrément, mais préserve CF. Cette particularité permet d'utiliser INC sans détruire une retenue précédente.",
       "distractorRationales": [
         {
-          "choice": "O",
-          "reason": "u"
+          "choice": "Oui",
+          "reason": "INC préserve CF ; il ne le met pas à jour comme ADD."
         },
         {
-          "choice": "C",
-          "reason": "F"
+          "choice": "CF devient zéro",
+          "reason": "INC ne force pas CF à zéro ; l'indicateur est conservé."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -228,12 +228,12 @@
       "derivation": "NEG forme le complément à deux de l'opérande en calculant zéro moins cette valeur. Pour AL=05h sur huit bits, le résultat est FBh, soit 251 non signé.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "L"
+          "choice": "AL−1",
+          "reason": "AL−1 décrirait une décrémentation, pas le complément à deux calculé par NEG."
         },
         {
-          "choice": "A",
-          "reason": "L"
+          "choice": "AL XOR FFh seulement",
+          "reason": "AL XOR FFh inverse les bits mais n'ajoute pas le 1 requis pour le complément à deux."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -255,12 +255,12 @@
       "derivation": "80h représente −128 en signé sur huit bits. Son opposé mathématique +128 n'est pas représentable ; le motif reste 80h et OF est activé. NEG met également CF à 1 car l'opérande initial n'était pas nul.",
       "distractorRationales": [
         {
-          "choice": "7",
-          "reason": "F"
+          "choice": "7Fh avec OF=0",
+          "reason": "NEG 80h produit 80h avec OF=1 ; il ne donne pas 7Fh sans débordement."
         },
         {
-          "choice": "0",
-          "reason": "0"
+          "choice": "00h avec CF=0",
+          "reason": "Le résultat de NEG 80h n'est pas nul ; le motif reste 80h et OF signale le débordement."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -279,12 +279,12 @@
       "derivation": "ADC ajoute la valeur actuelle de CF à la somme de la destination et de la source. ZF et DF ne sont pas les indicateurs d'entrée supplémentaires de cette instruction.",
       "distractorRationales": [
         {
-          "choice": "Z",
-          "reason": "F"
+          "choice": "ZF",
+          "reason": "ADC utilise CF comme entrée supplémentaire ; ZF est un indicateur de résultat, pas l'entrée de retenue."
         },
         {
-          "choice": "D",
-          "reason": "F"
+          "choice": "DF",
+          "reason": "DF contrôle la direction des instructions de chaîne, pas l'entrée d'ADC."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -305,12 +305,12 @@
       "derivation": "INC préserve explicitement CF sur le 8086, contrairement à ADD qui met CF à jour selon la retenue de l'addition. ZF peut en revanche être modifié par INC.",
       "distractorRationales": [
         {
-          "choice": "O",
-          "reason": "F"
+          "choice": "OF",
+          "reason": "INC préserve CF ; OF est modifiable par INC si le résultat déborde en signé."
         },
         {
-          "choice": "Z",
-          "reason": "F"
+          "choice": "ZF",
+          "reason": "INC modifie ZF selon le résultat, mais préserve CF."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -329,12 +329,12 @@
       "derivation": "ADC est l'instruction d'addition avec retenue : elle calcule AX+BX+CF. SBB réalise une soustraction avec emprunt, et NEG calcule zéro moins l'opérande.",
       "distractorRationales": [
         {
-          "choice": "S",
-          "reason": "B"
+          "choice": "SBB AX,BX",
+          "reason": "SBB réalise une soustraction avec emprunt CF, pas une addition avec retenue."
         },
         {
-          "choice": "N",
-          "reason": "E"
+          "choice": "NEG AX",
+          "reason": "NEG calcule zéro moins l'opérande ; elle n'ajoute pas deux opérandes avec CF."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -360,12 +360,12 @@
       "derivation": "Le calcul du mot faible doit être effectué d'abord. Sa retenue CF devient l'entrée de l'ADC sur le mot fort ; l'ignorer produirait un résultat multi-mots trop petit d'une unité.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le mot fort ne peut pas être lu",
+          "reason": "Le mot fort doit tenir compte de CF produit par le mot faible ; le lire seul ne suffit pas."
         },
         {
-          "choice": "A",
-          "reason": "X"
+          "choice": "AX est toujours le mot faible",
+          "reason": "AX n'est pas toujours le mot faible ; la répartition dépend du programme et des registres utilisés."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -388,12 +388,12 @@
       "derivation": "00h−01h vaut −1 mathématiquement. Le résultat conservé sur huit bits est FFh et l'opération non signée produit un emprunt, indiqué par CF=1.",
       "distractorRationales": [
         {
-          "choice": "0",
-          "reason": "1"
+          "choice": "01h avec CF=0",
+          "reason": "00h−01h donne FFh modulo 256 avec CF=1, pas 01h sans emprunt."
         },
         {
-          "choice": "0",
-          "reason": "0"
+          "choice": "00h avec CF=1",
+          "reason": "Le résultat n'est pas 00h ; l'opération a produit FFh et un emprunt."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -416,10 +416,12 @@
       "derivation": "SBB BL,0 calcule BL−0−CF. Avec BL=5 et CF=1, on obtient 5−0−1=4 ; l'instruction consomme donc bien l'emprunt entrant.",
       "distractorRationales": [
         {
-          "choice": "5"
+          "choice": "5",
+          "reason": "SBB soustrait le CF entrant ; le calcul est 5−0−1=4, pas 5."
         },
         {
-          "choice": "6"
+          "choice": "6",
+          "reason": "Le calcul 5−0−1 donne 4, pas 6."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -441,12 +443,12 @@
       "derivation": "80h est la valeur minimale signée sur huit bits (−128). Son opposé +128 dépasse la borne maximale +127 ; NEG laisse le motif 80h et active OF.",
       "distractorRationales": [
         {
-          "choice": "N",
-          "reason": "E"
+          "choice": "NEG 01h",
+          "reason": "NEG 01h ne déborde pas sur huit bits ; le résultat est FFh."
         },
         {
-          "choice": "N",
-          "reason": "E"
+          "choice": "NEG 00h",
+          "reason": "NEG 00h donne zéro sans débordement ; seul l'opérande 80h représente le minimum signé."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -471,12 +473,12 @@
       "derivation": "ADD AL,1 réalise une addition sur huit bits. AL devient 00h et CF signale la retenue ; AH reste 12h, car une retenue n'est pas automatiquement reportée dans l'autre octet du registre AX.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "F"
+          "choice": "CF remplace AH automatiquement",
+          "reason": "AH conserve sa valeur et CF reçoit la retenue ; la retenue n'est pas copiée dans AH."
         },
         {
-          "choice": "A",
-          "reason": "D"
+          "choice": "ADD AL est une opération 16 bits",
+          "reason": "ADD AL est une opération sur huit bits, pas une opération sur 16 bits."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -500,12 +502,12 @@
       "derivation": "Dans une addition multi-mots, ADC doit consommer la retenue produite par l'addition du mot faible. Une instruction intermédiaire qui modifie CF peut remplacer ou effacer cette retenue et fausser le mot fort.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "i"
+          "choice": "Lire AX sans le modifier",
+          "reason": "Lire AX sans modifier FLAGS ne détruit pas CF ; cette lecture n'interrompt pas la propagation."
         },
         {
-          "choice": "U",
-          "reason": "t"
+          "choice": "Utiliser un commentaire",
+          "reason": "Un commentaire n'est pas exécuté et ne modifie pas CF."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -530,12 +532,12 @@
       "derivation": "Un test robuste doit couvrir un calcul du mot faible sans retenue et un autre qui génère CF, puis vérifier que le mot fort est correct dans les deux situations. Tester uniquement 1+1 ou uniquement des valeurs négatives ne couvre pas la propagation.",
       "distractorRationales": [
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Uniquement 1+1",
+          "reason": "Tester uniquement 1+1 ne couvre pas la propagation d'une retenue depuis le mot faible."
         },
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Uniquement une valeur négative",
+          "reason": "Tester uniquement des valeurs négatives ne vérifie pas les chemins sans retenue et avec retenue."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
