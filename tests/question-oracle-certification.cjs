@@ -721,6 +721,8 @@ function independentlyCompute(oracle) {
       }));
       return { writes, finalCX: 0, finalDI: (i.initialDI + i.count) & 0xffff };
     }
+    case "default_segment_by_addressing_form":
+      return { segment: i.containsBP ? "SS" : "DS" };
     case "modrm_field_layout":
       return { fields: ["Mod", "Reg", "R/M"], widths: [i.modBits, i.regBits, i.rmBits], totalBits: i.modBits + i.regBits + i.rmBits };
     case "modrm_decode_byte": {
