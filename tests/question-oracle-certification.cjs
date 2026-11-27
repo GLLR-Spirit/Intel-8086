@@ -100,7 +100,8 @@ function independentlyCompute(oracle) {
         const instruction = i.program[pc];
         if (instruction[0] === "MOV" && instruction[1] === "AX") { ax = instruction[2]; pc++; }
         else if (instruction[0] === "JMP") {
-          skippedInstruction = i.program[pc + 1]?.slice(0, 2).join(" ");
+          const skipped = i.program[pc + 1];
+          skippedInstruction = skipped ? skipped.slice(0, 2).join(" ") + (skipped.length > 2 ? "," + skipped.slice(2).join(",") : "") : null;
           pc = labels.get(instruction[1]);
         } else if (instruction[0] === "LABEL") pc++;
         else if (instruction[0] === "HLT") { halted = true; break; }
