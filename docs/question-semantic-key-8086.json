@@ -10895,14 +10895,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Que fait CALL DOUBLE avec AX=3 et ADD AX,AX dans DOUBLE ?",
+      "stem": "CALL NEAR DOUBLE commence à IP=0100h avec l'encodage E8 05 00 et SP=1000h. Quelles valeurs sont empilées et quel est le nouveau SP ?",
       "choices": [
-        "Retourne AX=6",
-        "Retourne AX=3",
-        "Retourne AX=9"
+        "IP de retour 0103h ; SP=0FFEh",
+        "IP de retour 0105h ; SP=0FFCh",
+        "AX=0103h ; SP=1000h"
       ],
-      "correctAnswer": "Retourne AX=6",
-      "explanation": "La routine double AX puis RET reprend après CALL.",
+      "correctAnswer": "IP de retour 0103h ; SP=0FFEh",
+      "explanation": "CALL NEAR occupe trois octets : l'IP de continuation vaut 0103h. Il empile ce mot de deux octets, donc SP passe de 1000h à 0FFEh.",
       "category": "Analyse de programme"
     },
     {
