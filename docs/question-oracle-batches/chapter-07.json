@@ -27,12 +27,12 @@
       "derivation": "Le programme initialise BX à 0100h puis exécute LEA SI,[BX+4]. LEA calcule 0100h+0004h=0104h et place cet offset dans SI. L'instruction ne lit pas le contenu mémoire à cette adresse.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "i"
+          "choice": "Lit le contenu mémoire dans SI",
+          "reason": "LEA ne lit pas le mot pointé ; elle place dans SI le résultat du calcul d'adresse BX+4."
         },
         {
-          "choice": "C",
-          "reason": "h"
+          "choice": "Charge DS dans SI",
+          "reason": "LEA ne charge pas DS dans SI ; elle calcule l'offset de l'expression d'adresse fournie."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
@@ -53,12 +53,12 @@
       "derivation": "XCHG accepte deux registres généraux ou un registre général avec une case mémoire. Deux opérandes mémoire ne sont pas autorisés dans une même instruction XCHG sur le 8086.",
       "distractorRationales": [
         {
-          "choice": "X",
-          "reason": "C"
+          "choice": "XCHG AX,BX",
+          "reason": "XCHG AX,BX échange deux registres, une forme autorisée."
         },
         {
-          "choice": "X",
-          "reason": "C"
+          "choice": "XCHG AX,[BX]",
+          "reason": "XCHG AX,[BX] échange un registre et une case mémoire, une forme autorisée."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
@@ -80,12 +80,12 @@
       "derivation": "MOV AX,[BX] utilise l'opérande mémoire désigné par BX comme source. Le processeur lit le mot à cette adresse et le transfère dans AX ; ce n'est pas une simple addition de BX.",
       "distractorRationales": [
         {
-          "choice": "N",
-          "reason": "o"
+          "choice": "Non, elle calcule seulement BX",
+          "reason": "MOV AX,[BX] lit l'opérande mémoire ; elle n'effectue pas seulement un calcul d'adresse."
         },
         {
-          "choice": "S",
-          "reason": "e"
+          "choice": "Seulement si CF=1",
+          "reason": "CF n'est pas une condition nécessaire pour lire une opérande mémoire avec MOV."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
@@ -108,12 +108,12 @@
       "derivation": "BX+SI est l'une des combinaisons d'adressage effectif prévues par le 8086. AX+CX et DX+SP ne font pas partie des combinaisons base/index encodables dans le ModR/M 8086.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "X"
+          "choice": "AX+CX",
+          "reason": "AX+CX n'est pas une combinaison base/index encodable dans l'adressage 8086."
         },
         {
-          "choice": "D",
-          "reason": "X"
+          "choice": "DX+SP",
+          "reason": "DX+SP n'est pas une combinaison base/index 8086 ; SP ne peut pas servir dans le champ d'index ModR/M."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
@@ -132,12 +132,12 @@
       "derivation": "LEA calcule une adresse effective et la place dans le registre destination. Elle n'effectue pas d'opération arithmétique qui modifie FLAGS ; les indicateurs sont préservés.",
       "distractorRationales": [
         {
-          "choice": "O",
-          "reason": "u"
+          "choice": "Oui, CF",
+          "reason": "LEA ne calcule pas une addition arithmétique qui modifie CF ; elle préserve les indicateurs."
         },
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Uniquement OF",
+          "reason": "LEA ne modifie pas OF non plus ; aucun indicateur arithmétique n'est mis à jour."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
@@ -157,12 +157,12 @@
       "derivation": "La question ne fournit pas de valeurs numériques pour BX et SI. La réponse correcte doit donc rester l'expression symbolique BX+SI+6 : LEA calcule cette adresse effective sans déréférencer la mémoire.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le mot lu à cette adresse",
+          "reason": "Cette option décrit un accès mémoire/déréférencement, alors que LEA calcule seulement l'expression d'adresse."
         },
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le contenu de DS",
+          "reason": "LEA ne copie pas le contenu du registre de segment DS dans DX."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
@@ -184,12 +184,12 @@
       "derivation": "Un pointeur far 16:16 contient deux mots de 16 bits : un offset et un segment. Le total est 32 bits, soit quatre octets en mémoire.",
       "distractorRationales": [
         {
-          "choice": "2",
-          "reason": " "
+          "choice": "2 octets",
+          "reason": "Un pointeur 16:16 contient deux mots de 16 bits, donc quatre octets, pas deux."
         },
         {
-          "choice": "6",
-          "reason": " "
+          "choice": "6 octets",
+          "reason": "Six octets ne correspondent pas à deux champs de 16 bits ; la taille totale est quatre octets."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
@@ -211,12 +211,12 @@
       "derivation": "LDS charge le premier mot du pointeur far dans le registre général destination, ici SI. Ce premier mot est l'offset ; le mot suivant est chargé dans DS.",
       "distractorRationales": [
         {
-          "choice": "D",
-          "reason": "S"
+          "choice": "DS",
+          "reason": "DS reçoit le second mot du pointeur LDS ; le premier mot est chargé dans SI."
         },
         {
-          "choice": "E",
-          "reason": "S"
+          "choice": "ES",
+          "reason": "ES est le segment destination de LES, pas de LDS qui charge DS."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
@@ -238,12 +238,12 @@
       "derivation": "Le pointeur far est stocké sous la forme offset puis segment. LDS charge le premier mot dans SI et le second mot dans DS ; le second mot est donc le segment.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le premier octet",
+          "reason": "Le premier mot contient l'offset chargé dans SI ; le second mot contient le segment chargé dans DS."
         },
         {
-          "choice": "L",
-          "reason": "a"
+          "choice": "La valeur de SI",
+          "reason": "SI reçoit le premier mot offset ; la valeur de SI n'est pas le second mot segment."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
@@ -263,12 +263,12 @@
       "derivation": "LEA calcule l'offset numérique correspondant à l'expression d'adresse effective et le place dans le registre destination. Elle ne lit pas le contenu de la mémoire pointée ; cette différence la sépare d'un MOV avec opérande mémoire.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le contenu lu à cette adresse",
+          "reason": "LEA ne lit pas le contenu de la mémoire pointée ; elle calcule l'offset de l'expression."
         },
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le segment courant",
+          "reason": "LEA ne charge pas le registre de segment courant ; sa destination reçoit l'offset calculé."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
@@ -290,12 +290,12 @@
       "derivation": "Pour LDS SI,[PTR], le premier mot du pointeur far est l'offset et est chargé dans SI. Le second mot est le segment et est chargé dans DS.",
       "distractorRationales": [
         {
-          "choice": "R",
-          "reason": "e"
+          "choice": "Recevoir le segment",
+          "reason": "LDS place le premier mot du pointeur far dans le registre général destination ; le segment est dans le second mot."
         },
         {
-          "choice": "R",
-          "reason": "e"
+          "choice": "Recevoir FLAGS",
+          "reason": "FLAGS ne fait pas partie du pointeur far 16:16 lu par LDS."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
@@ -317,12 +317,12 @@
       "derivation": "XCHG autorise un échange entre un registre général et un opérande mémoire. En revanche, mémoire-mémoire et segment-register/segment-register ne sont pas des formes XCHG valides du 8086.",
       "distractorRationales": [
         {
-          "choice": "X",
-          "reason": "C"
+          "choice": "XCHG [BX],[SI]",
+          "reason": "XCHG mémoire-mémoire est interdit ; cette option ne constitue pas une forme valide."
         },
         {
-          "choice": "X",
-          "reason": "C"
+          "choice": "XCHG DS,ES",
+          "reason": "XCHG ne permet pas d'échanger directement deux registres de segment DS et ES."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
@@ -344,12 +344,12 @@
       "derivation": "LEA calcule l'offset de l'expression et ne lit pas l'octet ou le mot pointé. MOV AX,[BX+4] déréférence au contraire l'adresse et transfère le mot mémoire dans AX.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "E"
+          "choice": "LEA écrit en mémoire",
+          "reason": "LEA calcule un offset et ne réalise pas une écriture mémoire."
         },
         {
-          "choice": "M",
-          "reason": "O"
+          "choice": "MOV calcule uniquement l'adresse",
+          "reason": "MOV avec opérande mémoire lit la donnée pointée ; elle ne se limite pas au calcul de l'adresse."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
@@ -371,12 +371,12 @@
       "derivation": "L'adresse effective est la somme des composantes : 0100h+0020h+0004h=0124h. LEA place ce résultat dans le registre destination sans lire la mémoire.",
       "distractorRationales": [
         {
-          "choice": "0",
-          "reason": "1"
+          "choice": "0120h",
+          "reason": "0120h omet le déplacement final 0004h dans la somme des composantes."
         },
         {
-          "choice": "0",
-          "reason": "1"
+          "choice": "0104h",
+          "reason": "0104h omet la contribution du registre SI qui vaut 0020h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
@@ -398,12 +398,12 @@
       "derivation": "Le format du pointeur far en mémoire place d'abord le mot offset, puis le mot segment. Le second mot contient donc le segment ; le pointeur complet occupe quatre octets.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le mot FLAGS",
+          "reason": "Le premier mot du pointeur far est l'offset ; le mot segment vient ensuite."
         },
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le mot opcode",
+          "reason": "FLAGS n'est pas un champ du pointeur far 16:16."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
@@ -423,12 +423,12 @@
       "derivation": "LES charge le premier mot du pointeur far dans DI et le second mot dans ES. Le couple obtenu est donc ES:DI, avec DI comme offset et ES comme segment.",
       "distractorRationales": [
         {
-          "choice": "D",
-          "reason": "I"
+          "choice": "DI et DS",
+          "reason": "LES charge le segment dans ES ; DS est la destination de segment de LDS."
         },
         {
-          "choice": "S",
-          "reason": "I"
+          "choice": "SI et ES",
+          "reason": "LES charge l'offset dans DI, pas dans SI."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
@@ -448,12 +448,12 @@
       "derivation": "LEA calcule l'adresse effective à partir des registres et du déplacement, puis écrit l'offset calculé dans le registre destination. Elle n'effectue pas de lecture de la donnée mémoire pointée.",
       "distractorRationales": [
         {
-          "choice": "O",
-          "reason": "u"
+          "choice": "Oui, un octet",
+          "reason": "LEA ne déréférence pas l'adresse effective et ne lit donc pas un octet mémoire."
         },
         {
-          "choice": "O",
-          "reason": "u"
+          "choice": "Oui, un mot",
+          "reason": "LEA ne lit pas un mot mémoire non plus ; elle calcule uniquement l'offset."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
@@ -475,12 +475,12 @@
       "derivation": "LDS/LES lisent un pointeur far de 32 bits composé de deux mots de 16 bits. La zone mémoire source doit donc contenir les quatre octets représentant l'offset puis le segment.",
       "distractorRationales": [
         {
-          "choice": "I",
-          "reason": "n"
+          "choice": "Initialiser uniquement CF",
+          "reason": "CF n'est pas le pointeur far ; les quatre octets représentent les deux mots offset et segment."
         },
         {
-          "choice": "M",
-          "reason": "e"
+          "choice": "Mettre AX à zéro",
+          "reason": "AX à zéro n'initialise pas la structure du pointeur en mémoire qui sera lue par LDS."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
@@ -502,12 +502,12 @@
       "derivation": "Les crochets indiquent un opérande mémoire, mais l'effet dépend de l'instruction. LEA traite l'expression comme un calcul d'adresse ; MOV avec cet opérande lit ou écrit la donnée mémoire selon le sens des opérandes.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "o"
+          "choice": "Considérer tous les opérandes entre crochets comme des constantes",
+          "reason": "Les crochets indiquent un opérande mémoire, mais LEA traite l'expression comme une adresse à calculer."
         },
         {
-          "choice": "I",
-          "reason": "g"
+          "choice": "Ignorer la taille de l'opérande",
+          "reason": "Ignorer la taille est dangereux pour les opérations mémoire ; il faut distinguer calcul d'adresse et transfert de donnée."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, LEA, LDS/LES and pointer memory layout; Intel MCS-86 Assembly Language Reference Manual, XCHG forms."
