@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue individuelle — chapitre 18",
+  "reviewDate": "2026-11-27",
+  "scope": "Examen individuel des 19 questions sur l'adressage segment:offset, le calcul physique, les recouvrements, les alias et le repliement 20 bits. Cette revue est séparée de l'évaluation automatisée des oracles.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "sections": "Figure 2-18, Table 2-2, pp. 2-13–2-14; segmented address formation and default segment selection.",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Assembly Language Reference Manual",
+      "edition": "1979",
+      "sections": "Segment-register operands and MOV instruction forms.",
+      "url": "https://bitsavers.trailing-edge.com/pdf/intel/ISIS_II/9800640A_MCS-86_Assembly_Language_Reference_Manual_Apr79.pdf"
+    }
+  ],
+  "records": [
+    {
+      "id": "C18-L1-Q1",
+      "result": "passed",
+      "finding": "Définition exacte : une adresse logique associe un segment et un offset de 16 bits.",
+      "basis": "Intel 8086 Family User's Manual, Figure 2-18."
+    },
+    {
+      "id": "C18-L1-Q2",
+      "result": "corrected",
+      "finding": "L'énoncé initial attribuait une adresse à BX seul. La version corrigée précise la référence mémoire [BX] et le segment DS par défaut.",
+      "basis": "Intel 8086 Family User's Manual, Table 2-2 : variable ordinaire avec DS par défaut et offset effectif."
+    },
+    {
+      "id": "C18-L1-Q3",
+      "result": "corrected",
+      "finding": "L'énoncé initial parlait d'identifier une adresse logique alors que l'explication traitait de l'adresse physique. La question demande maintenant le calcul d'une adresse physique unique.",
+      "basis": "Intel 8086 Family User's Manual, Figure 2-18 : le segment et l'offset participent à la génération de l'adresse physique."
+    },
+    {
+      "id": "C18-L2-Q1",
+      "result": "passed",
+      "finding": "Formule correcte : base segmentée = segment décalé de quatre bits, puis addition de l'offset.",
+      "basis": "Intel 8086 Family User's Manual, Figure 2-18."
+    },
+    {
+      "id": "C18-L2-Q2",
+      "result": "passed",
+      "finding": "Calcul vérifié : 1000h×10h=10000h ; +0020h=10020h.",
+      "basis": "Calcul hexadécimal indépendant et Figure 2-18."
+    },
+    {
+      "id": "C18-L2-Q3",
+      "result": "passed",
+      "finding": "La plage 00000h–FFFFFh contient 2^20 adresses d'octets, soit 1 048 576 octets.",
+      "basis": "Intel 8086 Family User's Manual, bus d'adresses 20 bits."
+    },
+    {
+      "id": "C18-L3-Q1",
+      "result": "passed",
+      "finding": "Le recouvrement est possible : les bases de segment sont espacées de 16 octets alors que l'offset couvre jusqu'à 64 Kio.",
+      "basis": "Intel 8086 Family User's Manual, section mémoire segmentée."
+    },
+    {
+      "id": "C18-L3-Q2",
+      "result": "passed",
+      "finding": "Équivalence vérifiée : 1000h×10h+0010h=10010h et 1001h×10h+0000h=10010h.",
+      "basis": "Calcul hexadécimal indépendant."
+    },
+    {
+      "id": "C18-L3-Q3",
+      "result": "passed",
+      "finding": "L'aliasing décrit correctement plusieurs couples segment:offset produisant la même adresse physique.",
+      "basis": "Intel 8086 Family User's Manual, Figure 2-18 et recouvrement des segments."
+    },
+    {
+      "id": "C18-F-Q1",
+      "result": "passed",
+      "finding": "Définition correcte de l'adresse logique comme couple segment:offset.",
+      "basis": "Intel 8086 Family User's Manual, Figure 2-18."
+    },
+    {
+      "id": "C18-F-Q2",
+      "result": "corrected",
+      "finding": "Formulation précisée autour de l'espace physique de 1 Mio et classée dans la catégorie Définition pour équilibrer l'évaluation finale.",
+      "basis": "Bus d'adresses 20 bits et calcul segment×16+offset, Intel 8086 Family User's Manual."
+    },
+    {
+      "id": "C18-F-Q3",
+      "result": "passed",
+      "finding": "MOV DS,AX est une forme valide : un registre général 16 bits peut charger DS.",
+      "basis": "Intel MCS-86 Assembly Language Reference Manual, formes MOV et registres de segment."
+    },
+    {
+      "id": "C18-F-Q4",
+      "result": "passed",
+      "finding": "MOV CS,AX est une forme interdite ; la question est classée Syntaxe dans le plan d'évaluation.",
+      "basis": "Intel MCS-86 Assembly Language Reference Manual, formes MOV autorisées."
+    },
+    {
+      "id": "C18-F-Q5",
+      "result": "passed",
+      "finding": "Calcul vérifié : 1000h:0020h donne 10020h.",
+      "basis": "Calcul hexadécimal indépendant."
+    },
+    {
+      "id": "C18-F-Q6",
+      "result": "passed",
+      "finding": "Calcul vérifié : 1001h:0000h donne 10010h.",
+      "basis": "Calcul hexadécimal indépendant."
+    },
+    {
+      "id": "C18-F-Q7",
+      "result": "passed",
+      "finding": "La séquence charge DS=1000h et BX=0020h ; elle prépare bien l'adresse logique DS:BX.",
+      "basis": "Trace registre par registre et Table 2-2."
+    },
+    {
+      "id": "C18-F-Q8",
+      "result": "corrected",
+      "finding": "L'item a été transformé en analyse d'une séquence qui prépare DS:BX et ES:DI. Les deux références calculent 10010h, ce qui évalue le transfert des règles vers un programme.",
+      "basis": "Trace indépendante : 1000h×10h+0010h=10010h ; 1001h×10h+0000h=10010h."
+    },
+    {
+      "id": "C18-F-Q9",
+      "result": "passed",
+      "finding": "Le calcul FFFFh×10h+FFFFh=10FFEFh puis le masquage sur 20 bits donne 0FFEFh.",
+      "basis": "Calcul arithmétique indépendant et largeur physique 20 bits du 8086."
+    },
+    {
+      "id": "C18-F-Q10",
+      "result": "passed",
+      "finding": "La méthode segment×16+offset suivie de la limitation à 20 bits est correcte pour le bus physique 8086.",
+      "basis": "Intel 8086 Family User's Manual, génération d'adresse physique."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 15,
+    "corrected": 4,
+    "needsRevision": 0,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  },
+  "openFindings": []
+}
