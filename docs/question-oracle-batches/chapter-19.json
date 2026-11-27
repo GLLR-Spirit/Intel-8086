@@ -443,15 +443,18 @@
     {
       "id": "C19-F-Q8",
       "status": "certified",
-      "rule": "bp_default_segment",
+      "rule": "effective_address_sum",
       "inputs": {
-        "effectiveAddress": "[BP+4]"
+        "base": 65520,
+        "index": 48,
+        "displacement": 4,
+        "width": 16
       },
       "expected": {
-        "segment": "SS"
+        "offset": 36
       },
-      "correctAnswer": "SS",
-      "derivation": "BP sélectionne SS comme segment par défaut pour les formes d'adressage qui l'utilisent. DS et ES peuvent être sélectionnés explicitement par un préfixe, mais ne sont pas le choix implicite.",
+      "correctAnswer": "0024h (repli sur 16 bits)",
+      "derivation": "FFF0h+0030h+0004h=10024h ; l'offset effectif 16 bits conserve 0024h. Le segment sélectionné est appliqué séparément pour former l'adresse physique.",
       "distractorRationales": [
         {
           "choice": "DS",
