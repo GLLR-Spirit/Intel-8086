@@ -637,7 +637,7 @@ function initExerciseFilters(){
  $("resetExerciseFilters").onclick=function(){exerciseFilterState={search:"",chapter:"all",difficulty:"all",type:"all"};$("exerciseSearch").value="";$("exerciseChapter").value="all";$("exerciseDifficulty").value="all";$("exerciseType").value="all";renderExercises();};
 }
 function exerciseMethodSatisfied(index,state){
- var metadata=exercises[index]&&exercises[index][6]||{},required=metadata.requiredTrace||[],trace=state&&state.instructionTrace||[],cursor=0;
+ var metadata=exercises[index]&&exercises[index][5]||{},required=metadata.requiredTrace||[],trace=state&&state.instructionTrace||[],cursor=0;
  for(var i=0;i<trace.length&&cursor<required.length;i++){if(trace[i].op===required[cursor])cursor++;}
  if(cursor!==required.length)return false;
  return (metadata.requiredOperands||[]).every(function(expected){
