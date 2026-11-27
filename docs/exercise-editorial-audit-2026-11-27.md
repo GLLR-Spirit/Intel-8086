@@ -224,9 +224,9 @@ Le contrôle ne se contente plus de rechercher cinq mots isolés. Il exige des g
 Une faiblesse supplémentaire a été corrigée après inspection des validateurs : un résultat architectural final correct ne prouvait pas que l'élève avait réellement exécuté l'instruction demandée. Les contrôles de méthode précédents vérifiaient surtout les corrections guidées, pas le programme soumis.
 
 - L'exécution source conserve maintenant une trace ordonnée des mnémoniques effectivement exécutés (executedInstructions).
-- validateExercise impose une sous-séquence d'instructions exécutées pour les 18 exercices explicitement associés à une méthode : boucles, copie de chaînes, procédures CALL/RET, MUL/DIV, décalage, interruptions INT/IRET, E/S IN, sauvegarde de FLAGS et opérations de pile.
+- validateExercise impose une sous-séquence d'instructions exécutées pour les 21 exercices explicitement associés à une méthode : boucles, copie de chaînes, procédures CALL/RET, MUL/DIV, décalage, interruptions INT/IRET, E/S IN, sauvegarde de FLAGS et opérations de pile.
 - Les contrôles sont effectués sur la trace d'exécution, pas par simple recherche de mots dans le texte source ; une instruction présente uniquement dans un commentaire ou jamais atteinte ne satisfait donc pas le contrat.
 - Deux contrôles négatifs conservent artificiellement l'état final réussi tout en retirant CALL ou RET de la trace : les validateurs EX27 et EX41 doivent les refuser.
-- L'audit navigateur vérifie aussi que les corrections guidées des 18 exercices respectent leurs séquences obligatoires.
+- L'audit navigateur vérifie aussi que les corrections guidées des 21 exercices respectent leurs séquences obligatoires.
 
 Cette correction améliore la vérification des méthodes pour les exercices mappés. Elle ne constitue pas une certification exhaustive des 48 exercices : les autres consignes doivent encore être examinées individuellement pour identifier leurs propres contrats d'exécution, et les contrôles qualitatifs restent à terminer.
