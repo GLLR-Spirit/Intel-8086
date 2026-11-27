@@ -636,6 +636,19 @@ function initExerciseFilters(){
  $("exerciseType").onchange=function(){exerciseFilterState.type=this.value;renderExercises();};
  $("resetExerciseFilters").onclick=function(){exerciseFilterState={search:"",chapter:"all",difficulty:"all",type:"all"};$("exerciseSearch").value="";$("exerciseChapter").value="all";$("exerciseDifficulty").value="all";$("exerciseType").value="all";renderExercises();};
 }
+function setExerciseMethod(title,requirements){
+ var index=exercises.findIndex(function(item){return item[0]===title;});
+ if(index<0)throw Error("Exercice introuvable pour le contrôle de méthode : "+title);
+ exercises[index][5]=Object.assign({},exercises[index][5]||{},requirements);
+}
+setExerciseMethod("Somme répétée",{requiredTrace:["LOOP","LOOP","LOOP","LOOP"]});
+setExerciseMethod("Somme de 1 à 6",{requiredTrace:["LOOP","LOOP","LOOP","LOOP","LOOP","LOOP"]});
+setExerciseMethod("Branchement signé",{requiredTrace:["CMP","JL","MOV"],requiredOperands:[{op:"CMP",args:["AL","BL"]},{op:"JL",args:["NEGATIF"]},{op:"MOV",args:["CX","1"]}]});
+setExerciseMethod("Boucle : somme de 1 à 4",{requiredTrace:["LOOP","LOOP","LOOP","LOOP"]});
+setExerciseMethod("MUL et DIV : produit, quotient et reste",{requiredTrace:["MUL","DIV"],requiredOperands:[{op:"MUL",args:["BL"]},{op:"DIV",args:["BL"]}]});
+setExerciseMethod("Chaînes : copier deux octets avec REP MOVSB",{requiredTrace:["REP_MOVSB"]});
+setExerciseMethod("Chaînes : rechercher 42h avec REPNE SCASB",{requiredTrace:["REPNE_SCASB"]});
+setExerciseMethod("Interruption logicielle : INT et IRET",{requiredTrace:["INT","MOV","IRET"],requiredOperands:[{op:"INT",args:["30H"]},{op:"MOV",args:["AX","1234H"]},{op:"IRET",args:[]}]});
 function exerciseMethodSatisfied(index,state){
  var metadata=exercises[index]&&exercises[index][5]||{},required=metadata.requiredTrace||[],trace=state&&state.instructionTrace||[],cursor=0;
  for(var i=0;i<trace.length&&cursor<required.length;i++){if(trace[i].op===required[cursor])cursor++;}
