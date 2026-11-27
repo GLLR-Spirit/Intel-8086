@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "title": "Oracles sémantiques indépendants — tranche initiale",
-  "scope": "Le manifeste conserve six oracles historiques. Les lots des chapitres 1 à 25 couvrent 475 questions distinctes : 19 par chapitre, avec réutilisation sans doublon de C02-F-Q4 et C04-F-Q4 déjà présents dans le manifeste historique. Les autres questions restent non certifiées jusqu'à leur validation individuelle.",
+  "scope": "Le manifeste conserve six oracles historiques. Les lots des chapitres 1 à 26 couvrent 492 enregistrements de questions, dont trois identifiants déjà présents dans le manifeste historique (C17-F-Q2, C26-F-Q5 et C26-F-Q6). Les six oracles historiques sont comptés une seule fois ; les autres questions restent à certifier.",
   "referenceBasis": [
     "Intel 8086 Family User's Manual (October 1979), architecture EU/BIU, file de prélecture, arithmétique, instructions de décalage, instructions de chaîne et indicateurs.",
     "Intel MCS-86 Assembly Language Reference Manual, formes d'opérandes et syntaxe assembleur."
@@ -342,9 +342,10 @@
     },
     {
       "path": "docs/question-oracle-batches/chapter-17.json",
-      "scope": "Chapitre 17 — 19 questions couvertes",
+      "scope": "Chapitre 17 — 19 questions couvertes ; C17-F-Q2 est réutilisé depuis le manifeste historique",
       "certified": 19,
-      "newlyAdded": 19,
+      "newlyAdded": 18,
+      "reusedHistorical": 1,
       "blocked": 0,
       "pending": 0
     },
@@ -411,14 +412,24 @@
       "newlyAdded": 19,
       "blocked": 0,
       "pending": 0
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-26.json",
+      "scope": "Chapitre 26 — 19 questions couvertes ; C26-F-Q5 et C26-F-Q6 sont réutilisés depuis le manifeste historique",
+      "certified": 19,
+      "newlyAdded": 17,
+      "reusedHistorical": 2,
+      "blocked": 0,
+      "pending": 0
     }
   ],
   "certificationSummary": {
     "questionCount": 684,
     "historicalOracles": 6,
-    "newSupplementalOracles": 473,
-    "uniqueCertifiedQuestions": 479,
-    "remainingUncertified": 205,
-    "calculation": "6 oracles historiques distincts + 473 nouveaux identifiants dans les lots des chapitres 1 à 25 ; C02-F-Q4 et C04-F-Q4 sont réutilisés sans double comptage."
+    "supplementalBatchRecords": 492,
+    "newSupplementalOracles": 489,
+    "uniqueCertifiedQuestions": 495,
+    "remainingUncertified": 189,
+    "calculation": "492 enregistrements de lots, dont 3 identifiants déjà historiques, plus 6 oracles historiques distincts = 495 questions couvertes ; aucun identifiant n'est compté deux fois."
   }
 }
