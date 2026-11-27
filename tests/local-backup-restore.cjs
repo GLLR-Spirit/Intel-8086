@@ -104,4 +104,33 @@ const valid = makeData();
   assert.throws(() => sandbox.restoreBackupDocument(sandbox.JSON.parse(JSON.stringify(doc))), /données précédentes ont été rétablies/);
   assert.deepEqual(Object.fromEntries(store.data), before);
 }
-console.log("6 groupes de tests sauvegarde/restauration réussis.");
+{
+  const store = makeStore({ "i86-lessons-v2": "{" });
+  const sandbox = load(store);
+  assert.throws(() => sandbox.readCurrentBackupData(), /stockage local est inaccessible/);
+}
+{
+  const brokenStore = {
+    getItem() { throw new Error("SecurityError"); },
+    setItem() { throw new Error("SecurityError"); },
+    removeItem() {}
+  };
+  const sandbox = load(brokenStore);
+  assert.throws(() => sandbox.readCurrentBackupData(), /stockage local est inaccessible/);
+}
+{
+  const data = makeData(), seed = {};
+  Object.entries(data).forEach(([key, value]) => {
+    seed[key] = ["i86-title", "i86-idea", "i86-code"].includes(key) ? value : JSON.stringify(value);
+  });
+  const store = makeStore(seed), sandbox = load(store), before = Object.fromEntries(store.data);
+  const invalid = { application: "Intel 8086 Lab", backupVersion: 2, createdAt: new Date().toISOString(), data };
+  assert.throws(() => sandbox.restoreBackupDocument(sandbox.JSON.parse(JSON.stringify(invalid))), /non prise en charge/);
+  assert.deepEqual(Object.fromEntries(store.data), before);
+}
+{
+  const sandbox = load(makeStore());
+  const invalid = sandbox.JSON.parse(JSON.stringify({ ...makeData(), extra: "unexpected" }));
+  assert.match(sandbox.validateBackupData(invalid), /sept catégories/);
+}
+console.log("10 groupes de tests sauvegarde/restauration définis.");
