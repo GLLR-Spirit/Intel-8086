@@ -117,3 +117,12 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - Improved C03-F-Q4 distractors. The incorrect options now represent realistic misunderstandings of hexadecimal notation and the AL/AX width distinction.
 - Updated the runtime bank, semantic key and chapter-03 oracle batch. Added an independent `binary_pattern_count` evaluator and CI assertions for all 19 review records and the two removed repetitions.
 - Official individual certification remains 384/684; 300 questions remain. The review does not advance the official ledger.
+
+
+### Independent question review — chapter 4
+
+- Reviewed all 19 questions individually; 18 passed and one final-assessment item was diversified.
+- C04-F-Q8 previously reused the same `7Fh+1` scenario already used by the lesson quiz and another final item. It now tests `80h+80h`: unsigned 128+128=256 sets CF=1, while signed −128−128=−256 is outside the 8-bit signed range and sets OF=1.
+- Updated the runtime bank, semantic key and chapter-04 oracle; the existing independent signed-add evaluator recalculates both flags.
+- Added CI assertions for the complete 19-question review and the dual-CF/OF result.
+- Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
