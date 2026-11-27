@@ -233,3 +233,15 @@ The mission remains in progress. Passing automated suites is evidence for the te
   - C13-F-Q10 distinguishes a 16-bit near offset from a far pointer that also supplies CS.
 - Added independent evaluators for relative displacement, relative target, direct/indirect far JMP and near-register target state.
 - Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
+
+
+### Independent question review — chapter 14
+
+- Reviewed all 19 questions individually against the Intel 8086 Family User's Manual and MCS-86 condition-code reference.
+- 14 items passed; five were diversified:
+  - C14-L2-Q1 now tests JNO (OF=0), complementing JO (OF=1).
+  - C14-F-Q4 and FQ5 now trace JBE and JA after concrete unsigned CMP operations.
+  - C14-F-Q7 now traces JP after a parity-producing logical operation.
+  - C14-F-Q8 now traces JO after 7Fh+1 produces signed overflow.
+- Added independent evaluators and CI assertions for unsigned comparisons, parity branches and overflow branches.
+- Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
