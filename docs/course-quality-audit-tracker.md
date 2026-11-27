@@ -266,3 +266,12 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - No question is marked corrected: the current runtime bank has not yet been changed. The findings are deliberately left open rather than claiming a documentary review fixed the product.
 - Added `docs/question-independent-review/chapter-16.json` and a CI regression test that requires all 19 unique question IDs and preserves the open findings.
 - Official individual certification remains 384/684; 300 remain. This review does not advance the official ledger.
+
+
+### CI correction — JAE/JLE oracle conditions
+
+- The first run of this tranche exposed a pre-existing evaluator defect: the independent `jcc_condition` rule omitted JAE and JLE, so the chapter 15 oracle comparison failed despite the documented conditions being correct.
+- Root cause: the evaluator's mnemonic-to-condition lookup table did not include those two valid 8086 condition mnemonics.
+- Added the independent mappings `JAE → CF=0` and `JLE → ZF=1 || SF!=OF`. The chapter 15 oracle inputs and expected values were retained; no expected result was weakened.
+- Follow-up CI run [1863](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46032333572) passed both jobs. Separate browser audit [1226](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46032333568) also passed.
+- The chapter 16 inventory test passed. Its eight flagged question entries represent four repeated concepts; none is marked corrected until the runtime bank is actually revised.
