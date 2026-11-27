@@ -515,5 +515,17 @@
     "officialCertificationCount": 384,
     "remainingOfficialCertification": 300,
     "calculation": "681 enregistrements de lots, dont 3 identifiants déjà historiques, plus 3 oracles historiques non présents dans les lots (C02-F-Q4, C04-F-Q4 et C28-F-Q7) = 684 identifiants uniques. Les 6 oracles historiques sont tous comptés une seule fois."
-  }
+  },
+  "independentReviewBatches": [
+    {
+      "path": "docs/question-independent-review/chapter-01.json",
+      "chapter": 1,
+      "reviewedQuestions": 19,
+      "correctedQuestions": 4,
+      "blockedQuestions": 0,
+      "officialCertificationCountBefore": 384,
+      "officialCertificationCountAfter": 384,
+      "note": "Revue indépendante enregistrée séparément ; aucun incrément du compteur officiel tant que le registre nominatif antérieur n'est pas réconcilié."
+    }
+  ]
 }
