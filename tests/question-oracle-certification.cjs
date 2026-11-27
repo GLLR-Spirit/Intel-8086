@@ -646,6 +646,8 @@ function independentlyCompute(oracle) {
       return { checksAll: true };
     case "stack_lifo_order":
       return { order: "last_in_first_out" };
+    case "stack_lifo_wrong_order":
+      return { order: "last_in_first_out", wrongOrder: true };
     case "push_word_semantics":
       return { finalSP: i.initialSP - 2, storedValue: i.value, segment: "SS" };
     case "pop_register_from_stack":
