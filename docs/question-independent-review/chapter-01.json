@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue indépendante — chapitre 1",
+  "reviewDate": "2026-11-27",
+  "scope": "Vérification technique et pédagogique individuelle des 19 questions. Ce registre est distinct des lots d'oracles automatisés et ne modifie pas le compteur officiel.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Macro Assembly Language Reference Manual",
+      "edition": "1979",
+      "url": "https://manuals.plus/m/3aa41c4d0f61cee77e606f5d25d65c409e33c472f7869184e8bf69d9a2c89b98"
+    }
+  ],
+  "records": [
+    {
+      "id": "C01-L1-Q1",
+      "result": "corrected",
+      "finding": "Réponse exacte ; distracteurs remplacés car trop évidents.",
+      "basis": "Intel 8086 Manual, §2.2, EU/BIU et organisation fonctionnelle."
+    },
+    {
+      "id": "C01-L1-Q2",
+      "result": "passed",
+      "finding": "MOV AX,1234h est une instruction source ; 1234h est l'opérande immédiat.",
+      "basis": "Intel MCS-86 Manual, syntaxe et processus d'assemblage."
+    },
+    {
+      "id": "C01-L1-Q3",
+      "result": "passed",
+      "finding": "Code et données ont des rôles distincts et peuvent résider en mémoire.",
+      "basis": "Intel 8086 Manual, §2.3."
+    },
+    {
+      "id": "C01-L2-Q1",
+      "result": "passed",
+      "finding": "Le 8086 a 20 lignes d'adresse physiques ; 2^20 positions possibles.",
+      "basis": "Intel 8086 Manual, §2.3."
+    },
+    {
+      "id": "C01-L2-Q2",
+      "result": "corrected",
+      "finding": "Question redondante remplacée par le principe d'adressage par octet.",
+      "basis": "Intel 8086 Manual, §2.3, Figure 2-11."
+    },
+    {
+      "id": "C01-L2-Q3",
+      "result": "passed",
+      "finding": "Bus externe de données 8086 : 16 bits.",
+      "basis": "Intel 8086 Manual, Table 1-1 et §2.2."
+    },
+    {
+      "id": "C01-L3-Q1",
+      "result": "passed",
+      "finding": "Bus externe de données 8088 : 8 bits.",
+      "basis": "Intel 8086 Manual, Table 1-1."
+    },
+    {
+      "id": "C01-L3-Q2",
+      "result": "passed",
+      "finding": "La filiation architecturale n'implique pas des bus ou cycles identiques.",
+      "basis": "Intel 8086 Manual, §1.2 ; distinction générale des générations x86."
+    },
+    {
+      "id": "C01-L3-Q3",
+      "result": "passed",
+      "finding": "Le laboratoire est un modèle logiciel pédagogique, pas une reproduction électrique.",
+      "basis": "Périmètre fonctionnel et limites du dépôt Intel-8086."
+    },
+    {
+      "id": "C01-F-Q1",
+      "result": "corrected",
+      "finding": "Doublon conceptuel de L1-Q1 remplacé par le rôle de l'assembleur.",
+      "basis": "Intel MCS-86 Manual, développement et traduction du source."
+    },
+    {
+      "id": "C01-F-Q2",
+      "result": "corrected",
+      "finding": "Doublon de capacité remplacé par la distinction bus d'adresses/bus de données.",
+      "basis": "Intel 8086 Manual, figures 1-2 et 1-3."
+    },
+    {
+      "id": "C01-F-Q3",
+      "result": "passed",
+      "finding": "AX est la destination dans MOV AX,1234h ; ordre Intel destination,source.",
+      "basis": "Intel MCS-86 Manual, syntaxe des instructions."
+    },
+    {
+      "id": "C01-F-Q4",
+      "result": "passed",
+      "finding": "1234h=4660 nécessite 13 bits ; AL n'en accepte que 8.",
+      "basis": "Intel 8086 Manual, registres et opérandes immédiats."
+    },
+    {
+      "id": "C01-F-Q5",
+      "result": "passed",
+      "finding": "Après MOV AX,1234h puis MOV AL,56h : AX=1256h.",
+      "basis": "Intel 8086 Manual, Figure 2-7."
+    },
+    {
+      "id": "C01-F-Q6",
+      "result": "passed",
+      "finding": "2^20=1 048 576 adresses d'octets, soit 1 Mio.",
+      "basis": "Intel 8086 Manual, §2.3."
+    },
+    {
+      "id": "C01-F-Q7",
+      "result": "passed",
+      "finding": "MOV AX,5 charge AX ; HLT entre en état halt, avec reprise selon RESET/NMI/INTR.",
+      "basis": "Intel 8086 Manual, instruction HLT, §2.7."
+    },
+    {
+      "id": "C01-F-Q8",
+      "result": "passed",
+      "finding": "20 bits donnent 00000h à FFFFFh inclus.",
+      "basis": "Calcul indépendant et Intel 8086 Manual, §2.3."
+    },
+    {
+      "id": "C01-F-Q9",
+      "result": "passed",
+      "finding": "La largeur des registres (16 bits) est distincte de l'adresse physique (20 bits).",
+      "basis": "Intel 8086 Manual, §2.3."
+    },
+    {
+      "id": "C01-F-Q10",
+      "result": "passed",
+      "finding": "Synthèse exacte : registres 16 bits, bus données 16 bits, bus adresses 20 bits.",
+      "basis": "Intel 8086 Manual, Table 1-1, §2.2 et §2.3."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "corrected": 4,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  }
+}
