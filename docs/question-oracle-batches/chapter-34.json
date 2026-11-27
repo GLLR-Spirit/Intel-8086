@@ -361,12 +361,12 @@
         "address": "AX"
       },
       "expected": {
-        "valid": false,
+        "valid": true,
         "modifiesMemory": false,
         "lockableInstruction": false
       },
       "correctAnswer": "AX est un registre et l'instruction ne modifie aucune donnée mémoire partagée",
-      "derivation": "INC AX ne modifie que le registre AX. Même si LOCK demande un verrouillage du bus en mode maximum, cette instruction ne touche pas de donnée mémoire partagée ; elle ne constitue donc pas une opération mémoire à protéger.",
+      "derivation": "LOCK est un préfixe valide du 8086 : en mode maximum, le signal LOCK est activé pendant l'instruction qui suit. INC AX modifie toutefois uniquement le registre AX ; aucune donnée mémoire partagée n'est donc mise à jour ni protégée par cette opération.",
       "distractorRationales": [
         {
           "choice": "LOCK ne possède aucun octet d'encodage sur 8086",
@@ -377,7 +377,7 @@
           "reason": "INC modifie bien son opérande ; ici il s'agit simplement d'un registre et non d'une donnée mémoire partagée."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual (October 1979), Segment Override Prefixes, LOCK, REP, WAIT and ESC; Intel MCS-86 Assembly Language Reference Manual, prefix and string instruction rules. Hardware bus behavior is not claimed by the software laboratory."
+      "reference": "Intel 8086 Family User's Manual (October 1979), §2.5 Bus Lock and §2.11 Processor Control Instructions, LOCK: le préfixe d'un octet active LOCK pendant l'instruction suivante en mode maximum. L'opérande registre de INC AX ne réalise aucune mise à jour mémoire."
     },
     {
       "id": "C34-F-Q5",
