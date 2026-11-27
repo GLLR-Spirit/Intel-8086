@@ -1583,14 +1583,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 1,
-      "stem": "Dans MOV AX,BX, quelle est la destination ?",
+      "stem": "Dans MOV AX,BX, quelle est la source ?",
       "choices": [
         "AX",
         "BX",
         "Les deux"
       ],
-      "correctAnswer": "AX",
-      "explanation": "La première opérande est la destination.",
+      "correctAnswer": "BX",
+      "explanation": "BX est l'opérande source ; AX reçoit sa valeur.",
       "category": "Compréhension"
     },
     {
@@ -2447,14 +2447,14 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "Pourquoi MOV [100h],[200h] est-il invalide ?",
+      "stem": "Pourquoi MOV DS,ES est-il invalide sur le 8086 ?",
       "choices": [
-        "La forme mémoire vers mémoire n'est pas autorisée",
-        "Les adresses doivent être paires",
-        "MOV exige toujours AX"
+        "Un transfert direct entre deux registres de segment n'est pas encodable ; passer par AX",
+        "Les registres de segment ne peuvent jamais être source de MOV",
+        "ES est un registre de 8 bits"
       ],
-      "correctAnswer": "La forme mémoire vers mémoire n'est pas autorisée",
-      "explanation": "Un registre intermédiaire est requis pour transférer entre deux cases mémoire.",
+      "correctAnswer": "Un transfert direct entre deux registres de segment n'est pas encodable ; passer par AX",
+      "explanation": "MOV ne permet pas un transfert direct segment-vers-segment ; on peut passer par un registre général, par exemple MOV AX,ES puis MOV DS,AX.",
       "category": "Restrictions"
     },
     {
@@ -2495,14 +2495,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Quel état change directement après JMP FIN ?",
+      "stem": "Après MOV AX,1234h / JMP FIN / MOV AX,5678h / FIN: HLT, que vaut AX ?",
       "choices": [
-        "Le flot de contrôle, via IP",
-        "La valeur de AX",
-        "Le contenu de FLAGS par une comparaison"
+        "1234h",
+        "5678h",
+        "0000h"
       ],
-      "correctAnswer": "Le flot de contrôle, via IP",
-      "explanation": "JMP transfère l'exécution à la cible.",
+      "correctAnswer": "1234h",
+      "explanation": "JMP FIN saute MOV AX,5678h ; AX conserve donc 1234h lorsque HLT est atteint.",
       "category": "Analyse de programme"
     },
     {
