@@ -74,6 +74,8 @@ jobs:
         run: node tests/chapter-33-independent-review.cjs
       - name: Validate chapter 34 independent review and prefix semantics
         run: node tests/chapter-34-independent-review.cjs
+      - name: Validate chapter 35 independent review and BIU/prefetch semantics
+        run: node tests/chapter-35-independent-review.cjs
       - name: Validate question oracle evaluators (automated; not independent certification)
         run: node tests/question-oracle-certification.cjs
       - name: Compare 108 course examples and 48 corrections across source and binary execution
