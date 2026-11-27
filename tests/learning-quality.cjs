@@ -50,7 +50,7 @@ chapterVisuals.forEach((markup,index)=>{
     "Chapter "+(index+1)+" must display its own topic-specific visual, not a neighboring chapter's visual.");
 });
 learning.chapterLearning.forEach((chapter,index)=>{
-  const requiredChapters=[...chapter.prereq.matchAll(/\\d+/g)].map(match=>Number(match[0]));
+  const requiredChapters=[...chapter.prereq.matchAll(/\d+/g)].map(match=>Number(match[0]));
   assert.ok(requiredChapters.every(required=>required>0&&required<=index),
     "Chapter "+(index+1)+" must not require a future chapter.");
 });
