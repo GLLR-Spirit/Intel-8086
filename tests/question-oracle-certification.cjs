@@ -4,7 +4,7 @@ const assert = require("node:assert/strict");
 
 const key = JSON.parse(fs.readFileSync("docs/question-semantic-key-8086.json", "utf8"));
 const manifest = JSON.parse(fs.readFileSync("docs/question-independent-oracles-8086.json", "utf8"));
-const batches = ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23", "chapter-24"].map(name => JSON.parse(fs.readFileSync("docs/question-oracle-batches/" + name + ".json", "utf8")));
+const batches = ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23", "chapter-24", "chapter-25"].map(name => JSON.parse(fs.readFileSync("docs/question-oracle-batches/" + name + ".json", "utf8")));
 const html = fs.readFileSync("index.html", "utf8");
 const match = html.match(/<script>([\s\S]*?)<\/script>/);
 assert.ok(match, "Inline application script must exist");
@@ -580,6 +580,38 @@ function independentlyCompute(oracle) {
       return { CF: i.highHalf === 0 ? 0 : 1, OF: i.highHalf === 0 ? 0 : 1 };
     case "mul_result_validation":
       return { checkFullProduct: true, checkWidth: true, checkCF: true, checkOF: true };
+    case "div_byte_dividend":
+      return { dividendRegister: "AX" };
+    case "div_byte_trace": {
+      const quotient = Math.floor(i.dividend / i.divisor);
+      const remainder = i.dividend % i.divisor;
+      return { quotient, remainder, AL: quotient, AH: remainder };
+    }
+    case "div_byte_result_registers":
+      return { quotient: "AL", remainder: "AH" };
+    case "cbw_sign_extend": {
+      const signedValue = i.AL >= 0x80 ? i.AL - 0x100 : i.AL;
+      return { AX: signedValue & 0xffff, signedValue };
+    }
+    case "idiv_sign_extension_required":
+      return { requiredPreparation: "CBW", dividendAX: i.signedDividend8 & 0xffff };
+    case "division_error_conditions":
+      return { errorIfDivisorZero: true, errorIfQuotientOutOfRange: true };
+    case "div_byte_quotient_overflow":
+      return { fitsInAL: i.quotient <= 0xff, maxAL: 255, error: i.quotient > 0xff };
+    case "div_byte_boundary_cases":
+      return { firstFits: i.cases[0].dividend / i.cases[0].divisor <= 0xff, secondOverflows: i.cases[1].dividend / i.cases[1].divisor > 0xff };
+    case "div_unsigned_semantics":
+      return { signed: false, operation: "division" };
+    case "div_byte_form":
+      return { valid: true, dividend: "AX", divisor: "BL", quotient: "AL", remainder: "AH" };
+    case "idiv_byte_trace": {
+      const quotient = Math.trunc(i.signedDividend / i.divisor);
+      const remainder = i.signedDividend - quotient * i.divisor;
+      return { quotient, remainder, AL: quotient & 0xff, AH: remainder & 0xff };
+    }
+    case "division_result_validation":
+      return { checkDividendWidth: true, checkQuotientRange: true, checkRemainder: true, checkSignedness: true };
     case "memory_address_components":
       return { checksAll: true };
     case "stack_lifo_order":
@@ -797,8 +829,8 @@ function independentlyCompute(oracle) {
 }
 
 const keyMap = new Map(key.questions.map(q => [q.id, q]));
-assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23", "chapter-24"]);
-assert.deepEqual(batches.map(batch => batch.oracles.length), [19, 18, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19], "Chapters 2 and 4 each reuse one historical oracle rather than duplicating its ID");
+assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23", "chapter-24", "chapter-25"]);
+assert.deepEqual(batches.map(batch => batch.oracles.length), [19, 18, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19], "Chapters 2 and 4 each reuse one historical oracle rather than duplicating its ID");
 const historicalChapterOracles = manifest.oracles.filter(oracle => ["C02-F-Q4", "C04-F-Q4"].includes(oracle.id)).map(oracle => ({ ...oracle, status: "certified" }));
 assert.equal(historicalChapterOracles.length, 2, "The historical chapter 2 and chapter 4 final question oracles must each be reused exactly once");
 const allOracleRecords = [...batches.flatMap(batch => batch.oracles), ...historicalChapterOracles];
@@ -840,13 +872,13 @@ for (const oracle of allOracleRecords) {
     assert.fail("Unknown oracle status for " + oracle.id + ": " + oracle.status);
   }
 }
-assert.equal(certified, 456, "All 456 questions across chapters 1 to 24 are certified, including the two reused historical chapter oracles");
+assert.equal(certified, 475, "All 475 questions across chapters 1 to 25 are certified, including the two reused historical chapter oracles");
 assert.equal(blocked, 0, "No question in the certified batches remains blocked");
-for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]) {
+for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]) {
   const prefix = "C" + String(chapter).padStart(2, "0") + "-";
   const expectedIds = key.questions.filter(question => question.id.startsWith(prefix)).map(question => question.id);
   assert.equal(expectedIds.length, 19, "Each audited chapter must contain exactly 19 keyed questions");
   for (const id of expectedIds) assert.ok(allIds.includes(id), "Missing independent oracle for " + id);
 }
 assert.match(keyMap.get("C01-L1-Q2").explanation, /octets machine distincts/i, "Source assembly must be distinguished from its encoded machine bytes");
-console.log("Question oracle certification: chapters 1–24 — " + certified + "/456 certified; " + blocked + " blocked; runtime/key alignment and independent evaluators passed.");
+console.log("Question oracle certification: chapters 1–25 — " + certified + "/475 certified; " + blocked + " blocked; runtime/key alignment and independent evaluators passed.");
