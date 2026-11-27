@@ -1409,6 +1409,25 @@ assert.equal(manifest.oracleCoverageSummary.registeredOracleRecords, 684, "Regis
 assert.equal(manifest.oracleCoverageSummary.questionsWithoutOracle, 0, "No assessment question may be missing from the oracle index");
 assert.equal(manifest.oracleCoverageSummary.officialCertificationCount, 384, "Automated oracle coverage must not alter official individual certification");
 assert.equal(manifest.oracleCoverageSummary.remainingOfficialCertification, 300, "Official individual certification backlog remains separately tracked");
+
+const reviewedQuestionIds = [];
+for (const batch of manifest.independentReviewBatches) {
+  const review = JSON.parse(fs.readFileSync(batch.path, "utf8"));
+  const expectedChapterIds = key.questions.filter(question => question.chapter === batch.chapter).map(question => question.id).sort();
+  const actualChapterIds = review.records.map(record => record.id).sort();
+  assert.equal(review.summary.questionsReviewed, 19, "Each listed individual review must cover 19 questions: chapter " + batch.chapter);
+  assert.deepEqual(actualChapterIds, expectedChapterIds, "Individual review must cover each chapter question exactly once: chapter " + batch.chapter);
+  assert.equal(new Set(actualChapterIds).size, 19, "Individual review must not duplicate IDs: chapter " + batch.chapter);
+  assert.equal(review.summary.officialCertificationCountAfter, manifest.oracleCoverageSummary.officialCertificationCount,
+    "Individual review must not silently change the official certification ledger: chapter " + batch.chapter);
+  reviewedQuestionIds.push(...actualChapterIds);
+}
+assert.equal(new Set(reviewedQuestionIds).size, reviewedQuestionIds.length, "Individual review batches must not overlap question IDs");
+assert.equal(reviewedQuestionIds.length, manifest.oracleCoverageSummary.individuallyReviewedQuestions,
+  "Individual review total must match the actual records loaded from all listed chapter files");
+assert.equal(manifest.oracleCoverageSummary.individualReviewChapters.length, manifest.independentReviewBatches.length,
+  "Review chapter index and review batch list must stay aligned");
+
 const allIds = allOracleRecords.map(oracle => oracle.id);
 assert.equal(new Set(allIds).size, allIds.length, "Certified oracle IDs must be globally unique across supplemental batches and reused historical records");
 const seen = new Set();
