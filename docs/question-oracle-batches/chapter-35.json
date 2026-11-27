@@ -332,8 +332,10 @@
       },
       "expected": {
         "valid": true,
-        "destination": "AX",
-        "count": 1
+        "countForms": [
+          "1",
+          "CL"
+        ]
       },
       "correctAnswer": "SHL AX,1",
       "derivation": "SHL AX,1 désigne AX comme destination et le compte immédiat 1, forme historique prise en charge sur 8086. L'ordre des opérandes ne peut pas être inversé et BX n'est pas un compte immédiat autorisé pour cette forme.",
