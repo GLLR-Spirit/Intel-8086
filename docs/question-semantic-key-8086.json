@@ -3935,14 +3935,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 1,
-      "stem": "LOOP modifie quel registre ?",
+      "stem": "Dans quel ordre LOOP effectue-t-elle ses opérations ?",
       "choices": [
-        "CX",
-        "AX",
-        "IP uniquement"
+        "Elle décrémente CX puis teste si CX est non nul",
+        "Elle teste CX puis le décrémente",
+        "Elle compare AX et BX puis modifie CX"
       ],
-      "correctAnswer": "CX",
-      "explanation": "LOOP décrémente implicitement CX.",
+      "correctAnswer": "Elle décrémente CX puis teste si CX est non nul",
+      "explanation": "LOOP décrémente d’abord CX, puis branche si le résultat est non nul.",
       "category": "Compréhension"
     },
     {
@@ -3983,14 +3983,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 1,
-      "stem": "LOOPE branche si…",
+      "stem": "Si CX vaut 1 avant LOOPE et ZF=1, le branchement est-il pris ?",
       "choices": [
-        "CX après décrémentation est non nul et ZF=1",
-        "CX est nul",
-        "ZF=0 quel que soit CX"
+        "Non, CX devient 0 après décrémentation",
+        "Oui, car ZF=1 suffit",
+        "Oui, car CX initial était non nul"
       ],
-      "correctAnswer": "CX après décrémentation est non nul et ZF=1",
-      "explanation": "LOOPE combine le compteur et ZF.",
+      "correctAnswer": "Non, CX devient 0 après décrémentation",
+      "explanation": "LOOPE décrémente d’abord CX ; le résultat vaut zéro, donc le branchement n’est pas pris malgré ZF=1.",
       "category": "Compréhension"
     },
     {
@@ -4031,14 +4031,14 @@
       "kind": "intermediate",
       "lesson": 3,
       "number": 1,
-      "stem": "JCXZ décrémente-t-elle CX ?",
+      "stem": "JCXZ modifie-t-elle FLAGS ?",
       "choices": [
-        "Non",
-        "Oui, de 1",
-        "Oui, de 2"
+        "Non, FLAGS sont préservés",
+        "Oui, ZF devient 1",
+        "Oui, CF devient 0"
       ],
-      "correctAnswer": "Non",
-      "explanation": "JCXZ teste CX=0 sans modifier le compteur.",
+      "correctAnswer": "Non, FLAGS sont préservés",
+      "explanation": "JCXZ teste CX sans modifier FLAGS.",
       "category": "Compréhension"
     },
     {
@@ -4975,14 +4975,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "D'où provient le ZF lu par LOOPE ?",
+      "stem": "Quelle instruction peut établir ZF avant LOOPE ?",
       "choices": [
-        "De l'instruction précédente qui l'a défini",
-        "D'une comparaison implicite de CX",
-        "De l'instruction LOOP elle-même"
+        "CMP ou TEST",
+        "LOOPE elle-même",
+        "MOV qui modifie FLAGS"
       ],
-      "correctAnswer": "De l'instruction précédente qui l'a défini",
-      "explanation": "LOOPE teste le ZF déjà présent.",
+      "correctAnswer": "CMP ou TEST",
+      "explanation": "CMP et TEST peuvent établir ZF ; LOOPE lit cet indicateur sans le modifier.",
       "category": "Analyse de résultat"
     },
     {
