@@ -26,7 +26,7 @@
         ]
       },
       "correctAnswer": "10",
-      "derivation": "1010₂ représente 1×8 + 0×4 + 1×2 + 0×1. La somme des poids actifs vaut 8+2=10.",
+      "derivation": "On lit les positions de 1010₂ de droite à gauche avec les poids 2⁰, 2¹, 2² et 2³. Les chiffres 1 sont aux positions 3 et 1 ; la valeur est donc 2³+2¹=8+2=10. Les positions dont le bit vaut zéro ne contribuent pas à la somme.",
       "distractorRationales": [
         {
           "choice": "8",
@@ -132,7 +132,7 @@
         ]
       },
       "correctAnswer": "42",
-      "derivation": "En base 16, A vaut 10. Donc 2A₁₆ = 2×16 + 10 = 32+10 = 42.",
+      "derivation": "La notation 2A est en base 16. Le chiffre de gauche a le poids 16 et vaut 2 ; le chiffre A vaut 10 et a le poids 1. Le calcul positionnel est donc 2×16+10×1=32+10=42 en base dix.",
       "distractorRationales": [
         {
           "choice": "32",
@@ -185,7 +185,7 @@
         ]
       },
       "correctAnswer": "255",
-      "derivation": "F vaut 15. FF₁₆ = 15×16 + 15 = 240+15 = 255.",
+      "derivation": "Chaque chiffre F vaut 15 en base 16. Dans FFh, le premier F occupe la position des seize et le second celle des unités. On calcule 15×16+15=240+15=255 ; la valeur 256 serait 100h, juste après FFh.",
       "distractorRationales": [
         {
           "choice": "127",
@@ -240,7 +240,7 @@
         ]
       },
       "correctAnswer": "255",
-      "derivation": "Le zéro initial ne change pas la valeur. 0FFh = 0×256 + 15×16 + 15 = 255.",
+      "derivation": "Le zéro initial dans 0FFh ne modifie pas la valeur numérique. Les deux chiffres significatifs sont F et F : 15×16+15=255. Il faut distinguer cette valeur de 100h, qui vaut 256 et demande neuf bits non signés.",
       "distractorRationales": [
         {
           "choice": "15",
@@ -376,7 +376,7 @@
         ]
       },
       "correctAnswer": "60",
-      "derivation": "C vaut 12 en hexadécimal. 3C₁₆ = 3×16 + 12 = 48+12 = 60.",
+      "derivation": "Le chiffre 3 occupe la position des seize et C vaut 12 dans le système hexadécimal. La conversion décimale donne 3×16+12=48+12=60. Le résultat 48 oublierait entièrement la contribution du chiffre de poids faible C.",
       "distractorRationales": [
         {
           "choice": "48",
@@ -406,7 +406,7 @@
         ]
       },
       "correctAnswer": "45",
-      "derivation": "101101₂ = 1×32 + 0×16 + 1×8 + 1×4 + 0×2 + 1×1 = 32+8+4+1 = 45.",
+      "derivation": "Pour 101101₂, les bits actifs correspondent aux poids 2⁵, 2³, 2² et 2⁰. On additionne 32+8+4+1=45. Les positions 2⁴ et 2¹ sont nulles et ne contribuent donc pas au résultat.",
       "distractorRationales": [
         {
           "choice": "41",
