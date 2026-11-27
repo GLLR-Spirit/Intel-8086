@@ -658,7 +658,7 @@ const assert = require("node:assert/strict");
           (d==="all"||row.metadata.difficulty===d)&&(t==="all"||row.metadata.type===t))
         .map(row=>(row.index+1)+". "+row.exercise[0]);
       const actual=[...document.querySelectorAll("#exerciseList .exercise > b")].map(node=>node.textContent.trim());
-      const count=Number((document.querySelector("#exerciseCount").textContent.match(/^\\d+/)||[])[0]);
+      const count=Number((document.querySelector("#exerciseCount").textContent.match(/^\d+/)||[])[0]);
       if(count!==expected.length||JSON.stringify(actual)!==JSON.stringify(expected))
         return {checked,failed:{chapter:c,difficulty:d,type:t,expected,actual,count}};
       checked++;
