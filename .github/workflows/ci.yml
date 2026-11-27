@@ -60,6 +60,8 @@ jobs:
         run: node tests/chapter-26-independent-review.cjs
       - name: Validate chapter 27 independent review and string instruction semantics
         run: node tests/chapter-27-independent-review.cjs
+      - name: Validate chapter 28 independent review and repeated string semantics
+        run: node tests/chapter-28-independent-review.cjs
       - name: Validate question oracle evaluators (automated; not independent certification)
         run: node tests/question-oracle-certification.cjs
       - name: Compare 108 course examples and 48 corrections across source and binary execution
