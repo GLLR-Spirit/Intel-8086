@@ -547,6 +547,20 @@ function independentlyCompute(oracle) {
       return { flagsModified: false };
     case "jcxz_guard_before_loop":
       return { guard: "JCXZ", preventsZeroCounterUnderflow: true };
+    case "adc_syntax":
+      return { mnemonic: "ADC", destination: "AX", source: "BX", includesCarryIn: true };
+    case "word_add_carry_trace": {
+      const sum = i.initialAX + i.addend;
+      return { result: sum & 0xffff, CF: sum > 0xffff ? 1 : 0 };
+    }
+    case "search_index_trace": {
+      const index = i.values.indexOf(i.target);
+      return { found: index >= 0, index, checks: index >= 0 ? index + 1 : i.values.length };
+    }
+    case "last_valid_index":
+      return { arrayLength: i.arrayLength, lastValidIndex: i.arrayLength - 1 };
+    case "sequential_search_worst_case":
+      return { maxComparisons: i.length, complexity: "O(n)" };
     case "max_initialization":
       return { initialMaximum: i.values[0] };
     case "sum_accumulator_register":
