@@ -451,14 +451,20 @@ const assert = require("node:assert/strict");
       return {index:item.index,valid:!state.error&&api.validateExercise(item.index,state,source,item.response)};
     });
     const branchVariants = [
-      {index:3,from:"MOV AX, 15",to:"MOV AX, 14",register:"CX",expected:0},
-      {index:18,from:"MOV AX, 8",to:"MOV AX, 2",register:"DX",expected:0},
-      {index:20,from:"MOV AX, 17",to:"MOV AX, 30",register:"DX",expected:30},
-      {index:20,from:"MOV AX, 17",to:"MOV AX, 23",register:"DX",expected:23}
+      {index:3,from:"MOV AX, 15",to:"MOV AX, 14",check:state=>state.reg.CX===0},
+      {index:13,from:"MOV AL, 0FCh",to:"MOV AL, 3",check:state=>state.reg.CX===0},
+      {index:18,from:"MOV AX, 8",to:"MOV AX, 2",check:state=>state.reg.DX===0},
+      {index:19,from:"MOV AL, 0FCh",to:"MOV AL, 3",check:state=>state.reg.DX===0},
+      {index:20,from:"MOV AX, 17",to:"MOV AX, 30",check:state=>state.reg.DX===30},
+      {index:20,from:"MOV AX, 17",to:"MOV AX, 23",check:state=>state.reg.DX===23},
+      {index:44,from:"MOV AL, 42h",to:"MOV AL, 44h",check:state=>state.reg.CX===0&&state.reg.DI===0x0103&&state.flags.ZF===0},
+      {index:46,from:"CMP BYTE PTR ES:[0201h], 22h",to:"CMP BYTE PTR ES:[0201h], 99h",check:state=>state.reg.AX===0&&state.reg.BX===0xBEEF},
+      {index:47,from:"CMP WORD PTR ES:[0200h], 5678h",to:"CMP WORD PTR ES:[0200h], 9999h",check:state=>state.reg.AX===0&&state.reg.BX===0xBEEF}
     ].map(item => {
-      const source = api.exercises[item.index][4].solution.replace(item.from,item.to);
-      const state = api.executeAll(source);
-      return {index:item.index,register:item.register,expected:item.expected,actual:state.error?null:state.reg[item.register],valid:!state.error&&state.reg[item.register]===item.expected};
+      const original=api.exercises[item.index][4].solution;
+      const source=original.replace(item.from,item.to);
+      const state=api.executeAll(source);
+      return {index:item.index,valid:!state.error&&source!==original&&item.check(state)};
     });
     const requiredTechniques = [
       [1,[/MOV\s+DX\s*,\s*AX/i,/MOV\s+AX\s*,\s*BX/i,/MOV\s+BX\s*,\s*DX/i]],
@@ -488,8 +494,8 @@ const assert = require("node:assert/strict");
   });
   assert.deepEqual(advancedExerciseAudit.results.map(item=>item.valid),[true,true,true,true,true,true,true,true,true],
     "EX33/35/37/39/41/43/46/47/48 must pass their independent pedagogical oracles: "+JSON.stringify(advancedExerciseAudit));
-  assert.deepEqual(advancedExerciseAudit.branchVariants.map(item=>item.valid),[true,true,true,true],
-    "EX04, EX19 and EX21 must exercise their alternate/equality branch paths: "+JSON.stringify(advancedExerciseAudit.branchVariants));
+  assert.deepEqual(advancedExerciseAudit.branchVariants.map(item=>item.valid),[true,true,true,true,true,true,true,true,true],
+    "Conditional exercises must exercise alternate, equality and no-match paths: "+JSON.stringify(advancedExerciseAudit.branchVariants));
   assert.ok(advancedExerciseAudit.requiredTechniques.every(item=>item.valid),
     "Explicitly required techniques must appear in the guided corrections: "+JSON.stringify(advancedExerciseAudit.requiredTechniques));
   assert.ok(advancedExerciseAudit.missingAnswerRejected,"EX39 must reject a missing written explanation.");
