@@ -217,5 +217,13 @@
       "blocked": 0,
       "pending": 0
     }
-  ]
+  ],
+  "certificationSummary": {
+    "questionCount": 684,
+    "existingOracles": 6,
+    "supplementalCertified": 19,
+    "totalCertified": 25,
+    "remainingUncertified": 659,
+    "calculation": "6 historical oracle IDs + 19 distinct Chapter 1 oracle IDs; no overlap."
+  }
 }
