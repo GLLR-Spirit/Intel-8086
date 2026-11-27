@@ -39,6 +39,8 @@ runtime.chapterLearning.forEach((chapter, ci) => {
 
 const fact = {
   microprocessor_role: "fetch_decode_execute",
+  assembler_role: { translatesSourceToMachineCode: true, executesSourceText: false },
+  address_bus_role: { carriesAddress: true, carriesDataPayload: false },
   instruction_data_distinction: "distinct_roles_same_memory",
   x86_family_variation: "shared_lineage_not_identical_buses",
   lab_scope: "pedagogical_software_model",
@@ -76,6 +78,8 @@ function independentlyCompute(oracle) {
   }
   const i = oracle.inputs;
   switch (oracle.rule) {
+    case "assembler_role":
+    case "address_bus_role":
     case "microprocessor_role":
     case "instruction_data_distinction":
     case "x86_family_variation":
