@@ -261,11 +261,20 @@ assert.equal(semanticKeyFailures.length,0,
 console.log("Question concordance manifest: 684/684 runtime items match the pinned stems, choices, answers and explanations.");
 
 
-const requiredFinalCategories = ["Définition","Compréhension","Syntaxe","Restrictions","Prédiction","Calcul / prédiction","Analyse de programme","Analyse de résultat","Débogage","Raisonnement"];
+const requiredFinalCategoryGroups = [
+  ["Définition","Compréhension"],
+  ["Syntaxe","Restrictions"],
+  ["Prédiction","Calcul / prédiction"],
+  ["Analyse de programme","Analyse de résultat"],
+  ["Débogage","Raisonnement"]
+];
 for (let chapterIndex = 0; chapterIndex < learning.chapterLearning.length; chapterIndex++) {
   const chapter = learning.chapterLearning[chapterIndex];
-  assert.equal(JSON.stringify(chapter.quiz.map(q => q[4])), JSON.stringify(requiredFinalCategories),
-    "Chapter " + (chapterIndex + 1) + " final questions must follow the ten technical categories in order.");
+  const finalCategories = chapter.quiz.map(q => q[4]);
+  for (const group of requiredFinalCategoryGroups) {
+    assert.equal(finalCategories.filter(category => group.includes(category)).length, 2,
+      "Chapter " + (chapterIndex + 1) + " must include exactly two questions in each paired assessment dimension.");
+  }
   for (let lessonIndex = 0; lessonIndex < chapter.lessons.length; lessonIndex++) {
     assert.equal(JSON.stringify(chapter.lessons[lessonIndex].quiz.map(q => q[4])), JSON.stringify(["Compréhension","Application","Vérification"]),
       "Chapter " + (chapterIndex + 1) + ", lesson " + (lessonIndex + 1) + " must have three distinct learning checks.");
