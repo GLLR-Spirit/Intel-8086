@@ -149,6 +149,8 @@ function independentlyCompute(oracle) {
       const sign = 2 ** (i.bits - 1);
       return { unsignedValue: i.value, signedValue: i.value >= sign ? i.value - (2 ** i.bits) : i.value };
     }
+    case "mov_segment_to_segment_invalid":
+      return { valid: false, reason: "no_segment_to_segment_form" };
     case "mov_operand_size_compatibility":
       return { valid: i.destinationBits === i.sourceBits, destinationBits: i.destinationBits, sourceBits: i.sourceBits };
     case "memory_register_mov_validity":
@@ -1401,5 +1403,21 @@ assert.equal(chapter5Review.summary.remainingOfficialCertification, 300, "The of
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C05-F-Q4").expected, { valid: false, destinationBits: 16, sourceBits: 8 }, "MOV AX,AL must be rejected for operand-width mismatch");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C05-F-Q7").expected, { finalAX: 22068, finalAH: 86, finalAL: 52 }, "Writing AH must preserve the low byte AL");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C05-F-Q9").expected, { register: "DI", segment: "ES" }, "MOVSB destination must use ES:DI by default");
+
+
+const chapter6Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-06.json", "utf8"));
+const chapter6Ids = key.questions.filter(question => question.chapter === 6).map(question => question.id).sort();
+const reviewedChapter6Ids = chapter6Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter6Ids, chapter6Ids, "Chapter 6 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter6Ids).size, 19, "Chapter 6 review must not duplicate question IDs");
+assert.equal(chapter6Review.summary.questionsReviewed, 19, "Chapter 6 review count must match the complete question bank");
+assert.equal(chapter6Review.summary.passed, 16, "Chapter 6 review must report 16 passed questions");
+assert.equal(chapter6Review.summary.corrected, 3, "Chapter 6 review must record the source/destination, segment MOV, and jump-trace improvements");
+assert.equal(chapter6Review.summary.blocked, 0, "Chapter 6 review must have no unresolved blockers");
+assert.equal(chapter6Review.summary.officialCertificationCountBefore, 384, "Chapter 6 review starts from the official 384-question ledger");
+assert.equal(chapter6Review.summary.officialCertificationCountAfter, 384, "Chapter 6 review must not silently advance official certification");
+assert.equal(chapter6Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C06-F-Q4").expected, { valid: false, reason: "no_segment_to_segment_form" }, "MOV DS,ES must be rejected as a direct segment-to-segment move");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C06-F-Q7").expected, { finalAX: 4660, halted: true, skippedInstruction: "MOV AX,22136" }, "The chapter 6 jump trace must skip the instruction after JMP");
 
 console.log("Question oracle evaluator: chapters 1–36 — " + oracleRecordsChecked + "/684 oracle records passed automated checks; official certification ledger remains " + manifest.oracleCoverageSummary.officialCertificationCount + "/684 (" + manifest.oracleCoverageSummary.remainingOfficialCertification + " pending); " + blocked + " blocked.");
