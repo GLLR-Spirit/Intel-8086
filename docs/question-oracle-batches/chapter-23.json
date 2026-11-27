@@ -360,21 +360,22 @@
       "status": "certified",
       "rule": "procedure_double",
       "inputs": {
-        "initialAX": 6
+        "initialAX": 65535,
+        "width": 16
       },
       "expected": {
-        "finalAX": 12
+        "finalAX": 65534
       },
-      "correctAnswer": "12",
-      "derivation": "La routine additionne AX à lui-même : 6+6=12. La valeur 12 est le résultat calculé, alors que 6 est l'entrée et 36 correspondrait à une autre opération.",
+      "correctAnswer": "FFFEh",
+      "derivation": "FFFFh+FFFFh=1FFFEh. L'opération ADD conserve le résultat sur 16 bits dans AX, soit FFFEh ; la retenue est hors de ce mot.",
       "distractorRationales": [
         {
-          "choice": "6",
-          "reason": "La routine calcule 6+6=12, pas la valeur d'entrée seule."
+          "choice": "FFFFh",
+          "reason": "Le registre AX reçoit le résultat de l'addition sur 16 bits ; le mot faible de 1FFFEh est FFFEh."
         },
         {
-          "choice": "36",
-          "reason": "La multiplication 6×6 donnerait 36, mais ce n'est pas l'opération de doublement."
+          "choice": "0000h",
+          "reason": "Le mot faible de 1FFFEh est FFFEh, pas zéro."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
@@ -382,23 +383,26 @@
     {
       "id": "C23-F-Q6",
       "status": "certified",
-      "rule": "zero_double",
+      "rule": "procedure_addition",
       "inputs": {
-        "initialValue": 0
+        "left": 6,
+        "right": 4,
+        "width": 16
       },
       "expected": {
-        "result": 0
+        "AX": 10,
+        "sum": 10
       },
-      "correctAnswer": "0",
-      "derivation": "Le double de zéro reste zéro, car 0+0=0. Une routine correcte doit conserver ce résultat au cas limite et ne pas fabriquer une valeur non nulle.",
+      "correctAnswer": "000Ah",
+      "derivation": "La routine additionne les paramètres 0006h et 0004h : le résultat vaut 000Ah et la convention de sortie le place dans AX.",
       "distractorRationales": [
         {
-          "choice": "1",
-          "reason": "Le double de zéro est zéro, pas un."
+          "choice": "0002h",
+          "reason": "La somme est 6+4=10 ; 2 ne correspond pas au résultat."
         },
         {
-          "choice": "FFFFh",
-          "reason": "FFFFh n'est pas le résultat de 0+0 ; aucun emprunt ni complément à deux n'est appliqué."
+          "choice": "0018h",
+          "reason": "0018h vaut 24 ; l'addition 6+4 donne 10, pas 24."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack behavior; Intel MCS-86 Assembly Language Reference Manual, procedures. Modularity, interfaces and test strategy are software-engineering contracts."
