@@ -810,6 +810,10 @@ function independentlyCompute(oracle) {
       return { destination: "ES:" + i.DI.toString(16).toUpperCase().padStart(4, "0") + "h" };
     case "stosb_index_register":
       return { indexRegister: "DI" };
+    case "stosb_index_update": {
+      const delta = i.DF ? -1 : 1;
+      return { DI: (i.DI + delta) & 0xffff };
+    }
     case "scasb_operands":
       return { left: "AL", right: "ES:DI", operation: "compare" };
     case "scasb_equal_flags":
