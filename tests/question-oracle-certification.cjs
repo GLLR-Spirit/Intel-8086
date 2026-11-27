@@ -406,10 +406,24 @@ function independentlyCompute(oracle) {
       return { flagsProducedBeforeBranch: true, branchReadsFlags: true };
     case "relative_displacement_range":
       return { minimum: -(2 ** (i.bits - 1)), maximum: (2 ** (i.bits - 1)) - 1, unit: "bytes" };
+    case "relative_displacement_value": {
+      const displacement = i.target - i.ipAfter;
+      const min = -(2 ** (i.bits - 1));
+      const max = (2 ** (i.bits - 1)) - 1;
+      return { displacement, encoded: displacement & ((2 ** i.bits) - 1), fits: displacement >= min && displacement <= max };
+    }
+    case "relative_target_calculation":
+      return { target: (i.ipAfter + i.displacement) & 0xffff, base: "IP_after_instruction" };
     case "relative_displacement_base":
       return { base: "IP_after_instruction" };
+    case "jmp_register_target_state":
+      return { CS: i.CS, IP: i.BX, CSChanged: false, IPChanged: true };
     case "jmp_register_indirect":
       return { kind: "near_indirect", targetFrom: "BX", CSChanged: false };
+    case "jmp_far_direct_encoding":
+      return { opcode: "EA", kind: "far_direct", pointerBits: 32 };
+    case "jmp_indirect_far_encoding":
+      return { opcode: "FF", extension: 5, kind: "far_indirect" };
     case "jmp_near_encoding":
       return { opcode: "E9", displacementBits: 16, kind: "direct_relative_near" };
     case "jmp_indirect_near_encoding":
@@ -1568,5 +1582,23 @@ assert.equal(chapter12Review.summary.remainingOfficialCertification, 300, "The o
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C12-L3-Q1").expected, { AF: "undefined", CF: 0, OF: 0 }, "TEST must leave AF undefined while clearing CF and OF");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C12-F-Q7").expected, { logicalResult: 3, CF: 0, OF: 0, PF: 1, AF: "undefined" }, "TEST 03h must set PF=1 and clear CF/OF");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C12-F-Q9").expected, { condition: "SF==OF", signed: true }, "Signed greater-or-equal must use SF=OF");
+
+
+const chapter13Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-13.json", "utf8"));
+const chapter13Ids = key.questions.filter(question => question.chapter === 13).map(question => question.id).sort();
+const reviewedChapter13Ids = chapter13Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter13Ids, chapter13Ids, "Chapter 13 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter13Ids).size, 19, "Chapter 13 review must not duplicate question IDs");
+assert.equal(chapter13Review.summary.questionsReviewed, 19, "Chapter 13 review count must match the complete question bank");
+assert.equal(chapter13Review.summary.passed, 12, "Chapter 13 review must report 12 passed questions");
+assert.equal(chapter13Review.summary.corrected, 7, "Chapter 13 review must record seven encoding and target-diversity corrections");
+assert.equal(chapter13Review.summary.blocked, 0, "Chapter 13 review must have no unresolved blockers");
+assert.equal(chapter13Review.summary.officialCertificationCountBefore, 384, "Chapter 13 review starts from the official 384-question ledger");
+assert.equal(chapter13Review.summary.officialCertificationCountAfter, 384, "Chapter 13 review must not silently advance official certification");
+assert.equal(chapter13Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C13-L1-Q1").expected, { displacement: -16, encoded: 240, fits: true }, "Backward rel8 displacement must encode as F0h");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C13-L2-Q1").expected, { opcode: "EA", kind: "far_direct", pointerBits: 32 }, "Direct far JMP must use EA ptr16:16");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C13-F-Q7").expected, { opcode: "FF", extension: 5, kind: "far_indirect" }, "Indirect far JMP must use FF /5");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C13-F-Q5").expected, { CS: 4096, IP: 4660, CSChanged: false, IPChanged: true }, "JMP BX must load IP and preserve CS");
 
 console.log("Question oracle evaluator: chapters 1–36 — " + oracleRecordsChecked + "/684 oracle records passed automated checks; official certification ledger remains " + manifest.oracleCoverageSummary.officialCertificationCount + "/684 (" + manifest.oracleCoverageSummary.remainingOfficialCertification + " pending); " + blocked + " blocked.");
