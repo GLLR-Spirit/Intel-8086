@@ -242,16 +242,16 @@
         "SPAdvancedBy2": true,
         "stackStateMayBeCorrupted": true
       },
-      "correctAnswer": "Il restaure des données arbitraires comme FLAGS et déséquilibre la pile",
-      "derivation": "POPF consomme le mot présent au sommet de pile et l'interprète comme FLAGS, qu'il s'agisse ou non du mot précédemment sauvegardé. Un PUSH manquant ou un mauvais SP peut donc restaurer un état arbitraire et déséquilibrer la pile.",
+      "correctAnswer": "Il interprète le mot courant SS:SP comme FLAGS puis avance SP de 2",
+      "derivation": "POPF lit le mot courant à SS:SP, l'interprète comme FLAGS puis avance SP de deux octets. Sans sauvegarde correspondante, ce mot peut être une donnée sans rapport.",
       "distractorRationales": [
         {
           "choice": "Il ne fait rien dans tous les cas",
-          "reason": "POPF consomme toujours le mot au sommet ; si la pile est incorrecte, l'instruction ne devient pas un no-op."
+          "reason": "POPF consomme le mot au sommet et modifie SP ; il ne devient pas un no-op si la sauvegarde manque."
         },
         {
           "choice": "Il incrémente CX",
-          "reason": "POPF ne modifie pas CX ; il restaure FLAGS depuis le mot lu à SS:SP."
+          "reason": "POPF ne modifie pas CX ; il charge FLAGS depuis le mot lu à SS:SP."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -383,16 +383,16 @@
         "poppedValue": "BX",
         "destination": "CX"
       },
-      "correctAnswer": "CX avec POP CX",
+      "correctAnswer": "CX",
       "derivation": "BX a été empilé en dernier ; il se trouve au sommet et doit être récupéré par POP CX. POP DX ou POP AX attribuerait la valeur au mauvais registre.",
       "distractorRationales": [
         {
-          "choice": "DX avec POP DX",
-          "reason": "Le dernier mot empilé est BX ; POP DX récupérerait la valeur dans le mauvais registre si CX est attendu."
+          "choice": "DX",
+          "reason": "La séquence donnée exécute POP CX en premier ; BX est donc copié dans CX, pas dans DX."
         },
         {
-          "choice": "AX avec POP AX",
-          "reason": "AX a été empilé en premier et ne se trouve pas au sommet immédiatement après PUSH BX."
+          "choice": "AX",
+          "reason": "AX est la valeur empilée en premier et reste sous BX ; le premier POP récupère BX dans CX."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
@@ -450,26 +450,27 @@
     {
       "id": "C20-F-Q8",
       "status": "certified",
-      "rule": "balanced_stack_sp",
+      "rule": "push_word_semantics",
       "inputs": {
-        "pushWords": 2,
-        "popWords": 2,
-        "initialSP": 4096
+        "initialSP": 256,
+        "value": 4660,
+        "width": 16
       },
       "expected": {
-        "finalSP": 4096,
-        "netChange": 0
+        "finalSP": 254,
+        "storedValue": 4660,
+        "segment": "SS"
       },
-      "correctAnswer": "SP final égale SP initial",
-      "derivation": "Une séquence équilibrée de deux PUSH et deux POP de mots doit restaurer SP à sa valeur initiale, à condition qu'aucune autre opération ne modifie la pile entre-temps.",
+      "correctAnswer": "SS:00FEh",
+      "derivation": "Le premier PUSH décrémente SP de deux avant l'écriture. Avec SP initial=0100h, le nouveau sommet est SS:00FEh.",
       "distractorRationales": [
         {
-          "choice": "SP final égale zéro",
-          "reason": "SP doit revenir à sa valeur initiale, pas à zéro ; sa valeur initiale peut être n'importe quel offset valide."
+          "choice": "SS:0100h",
+          "reason": "PUSH décrémente SP avant l'écriture ; l'adresse écrite n'est donc pas l'ancien SS:0100h."
         },
         {
-          "choice": "IP final égale SP initial",
-          "reason": "IP est indépendant du pointeur de pile ; l'équilibre concerne SP, pas IP."
+          "choice": "DS:00FEh",
+          "reason": "Les accès à la pile utilisent SS, même si DS désigne un autre segment de données."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), stack segment SS, stack pointer SP, PUSH/POP/PUSHF/POPF semantics and stack growth; Intel MCS-86 Assembly Language Reference Manual, stack instructions."
