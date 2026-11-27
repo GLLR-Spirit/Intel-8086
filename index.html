@@ -1964,7 +1964,7 @@ var auditedL4to6FinalB=[
  auditedQ("Que contient le port 10h après MOV AL,55h / OUT DX,AL avec DX=10h ?",["55h","10h","00h"],0,"OUT écrit le contenu de AL dans l'état du port désigné.","Prédiction"),
  auditedQ("Combien vaut le numéro de port 03F8h en décimal ?",["1016","248","398"],0,"03F8h = 3×256+15×16+8 = 1016.","Calcul / prédiction"),
  auditedQ("Que fait IN AL,10h dans le modèle si le port 10h vaut 55h ?",["Charge 55h dans AL","Écrit AL dans le port","Modifie DX"],0,"IN lit l'état configuré du port et le place dans AL.","Analyse de programme"),
- auditedQ("Que vérifie le modèle après OUT DX,AL ?",["L'état du port et la valeur écrite","Une adresse mémoire DS","Le contenu de CS"],0,"Le modèle expose les ports configurés dans son état d'E/S.","Analyse de résultat"),
+ auditedQ("Après MOV DX,20h / MOV AL,A5h / OUT DX,AL, quelle valeur doit apparaître dans l'état du port 20h ?",["A5h","20h","00h"],0,"DX sélectionne le port 20h et AL fournit A5h ; OUT écrit donc A5h dans l'état du port 20h.","Analyse de résultat"),
  auditedQ("Comment corriger IN AL,DX si aucune valeur d'entrée n'est configurée ?",["Initialiser la valeur du port dans l'état d'E/S","Effacer AL","Remplacer IN par CALL"],0,"Le simulateur exige une valeur d'entrée explicitement fournie pour le port.","Débogage"),
  auditedQ("Quelle limite doit être annoncée pour IN/OUT ?",["Le modèle de ports ne remplace pas un périphérique matériel réel","Les ports sont des registres 32 bits","IN/OUT ne possèdent pas d'opcodes"],0,"Le laboratoire simule un état de ports configurable sans matériel externe.","Raisonnement")
 ],
