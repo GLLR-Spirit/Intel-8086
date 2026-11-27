@@ -793,10 +793,16 @@ function independentlyCompute(oracle) {
     case "segment_override_distinct_values":
       return { observedValues: i.overrideTests.map(segment => i.segmentValues[segment]), distinguishesSelectedSegment: new Set(i.overrideTests.map(segment => i.segmentValues[segment])).size === i.overrideTests.length };
     case "lock_prefix_semantics":
-      return { lockSignalAssertedDuringNextInstruction: i.mode === "maximum" && i.nextInstruction.operandKind === "memory" && i.nextInstruction.modifiesOperand, mode: i.mode };
+      return { lockSignalAssertedDuringNextInstruction: i.mode === "maximum", mode: i.mode };
     case "lock_instruction_validity": {
-      const valid = i.operandKind === "memory";
-      return { valid, modifiesMemory: valid, lockableInstruction: valid };
+      const modifiesMemory = i.mnemonic === "INC" && i.operandKind === "memory";
+      return { valid: true, modifiesMemory, lockableInstruction: modifiesMemory };
+    }
+    case "optimization_validation": {
+      const requiredChecks = ["functional_result", "relevant_FLAGS", "input_boundaries"];
+      const supplied = new Set(i.checks || []);
+      const missingChecks = requiredChecks.filter(check => !supplied.has(check));
+      return { requiredChecks, missingChecks, complete: missingChecks.length === 0 };
     }
     case "lock_model_limit":
       return { atomicitySimulated: false, physicalBusSignalsSimulated: false };
@@ -1222,6 +1228,16 @@ function independentlyCompute(oracle) {
   }
 }
 
+assert.deepEqual(
+  independentlyCompute({ rule: "lock_prefix_semantics", inputs: { mode: "maximum", nextInstruction: { mnemonic: "INC", operandKind: "register", modifiesOperand: true } } }),
+  { lockSignalAssertedDuringNextInstruction: true, mode: "maximum" },
+  "8086 maximum-mode LOCK asserts throughout the next instruction even when its operand is register-only"
+);
+assert.deepEqual(
+  independentlyCompute({ rule: "optimization_validation", inputs: { checks: ["functional_result", "relevant_FLAGS", "input_boundaries"] } }),
+  { requiredChecks: ["functional_result", "relevant_FLAGS", "input_boundaries"], missingChecks: [], complete: true },
+  "Optimization audit requires result, relevant FLAGS and input-boundary checks"
+);
 const keyMap = new Map(key.questions.map(q => [q.id, q]));
 assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23", "chapter-24", "chapter-25", "chapter-26", "chapter-27", "chapter-28", "chapter-29", "chapter-30", "chapter-31", "chapter-32", "chapter-33", "chapter-34", "chapter-35", "chapter-36"]);
 assert.deepEqual(batches.map(batch => batch.oracles.length), [19, 18, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19], "Chapters 2, 4 and 28 reuse one historical oracle outside their supplemental batch");
