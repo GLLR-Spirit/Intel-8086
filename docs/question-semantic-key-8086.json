@@ -8479,14 +8479,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Quel état est attendu après REP MOVSB avec CX=2 et DF=0 ?",
+      "stem": "Après REP MOVSB avec SI=0100h, DI=0200h, CX=2, DF=0, et [DS:0100h]=41h, [DS:0101h]=42h, quels octets sont écrits à ES:0200h et ES:0201h ?",
       "choices": [
-        "CX=0, SI et DI augmentés de 2",
-        "CX=2, SI et DI diminués de 2",
-        "CX=0, SI inchangé"
+        "41h puis 42h",
+        "42h puis 41h",
+        "Deux zéros"
       ],
-      "correctAnswer": "CX=0, SI et DI augmentés de 2",
-      "explanation": "Deux transferts font progresser les deux index de deux octets.",
+      "correctAnswer": "41h puis 42h",
+      "explanation": "MOVSB lit chaque octet à DS:SI et l’écrit à ES:DI. Avec SI=0100h, DI=0200h, CX=2 et DF=0, les octets 41h puis 42h sont copiés dans le même ordre.",
       "category": "Analyse de résultat"
     },
     {
