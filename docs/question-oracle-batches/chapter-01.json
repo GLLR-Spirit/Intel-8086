@@ -1,0 +1,505 @@
+{
+  "schemaVersion": 1,
+  "batch": "chapter-01",
+  "title": "Oracles indépendants — chapitre 1 : introduction et caractéristiques du 8086",
+  "reviewDate": "2026-11-27",
+  "statusLegend": {
+    "certified": "Réponse, raisonnement et explication contrôlés indépendamment",
+    "blocked": "Oracle établi, mais la question ou son explication runtime doit être corrigée avant certification"
+  },
+  "referenceBasis": [
+    "Intel 8086 Family User's Manual, October 1979 — architecture, registres, bus, mémoire et instructions.",
+    "Intel MCS-86 Assembly Language Reference Manual — syntaxe source assembleur et formes d'opérandes."
+  ],
+  "oracles": [
+    {
+      "id": "C01-L1-Q1",
+      "status": "certified",
+      "rule": "microprocessor_role",
+      "inputs": {},
+      "expected": "fetch_decode_execute",
+      "correctAnswer": "Exécuter les instructions d'un programme",
+      "derivation": "Le rôle fonctionnel central du microprocesseur est d'aller chercher les instructions, de les décoder et de les exécuter. La production durable des données et le remplacement de la mémoire ne sont pas ses fonctions.",
+      "distractorRationales": [
+        {
+          "choice": "Fabriquer les données stockées",
+          "reason": "La mémoire conserve les données ; le processeur les traite."
+        },
+        {
+          "choice": "Remplacer la mémoire",
+          "reason": "Le processeur et la mémoire ont des rôles distincts et complémentaires."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), description générale du processeur et du cycle d'instruction.",
+      "verifiedAgainstRuntime": false
+    },
+    {
+      "id": "C01-L1-Q2",
+      "status": "blocked",
+      "rule": "source_instruction_vs_data",
+      "inputs": {
+        "source": "MOV AX,1234h",
+        "immediate": "1234h"
+      },
+      "expected": "assembly_statement_is_instruction",
+      "correctAnswer": "MOV AX,1234h",
+      "derivation": "MOV AX,1234h est une instruction en langage assembleur ; 1234h isolé est une valeur immédiate. Toutefois, la phrase d'explication actuelle affirme à tort que le texte source est déjà « une instruction encodée » : l'encodage machine est une suite d'octets distincte, produite par l'assembleur.",
+      "distractorRationales": [
+        {
+          "choice": "La valeur 1234h isolée",
+          "reason": "Une constante seule est une donnée ou un opérande, pas une instruction."
+        },
+        {
+          "choice": "Une adresse mémoire",
+          "reason": "Une adresse désigne un emplacement ; elle n'exprime pas à elle seule une opération."
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, syntaxe source ; Intel 8086 Family User's Manual, format des instructions machine.",
+      "blocker": "Réviser l'explication runtime : le source assembleur n'est pas lui-même les octets machine.",
+      "verifiedAgainstRuntime": false
+    },
+    {
+      "id": "C01-L1-Q3",
+      "status": "certified",
+      "rule": "instruction_data_distinction",
+      "inputs": {},
+      "expected": "distinct_roles_same_memory",
+      "correctAnswer": "Elles ont des rôles différents même si elles peuvent résider en mémoire",
+      "derivation": "Les instructions décrivent les opérations à exécuter ; les données sont les valeurs manipulées. Le 8086 utilise une mémoire adressable par octet pouvant contenir du code ou des données selon le programme.",
+      "distractorRationales": [
+        {
+          "choice": "Les données sont toujours dans AX",
+          "reason": "Les données peuvent être dans des registres, la mémoire ou des opérandes immédiats."
+        },
+        {
+          "choice": "Les instructions ne sont jamais stockées en mémoire",
+          "reason": "Le processeur récupère les octets d'instruction depuis la mémoire."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, organisation mémoire et cycle de récupération des instructions.",
+      "verifiedAgainstRuntime": false
+    },
+    {
+      "id": "C01-L2-Q1",
+      "status": "certified",
+      "rule": "8086_address_bus_width",
+      "inputs": {
+        "processor": "8086"
+      },
+      "expected": {
+        "addressBits": 20
+      },
+      "correctAnswer": "20",
+      "derivation": "Le 8086 expose vingt lignes d'adresse physiques (AD0–AD15 multiplexées avec les données et A16–A19). Le nombre de lignes d'adresse est distinct de la largeur des registres généraux.",
+      "distractorRationales": [
+        {
+          "choice": "16",
+          "reason": "16 bits décrivent notamment les registres généraux et le bus de données, pas le bus d'adresses."
+        },
+        {
+          "choice": "24",
+          "reason": "Le 8086 ne dispose pas de 24 lignes d'adresse physiques."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, brochage et bus d'adresses.",
+      "verifiedAgainstRuntime": false
+    },
+    {
+      "id": "C01-L2-Q2",
+      "status": "certified",
+      "rule": "address_space_capacity",
+      "inputs": {
+        "addressBits": 20,
+        "bytesPerAddress": 1
+      },
+      "expected": {
+        "addresses": 1048576,
+        "bytes": 1048576,
+        "mebibytes": 1
+      },
+      "correctAnswer": "1 Mio",
+      "derivation": "Chaque adresse sélectionne un octet. Il existe 2^20 = 1 048 576 adresses, soit 1 048 576 octets = 1 Mio.",
+      "distractorRationales": [
+        {
+          "choice": "64 Kio",
+          "reason": "2^16 adresses correspondent à 64 Kio, pas à 20 bits."
+        },
+        {
+          "choice": "16 Mio",
+          "reason": "16 Mio nécessiteraient 24 bits d'adresse."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, espace d'adressage physique 20 bits.",
+      "verifiedAgainstRuntime": false
+    },
+    {
+      "id": "C01-L2-Q3",
+      "status": "certified",
+      "rule": "8086_external_data_bus_width",
+      "inputs": {
+        "processor": "8086"
+      },
+      "expected": {
+        "dataBits": 16
+      },
+      "correctAnswer": "16 bits",
+      "derivation": "Le bus externe de données du 8086 est large de 16 bits. Il faut le distinguer du bus d'adresses physiques de 20 bits.",
+      "distractorRationales": [
+        {
+          "choice": "8 bits",
+          "reason": "Cette largeur caractérise le bus externe de données du 8088, pas du 8086."
+        },
+        {
+          "choice": "20 bits",
+          "reason": "20 bits est la largeur du bus d'adresses physiques."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, description des bus et brochage.",
+      "verifiedAgainstRuntime": false
+    },
+    {
+      "id": "C01-L3-Q1",
+      "status": "certified",
+      "rule": "8088_external_data_bus_width",
+      "inputs": {
+        "processor": "8088"
+      },
+      "expected": {
+        "dataBits": 8
+      },
+      "correctAnswer": "Le 8088 a un bus externe de données de 8 bits",
+      "derivation": "Le 8088 partage l'architecture logicielle générale de la famille, mais son bus externe de données est de 8 bits ; le 8086 utilise 16 bits.",
+      "distractorRationales": [
+        {
+          "choice": "Le 8088 a des registres généraux de 32 bits",
+          "reason": "Le 8088 est un processeur 16 bits, pas un processeur à registres généraux 32 bits."
+        },
+        {
+          "choice": "Le 8088 possède 24 lignes d'adresse",
+          "reason": "Le 8088 adresse 1 Mio avec 20 lignes d'adresse."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, comparaison 8086/8088.",
+      "verifiedAgainstRuntime": false
+    },
+    {
+      "id": "C01-L3-Q2",
+      "status": "certified",
+      "rule": "x86_family_variation",
+      "inputs": {},
+      "expected": "shared_lineage_not_identical_buses",
+      "correctAnswer": "Une filiation architecturale et logicielle, pas des bus identiques sur tous les modèles",
+      "derivation": "L'appartenance à x86 indique une continuité d'architecture et d'écosystème logiciel ; elle n'implique pas des largeurs de bus, modes ou microarchitectures identiques entre générations.",
+      "distractorRationales": [
+        {
+          "choice": "Tous les processeurs x86 ont un bus 16 bits",
+          "reason": "Les générations x86 ont des bus externes de largeurs différentes."
+        },
+        {
+          "choice": "Tous les processeurs x86 exécutent les mêmes cycles matériels",
+          "reason": "Les cycles et microarchitectures évoluent entre générations."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, caractéristiques du 8086/8088 ; documentation Intel des générations x86 ultérieures.",
+      "verifiedAgainstRuntime": false
+    },
+    {
+      "id": "C01-L3-Q3",
+      "status": "certified",
+      "rule": "lab_scope",
+      "inputs": {},
+      "expected": "pedagogical_software_model",
+      "correctAnswer": "Un modèle logiciel pédagogique",
+      "derivation": "Le laboratoire représente des états et des opérations du processeur dans un logiciel. Sans modélisation électrique et temporelle dédiée, il ne constitue ni une carte mère physique ni un instrument de mesure des signaux de bus.",
+      "distractorRationales": [
+        {
+          "choice": "Une carte mère 8086 complète",
+          "reason": "Une application web ne constitue pas le matériel physique complet."
+        },
+        {
+          "choice": "Une mesure électrique des cycles bus",
+          "reason": "Une simulation logique ne mesure pas des tensions ni des signaux électriques réels."
+        }
+      ],
+      "reference": "Périmètre fonctionnel documenté du laboratoire ; distinction entre modèle logiciel et matériel physique.",
+      "verifiedAgainstRuntime": false
+    },
+    {
+      "id": "C01-F-Q1",
+      "status": "certified",
+      "rule": "microprocessor_role",
+      "inputs": {},
+      "expected": "fetch_decode_execute",
+      "correctAnswer": "Exécuter les instructions du programme",
+      "derivation": "Le processeur exécute les instructions du programme en coordonnant récupération, décodage, calcul et transferts.",
+      "distractorRationales": [
+        {
+          "choice": "Conserver durablement tous les fichiers",
+          "reason": "Le stockage durable relève des dispositifs de mémoire et de stockage."
+        },
+        {
+          "choice": "Fournir l'alimentation électrique",
+          "reason": "L'alimentation relève du système électrique, pas de la fonction du CPU."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, fonctionnement général du processeur.",
+      "verifiedAgainstRuntime": false
+    },
+    {
+      "id": "C01-F-Q2",
+      "status": "certified",
+      "rule": "address_space_capacity",
+      "inputs": {
+        "addressBits": 20,
+        "bytesPerAddress": 1
+      },
+      "expected": {
+        "addresses": 1048576,
+        "bytes": 1048576,
+        "mebibytes": 1
+      },
+      "correctAnswer": "Il peut sélectionner 2^20 adresses d'octets",
+      "derivation": "Avec 20 bits, le nombre d'adresses distinctes vaut 2^20 = 1 048 576. L'espace est adressé par octet, soit 1 Mio.",
+      "distractorRationales": [
+        {
+          "choice": "Chaque registre général contient 20 bits",
+          "reason": "Les registres généraux du 8086 ont 16 bits."
+        },
+        {
+          "choice": "Le bus de données transporte 20 bits par transfert",
+          "reason": "Le bus de données externe du 8086 est de 16 bits."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, bus d'adresses et espace mémoire.",
+      "verifiedAgainstRuntime": false
+    },
+    {
+      "id": "C01-F-Q3",
+      "status": "certified",
+      "rule": "intel_operand_order",
+      "inputs": {
+        "instruction": "MOV AX,1234h"
+      },
+      "expected": {
+        "destination": "AX",
+        "source": "1234h"
+      },
+      "correctAnswer": "Destination",
+      "derivation": "La syntaxe Intel écrit la destination en premier et la source en second : MOV destination,source. AX reçoit donc la constante immédiate.",
+      "distractorRationales": [
+        {
+          "choice": "Source",
+          "reason": "1234h est l'opérande source immédiat."
+        },
+        {
+          "choice": "Adresse mémoire implicite",
+          "reason": "AX est un registre, pas une adresse mémoire implicite."
+        }
+      ],
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, syntaxe des instructions.",
+      "verifiedAgainstRuntime": false
+    },
+    {
+      "id": "C01-F-Q4",
+      "status": "certified",
+      "rule": "immediate_fits_register",
+      "inputs": {
+        "registerBits": 8,
+        "immediate": 4660
+      },
+      "expected": {
+        "fits": false,
+        "maxValue": 255,
+        "requiredBits": 13
+      },
+      "correctAnswer": "La constante dépasse la capacité de 8 bits de AL",
+      "derivation": "AL peut représenter un motif de 8 bits, de 00h à FFh. 1234h vaut 4660 et nécessite 13 bits ; cette valeur ne tient pas dans AL.",
+      "distractorRationales": [
+        {
+          "choice": "AL est un registre de segment",
+          "reason": "AL est l'octet faible de AX, un registre général."
+        },
+        {
+          "choice": "MOV ne permet jamais de constante immédiate",
+          "reason": "MOV autorise une source immédiate lorsque la taille et les contraintes d'encodage sont respectées."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, formes MOV et tailles des opérandes.",
+      "verifiedAgainstRuntime": false
+    },
+    {
+      "id": "C01-F-Q5",
+      "status": "certified",
+      "rule": "write_low_byte_preserve_high",
+      "inputs": {
+        "initialAX": 4660,
+        "newAL": 86
+      },
+      "expected": {
+        "finalAX": 4694,
+        "finalAH": 18,
+        "finalAL": 86
+      },
+      "correctAnswer": "1256h",
+      "derivation": "AX=1234h se décompose en AH=12h et AL=34h. MOV AL,56h remplace seulement les bits 7..0 ; AH reste 12h, donc AX=1256h.",
+      "distractorRationales": [
+        {
+          "choice": "5634h",
+          "reason": "Cette valeur remplace AH et conserve AL, l'inverse de l'opération demandée."
+        },
+        {
+          "choice": "0056h",
+          "reason": "Cette valeur effacerait aussi AH, alors que MOV AL ne modifie que l'octet faible."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, registres généraux et registres octet AH/AL.",
+      "verifiedAgainstRuntime": false
+    },
+    {
+      "id": "C01-F-Q6",
+      "status": "certified",
+      "rule": "address_space_capacity",
+      "inputs": {
+        "addressBits": 20,
+        "bytesPerAddress": 1
+      },
+      "expected": {
+        "addresses": 1048576,
+        "bytes": 1048576,
+        "mebibytes": 1
+      },
+      "correctAnswer": "1 048 576",
+      "derivation": "2^20 = 1 048 576. Comme chaque adresse désigne un octet, le nombre d'adresses est aussi le nombre d'octets adressables.",
+      "distractorRationales": [
+        {
+          "choice": "65 536",
+          "reason": "65 536 = 2^16, espace correspondant à 16 bits."
+        },
+        {
+          "choice": "16 777 216",
+          "reason": "16 777 216 = 2^24, espace correspondant à 24 bits."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, espace physique 20 bits.",
+      "verifiedAgainstRuntime": false
+    },
+    {
+      "id": "C01-F-Q7",
+      "status": "certified",
+      "rule": "simple_program_trace",
+      "inputs": {
+        "program": [
+          [
+            "MOV",
+            "AX",
+            5
+          ],
+          [
+            "HLT"
+          ]
+        ],
+        "initialAX": 0
+      },
+      "expected": {
+        "finalAX": 5,
+        "halted": true
+      },
+      "correctAnswer": "Il place 5 dans AX puis arrête l'exécution",
+      "derivation": "MOV AX,5 charge la valeur immédiate dans AX. HLT suspend ensuite l'exécution du processeur jusqu'à l'événement de reprise prévu par le modèle.",
+      "distractorRationales": [
+        {
+          "choice": "Il écrit 5 à l'adresse mémoire 0005h",
+          "reason": "La destination explicite de MOV est le registre AX, pas la mémoire."
+        },
+        {
+          "choice": "Il lance une interruption",
+          "reason": "HLT n'est pas une instruction INT et ne déclenche pas une interruption logicielle."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, instructions MOV et HLT.",
+      "verifiedAgainstRuntime": false
+    },
+    {
+      "id": "C01-F-Q8",
+      "status": "certified",
+      "rule": "address_range",
+      "inputs": {
+        "addressBits": 20
+      },
+      "expected": {
+        "minimum": 0,
+        "maximum": 1048575,
+        "hexMinimum": "00000h",
+        "hexMaximum": "FFFFFh"
+      },
+      "correctAnswer": "00000h à FFFFFh",
+      "derivation": "Avec 20 bits, l'adresse minimale est 0 et la maximale est 2^20−1 = 1 048 575 = FFFFFh.",
+      "distractorRationales": [
+        {
+          "choice": "0000h à FFFFh",
+          "reason": "Cette plage ne couvre que 16 bits, soit 64 Kio."
+        },
+        {
+          "choice": "000000h à FFFFFFh",
+          "reason": "Cette plage couvre 24 bits, soit 16 Mio."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, bus d'adresses 20 bits.",
+      "verifiedAgainstRuntime": false
+    },
+    {
+      "id": "C01-F-Q9",
+      "status": "certified",
+      "rule": "separate_register_and_address_width",
+      "inputs": {
+        "generalRegisterBits": 16,
+        "addressBits": 20
+      },
+      "expected": {
+        "registerBits": 16,
+        "addressBits": 20
+      },
+      "correctAnswer": "Distinguer largeur des registres et largeur d'adresse physique : le bus d'adresses a 20 bits",
+      "derivation": "Le qualificatif 16 bits concerne notamment les registres généraux et le bus de données ; le bus d'adresses physiques comporte 20 bits. Ces largeurs décrivent des propriétés différentes.",
+      "distractorRationales": [
+        {
+          "choice": "Remplacer AX par un registre 20 bits",
+          "reason": "Le 8086 n'a pas besoin de registres généraux 20 bits pour générer ses adresses physiques."
+        },
+        {
+          "choice": "Réduire le bus de données à 8 bits",
+          "reason": "Cela décrirait plutôt le bus externe du 8088, pas une correction du raisonnement."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, registres et caractéristiques des bus.",
+      "verifiedAgainstRuntime": false
+    },
+    {
+      "id": "C01-F-Q10",
+      "status": "certified",
+      "rule": "8086_widths_tuple",
+      "inputs": {
+        "processor": "8086"
+      },
+      "expected": {
+        "generalRegisters": 16,
+        "dataBus": 16,
+        "addressBus": 20
+      },
+      "correctAnswer": "Le 8086 a des registres généraux 16 bits, un bus de données 16 bits et un bus d'adresses 20 bits",
+      "derivation": "Les trois valeurs se vérifient séparément dans les spécifications : registres généraux 16 bits, bus de données externe 16 bits, bus d'adresses physiques 20 bits.",
+      "distractorRationales": [
+        {
+          "choice": "Le 8086 a des registres 20 bits et un bus d'adresses 16 bits",
+          "reason": "Cette proposition inverse les largeurs et attribue une largeur erronée aux registres."
+        },
+        {
+          "choice": "Le 8086 adresse les mots uniquement, jamais les octets",
+          "reason": "La mémoire du 8086 est adressée par octet ; un mot occupe deux octets consécutifs."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual, architecture des registres et bus.",
+      "verifiedAgainstRuntime": false
+    }
+  ]
+}
