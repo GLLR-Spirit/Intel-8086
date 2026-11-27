@@ -238,7 +238,7 @@ assert.ok(/structurally indexed/i.test(semanticKey.reviewScope),
   "The semantic manifest must distinguish runtime concordance from independent certification.");
 assert.ok(/only items with explicit independent oracle evidence are certified/i.test(semanticKey.reviewScope),
   "The semantic manifest must not overstate the scope of independent question validation.");
-console.log("Independent semantic question oracles: "+independentQuestionAudit.oracles.length+"/684 explicitly recalculated; remaining items are not certified by concordance alone.");
+console.log("Initial semantic tranche: "+independentQuestionAudit.oracles.length+" historical oracles explicitly recalculated; supplemental oracle records are evaluated by tests/question-oracle-certification.cjs. Automated checks do not advance the official certification ledger (384/684; 300 pending).");
 const semanticKeyFailures=[];
 for(const expected of semanticKey.questions){
   const actual=runtimeQuestionMap.get(expected.id);
