@@ -138,3 +138,14 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - Updated the runtime bank, semantic key and chapter-05 oracle batch. Added independent evaluators for operand-width compatibility, high-byte writes and the string destination index.
 - Added CI assertions for all 19 review records and the three independent results.
 - Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
+
+
+### Independent question review — chapter 6
+
+- Reviewed all 19 questions individually against the Intel MCS-86 Assembly Language Reference Manual and Intel 8086 Family User's Manual.
+- 16 items passed; three were diversified to remove repeated checks:
+  - C06-L2-Q1 now asks for the source operand of MOV AX,BX, complementing the final question that asks for the destination.
+  - C06-F-Q4 now tests the restriction on direct segment-register-to-segment-register MOV, distinct from the lesson's memory-to-memory restriction.
+  - C06-F-Q7 now uses a complete labelled program trace; JMP FIN skips MOV AX,5678h and leaves AX=1234h at HLT.
+- Updated runtime bank, semantic key and chapter-06 oracle batch. Added an independent evaluator for the segment-to-segment MOV restriction and assertions for the trace result.
+- Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
