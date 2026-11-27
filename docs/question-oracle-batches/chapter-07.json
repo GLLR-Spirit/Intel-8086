@@ -251,18 +251,16 @@
     {
       "id": "C07-F-Q1",
       "status": "certified",
-      "rule": "lea_effective_offset",
+      "rule": "lea_general_semantics",
       "inputs": {
-        "base": 256,
-        "index": 32,
-        "displacement": 4
+        "instruction": "LEA AX,[BX+SI]"
       },
       "expected": {
-        "offset": 292,
+        "offsetDescription": "effective_address",
         "memoryRead": false
       },
       "correctAnswer": "L'offset calculé d'une expression d'adresse",
-      "derivation": "LEA évalue l'expression d'adresse effective et place le résultat numérique dans un registre. Elle ne déréférence pas l'adresse et ne charge donc pas le contenu pointé.",
+      "derivation": "LEA calcule l'offset numérique correspondant à l'expression d'adresse effective et le place dans le registre destination. Elle ne lit pas le contenu de la mémoire pointée ; cette différence la sépare d'un MOV avec opérande mémoire.",
       "distractorRationales": [
         {
           "choice": "L",
