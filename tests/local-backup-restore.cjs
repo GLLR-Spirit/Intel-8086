@@ -52,6 +52,7 @@ function load(store) {
 const valid = makeData();
 {
   const sandbox = load(makeStore());
+  assert.equal(sandbox.BACKUP_MAX_BYTES, 10 * 1024 * 1024);
   const realmValid = sandbox.JSON.parse(JSON.stringify(valid));
   assert.equal(sandbox.validateBackupData(realmValid), null);
   assert.equal(sandbox.validateBackupData(sandbox.JSON.parse(JSON.stringify({ ...valid, "i86-code": 42 }))) !== null, true);
@@ -133,4 +134,4 @@ const valid = makeData();
   const invalid = sandbox.JSON.parse(JSON.stringify({ ...makeData(), extra: "unexpected" }));
   assert.match(sandbox.validateBackupData(invalid), /sept catégories/);
 }
-console.log("10 groupes de tests sauvegarde/restauration définis.");
+console.log("10 groupes de tests sauvegarde/restauration exécutés avec succès.");
