@@ -3735,7 +3735,7 @@
     "remainingOfficialCertification": 300,
     "calculation": "36 chapitres × 19 questions = 684 identifiants uniques. Les 681 enregistrements des lots sont complétés par trois oracles historiques hors lots ; trois autres oracles historiques sont réutilisés dans les lots. L'index oracles expose les 684 identifiants ; historicalOracles conserve les six objets historiques détaillés.",
     "registeredOracleRecords": 684,
-    "individuallyReviewedQuestions": 361,
+    "individuallyReviewedQuestions": 380,
     "individualReviewChapters": [
       1,
       2,
@@ -3755,7 +3755,8 @@
       16,
       17,
       18,
-      19
+      19,
+      20
     ]
   },
   "independentReviewBatches": [
@@ -3872,6 +3873,12 @@
       "chapter": 19,
       "reviewedQuestions": 19,
       "note": "Revue individuelle enregistrée ; cas limite de repliement de l'offset effectif corrigé ; compteur officiel historique inchangé."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-20.json",
+      "chapter": 20,
+      "reviewedQuestions": 19,
+      "note": "Revue individuelle enregistrée ; ambiguïté de dépilage et adresse d'écriture PUSH corrigées."
     }
   ],
   "historicalOracles": [
