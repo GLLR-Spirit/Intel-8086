@@ -470,7 +470,7 @@
     {
       "id": "C32-F-Q8",
       "status": "certified",
-      "rule": "default_data_segment",
+      "rule": "default_segment_by_addressing_form",
       "inputs": {
         "addressingForm": "[BP+SI]",
         "containsBP": true
