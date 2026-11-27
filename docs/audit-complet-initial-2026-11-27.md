@@ -3,7 +3,8 @@
 ## Périmètre et statut
 
 Dépôt : `GLLR-Spirit/Intel-8086`  
-Commit audité : `96a7bdf83491a53ec9546e04987e4ce012fbf2da`  
+Commit de base audité : `96a7bdf83491a53ec9546e04987e4ce012fbf2da`  
+Dernière validation corrective de la branche : `2d117da7ce17bbf861efdd39c43436a55c2906d6`  
 Branche de travail : `audit-complet-2026-11-27`  
 Branche principale : `main` (lecture seule pendant cet audit)
 
@@ -29,10 +30,9 @@ Ce document consigne une vérification reproductible du dépôt et des résultat
 
 ### Exécutions GitHub Actions consultées
 
-- CI principal : [run 1775](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46014172472), commit audité, conclusion `success`.
-- Audit navigateur : [run 1143](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46014172454), même commit, conclusion `success`.
-- Les deux jobs du CI principal et toutes les étapes affichées sont en succès.
-- Le journal CI confirme notamment 108/108 exemples source/binaire, 48/48 corrections guidées, 684/684 évaluateurs d'oracles automatisés, 378/378 smoke tests et 11 568/11 568 cas ModR/M.
+- CI et audit navigateur : [run 1884](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46035262824), commit de branche `2d117da7ce17bbf861efdd39c43436a55c2906d6`, conclusion `success`.
+- Les deux jobs ont réussi : `simulator-smoke-tests` et `course-browser-audit` (Playwright desktop/mobile).
+- Le journal confirme notamment 684/684 questions concordantes runtime/clé, 684/684 évaluateurs d'oracles automatisés réussis, 323 revues individuelles enregistrées sur 17 chapitres, 108/108 exemples source/binaire comparés, ainsi que les suites d'instructions et matrices configurées.
 - Les journaux contiennent un avertissement de dépréciation Node.js concernant `punycode` et un avertissement de compatibilité Node 20 de certaines actions GitHub ; ils n'ont pas fait échouer les workflows.
 
 ## Anomalies documentaires corrigées dans cette branche
@@ -54,4 +54,4 @@ Cause commune : les documents de suivi n'avaient pas été réconciliés après 
 
 ## Conclusion de cette tranche
 
-Les deux workflows du commit audité sont réussis. Les anomalies documentaires identifiées dans cette tranche sont corrigées dans la branche d'audit. La mission globale reste **en cours** tant que les revues individuelles restantes et les contrôles manuels listés ci-dessus ne sont pas terminés.
+Les deux jobs du CI correctif run 1884 sont réussis sur la branche d'audit. L'index des 684 oracles, les 17 fichiers de revue, la clé sémantique et les évaluateurs ont été réconciliés. La mission globale reste en cours tant que les revues des chapitres 18 à 36 et les contrôles manuels listés ci-dessus ne sont pas terminés. La mission globale reste **en cours** tant que les revues individuelles restantes et les contrôles manuels listés ci-dessus ne sont pas terminés.
