@@ -1,0 +1,570 @@
+{
+  "schemaVersion": 1,
+  "batch": "chapter-32",
+  "title": "Oracles indépendants — chapitre 32 : ModR/M, adressage effectif et cas spéciaux",
+  "reviewDate": "2026-11-27",
+  "statusLegend": {
+    "certified": "Découpage ModR/M, calculs EA, disp8/disp16 et cas spéciaux vérifiés indépendamment"
+  },
+  "referenceBasis": [
+    "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 16-bit Addressing Modes.",
+    "Intel MCS-86 Assembly Language Reference Manual, memory operand syntax and ModR/M encodings.",
+    "Les calculs d'EA sont distingués de la sélection du segment et de la formation de l'adresse physique."
+  ],
+  "oracles": [
+    {
+      "id": "C32-L1-Q1",
+      "status": "certified",
+      "rule": "modrm_field_layout",
+      "inputs": {
+        "modBits": 2,
+        "regBits": 3,
+        "rmBits": 3
+      },
+      "expected": {
+        "fields": [
+          "Mod",
+          "Reg",
+          "R/M"
+        ],
+        "widths": [
+          2,
+          3,
+          3
+        ],
+        "totalBits": 8
+      },
+      "correctAnswer": "Mod, Reg et R/M",
+      "derivation": "Le byte ModR/M est réparti en trois champs contigus : Mod occupe les deux bits de poids fort, Reg les trois bits suivants et R/M les trois bits de poids faible. La somme 2+3+3 donne les huit bits du byte.",
+      "distractorRationales": [
+        {
+          "choice": "Segment, offset et FLAGS",
+          "reason": "Ces éléments décrivent des registres ou des composantes d'adresse, pas les trois champs binaires du byte ModR/M."
+        },
+        {
+          "choice": "Opcode, immédiat et IP",
+          "reason": "Opcode et immédiat sont des champs distincts de l'instruction ; IP est un registre et ne fait pas partie du byte ModR/M."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
+    },
+    {
+      "id": "C32-L1-Q2",
+      "status": "certified",
+      "rule": "modrm_decode_byte",
+      "inputs": {
+        "byte": 64,
+        "width": 8
+      },
+      "expected": {
+        "binary": "01000000",
+        "mod": 1,
+        "reg": 0,
+        "rm": 0
+      },
+      "correctAnswer": "01 000 000",
+      "derivation": "40h vaut 01000000b. En séparant les bits 7–6, 5–3 et 2–0, on obtient Mod=01, Reg=000 et R/M=000. La forme Mod=01 sélectionne un déplacement de huit bits.",
+      "distractorRationales": [
+        {
+          "choice": "00 100 000",
+          "reason": "Cette séquence binaire vaut 20h et donnerait Mod=00, Reg=100, R/M=000, différent de 40h."
+        },
+        {
+          "choice": "10 000 000",
+          "reason": "Cette séquence vaut 80h et donnerait Mod=10, soit un déplacement de 16 bits, pas Mod=01."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
+    },
+    {
+      "id": "C32-L1-Q3",
+      "status": "certified",
+      "rule": "modrm_disp_size",
+      "inputs": {
+        "mod": 1
+      },
+      "expected": {
+        "displacementBits": 8,
+        "signed": true
+      },
+      "correctAnswer": "Mod=01",
+      "derivation": "Le champ Mod=01 indique un opérande mémoire avec un déplacement signé sur huit bits. Reg et R/M déterminent respectivement le registre ou l'extension d'opcode et la forme de l'opérande ; ils ne déterminent pas la largeur du déplacement.",
+      "distractorRationales": [
+        {
+          "choice": "Reg=000",
+          "reason": "Reg sélectionne un registre ou une extension d'opcode ; il ne choisit pas la présence ni la largeur du déplacement."
+        },
+        {
+          "choice": "R/M=000",
+          "reason": "R/M sélectionne la combinaison base/index ; la largeur du déplacement est indiquée par Mod."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
+    },
+    {
+      "id": "C32-L2-Q1",
+      "status": "certified",
+      "rule": "effective_address_formula",
+      "inputs": {
+        "base": "BX",
+        "index": "SI",
+        "displacement": 4,
+        "width": 16
+      },
+      "expected": {
+        "formula": "BX+SI+4 modulo 65536",
+        "segmentCalculationSeparate": true
+      },
+      "correctAnswer": "BX+SI+4 modulo 65536",
+      "derivation": "L'offset effectif est la somme 16 bits de la base BX, de l'index SI et du déplacement. Le résultat est ramené sur 16 bits ; le calcul du segment et la conversion en adresse physique sont des étapes séparées.",
+      "distractorRationales": [
+        {
+          "choice": "BX×SI+4",
+          "reason": "L'adressage effectif additionne base, index et déplacement ; il ne multiplie pas BX par SI."
+        },
+        {
+          "choice": "BX+SI puis segment×16",
+          "reason": "La multiplication du segment par 16 intervient dans le calcul de l'adresse physique, pas dans l'offset effectif demandé."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
+    },
+    {
+      "id": "C32-L2-Q2",
+      "status": "certified",
+      "rule": "effective_address_sum",
+      "inputs": {
+        "base": 256,
+        "index": 2,
+        "displacement": 4,
+        "width": 16
+      },
+      "expected": {
+        "offset": 262
+      },
+      "correctAnswer": "0106h",
+      "derivation": "BX=0100h, SI=0002h et le déplacement vaut 0004h. La somme 0100h+0002h+0004h donne 0106h, qui tient dans 16 bits sans réduction supplémentaire.",
+      "distractorRationales": [
+        {
+          "choice": "0102h",
+          "reason": "Cette valeur omet le déplacement de quatre octets et ne calcule que BX+SI."
+        },
+        {
+          "choice": "0104h",
+          "reason": "Cette valeur omet l'index SI ; l'EA doit inclure BX, SI et le déplacement."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
+    },
+    {
+      "id": "C32-L2-Q3",
+      "status": "certified",
+      "rule": "default_data_segment",
+      "inputs": {
+        "addressingForm": "[BX+SI]",
+        "containsBP": false
+      },
+      "expected": {
+        "segment": "DS"
+      },
+      "correctAnswer": "DS",
+      "derivation": "La forme [BX+SI] contient BX et SI, sans BP. Pour les formes d'adressage mémoire 8086 sans surcharge de segment, DS est donc le segment par défaut ; la présence de BP sélectionnerait SS.",
+      "distractorRationales": [
+        {
+          "choice": "SS",
+          "reason": "SS est le segment par défaut pour les formes d'adressage qui utilisent BP comme base, ce qui n'est pas le cas ici."
+        },
+        {
+          "choice": "ES",
+          "reason": "ES est notamment le segment destination implicite de certaines instructions de chaîne ; ce n'est pas le segment par défaut de [BX+SI]."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
+    },
+    {
+      "id": "C32-L3-Q1",
+      "status": "certified",
+      "rule": "modrm_direct_address_special",
+      "inputs": {
+        "mod": 0,
+        "rm": 6
+      },
+      "expected": {
+        "directAddress": true,
+        "displacementBits": 16,
+        "usesBaseRegister": false
+      },
+      "correctAnswer": "Mod=00 et R/M=110",
+      "derivation": "En mode 16 bits, la combinaison spéciale Mod=00 et R/M=110 désigne un adressage mémoire direct suivi d'un déplacement 16 bits. Elle ne signifie pas [BP] ; le champ R/M=110 est réservé à ce cas lorsque Mod=00.",
+      "distractorRationales": [
+        {
+          "choice": "Mod=11 et R/M=110",
+          "reason": "Mod=11 indique un registre direct ; cela ne sélectionne pas l'adressage mémoire direct disp16."
+        },
+        {
+          "choice": "Mod=01 et R/M=000",
+          "reason": "Mod=01 sélectionne un déplacement signé de huit bits et R/M=000 représente [BX+SI], pas l'adresse directe disp16."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
+    },
+    {
+      "id": "C32-L3-Q2",
+      "status": "certified",
+      "rule": "little_endian_word_bytes",
+      "inputs": {
+        "word": 4660,
+        "startAddress": 20480,
+        "byteBits": 8
+      },
+      "expected": {
+        "lowByte": 52,
+        "highByte": 18,
+        "lowAddress": 20480,
+        "highAddress": 20481
+      },
+      "correctAnswer": "34h puis 12h",
+      "derivation": "Le déplacement 1234h est un mot 16 bits. En little-endian, son octet faible 34h est stocké à l'adresse basse 5000h, puis son octet fort 12h à 5001h.",
+      "distractorRationales": [
+        {
+          "choice": "12h puis 34h",
+          "reason": "Cet ordre place l'octet fort en premier et correspond au big-endian, pas au stockage 8086."
+        },
+        {
+          "choice": "23h puis 14h",
+          "reason": "Ces deux octets ne représentent pas le mot 1234h ; sa décomposition correcte est 34h et 12h."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
+    },
+    {
+      "id": "C32-L3-Q3",
+      "status": "certified",
+      "rule": "bp_zero_displacement_encoding",
+      "inputs": {
+        "base": "BP",
+        "modWithoutDisplacement": 0,
+        "rm": 6,
+        "displacementBytes": 8
+      },
+      "expected": {
+        "mod": 1,
+        "rm": 6,
+        "disp8": 0,
+        "usesBP": true,
+        "directAddress": false
+      },
+      "correctAnswer": "Mod=00,R/M=110 désigne [disp16], donc BP utilise disp8 nul",
+      "derivation": "Le codage 16 bits réserve Mod=00,R/M=110 à l'adressage direct disp16. Pour exprimer [BP] sans changer l'adresse effective, l'encodeur choisit Mod=01 avec disp8=00h. Le déplacement explicite nul évite l'interprétation comme adresse directe.",
+      "distractorRationales": [
+        {
+          "choice": "BP ne peut pas être base",
+          "reason": "BP est une base valide dans les formes 16 bits ; c'est la combinaison spéciale Mod=00,R/M=110 qui impose le codage avec disp8 nul."
+        },
+        {
+          "choice": "BP utilise un registre 8 bits",
+          "reason": "BP est un registre 16 bits ; le déplacement nul est un octet encodé, pas une réduction de largeur de BP."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
+    },
+    {
+      "id": "C32-F-Q1",
+      "status": "certified",
+      "rule": "modrm_field_layout",
+      "inputs": {
+        "modBits": 2,
+        "regBits": 3,
+        "rmBits": 3
+      },
+      "expected": {
+        "fields": [
+          "Mod",
+          "Reg",
+          "R/M"
+        ],
+        "widths": [
+          2,
+          3,
+          3
+        ],
+        "totalBits": 8
+      },
+      "correctAnswer": "Mod, Reg et R/M",
+      "derivation": "Le byte ModR/M est constitué des champs Mod (2 bits), Reg (3 bits) et R/M (3 bits). Ces champs déterminent le mode opérande, le registre/extension et la sélection registre ou mémoire.",
+      "distractorRationales": [
+        {
+          "choice": "CS, IP et FLAGS",
+          "reason": "Ces registres participent au contrôle du processeur mais ne sont pas les champs du byte ModR/M."
+        },
+        {
+          "choice": "Segment, offset et port",
+          "reason": "Segment:offset décrit une adresse logique et le port appartient à l'espace E/S ; aucun de ces éléments ne découpe ModR/M."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
+    },
+    {
+      "id": "C32-F-Q2",
+      "status": "certified",
+      "rule": "modrm_disp_size",
+      "inputs": {
+        "mod": 1
+      },
+      "expected": {
+        "displacementBits": 8,
+        "signed": true
+      },
+      "correctAnswer": "Un déplacement signé de 8 bits",
+      "derivation": "Mod=01 sélectionne un déplacement disp8 signé, étendu selon le contexte d'adressage. Mod=00 et Mod=10 ont d'autres significations, et Mod=11 désigne un registre.",
+      "distractorRationales": [
+        {
+          "choice": "Un registre direct",
+          "reason": "Le mode registre direct est Mod=11 ; Mod=01 indique un opérande mémoire avec déplacement court."
+        },
+        {
+          "choice": "Un déplacement 16 bits",
+          "reason": "Le déplacement 16 bits est sélectionné par Mod=10, ou par le cas spécial Mod=00,R/M=110 pour l'adressage direct."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
+    },
+    {
+      "id": "C32-F-Q3",
+      "status": "certified",
+      "rule": "modrm_mov_memory_decode",
+      "inputs": {
+        "opcode": 139,
+        "modrm": 64,
+        "displacement": 4,
+        "width": 16
+      },
+      "expected": {
+        "instruction": "MOV AX,[BX+SI+4]",
+        "mod": 1,
+        "reg": "AX",
+        "rmExpression": "BX+SI",
+        "displacement": 4
+      },
+      "correctAnswer": "MOV AX,[BX+SI+4]",
+      "derivation": "8Bh est MOV r16,r/m16. Le byte ModR/M 40h se décompose en Mod=01, Reg=000 (AX), R/M=000 ([BX+SI]) ; l'octet suivant 04h est le déplacement signé +4. L'instruction lit donc [BX+SI+4] dans AX.",
+      "distractorRationales": [
+        {
+          "choice": "MOV [BX],AX",
+          "reason": "Cette forme inverse la direction et ne correspond pas à l'opcode 8Bh ni au champ Reg=AX."
+        },
+        {
+          "choice": "MOV AX,1234h",
+          "reason": "Cette forme chargerait un immédiat et utiliserait un opcode B8+r ; 8B 40 04 contient ModR/M et déplacement mémoire."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
+    },
+    {
+      "id": "C32-F-Q4",
+      "status": "certified",
+      "rule": "modrm_direct_address_special",
+      "inputs": {
+        "mod": 0,
+        "rm": 6
+      },
+      "expected": {
+        "directAddress": true,
+        "displacementBits": 16,
+        "usesBaseRegister": false
+      },
+      "correctAnswer": "Adressage direct disp16",
+      "derivation": "Sur le 8086, Mod=00,R/M=110 est le cas spécial d'adresse mémoire directe ; les deux octets suivants donnent l'offset disp16. Ce n'est ni le mode registre BP ni [BP] sans déplacement.",
+      "distractorRationales": [
+        {
+          "choice": "Registre BP direct",
+          "reason": "Le mode registre direct est Mod=11 ; la combinaison Mod=00,R/M=110 est réservée à l'adressage mémoire direct."
+        },
+        {
+          "choice": "[BP] sans déplacement",
+          "reason": "[BP] sans déplacement est encodé par Mod=01,R/M=110 avec disp8=00h pour éviter le cas spécial disp16."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
+    },
+    {
+      "id": "C32-F-Q5",
+      "status": "certified",
+      "rule": "effective_address_sum",
+      "inputs": {
+        "base": 256,
+        "index": 2,
+        "displacement": 4,
+        "width": 16
+      },
+      "expected": {
+        "offset": 262
+      },
+      "correctAnswer": "0106h",
+      "derivation": "L'offset effectif se calcule par addition : 0100h+0002h+0004h=0106h. Il s'agit de l'EA 16 bits, avant l'ajout du segment pour former l'adresse physique.",
+      "distractorRationales": [
+        {
+          "choice": "0102h",
+          "reason": "Cette somme oublie disp8=4 et ne prend que BX+SI."
+        },
+        {
+          "choice": "0104h",
+          "reason": "Cette somme oublie SI=2 ; les trois termes doivent être ajoutés."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
+    },
+    {
+      "id": "C32-F-Q6",
+      "status": "certified",
+      "rule": "modrm_decode_byte",
+      "inputs": {
+        "byte": 64,
+        "width": 8
+      },
+      "expected": {
+        "binary": "01000000",
+        "mod": 1,
+        "reg": 0,
+        "rm": 0
+      },
+      "correctAnswer": "01000000b",
+      "derivation": "40h se convertit en binaire 01000000. Les deux bits de poids fort sont 01, les trois bits suivants 000 et les trois bits faibles 000.",
+      "distractorRationales": [
+        {
+          "choice": "10000000b",
+          "reason": "10000000b représente 80h, pas 40h ; le bit de poids fort y est actif."
+        },
+        {
+          "choice": "00000100b",
+          "reason": "00000100b représente 04h, pas 40h ; les bits ne sont pas ceux du byte ModR/M donné."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
+    },
+    {
+      "id": "C32-F-Q7",
+      "status": "certified",
+      "rule": "modrm_reg_field_register",
+      "inputs": {
+        "reg": 0,
+        "width": 16
+      },
+      "expected": {
+        "register": "AX"
+      },
+      "correctAnswer": "AX",
+      "derivation": "Dans le codage des registres 16 bits du 8086, le code Reg=000 désigne AX. Les codes 001 et 011 désignent respectivement CX et BX.",
+      "distractorRationales": [
+        {
+          "choice": "BX",
+          "reason": "BX correspond au code registre 011, pas 000."
+        },
+        {
+          "choice": "CX",
+          "reason": "CX correspond au code registre 001, pas 000."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
+    },
+    {
+      "id": "C32-F-Q8",
+      "status": "certified",
+      "rule": "default_data_segment",
+      "inputs": {
+        "addressingForm": "[BP+SI]",
+        "containsBP": true
+      },
+      "expected": {
+        "segment": "SS"
+      },
+      "correctAnswer": "SS",
+      "derivation": "La forme [BP+SI] utilise BP comme base. En l'absence de surcharge de segment, les modes mémoire basés sur BP sélectionnent SS par défaut, même si SI est aussi présent.",
+      "distractorRationales": [
+        {
+          "choice": "DS",
+          "reason": "DS est le segment par défaut des formes utilisant BX ou SI sans BP ; ici BP impose SS."
+        },
+        {
+          "choice": "ES",
+          "reason": "ES est utilisé comme destination implicite de certaines chaînes, pas comme segment par défaut de [BP+SI]."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
+    },
+    {
+      "id": "C32-F-Q9",
+      "status": "certified",
+      "rule": "bp_zero_displacement_encoding",
+      "inputs": {
+        "base": "BP",
+        "modWithoutDisplacement": 0,
+        "rm": 6,
+        "displacementBytes": 8
+      },
+      "expected": {
+        "mod": 1,
+        "rm": 6,
+        "disp8": 0,
+        "usesBP": true,
+        "directAddress": false
+      },
+      "correctAnswer": "Mod=01,R/M=110,disp8=00h",
+      "derivation": "Mod=00,R/M=110 est réservé à l'adresse directe disp16. Pour coder [BP] sans déplacement, on utilise Mod=01,R/M=110 et un disp8 nul ; le résultat de l'addition reste BP.",
+      "distractorRationales": [
+        {
+          "choice": "Mod=00,R/M=110",
+          "reason": "Cette combinaison serait interprétée comme une adresse directe suivie de disp16, pas comme [BP]."
+        },
+        {
+          "choice": "Mod=11,R/M=110",
+          "reason": "Mod=11 sélectionne un registre direct ; il n'exprime pas un opérande mémoire [BP]."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
+    },
+    {
+      "id": "C32-F-Q10",
+      "status": "certified",
+      "rule": "audit_checklist_coverage",
+      "inputs": {
+        "domain": "modrm_audit",
+        "checks": [
+          "all_mod_values",
+          "all_reg_values",
+          "all_rm_values",
+          "disp8",
+          "disp16",
+          "opcode_extensions",
+          "special_cases"
+        ]
+      },
+      "expected": {
+        "requiredChecks": [
+          "all_mod_values",
+          "all_reg_values",
+          "all_rm_values",
+          "disp8",
+          "disp16",
+          "opcode_extensions",
+          "special_cases"
+        ],
+        "missingChecks": [],
+        "complete": true
+      },
+      "correctAnswer": "Toutes les valeurs Mod, Reg, R/M, déplacements et extensions pertinentes",
+      "derivation": "Un audit ModR/M complet doit couvrir les quatre valeurs de Mod, les huit codes Reg et R/M, les formes disp8 et disp16, les extensions d'opcode ainsi que les cas spéciaux comme Mod=00,R/M=110 et [BP] sans déplacement. Tester uniquement les registres ou Mod=11 laisse de grandes parties de l'espace de codage sans validation.",
+      "distractorRationales": [
+        {
+          "choice": "Seulement les huit registres",
+          "reason": "Tester les codes de registres seuls ignore les modes mémoire, les déplacements, les extensions d'opcode et les combinaisons spéciales."
+        },
+        {
+          "choice": "Seulement Mod=11",
+          "reason": "Mod=11 ne couvre que les formes registre-registre ; les modes mémoire Mod=00/01/10 et leurs cas limites resteraient non testés."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (October 1979), ModR/M Byte, Effective Address Calculation and 8086 Addressing Modes; Intel MCS-86 Assembly Language Reference Manual, 16-bit memory addressing forms."
+    }
+  ]
+}
