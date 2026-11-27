@@ -34,7 +34,7 @@
     },
     {
       "id": "C01-L1-Q2",
-      "status": "blocked",
+      "status": "certified",
       "rule": "source_instruction_vs_data",
       "inputs": {
         "source": "MOV AX,1234h",
@@ -42,7 +42,7 @@
       },
       "expected": "assembly_statement_is_instruction",
       "correctAnswer": "MOV AX,1234h",
-      "derivation": "MOV AX,1234h est une instruction en langage assembleur ; 1234h isolé est une valeur immédiate. Toutefois, la phrase d'explication actuelle affirme à tort que le texte source est déjà « une instruction encodée » : l'encodage machine est une suite d'octets distincte, produite par l'assembleur.",
+      "derivation": "MOV AX,1234h est une instruction écrite en langage assembleur ; 1234h est l'opérande immédiat. Le texte source n'est pas encore le code machine : l'assembleur produit une séquence d'octets encodés distincte.",
       "distractorRationales": [
         {
           "choice": "La valeur 1234h isolée",
@@ -53,8 +53,7 @@
           "reason": "Une adresse désigne un emplacement ; elle n'exprime pas à elle seule une opération."
         }
       ],
-      "reference": "Intel MCS-86 Assembly Language Reference Manual, syntaxe source ; Intel 8086 Family User's Manual, format des instructions machine.",
-      "blocker": "Réviser l'explication runtime : le source assembleur n'est pas lui-même les octets machine."
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, syntaxe source ; Intel 8086 Family User's Manual, format des instructions machine."
     },
     {
       "id": "C01-L1-Q3",
