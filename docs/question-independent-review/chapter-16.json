@@ -116,10 +116,10 @@
   ],
   "summary": {
     "questionsReviewed": 19,
-    "passed": 15,
-    "needsRevision": 4,
+    "passed": 11,
+    "needsRevision": 8,
     "corrected": 0,
-    "blocked": 4,
+    "blocked": 8,
     "officialCertificationCountBefore": 384,
     "officialCertificationCountAfter": 384,
     "remainingOfficialCertification": 300
