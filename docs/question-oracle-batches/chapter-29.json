@@ -572,8 +572,9 @@
     {
       "id": "C29-F-Q9",
       "status": "certified",
-      "rule": "interrupt_return_debug",
+      "rule": "audit_checklist_coverage",
       "inputs": {
+        "domain": "interrupt_return_debug",
         "checks": [
           "stack_word_order",
           "saved_IP",
