@@ -723,7 +723,7 @@ function independentlyCompute(oracle) {
       return { writes, finalCX: 0, finalDI: (i.initialDI + i.count) & 0xffff };
     }
     case "symbol_table_offsets":
-      return Object.fromEntries(i.symbols.map(symbol => [symbol.label, symbol.offset]));
+      return { ...Object.fromEntries(i.symbols.map(symbol => [symbol.label, symbol.offset])), valuesAreOffsets: true };
     case "assembler_two_pass":
       return { firstPass: "calculate_offsets_and_symbols", secondPass: "resolve_references_and_encode" };
     case "near_label_jump_resolution":
