@@ -180,7 +180,6 @@ for (const oracle of independentQuestionAudit.oracles) {
       break;
     }
     case "unsigned_strict_greater":{
-      const greater=oracle.inputs.candidate>oracle.inputs.currentMaximum;
       const equal=oracle.inputs.equalCase.candidate===oracle.inputs.equalCase.currentMaximum;
       const carry=oracle.inputs.candidate<oracle.inputs.currentMaximum?1:0;
       const zero=equal?1:0;
