@@ -1150,7 +1150,7 @@ function independentlyCompute(oracle) {
     }
     case "intel_operand_order":
       if (i.instruction) {
-        const operands = i.instruction.replace(/^MOV\s+/i, "").split(",");
+        const operands = i.instruction.replace(/^[A-Z]+\s+/i, "").split(",");
         return { destination: operands[0].trim(), source: operands[1].trim() };
       }
       return fact[oracle.rule];
@@ -1323,12 +1323,19 @@ assert.deepEqual(reviewedChapter2Ids, chapter2Ids, "Chapter 2 independent review
 assert.equal(new Set(reviewedChapter2Ids).size, 19, "Chapter 2 review must not duplicate question IDs");
 assert.equal(chapter2Review.summary.questionsReviewed, 19, "Chapter 2 review count must match the complete question bank");
 assert.equal(chapter2Review.summary.passed, 18, "Chapter 2 review must report 18 technically and pedagogically passed items");
-assert.equal(chapter2Review.summary.blocked, 1, "Chapter 2 review must preserve the unresolved assessment-blueprint blocker");
-assert.equal(chapter2Review.summary.corrected, 0, "No chapter 2 runtime question has been changed in this review tranche");
+assert.equal(chapter2Review.summary.blocked, 0, "Chapter 2 assessment blueprint blocker must be resolved");
+assert.equal(chapter2Review.summary.corrected, 1, "The second syntax item must be recorded as corrected");
 assert.equal(chapter2Review.summary.officialCertificationCountBefore, 384, "Chapter 2 review starts from the official 384-question ledger");
 assert.equal(chapter2Review.summary.officialCertificationCountAfter, 384, "A blocked chapter review must not advance official certification");
 assert.equal(chapter2Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
-const chapter2Blocker = chapter2Review.records.find(record => record.id === "C02-F-Q4");
-assert.equal(chapter2Blocker?.result, "blocked", "C02-F-Q4 must remain blocked until the final-assessment category balance is corrected");
-assert.match(chapter2Blocker.finding, /second item of syntax/i, "The chapter 2 blocker must explain the missing second syntax assessment item");
+const chapter2Correction = chapter2Review.records.find(record => record.id === "C02-F-Q4");
+assert.equal(chapter2Correction?.result, "corrected", "C02-F-Q4 must record the syntax correction");
+assert.match(chapter2Correction.finding, /ADD AX,3/i, "The chapter 2 review must document the corrected Intel syntax item");
+const chapter2Final = key.questions.filter(question => question.chapter === 2 && question.kind === "final");
+const categoryCount = category => chapter2Final.filter(question => question.category === category).length;
+assert.equal(categoryCount("Définition"), 2, "Chapter 2 final assessment must contain two definition items");
+assert.equal(categoryCount("Syntaxe"), 2, "Chapter 2 final assessment must contain two syntax items");
+assert.equal(chapter2Final.filter(question => ["Prédiction", "Calcul / prédiction"].includes(question.category)).length, 2, "Chapter 2 final assessment must contain two calculation/prediction items");
+assert.equal(chapter2Final.filter(question => ["Analyse de programme", "Analyse de résultat"].includes(question.category)).length, 2, "Chapter 2 final assessment must contain two program-analysis items");
+assert.equal(chapter2Final.filter(question => ["Débogage", "Raisonnement"].includes(question.category)).length, 2, "Chapter 2 final assessment must contain two reasoning/debug items");
 console.log("Question oracle evaluator: chapters 1–36 — " + oracleRecordsChecked + "/684 oracle records passed automated checks; official certification ledger remains " + manifest.oracleCoverageSummary.officialCertificationCount + "/684 (" + manifest.oracleCoverageSummary.remainingOfficialCertification + " pending); " + blocked + " blocked.");
