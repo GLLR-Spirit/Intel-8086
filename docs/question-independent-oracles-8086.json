@@ -3735,7 +3735,7 @@
     "remainingOfficialCertification": 300,
     "calculation": "36 chapitres × 19 questions = 684 identifiants uniques. Les 681 enregistrements des lots sont complétés par trois oracles historiques hors lots ; trois autres oracles historiques sont réutilisés dans les lots. L'index oracles expose les 684 identifiants ; historicalOracles conserve les six objets historiques détaillés.",
     "registeredOracleRecords": 684,
-    "individuallyReviewedQuestions": 494,
+    "individuallyReviewedQuestions": 456,
     "individualReviewChapters": [
       1,
       2,
