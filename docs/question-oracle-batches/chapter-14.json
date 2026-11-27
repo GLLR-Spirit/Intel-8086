@@ -48,7 +48,7 @@
         "condition": "OF=1"
       },
       "correctAnswer": "OF=1",
-      "derivation": "JO signifie jump if overflow et teste OF=1. Il ne teste ni ZF ni PF.",
+      "derivation": "JO signifie jump if overflow et teste directement OF=1. Il branche donc lorsque l'opération précédente a produit un débordement dans l'interprétation signée. ZF décrit un résultat nul et PF décrit la parité de l'octet faible ; aucun de ces deux indicateurs ne définit JO.",
       "distractorRationales": [
         {
           "choice": "ZF=1",
