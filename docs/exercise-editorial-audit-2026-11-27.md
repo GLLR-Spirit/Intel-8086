@@ -203,10 +203,13 @@ Un troisième champ éditorial a été ajouté à chacune des 48 fiches : une ju
 
 ### Couverture des branches et des méthodes demandées
 
-Le test navigateur indépendant inclut maintenant des variantes de données pour vérifier les chemins alternatifs :
+Le test navigateur indépendant inclut maintenant neuf variantes de données pour vérifier les chemins alternatifs :
 
 - EX04 : cas différent (AX≠BX), en complément du cas égal de l'énoncé.
 - EX19 : branche signée prise vers le cas AX≤BX, en complément du chemin AX>BX.
 - EX21 : cas AX>BX et cas AX=BX, en complément du cas AX<BX de l'énoncé.
+- EX14 et EX20 : cas où la condition signée n'est pas satisfaite.
+- EX45 : recherche sans correspondance, avec CX épuisé, DI avancé et ZF=0.
+- EX47 et EX48 : cas où la vérification mémoire échoue et le statut transmis au gestionnaire devient zéro.
 
 Il vérifie aussi explicitement la présence des méthodes demandées dans les corrections EX02, EX03, EX05, EX25, EX33, EX34, EX43, EX45, EX46, EX47 et EX48 (registre temporaire, CX/LOOP, direction des chaînes, E/S, FLAGS et interruptions). Ces contrôles empêchent qu'un résultat final isolé soit pris pour la preuve d'une méthode qui n'aurait pas été utilisée.
