@@ -311,6 +311,14 @@ assert.ok(learning.exerciseChapterAssignments.every(chapters =>
   chapters.every(chapter => Number.isInteger(chapter) && chapter >= 1 && chapter <= 36)),
   "Every exercise assignment must reference one or more valid 1-based chapter numbers");
 assert.equal(learning.exercises.length, 48, "The exercise bank must contain 48 guided exercises.");
+const reasoningExercise=learning.exercises[38][6];
+assert.ok(reasoningExercise,"EX39 must define a dedicated written-reasoning rubric.");
+assert.equal(reasoningExercise.criteria.length,4,"EX39 must expose four independently reviewable reasoning criteria.");
+assert.ok(reasoningExercise.criteria.some(item=>/BIU/.test(item)),"EX39 rubric must address BIU prefetch overlap.");
+assert.ok(reasoningExercise.criteria.some(item=>/bus/i.test(item)),"EX39 rubric must address bus activity.");
+assert.ok(/ne modélise pas ces cycles matériels/.test(reasoningExercise.modelAnswer),
+  "EX39 model answer must state the simulator's timing-model limitation.");
+
 assert.equal(learning.exerciseChapterAssignments.length, 48, "Every exercise must have an explicit chapter mapping.");
 const exerciseMetadataRows=learning.exercises.map((exercise,index)=>learning.exerciseMetadata(exercise,index));
 const exerciseChapters=new Set();
