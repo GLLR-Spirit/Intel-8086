@@ -1781,7 +1781,7 @@ var auditedL4to6Final=[
  auditedQ("Avec BX=0100h, SI=0002h et disp=4, quelle EA obtient-on ?",["0106h","0102h","0104h"],0,"0100h+0002h+0004h=0106h.","Prédiction"),
  auditedQ("Quel déplacement code l'adresse directe [1234h] ?",["disp16=1234h","disp8=34h","aucun déplacement"],0,"Le mode direct utilise Mod=00, r/m=110 et un déplacement 16 bits.","Calcul / prédiction"),
  auditedQ("Que fait MOV AX,[BX+SI] si le mot ABCDh est à DS:0102h et BX+SI=0102h ?",["AX reçoit ABCDh","AX reçoit 0102h","BX reçoit ABCDh"],0,"L'instruction lit le mot à l'adresse effective et le charge dans AX.","Analyse de programme"),
- auditedQ("Quel segment est sélectionné par défaut pour [BP+4] ?",["SS","DS","ES"],0,"BP sélectionne SS sauf override explicite.","Analyse de résultat"),
+ auditedQ("Après MOV BX,FFF0h / MOV SI,0030h / MOV AX,[BX+SI+4], quel offset effectif est utilisé pour lire le mot ?",["0024h (repli sur 16 bits)","10024h (offset 20 bits)","0020h (déplacement ignoré)"],0,"FFF0h+0030h+0004h=10024h. L'adresse effective est un offset 16 bits : seuls les 16 bits faibles sont conservés, soit 0024h. Le segment est appliqué ensuite.","Analyse de résultat"),
  auditedQ("Comment corriger MOV AX,[BP+4] si la donnée est volontairement dans DS ?",["MOV AX, DS:[BP+4]","MOV DS,CS","MOV AX,CS:IP"],0,"Un préfixe DS explicite remplace le segment par défaut SS.","Débogage"),
  auditedQ("Quelle démarche couvre correctement un mode mémoire ?",["Vérifier EA, segment par défaut, override et largeur","Vérifier uniquement la valeur de BX","Ignorer le déplacement"],0,"La sémantique mémoire dépend de tous ces éléments.","Raisonnement")
 ],
