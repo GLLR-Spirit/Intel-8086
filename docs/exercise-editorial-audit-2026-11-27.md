@@ -182,3 +182,15 @@ Le premier contrôle avait comparé l'IP après HLT à la taille totale du progr
 
 
 Le test navigateur indépendant a été étendu aux invariants ajoutés de EX33 et EX43. Il exécute maintenant neuf corrections ciblées (EX33, EX35, EX37, EX39, EX41, EX43, EX46, EX47, EX48) et conserve trois contrôles négatifs.
+
+
+## Deuxième passe éditoriale — prérequis et erreurs fréquentes
+
+Les 48 fiches disposent maintenant d'un complément éditorial individuel affiché dans le guide de chaque exercice :
+
+- **Prérequis ciblés** : notions et instructions que l'apprenant doit maîtriser avant de commencer.
+- **Piège fréquent** : erreur plausible propre à l'exercice, symptôme ou conséquence, et correction attendue.
+- Les notes sont liées par index à EX01–EX48 ; elles ne sont pas une consigne générique recopiée.
+- Le test navigateur vérifie que les 48 entrées possèdent chacune ces deux champs non vides, en plus du parcours des 48 corrections guidées.
+
+Cette passe améliore l'explicitation des prérequis et l'apprentissage par l'erreur. Elle ne transforme pas le contrôle lexical d'EX39 en correction sémantique automatique et ne remplace pas l'examen des variantes de branchement ; ces limites restent explicites dans le registre.
