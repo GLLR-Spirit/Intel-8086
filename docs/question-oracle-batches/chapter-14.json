@@ -26,12 +26,12 @@
       "derivation": "JE branche lorsque le résultat précédent est nul, donc lorsque ZF=1. JZ est un alias de JE et teste exactement le même indicateur.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "F"
+          "choice": "CF=1",
+          "reason": "CF signale une retenue ou un emprunt non signé ; JE teste l'égalité via ZF."
         },
         {
-          "choice": "S",
-          "reason": "F"
+          "choice": "SF=1",
+          "reason": "SF indique le signe du résultat et ne constitue pas la condition d'égalité de JE."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), conditional jump mnemonics and FLAGS conditions; Intel MCS-86 Assembly Language Reference Manual, Jcc condition-code table."
@@ -51,12 +51,12 @@
       "derivation": "JO signifie jump if overflow et teste OF=1. Il ne teste ni ZF ni PF.",
       "distractorRationales": [
         {
-          "choice": "Z",
-          "reason": "F"
+          "choice": "ZF=1",
+          "reason": "ZF=1 indique un résultat nul ; JO teste le débordement OF."
         },
         {
-          "choice": "P",
-          "reason": "F"
+          "choice": "PF=0",
+          "reason": "PF décrit la parité et n'est pas l'indicateur testé par JO."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), conditional jump mnemonics and FLAGS conditions; Intel MCS-86 Assembly Language Reference Manual, Jcc condition-code table."
@@ -76,12 +76,12 @@
       "derivation": "JL est le branchement inférieur signé. Sa condition est SF différent de OF ; CF=0 et ZF=0 correspondent plutôt à JA non signé.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "F"
+          "choice": "CF=0 et ZF=0",
+          "reason": "CF=0 et ZF=0 correspond à supérieur strict non signé (JA), pas à inférieur signé."
         },
         {
-          "choice": "Z",
-          "reason": "F"
+          "choice": "ZF=1 uniquement",
+          "reason": "ZF=1 indique l'égalité ; JL teste la relation signée SF différent de OF."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), conditional jump mnemonics and FLAGS conditions; Intel MCS-86 Assembly Language Reference Manual, Jcc condition-code table."
@@ -101,12 +101,12 @@
       "derivation": "JO teste OF=1, c'est-à-dire que l'opération précédente a signalé un débordement signé. Il ne teste pas la retenue CF ni l'égalité ZF.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "F"
+          "choice": "CF=1",
+          "reason": "CF indique une retenue ou un emprunt non signé, pas un débordement signé."
         },
         {
-          "choice": "Z",
-          "reason": "F"
+          "choice": "ZF=1",
+          "reason": "ZF indique un résultat nul et n'est pas la condition de JO."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), conditional jump mnemonics and FLAGS conditions; Intel MCS-86 Assembly Language Reference Manual, Jcc condition-code table."
@@ -126,12 +126,12 @@
       "derivation": "JP et son alias JPE branchent lorsque PF=1. PF vaut 1 lorsque l'octet faible du résultat contient un nombre pair de bits à 1.",
       "distractorRationales": [
         {
-          "choice": "P",
-          "reason": "F"
+          "choice": "PF=0, parité impaire",
+          "reason": "PF=0 correspond à une parité impaire ; JP demande PF=1."
         },
         {
-          "choice": "S",
-          "reason": "F"
+          "choice": "SF=1",
+          "reason": "SF indique le signe et n'est pas l'indicateur de parité testé par JP."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), conditional jump mnemonics and FLAGS conditions; Intel MCS-86 Assembly Language Reference Manual, Jcc condition-code table."
@@ -151,12 +151,12 @@
       "derivation": "JNS signifie jump if not sign et branche lorsque SF=0. La condition ne dépend pas directement de CF ou OF.",
       "distractorRationales": [
         {
-          "choice": "S",
-          "reason": "F"
+          "choice": "SF=1",
+          "reason": "SF=1 signifie que le bit de signe est actif ; JNS demande son absence."
         },
         {
-          "choice": "O",
-          "reason": "F"
+          "choice": "OF=1",
+          "reason": "OF indique un débordement signé et ne remplace pas le test SF=0 de JNS."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), conditional jump mnemonics and FLAGS conditions; Intel MCS-86 Assembly Language Reference Manual, Jcc condition-code table."
@@ -176,12 +176,12 @@
       "derivation": "JA exprime strictement supérieur en non signé. Il faut simultanément aucune retenue/emprunt (CF=0) et une différence non nulle (ZF=0).",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "F"
+          "choice": "CF=1 ou ZF=1",
+          "reason": "CF=1 ou ZF=1 correspond à inférieur ou égal non signé (JBE), pas à supérieur strict."
         },
         {
-          "choice": "S",
-          "reason": "F"
+          "choice": "SF différent de OF",
+          "reason": "SF différent de OF est une condition de comparaison signée (JL), pas JA non signé."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), conditional jump mnemonics and FLAGS conditions; Intel MCS-86 Assembly Language Reference Manual, Jcc condition-code table."
@@ -201,12 +201,12 @@
       "derivation": "JBE exprime inférieur ou égal en non signé. Il branche si la soustraction indique un emprunt CF=1 ou si les opérandes sont égaux ZF=1.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "F"
+          "choice": "CF=0 et ZF=0",
+          "reason": "CF=0 et ZF=0 correspond à supérieur strict non signé, pas à inférieur ou égal."
         },
         {
-          "choice": "S",
-          "reason": "F"
+          "choice": "SF=OF et ZF=0",
+          "reason": "SF=OF et ZF=0 correspond à supérieur signé, pas à JBE non signé."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), conditional jump mnemonics and FLAGS conditions; Intel MCS-86 Assembly Language Reference Manual, Jcc condition-code table."
@@ -226,12 +226,12 @@
       "derivation": "JG exprime strictement supérieur en signé. Il faut que les opérandes soient différents (ZF=0) et que SF soit égal à OF.",
       "distractorRationales": [
         {
-          "choice": "S",
-          "reason": "F"
+          "choice": "SF différent de OF",
+          "reason": "SF différent de OF correspond à inférieur signé (JL), pas à supérieur strict signé."
         },
         {
-          "choice": "C",
-          "reason": "F"
+          "choice": "CF=1",
+          "reason": "CF=1 concerne une condition non signée et ne définit pas JG."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), conditional jump mnemonics and FLAGS conditions; Intel MCS-86 Assembly Language Reference Manual, Jcc condition-code table."
@@ -252,12 +252,12 @@
       "derivation": "JE et JZ sont deux mnémoniques alias pour la même condition : ZF=1. Leur choix ne change ni l'encodage conditionnel ni le sens du branchement.",
       "distractorRationales": [
         {
-          "choice": "N",
-          "reason": "o"
+          "choice": "Non",
+          "reason": "JE et JZ testent tous deux ZF=1 ; ils sont des alias, pas des conditions différentes."
         },
         {
-          "choice": "S",
-          "reason": "e"
+          "choice": "Seulement en 32 bits",
+          "reason": "JE et JZ sont des alias sur le 8086 ; leur équivalence ne dépend pas d'un mode 32 bits."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), conditional jump mnemonics and FLAGS conditions; Intel MCS-86 Assembly Language Reference Manual, Jcc condition-code table."
@@ -277,12 +277,12 @@
       "derivation": "JNE et son alias JNZ branchent lorsque ZF=0, c'est-à-dire lorsque le résultat précédent n'est pas nul.",
       "distractorRationales": [
         {
-          "choice": "Z",
-          "reason": "F"
+          "choice": "ZF=1",
+          "reason": "ZF=1 signifie égalité ; JNE branche lorsque ZF=0."
         },
         {
-          "choice": "C",
-          "reason": "F"
+          "choice": "CF=1",
+          "reason": "CF=1 est un test de retenue non signée et ne définit pas JNE."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), conditional jump mnemonics and FLAGS conditions; Intel MCS-86 Assembly Language Reference Manual, Jcc condition-code table."
@@ -302,12 +302,12 @@
       "derivation": "JC branche lorsque CF=1, ce qui correspond à une retenue ou un emprunt dans l'interprétation non signée.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "F"
+          "choice": "CF=0",
+          "reason": "CF=0 signifie qu'aucune retenue/emprunt n'est présent ; JC exige CF=1."
         },
         {
-          "choice": "O",
-          "reason": "F"
+          "choice": "OF=1",
+          "reason": "OF signale un débordement signé, pas une retenue non signée."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), conditional jump mnemonics and FLAGS conditions; Intel MCS-86 Assembly Language Reference Manual, Jcc condition-code table."
@@ -327,12 +327,12 @@
       "derivation": "JBE signifie inférieur ou égal non signé. Il branche si CF=1 ou si ZF=1 ; l'une des deux conditions suffit.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "F"
+          "choice": "CF=0 et ZF=0",
+          "reason": "CF=0 et ZF=0 est la condition JA supérieur strict non signé, pas JBE."
         },
         {
-          "choice": "S",
-          "reason": "F"
+          "choice": "SF=OF",
+          "reason": "SF=OF est une condition de comparaison signée, pas la condition non signée JBE."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), conditional jump mnemonics and FLAGS conditions; Intel MCS-86 Assembly Language Reference Manual, Jcc condition-code table."
@@ -352,12 +352,12 @@
       "derivation": "JA signifie strictement supérieur non signé. Il ne branche que si CF=0 et ZF=0 ; l'absence d'emprunt et l'inégalité sont toutes deux nécessaires.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "F"
+          "choice": "CF=1 ou ZF=1",
+          "reason": "CF=1 ou ZF=1 est la condition JBE inférieur ou égal, pas JA."
         },
         {
-          "choice": "S",
-          "reason": "F"
+          "choice": "SF différent de OF",
+          "reason": "SF différent de OF est une condition signée (JL), pas supérieur strict non signé."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), conditional jump mnemonics and FLAGS conditions; Intel MCS-86 Assembly Language Reference Manual, Jcc condition-code table."
@@ -377,12 +377,12 @@
       "derivation": "JS signifie jump if sign et branche lorsque le bit de signe SF vaut 1. Il ne teste pas directement OF ou PF.",
       "distractorRationales": [
         {
-          "choice": "O",
-          "reason": "F"
+          "choice": "OF=1",
+          "reason": "OF=1 indique un débordement signé ; JS teste SF=1."
         },
         {
-          "choice": "P",
-          "reason": "F"
+          "choice": "PF=1",
+          "reason": "PF=1 indique une parité paire, pas un signe négatif."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), conditional jump mnemonics and FLAGS conditions; Intel MCS-86 Assembly Language Reference Manual, Jcc condition-code table."
@@ -402,12 +402,12 @@
       "derivation": "JP branche lorsque PF=1, soit lorsque l'octet faible du résultat présente une parité paire. CF et ZF ne définissent pas cette condition.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "F"
+          "choice": "CF=1",
+          "reason": "CF=1 signale une retenue ou un emprunt, pas la parité paire."
         },
         {
-          "choice": "Z",
-          "reason": "F"
+          "choice": "ZF=0",
+          "reason": "ZF=0 indique un résultat non nul ; JP teste PF=1."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), conditional jump mnemonics and FLAGS conditions; Intel MCS-86 Assembly Language Reference Manual, Jcc condition-code table."
@@ -427,12 +427,12 @@
       "derivation": "JNO signifie jump if not overflow et branche lorsque OF vaut zéro. La condition est indépendante de ZF et ne signifie pas que le résultat est nul.",
       "distractorRationales": [
         {
-          "choice": "O",
-          "reason": "F"
+          "choice": "OF=1",
+          "reason": "JNO branche lorsque OF=0 ; OF=1 est la condition opposée JO."
         },
         {
-          "choice": "Z",
-          "reason": "F"
+          "choice": "ZF=0",
+          "reason": "ZF=0 signifie résultat non nul et n'est pas le test de JNO."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), conditional jump mnemonics and FLAGS conditions; Intel MCS-86 Assembly Language Reference Manual, Jcc condition-code table."
@@ -452,12 +452,12 @@
       "derivation": "JGE exprime supérieur ou égal en signé. La condition est SF égal à OF ; contrairement à JL, les deux indicateurs doivent être égaux.",
       "distractorRationales": [
         {
-          "choice": "S",
-          "reason": "F"
+          "choice": "SF≠OF",
+          "reason": "SF différent de OF correspond à inférieur signé (JL), pas à supérieur ou égal."
         },
         {
-          "choice": "Z",
-          "reason": "F"
+          "choice": "ZF=1",
+          "reason": "ZF=1 indique égalité, mais JGE utilise SF=OF."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), conditional jump mnemonics and FLAGS conditions; Intel MCS-86 Assembly Language Reference Manual, Jcc condition-code table."
@@ -477,12 +477,12 @@
       "derivation": "Jcc lit les indicateurs produits par une instruction précédente, par exemple CMP ou TEST. Le saut conditionnel ne compare pas lui-même AX et BX et ne produit pas une nouvelle soustraction.",
       "distractorRationales": [
         {
-          "choice": "O",
-          "reason": "u"
+          "choice": "Oui, toujours CMP AX,0",
+          "reason": "Jcc lit les indicateurs existants ; il ne réalise pas automatiquement CMP AX,0."
         },
         {
-          "choice": "S",
-          "reason": "e"
+          "choice": "Seulement pour JE",
+          "reason": "La condition Jcc n'est pas limitée à JE ; toutes les formes Jcc testent leurs indicateurs spécifiés."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), conditional jump mnemonics and FLAGS conditions; Intel MCS-86 Assembly Language Reference Manual, Jcc condition-code table."
