@@ -10559,14 +10559,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Lors d'une opération normale de prélecture, combien d'octets le 8086 récupère-t-il ?",
+      "stem": "La file de prélecture contient déjà 4 octets. La BIU récupère un mot de 2 octets. Combien d'octets la file contient-elle ensuite ?",
       "choices": [
-        "2",
-        "1",
+        "6",
+        "5",
         "4"
       ],
-      "correctAnswer": "2",
-      "explanation": "La BIU du 8086 récupère normalement deux octets par opération de prélecture ; la capacité totale de la file reste de six octets.",
+      "correctAnswer": "6",
+      "explanation": "La file passe de 4 à 6 octets après le transfert d'un mot de deux octets ; elle atteint alors sa capacité de six octets.",
       "category": "Prédiction"
     },
     {
@@ -10575,14 +10575,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Si un branchement conditionnel n'est pas pris, que devient la file de prélecture séquentielle ?",
+      "stem": "JNZ SHORT CIBLE est exécuté avec ZF=1. Quel est l'effet sur le flot d'instructions ?",
       "choices": [
-        "Elle reste utilisable car le flot séquentiel continue",
-        "Elle est toujours vidée par tout branchement",
-        "IP est remis à zéro"
+        "Le saut n'est pas pris : IP continue après JNZ et la file séquentielle reste utilisable",
+        "Le saut est pris et la file est vidée",
+        "IP revient à zéro"
       ],
-      "correctAnswer": "Elle reste utilisable car le flot séquentiel continue",
-      "explanation": "Si la condition n'est pas satisfaite, IP suit le chemin séquentiel. Le branchement n'impose donc pas de vider la file pour réalimenter un nouvel emplacement.",
+      "correctAnswer": "Le saut n'est pas pris : IP continue après JNZ et la file séquentielle reste utilisable",
+      "explanation": "JNZ saute seulement si ZF=0. Avec ZF=1, le saut n'est pas pris ; l'exécution continue à l'instruction suivante et le flot séquentiel préchargé reste cohérent.",
       "category": "Calcul / prédiction"
     },
     {
