@@ -436,6 +436,34 @@ function independentlyCompute(oracle) {
       return { opcode: "EB", displacementBits: 8, kind: "direct_relative_short" };
     case "short_displacement_fits":
       return { fits: i.displacement >= -(2 ** (i.bits - 1)) && i.displacement <= (2 ** (i.bits - 1)) - 1, minimum: -(2 ** (i.bits - 1)), maximum: (2 ** (i.bits - 1)) - 1 };
+    case "jcc_compare_trace": {
+      const modulus = 2 ** i.bits;
+      const sign = 2 ** (i.bits - 1);
+      const signedValue = value => (value & sign) ? value - modulus : value;
+      const leftValue = i.signed ? signedValue(i.left) : i.left;
+      const rightValue = i.signed ? signedValue(i.right) : i.right;
+      const CF = i.left < i.right ? 1 : 0;
+      const ZF = i.left === i.right ? 1 : 0;
+      const branchTaken = i.condition === "JBE" ? (CF === 1 || ZF === 1) : i.condition === "JA" ? (CF === 0 && ZF === 0) : false;
+      return { leftValue, rightValue, CF, ZF, branchTaken };
+    }
+    case "jcc_parity_trace": {
+      const result = i.AL & i.mask;
+      let bits = result & 0xff;
+      let ones = 0;
+      while (bits) { ones += bits & 1; bits >>>= 1; }
+      const PF = ones % 2 === 0 ? 1 : 0;
+      return { result, PF, branchTaken: i.condition === "JP" && PF === 1 };
+    }
+    case "jcc_overflow_trace": {
+      const modulus = 2 ** i.width;
+      const sign = 2 ** (i.width - 1);
+      const signedInitial = (i.initialAL & sign) ? i.initialAL - modulus : i.initialAL;
+      const signedResult = signedInitial + i.addend;
+      const result = (i.initialAL + i.addend) & (modulus - 1);
+      const OF = signedResult < -sign || signedResult > sign - 1 ? 1 : 0;
+      return { result, OF, branchTaken: i.condition === "JO" && OF === 1 };
+    }
     case "jcc_condition": {
       const conditions = { JE: "ZF=1", JB: "CF=1", JO: "OF=1", JL: "SF!=OF", JP: "PF=1", JNS: "SF=0", JA: "CF=0 && ZF=0", JBE: "CF=1 || ZF=1", JG: "ZF=0 && SF=OF", JNE: "ZF=0", JC: "CF=1", JS: "SF=1", JNO: "OF=0", JGE: "SF=OF" };
       return { condition: conditions[i.mnemonic] };
@@ -1600,5 +1628,22 @@ assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C13-L1-Q1").expe
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C13-L2-Q1").expected, { opcode: "EA", kind: "far_direct", pointerBits: 32 }, "Direct far JMP must use EA ptr16:16");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C13-F-Q7").expected, { opcode: "FF", extension: 5, kind: "far_indirect" }, "Indirect far JMP must use FF /5");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C13-F-Q5").expected, { CS: 4096, IP: 4660, CSChanged: false, IPChanged: true }, "JMP BX must load IP and preserve CS");
+
+
+const chapter14Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-14.json", "utf8"));
+const chapter14Ids = key.questions.filter(question => question.chapter === 14).map(question => question.id).sort();
+const reviewedChapter14Ids = chapter14Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter14Ids, chapter14Ids, "Chapter 14 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter14Ids).size, 19, "Chapter 14 review must not duplicate question IDs");
+assert.equal(chapter14Review.summary.questionsReviewed, 19, "Chapter 14 review count must match the complete question bank");
+assert.equal(chapter14Review.summary.passed, 14, "Chapter 14 review must report 14 passed questions");
+assert.equal(chapter14Review.summary.corrected, 5, "Chapter 14 review must record five Jcc coverage improvements");
+assert.equal(chapter14Review.summary.blocked, 0, "Chapter 14 review must have no unresolved blockers");
+assert.equal(chapter14Review.summary.officialCertificationCountBefore, 384, "Chapter 14 review starts from the official 384-question ledger");
+assert.equal(chapter14Review.summary.officialCertificationCountAfter, 384, "Chapter 14 review must not silently advance official certification");
+assert.equal(chapter14Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C14-F-Q4").expected, { leftValue: 4, rightValue: 5, CF: 1, ZF: 0, branchTaken: true }, "JBE must branch after unsigned 4<5");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C14-F-Q7").expected, { result: 3, PF: 1, branchTaken: true }, "JP must branch for an even-parity TEST result");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C14-F-Q8").expected, { result: 128, OF: 1, branchTaken: true }, "JO must branch after signed 7Fh+1 overflow");
 
 console.log("Question oracle evaluator: chapters 1–36 — " + oracleRecordsChecked + "/684 oracle records passed automated checks; official certification ledger remains " + manifest.oracleCoverageSummary.officialCertificationCount + "/684 (" + manifest.oracleCoverageSummary.remainingOfficialCertification + " pending); " + blocked + " blocked.");
