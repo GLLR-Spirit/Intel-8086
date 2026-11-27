@@ -124,10 +124,5 @@
     "officialCertificationCountAfter": 384,
     "remainingOfficialCertification": 300
   },
-  "openFindings": [
-    {
-      "id": "final-assessment-blueprint",
-      "description": "Les dix questions finales utilisent encore dix catégories distinctes au lieu de deux questions dans chacune des cinq dimensions demandées (définition, syntaxe, calcul/prédiction, analyse, raisonnement/débogage). À rééquilibrer avant validation pédagogique complète."
-    }
-  ]
+  "openFindings": []
 }
