@@ -376,23 +376,26 @@
     {
       "id": "C35-F-Q5",
       "status": "certified",
-      "rule": "prefetch_fetch_width",
+      "rule": "prefetch_queue_occupancy",
       "inputs": {
-        "processor": "8086"
+        "queueOccupancyBefore": 4,
+        "fetchBytes": 2,
+        "queueCapacity": 6
       },
       "expected": {
-        "bytesPerFetch": 2
+        "queueOccupancyAfter": 6,
+        "queueHasCapacity": 6
       },
-      "correctAnswer": "2",
-      "derivation": "Le 8086 récupère normalement deux octets d'instruction par opération de prélecture. Cette largeur de récupération est distincte de la capacité totale de six octets de la file.",
+      "correctAnswer": "6",
+      "derivation": "La BIU récupère un mot de deux octets. Avec quatre octets déjà présents, la file contient 4+2=6 octets après le transfert, soit sa capacité totale.",
       "distractorRationales": [
         {
-          "choice": "1",
-          "reason": "Une récupération d'un octet caractérise le comportement de prélecture du 8088, pas le transfert normal de deux octets du 8086."
+          "choice": "5",
+          "reason": "La prélecture normale du 8086 récupère deux octets, pas un seul."
         },
         {
           "choice": "4",
-          "reason": "La capacité de la file est de six octets, mais la BIU du 8086 récupère normalement deux octets par opération de prélecture."
+          "reason": "Cette réponse ignore les deux octets ajoutés par le transfert."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), §2.2 Instruction Queue: the 8086 BIU normally obtains two instruction bytes per fetch."
@@ -400,30 +403,30 @@
     {
       "id": "C35-F-Q6",
       "status": "certified",
-      "rule": "branch_prefetch_flush",
+      "rule": "conditional_branch_not_taken_prefetch",
       "inputs": {
-        "controlTransfer": false,
-        "oldSequentialQueue": [
-          "next",
-          "next+1"
-        ],
-        "newIP": null
+        "mnemonic": "JNZ",
+        "ZF": 1,
+        "fallThroughIP": 258,
+        "targetIP": 512,
+        "queueContainsSequentialBytes": true
       },
       "expected": {
+        "branchTaken": false,
+        "nextIP": 258,
         "queueDiscarded": false,
-        "refillFromNewIP": false,
-        "newIP": null
+        "sequentialQueueUsable": true
       },
-      "correctAnswer": "Elle reste utilisable car le flot séquentiel continue",
-      "derivation": "Si la condition du branchement n'est pas satisfaite, le transfert de contrôle n'a pas lieu et IP poursuit le chemin séquentiel. La file contenant les octets de ce chemin n'a donc pas à être abandonnée pour une nouvelle cible.",
+      "correctAnswer": "Le saut n'est pas pris : IP continue après JNZ et la file séquentielle reste utilisable",
+      "derivation": "JNZ prend le branchement lorsque ZF=0. Avec ZF=1, la condition est fausse : IP suit l'adresse de continuation séquentielle. Aucun transfert de contrôle vers CIBLE n'a lieu, donc la file préchargée pour le flot séquentiel n'est pas invalidée par ce saut non pris.",
       "distractorRationales": [
         {
-          "choice": "Elle est toujours vidée par tout branchement",
-          "reason": "La file est réinitialisée lorsque l'exécution transfère effectivement le contrôle vers une nouvelle adresse, pas lorsqu'un branchement conditionnel n'est pas pris."
+          "choice": "Le saut est pris et la file est vidée",
+          "reason": "ZF=1 rend JNZ faux ; le saut n'est donc pas pris."
         },
         {
-          "choice": "IP est remis à zéro",
-          "reason": "Un branchement non pris laisse l'exécution suivre l'adresse séquentielle ; il ne remet pas IP à zéro."
+          "choice": "IP revient à zéro",
+          "reason": "Un branchement conditionnel non pris poursuit à l'adresse séquentielle, sans remettre IP à zéro."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), §2.2 Instruction Queue: a taken control transfer resets the queue and begins fetching at the new address."
