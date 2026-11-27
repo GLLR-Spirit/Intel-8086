@@ -74,7 +74,7 @@ function independentlyCompute(oracle) {
     case "source_instruction_vs_data":
       return "assembly_statement_is_instruction";
     case "intel_operand_order_generic": {
-      const operands = i.instruction.replace(/^MOV\\s+/i, "").split(",");
+      const operands = i.instruction.replace(/^MOV\s+/i, "").split(",");
       return { destination: operands[0].trim(), source: operands[1].trim() };
     }
     case "segment_offset_address": {
