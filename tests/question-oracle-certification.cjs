@@ -1259,7 +1259,7 @@ const allOracleRecords = [...batches.flatMap(batch => batch.oracles), ...histori
 const allIds = allOracleRecords.map(oracle => oracle.id);
 assert.equal(new Set(allIds).size, allIds.length, "Certified oracle IDs must be globally unique across supplemental batches and reused historical records");
 const seen = new Set();
-let certified = 0;
+let oracleRecordsChecked = 0;
 let blocked = 0;
 
 for (const oracle of allOracleRecords) {
@@ -1285,7 +1285,7 @@ for (const oracle of allOracleRecords) {
   }
   assert.ok(oracle.derivation.trim().length >= 80, oracle.id + " must contain an independent derivation");
   assert.ok(oracle.reference && oracle.reference.trim().length >= 20, oracle.id + " must identify a technical reference");
-  if (oracle.status === "certified") certified++;
+  if (oracle.status === "certified") oracleRecordsChecked++;
   else if (oracle.status === "blocked") {
     blocked++;
     assert.ok(oracle.blocker && oracle.blocker.length >= 30, oracle.id + " blocked status must explain the required correction");
@@ -1294,14 +1294,16 @@ for (const oracle of allOracleRecords) {
     assert.fail("Unknown oracle status for " + oracle.id + ": " + oracle.status);
   }
 }
-assert.equal(certified, 684, "All 684 unique questions and historical oracles are covered through chapter 36, including three historical records not duplicated in batches");
-assert.equal(manifest.certificationSummary.questionCount, 684, "Manifest total must match the full assessment bank");
-assert.equal(manifest.certificationSummary.historicalOracles, 6, "All six historical oracles must remain registered");
-assert.equal(manifest.certificationSummary.supplementalBatchRecords, batches.reduce((sum, batch) => sum + batch.oracles.length, 0), "Manifest batch-record count must match the loaded files");
-assert.equal(manifest.certificationSummary.newSupplementalOracles, batches.reduce((sum, batch) => sum + batch.oracles.length - (batch.batch === "chapter-17" ? 1 : batch.batch === "chapter-26" ? 2 : 0), 0), "Manifest new-oracle count must exclude historical IDs reused inside batches");
-assert.equal(manifest.certificationSummary.uniqueCertifiedQuestions, certified, "Manifest unique coverage must match the executable certification test");
-assert.equal(manifest.certificationSummary.remainingUncertified, 684 - certified, "Manifest remaining count must be arithmetically consistent");
-assert.equal(blocked, 0, "No question in the certified batches remains blocked");
+assert.equal(oracleRecordsChecked, 684, "All 684 registered oracle records must pass independent evaluator and runtime/key alignment checks");
+assert.equal(manifest.oracleCoverageSummary.questionCount, 684, "Manifest total must match the full assessment bank");
+assert.equal(manifest.oracleCoverageSummary.historicalOracles, 6, "All six historical oracles must remain registered");
+assert.equal(manifest.oracleCoverageSummary.supplementalBatchRecords, batches.reduce((sum, batch) => sum + batch.oracles.length, 0), "Manifest batch-record count must match the loaded files");
+assert.equal(manifest.oracleCoverageSummary.newSupplementalOracles, batches.reduce((sum, batch) => sum + batch.oracles.length - (batch.batch === "chapter-17" ? 1 : batch.batch === "chapter-26" ? 2 : 0), 0), "Manifest new-oracle count must exclude historical IDs reused inside batches");
+assert.equal(manifest.oracleCoverageSummary.uniqueOracleQuestionIds, oracleRecordsChecked, "Manifest unique coverage must match the executable certification test");
+assert.equal(manifest.oracleCoverageSummary.questionsWithoutOracle, 684 - oracleRecordsChecked, "Manifest remaining count must be arithmetically consistent");
+assert.equal(manifest.oracleCoverageSummary.officialCertificationCount, 384, "Automated oracle coverage must not change the official certification count");
+assert.equal(manifest.oracleCoverageSummary.remainingOfficialCertification, 300, "The official review backlog remains separate from oracle coverage");
+assert.equal(blocked, 0, "No registered oracle record remains blocked");
 for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]) {
   const prefix = "C" + String(chapter).padStart(2, "0") + "-";
   const expectedIds = key.questions.filter(question => question.id.startsWith(prefix)).map(question => question.id);
@@ -1309,4 +1311,4 @@ for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17
   for (const id of expectedIds) assert.ok(allIds.includes(id), "Missing independent oracle for " + id);
 }
 assert.match(keyMap.get("C01-L1-Q2").explanation, /octets machine distincts/i, "Source assembly must be distinguished from its encoded machine bytes");
-console.log("Question oracle certification: chapters 1–36 — " + certified + "/684 certified; " + blocked + " blocked; runtime/key alignment and independent evaluators passed.");
+console.log("Question oracle evaluator: chapters 1–36 — " + oracleRecordsChecked + "/684 oracle records passed automated checks; official certification ledger remains " + manifest.oracleCoverageSummary.officialCertificationCount + "/684 (" + manifest.oracleCoverageSummary.remainingOfficialCertification + " pending); " + blocked + " blocked.");
