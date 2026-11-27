@@ -734,9 +734,25 @@ const assert = require("node:assert/strict");
     assert.equal(await page.locator("#code").inputValue(),exercise.solution,
       "Exercise "+(exercise.index+1)+" must load its complete correction into the editor.");
     await page.locator('[data-view="exercises"]').click();
-    await page.locator("#exerciseList [data-check]").nth(exercise.index).click();
-    assert.match(await page.locator("#exerciseList .exercise").nth(exercise.index).textContent(),/Réussi/,
-      "Exercise "+(exercise.index+1)+" correction must pass its own UI validator.");
+    if(exercise.index===38){
+      const card=page.locator("#exerciseList .exercise").nth(exercise.index);
+      assert.equal(await card.locator("#exerciseReasoning39").count(),1,
+        "EX39 must provide a dedicated written-response field.");
+      assert.equal(await card.locator(".exercise-reasoning li").count(),4,
+        "EX39 must show all four reasoning criteria.");
+      assert.match(await card.textContent(),/Exemple de réponse argumentée/,
+        "EX39 must expose a model answer for self-review.");
+      await card.locator("#exerciseReasoning39").fill("Le résultat AX=8 vérifie le calcul, pas les cycles. La BIU précharge les instructions pendant l'exécution de l'EU. Les accès mémoire et le bus influencent le temps réel. Le simulateur ne modélise pas les cycles matériels ni les états d'attente.");
+      await page.locator("#exerciseList [data-check]").nth(exercise.index).click();
+      assert.match(await page.locator("#status").textContent(),/Programme vérifié : AX=8/,
+        "EX39 must report program validation separately from written reasoning.");
+      assert.doesNotMatch(await card.textContent(),/✓ Réussi/,
+        "EX39 must not be certified automatically when only the program is checked.");
+    }else{
+      await page.locator("#exerciseList [data-check]").nth(exercise.index).click();
+      assert.match(await page.locator("#exerciseList .exercise").nth(exercise.index).textContent(),/Réussi/,
+        "Exercise "+(exercise.index+1)+" correction must pass its own UI validator.");
+    }
   }
   console.log("Guided correction hand-off and UI validation: 48/48 exercises PASS.");
   await page.locator('[data-view="editor"]').click();
