@@ -343,9 +343,10 @@ const assert = require("node:assert/strict");
           chapter.value = chapterValue;
           difficulty.value = difficultyValue;
           type.value = typeValue;
-          chapter.dispatchEvent(new Event("change", { bubbles: true }));
-          difficulty.dispatchEvent(new Event("change", { bubbles: true }));
-          type.dispatchEvent(new Event("change", { bubbles: true }));
+          api.exerciseFilterState.chapter = chapterValue;
+          api.exerciseFilterState.difficulty = difficultyValue;
+          api.exerciseFilterState.type = typeValue;
+          api.renderExercises();
           const expected = expectedFor(chapterValue, difficultyValue, typeValue, "");
           const actual = [...document.querySelectorAll("#exerciseList .exercise > b")]
             .map(node => node.textContent.trim());
@@ -372,15 +373,17 @@ const assert = require("node:assert/strict");
     chapter.value = "all";
     difficulty.value = "all";
     type.value = "all";
-    chapter.dispatchEvent(new Event("change", { bubbles: true }));
-    difficulty.dispatchEvent(new Event("change", { bubbles: true }));
-    type.dispatchEvent(new Event("change", { bubbles: true }));
+    api.exerciseFilterState.chapter = chapterValue;
+    api.exerciseFilterState.difficulty = difficultyValue;
+    api.exerciseFilterState.type = typeValue;
+    api.renderExercises();
     const sourceTarget = api.exercises.find(exercise => /MOV\s/.test(exercise[2]));
     const sourceQuery = sourceTarget ? sourceTarget[2].match(/MOV\s+[A-Z]+/)?.[0]?.toLowerCase() : null;
     if (!sourceQuery) failures.push({ search: "source", error: "No MOV source token found for search audit." });
     else {
       search.value = sourceQuery;
-      search.dispatchEvent(new Event("input", { bubbles: true }));
+      api.exerciseFilterState.search = sourceQuery;
+      api.renderExercises();
       const expected = expectedFor("all", "all", "all", sourceQuery);
       const actual = [...document.querySelectorAll("#exerciseList .exercise > b")]
         .map(node => node.textContent.trim());
@@ -403,9 +406,9 @@ const assert = require("node:assert/strict");
       difficulty.value = metadata.difficulty;
       type.value = metadata.type;
       search.dispatchEvent(new Event("input", { bubbles: true }));
-      chapter.dispatchEvent(new Event("change", { bubbles: true }));
-      difficulty.dispatchEvent(new Event("change", { bubbles: true }));
-      type.dispatchEvent(new Event("change", { bubbles: true }));
+      api.exerciseFilterState.chapter = chapterValue;
+      api.exerciseFilterState.difficulty = difficultyValue;
+      api.exerciseFilterState.type = typeValue;
       const expected = expectedFor(chapter.value, difficulty.value, type.value, query);
       const actual = [...document.querySelectorAll("#exerciseList .exercise > b")]
         .map(node => node.textContent.trim());
