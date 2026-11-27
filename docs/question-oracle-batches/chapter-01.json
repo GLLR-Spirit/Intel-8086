@@ -30,8 +30,7 @@
           "reason": "Le processeur et la mémoire ont des rôles distincts et complémentaires."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual (1979), description générale du processeur et du cycle d'instruction.",
-      "verifiedAgainstRuntime": false
+      "reference": "Intel 8086 Family User's Manual (1979), description générale du processeur et du cycle d'instruction."
     },
     {
       "id": "C01-L1-Q2",
@@ -55,8 +54,7 @@
         }
       ],
       "reference": "Intel MCS-86 Assembly Language Reference Manual, syntaxe source ; Intel 8086 Family User's Manual, format des instructions machine.",
-      "blocker": "Réviser l'explication runtime : le source assembleur n'est pas lui-même les octets machine.",
-      "verifiedAgainstRuntime": false
+      "blocker": "Réviser l'explication runtime : le source assembleur n'est pas lui-même les octets machine."
     },
     {
       "id": "C01-L1-Q3",
@@ -76,8 +74,7 @@
           "reason": "Le processeur récupère les octets d'instruction depuis la mémoire."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual, organisation mémoire et cycle de récupération des instructions.",
-      "verifiedAgainstRuntime": false
+      "reference": "Intel 8086 Family User's Manual, organisation mémoire et cycle de récupération des instructions."
     },
     {
       "id": "C01-L2-Q1",
@@ -101,8 +98,7 @@
           "reason": "Le 8086 ne dispose pas de 24 lignes d'adresse physiques."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual, brochage et bus d'adresses.",
-      "verifiedAgainstRuntime": false
+      "reference": "Intel 8086 Family User's Manual, brochage et bus d'adresses."
     },
     {
       "id": "C01-L2-Q2",
@@ -129,8 +125,7 @@
           "reason": "16 Mio nécessiteraient 24 bits d'adresse."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual, espace d'adressage physique 20 bits.",
-      "verifiedAgainstRuntime": false
+      "reference": "Intel 8086 Family User's Manual, espace d'adressage physique 20 bits."
     },
     {
       "id": "C01-L2-Q3",
@@ -154,8 +149,7 @@
           "reason": "20 bits est la largeur du bus d'adresses physiques."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual, description des bus et brochage.",
-      "verifiedAgainstRuntime": false
+      "reference": "Intel 8086 Family User's Manual, description des bus et brochage."
     },
     {
       "id": "C01-L3-Q1",
@@ -179,8 +173,7 @@
           "reason": "Le 8088 adresse 1 Mio avec 20 lignes d'adresse."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual, comparaison 8086/8088.",
-      "verifiedAgainstRuntime": false
+      "reference": "Intel 8086 Family User's Manual, comparaison 8086/8088."
     },
     {
       "id": "C01-L3-Q2",
@@ -200,8 +193,7 @@
           "reason": "Les cycles et microarchitectures évoluent entre générations."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual, caractéristiques du 8086/8088 ; documentation Intel des générations x86 ultérieures.",
-      "verifiedAgainstRuntime": false
+      "reference": "Intel 8086 Family User's Manual, caractéristiques du 8086/8088 ; documentation Intel des générations x86 ultérieures."
     },
     {
       "id": "C01-L3-Q3",
@@ -221,8 +213,7 @@
           "reason": "Une simulation logique ne mesure pas des tensions ni des signaux électriques réels."
         }
       ],
-      "reference": "Périmètre fonctionnel documenté du laboratoire ; distinction entre modèle logiciel et matériel physique.",
-      "verifiedAgainstRuntime": false
+      "reference": "Périmètre fonctionnel documenté du laboratoire ; distinction entre modèle logiciel et matériel physique."
     },
     {
       "id": "C01-F-Q1",
@@ -242,8 +233,7 @@
           "reason": "L'alimentation relève du système électrique, pas de la fonction du CPU."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual, fonctionnement général du processeur.",
-      "verifiedAgainstRuntime": false
+      "reference": "Intel 8086 Family User's Manual, fonctionnement général du processeur."
     },
     {
       "id": "C01-F-Q2",
@@ -270,8 +260,7 @@
           "reason": "Le bus de données externe du 8086 est de 16 bits."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual, bus d'adresses et espace mémoire.",
-      "verifiedAgainstRuntime": false
+      "reference": "Intel 8086 Family User's Manual, bus d'adresses et espace mémoire."
     },
     {
       "id": "C01-F-Q3",
@@ -296,8 +285,7 @@
           "reason": "AX est un registre, pas une adresse mémoire implicite."
         }
       ],
-      "reference": "Intel MCS-86 Assembly Language Reference Manual, syntaxe des instructions.",
-      "verifiedAgainstRuntime": false
+      "reference": "Intel MCS-86 Assembly Language Reference Manual, syntaxe des instructions."
     },
     {
       "id": "C01-F-Q4",
@@ -324,8 +312,7 @@
           "reason": "MOV autorise une source immédiate lorsque la taille et les contraintes d'encodage sont respectées."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual, formes MOV et tailles des opérandes.",
-      "verifiedAgainstRuntime": false
+      "reference": "Intel 8086 Family User's Manual, formes MOV et tailles des opérandes."
     },
     {
       "id": "C01-F-Q5",
@@ -352,8 +339,7 @@
           "reason": "Cette valeur effacerait aussi AH, alors que MOV AL ne modifie que l'octet faible."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual, registres généraux et registres octet AH/AL.",
-      "verifiedAgainstRuntime": false
+      "reference": "Intel 8086 Family User's Manual, registres généraux et registres octet AH/AL."
     },
     {
       "id": "C01-F-Q6",
@@ -380,8 +366,7 @@
           "reason": "16 777 216 = 2^24, espace correspondant à 24 bits."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual, espace physique 20 bits.",
-      "verifiedAgainstRuntime": false
+      "reference": "Intel 8086 Family User's Manual, espace physique 20 bits."
     },
     {
       "id": "C01-F-Q7",
@@ -416,8 +401,7 @@
           "reason": "HLT n'est pas une instruction INT et ne déclenche pas une interruption logicielle."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual, instructions MOV et HLT.",
-      "verifiedAgainstRuntime": false
+      "reference": "Intel 8086 Family User's Manual, instructions MOV et HLT."
     },
     {
       "id": "C01-F-Q8",
@@ -444,8 +428,7 @@
           "reason": "Cette plage couvre 24 bits, soit 16 Mio."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual, bus d'adresses 20 bits.",
-      "verifiedAgainstRuntime": false
+      "reference": "Intel 8086 Family User's Manual, bus d'adresses 20 bits."
     },
     {
       "id": "C01-F-Q9",
@@ -471,8 +454,7 @@
           "reason": "Cela décrirait plutôt le bus externe du 8088, pas une correction du raisonnement."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual, registres et caractéristiques des bus.",
-      "verifiedAgainstRuntime": false
+      "reference": "Intel 8086 Family User's Manual, registres et caractéristiques des bus."
     },
     {
       "id": "C01-F-Q10",
@@ -498,8 +480,7 @@
           "reason": "La mémoire du 8086 est adressée par octet ; un mot occupe deux octets consécutifs."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual, architecture des registres et bus.",
-      "verifiedAgainstRuntime": false
+      "reference": "Intel 8086 Family User's Manual, architecture des registres et bus."
     }
   ]
 }
