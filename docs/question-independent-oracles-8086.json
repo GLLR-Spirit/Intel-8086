@@ -3733,9 +3733,9 @@
     "questionsWithoutOracle": 0,
     "officialCertificationCount": 384,
     "remainingOfficialCertification": 300,
-    "calculation": "36 chapitres × 19 questions = 684 identifiants uniques. Les 681 enregistrements des lots sont complétés par trois oracles historiques hors lots ; trois autres oracles historiques sont réutilisés dans les lots. L'index oracles expose les 684 identifiants ; historicalOracles conserve les six objets historiques détaillés.",
+    "calculation": "36 chapitres × 19 questions = 684 identifiants uniques. Les 684 questions disposent désormais d'une fiche de revue individuelle (575 validées sans correction, 109 corrigées, 0 bloquée). Cette revue reste distincte du registre historique officiel : 384/684 certifiées, 300 à réconcilier par identifiant stable.",
     "registeredOracleRecords": 684,
-    "individuallyReviewedQuestions": 513,
+    "individuallyReviewedQuestions": 684,
     "individualReviewChapters": [
       1,
       2,
@@ -3763,7 +3763,16 @@
       24,
       25,
       26,
-      27
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36
     ]
   },
   "independentReviewBatches": [
@@ -3771,163 +3780,217 @@
       "path": "docs/question-independent-review/chapter-01.json",
       "chapter": 1,
       "reviewedQuestions": 19,
-      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-02.json",
       "chapter": 2,
       "reviewedQuestions": 19,
-      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-03.json",
       "chapter": 3,
       "reviewedQuestions": 19,
-      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-04.json",
       "chapter": 4,
       "reviewedQuestions": 19,
-      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-05.json",
       "chapter": 5,
       "reviewedQuestions": 19,
-      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-06.json",
       "chapter": 6,
       "reviewedQuestions": 19,
-      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-07.json",
       "chapter": 7,
       "reviewedQuestions": 19,
-      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-08.json",
       "chapter": 8,
       "reviewedQuestions": 19,
-      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-09.json",
       "chapter": 9,
       "reviewedQuestions": 19,
-      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-10.json",
       "chapter": 10,
       "reviewedQuestions": 19,
-      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-11.json",
       "chapter": 11,
       "reviewedQuestions": 19,
-      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-12.json",
       "chapter": 12,
       "reviewedQuestions": 19,
-      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-13.json",
       "chapter": 13,
       "reviewedQuestions": 19,
-      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-14.json",
       "chapter": 14,
       "reviewedQuestions": 19,
-      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-15.json",
       "chapter": 15,
       "reviewedQuestions": 19,
-      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-16.json",
       "chapter": 16,
       "reviewedQuestions": 19,
-      "note": "Fichier de revue individuelle référencé ; le compteur historique de certification reste distinct."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-17.json",
       "chapter": 17,
       "reviewedQuestions": 19,
-      "note": "Revue individuelle enregistrée ; le point de conception des dix questions finales reste ouvert dans le rapport du chapitre 17 ; le compteur officiel ne progresse pas automatiquement."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-18.json",
       "chapter": 18,
       "reviewedQuestions": 19,
-      "note": "Revue individuelle enregistrée ; évaluation finale équilibrée ; le compteur historique officiel reste distinct."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-19.json",
       "chapter": 19,
       "reviewedQuestions": 19,
-      "note": "Revue individuelle enregistrée ; cas limite de repliement de l'offset effectif corrigé ; compteur officiel historique inchangé."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-20.json",
       "chapter": 20,
       "reviewedQuestions": 19,
-      "note": "Revue individuelle enregistrée ; ambiguïté de dépilage et adresse d'écriture PUSH corrigées."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-21.json",
       "chapter": 21,
       "reviewedQuestions": 19,
-      "note": "Revue individuelle enregistrée ; CALL/RET near et MUL mot validés sans correction de contenu."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-22.json",
       "chapter": 22,
       "reviewedQuestions": 19,
-      "note": "Revue individuelle enregistrée ; deux questions finales redondantes remplacées par des traces de paramètres sur pile et de CALL near."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-23.json",
       "chapter": 23,
       "reviewedQuestions": 19,
-      "note": "Revue individuelle enregistrée ; doublons de l'évaluation finale remplacés par un cas de dépassement 16 bits et un cas de paramètres AX/BX."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-24.json",
       "chapter": 24,
       "reviewedQuestions": 19,
-      "note": "Revue individuelle enregistrée ; doublons MUL remplacés par deux cas contrastant multiplication signée et non signée."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-25.json",
       "chapter": 25,
       "reviewedQuestions": 19,
-      "note": "Revue individuelle enregistrée ; répétitions DIV et CBW remplacées par des cas quotient/reste et extension signée distincts."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-26.json",
       "chapter": 26,
       "reviewedQuestions": 19,
-      "note": "Revue individuelle enregistrée ; répétitions finales SHR/SAR/ROL remplacées par des comptes multi-bits."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     },
     {
       "path": "docs/question-independent-review/chapter-27.json",
       "chapter": 27,
       "reviewedQuestions": 19,
-      "note": "Revue individuelle enregistrée ; cas DF=1, comparaison SCASB inégale et override CS valide sur 8086."
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-28.json",
+      "chapter": 28,
+      "reviewedQuestions": 19,
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-29.json",
+      "chapter": 29,
+      "reviewedQuestions": 19,
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-30.json",
+      "chapter": 30,
+      "reviewedQuestions": 19,
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-31.json",
+      "chapter": 31,
+      "reviewedQuestions": 19,
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-32.json",
+      "chapter": 32,
+      "reviewedQuestions": 19,
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-33.json",
+      "chapter": 33,
+      "reviewedQuestions": 19,
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-34.json",
+      "chapter": 34,
+      "reviewedQuestions": 19,
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-35.json",
+      "chapter": 35,
+      "reviewedQuestions": 19,
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
+    },
+    {
+      "path": "docs/question-independent-review/chapter-36.json",
+      "chapter": 36,
+      "reviewedQuestions": 19,
+      "note": "Fiche de revue individuelle enregistrée ; son résultat ne modifie pas automatiquement le registre historique officiel de certification."
     }
   ],
   "historicalOracles": [
