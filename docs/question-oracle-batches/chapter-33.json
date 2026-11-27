@@ -408,24 +408,33 @@
     {
       "id": "C33-F-Q5",
       "status": "certified",
-      "rule": "decode_hlt_opcode",
+      "rule": "linear_disassembly_opcode_offset",
       "inputs": {
-        "byte": 244
+        "startOffset": 256,
+        "bytes": [
+          184,
+          52,
+          18,
+          244
+        ],
+        "firstInstructionLength": 3
       },
       "expected": {
-        "mnemonic": "HLT",
-        "length": 1
+        "hltOffset": 259,
+        "hltOffsetHex": "0103h",
+        "hltOpcode": 244,
+        "hltOpcodeHex": "F4h"
       },
-      "correctAnswer": "Il code HLT",
-      "derivation": "Après les trois octets de MOV AX,1234h, F4h est le code machine de HLT sur 8086. Il s'agit d'une instruction d'un octet qui arrête l'exécution jusqu'à un événement de reprise matériel modélisé ou réel.",
+      "correctAnswer": "0103h",
+      "derivation": "B8 34 12 est l'encodage de MOV AX,1234h : un octet d'opcode et deux octets d'immédiat, donc trois octets. À partir de 0100h, le byte suivant F4h commence à 0103h.",
       "distractorRationales": [
         {
-          "choice": "Il code NOP",
-          "reason": "NOP est encodé par 90h ; F4h est l'opcode HLT."
+          "choice": "0102h",
+          "reason": "Cette position omet le deuxième octet de l'immédiat."
         },
         {
-          "choice": "Il code INT 4",
-          "reason": "INT 4 utilise CD 04h ; F4h seul n'est pas une instruction INT."
+          "choice": "0104h",
+          "reason": "Cette position compte un octet de trop pour MOV AX,imm16."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), instruction encoding and control-transfer instructions; Intel MCS-86 Assembly Language Reference Manual, labels, symbols and assembler passes. Disassembly limitations are properties of linear byte-stream decoding."
