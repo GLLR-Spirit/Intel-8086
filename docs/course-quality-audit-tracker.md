@@ -294,3 +294,11 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - Test navigateur renforcé sur cette branche : 1 554 combinaisons des filtres chapitre/difficulté/type, recherche dans le code source, combinaison recherche + filtres et réinitialisation.
 - Grille éditoriale détaillée et registre EX01–EX48 : `docs/exercise-editorial-audit-2026-11-27.md`.
 - Statut : audit éditorial en cours ; aucun changement fusionné dans `main`, aucun déploiement.
+
+
+## Mise à jour — corrections des écarts pédagogiques des exercices (2026-11-27)
+
+- EX35 : oracle d'encodage exact ; EX37 : oracle de désassemblage et de frontières ; EX39 : champ de réponse écrite et critères minimaux ; EX41/EX46 : SP et pile vérifiés ; EX47/EX48 : BX sentinelle BEEFh préservé et SP restauré.
+- Vérification réussie : 48/48 corrections en source/binaire ; 48/48 corrections guidées via l'interface ; 7/7 oracles complémentaires et trois contrôles négatifs ; 1 554 combinaisons de filtres.
+- CI principal et audit navigateur de niveau 3 réussis sur le commit `e6094f486d024c929b93914500f9f69772eec7eb`. Le test UI EX39 a ensuite été adapté pour fournir sa justification ; relance en cours sur le commit suivant.
+- La certification pédagogique complète des 48 exercices reste conditionnée à la revue éditoriale détaillée des critères qualitatifs pour chaque exercice. Pas de fusion ni de déploiement.
