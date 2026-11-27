@@ -3279,14 +3279,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Si CF=1 avant INC AL, que devient CF après INC ?",
+      "stem": "Si CF=1 et AX=7FFFh avant INC AX, que valent OF et CF après INC ?",
       "choices": [
-        "Il reste à 1",
-        "Il est remis à zéro",
-        "Il est inversé"
+        "OF=1 et CF=1",
+        "OF=0 et CF=0",
+        "OF=1 et CF=0"
       ],
-      "correctAnswer": "Il reste à 1",
-      "explanation": "INC préserve la valeur antérieure de CF sans la modifier.",
+      "correctAnswer": "OF=1 et CF=1",
+      "explanation": "INC 7FFFh produit 8000h et OF=1 ; INC préserve CF, qui reste à 1.",
       "category": "Calcul / prédiction"
     },
     {
@@ -3295,14 +3295,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Quel contrôle permet de valider un branchement ?",
+      "stem": "Après CMP AX,BX avec AX=1 et BX=2, puis JZ EGAL, quel chemin est suivi ?",
       "choices": [
-        "Tester les conditions vraie et fausse et relever IP",
-        "Lire uniquement le résultat final",
-        "Changer le registre source au hasard"
+        "Le chemin non pris : l'instruction qui suit JZ",
+        "La cible EGAL",
+        "Une interruption"
       ],
-      "correctAnswer": "Tester les conditions vraie et fausse et relever IP",
-      "explanation": "Les deux chemins doivent être testés et le flot vérifié.",
+      "correctAnswer": "Le chemin non pris : l'instruction qui suit JZ",
+      "explanation": "CMP établit ZF=0 car 1 n'est pas égal à 2 ; JZ n'est donc pas pris et l'exécution continue après le saut.",
       "category": "Analyse de programme"
     },
     {
@@ -3327,14 +3327,14 @@
       "kind": "final",
       "lesson": null,
       "number": 9,
-      "stem": "Quelle démarche convient après un échec reproductible ?",
+      "stem": "Pourquoi conserver un test de régression après une correction ?",
       "choices": [
-        "Comparer la première divergence et isoler une cause",
-        "Modifier plusieurs lignes au hasard",
-        "Supprimer le cas de test"
+        "Pour détecter la réapparition du défaut lors d'un changement ultérieur",
+        "Pour empêcher toute modification future",
+        "Pour remplacer l'analyse de la cause"
       ],
-      "correctAnswer": "Comparer la première divergence et isoler une cause",
-      "explanation": "Le diagnostic doit être progressif et reproductible.",
+      "correctAnswer": "Pour détecter la réapparition du défaut lors d'un changement ultérieur",
+      "explanation": "Le test de régression conserve le cas qui a échoué et détecte si une modification ultérieure réintroduit le défaut.",
       "category": "Débogage"
     },
     {
