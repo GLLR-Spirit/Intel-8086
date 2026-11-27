@@ -95,7 +95,9 @@ const semanticQuestionOracles = [
   ["Quel registre contient l'offset de la prochaine instruction à exécuter ?","IP","IP contient l'offset de la prochaine instruction dans le segment de code."],
   ["Comment corriger SHR AL,1 si le programme doit préserver un signe négatif ?","Utiliser SAR plutôt que SHR","SAR propage le bit de signe alors que SHR insère zéro."],
   ["Pourquoi LOCK INC AX ne protège-t-il pas une donnée mémoire partagée ?","AX est un registre et l'instruction ne modifie aucune donnée mémoire partagée","Le 8086 active le signal LOCK pendant l'instruction suivante en mode maximum, mais INC AX ne touche qu'un registre. Pour protéger une donnée partagée, l'instruction doit réellement accéder à cette donnée en mémoire."],
-  ["Comment rendre LOCK utile pour protéger une donnée partagée ?","Employer une opération qui modifie cette donnée en mémoire, par exemple LOCK INC WORD PTR [BX]","Le verrouillage protège l'accès au bus pendant l'instruction ; l'opération doit effectivement accéder à la donnée mémoire partagée."]
+  ["Comment rendre LOCK utile pour protéger une donnée partagée ?","Employer une opération qui modifie cette donnée en mémoire, par exemple LOCK INC WORD PTR [BX]","Le verrouillage protège l'accès au bus pendant l'instruction ; l'opération doit effectivement accéder à la donnée mémoire partagée."],
+  ["Pourquoi initialise-t-on DS, ES et CS avec des valeurs distinctes dans l'exemple ?","Pour vérifier que chaque override sélectionne réellement le segment demandé","Des valeurs distinctes aux mêmes offsets permettent d'observer quel segment est effectivement utilisé."],
+  ["Quel effet le préfixe LOCK demande-t-il sur le 8086 ?","L'assertion du signal de verrouillage du bus pendant l'instruction suivante","Le préfixe demande l'activation du signal LOCK pendant l'opération de l'instruction suivante ; il est utile lorsque celle-ci accède à une ressource partagée."]
 ];
 for(const [stem,answer,explanation] of semanticQuestionOracles){
   const {q,where}=findQuestion(stem);
@@ -122,8 +124,9 @@ for(const expected of semanticKey.questions){
   const actual=runtimeQuestionMap.get(expected.id);
   if(!actual){semanticKeyFailures.push({id:expected.id,problem:"missing runtime question"});continue;}
   const sameChoices=JSON.stringify([...actual[1]].sort())===JSON.stringify([...expected.choices].sort());
-  if(actual[0]!==expected.stem||actual[1][actual[2]]!==expected.correctAnswer||actual[3]!==expected.explanation||!sameChoices){
-    semanticKeyFailures.push({id:expected.id,stem:actual[0],answer:actual[1][actual[2]],explanation:actual[3],choices:actual[1]});
+  const sameCategory=actual[4]===expected.category;
+  if(actual[0]!==expected.stem||actual[1][actual[2]]!==expected.correctAnswer||actual[3]!==expected.explanation||!sameChoices||!sameCategory){
+    semanticKeyFailures.push({id:expected.id,stem:actual[0],answer:actual[1][actual[2]],explanation:actual[3],choices:actual[1],category:actual[4]});
   }
 }
 assert.equal(semanticKeyFailures.length,0,
