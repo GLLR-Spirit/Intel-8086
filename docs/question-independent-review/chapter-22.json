@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue individuelle — chapitre 22",
+  "reviewDate": "2026-11-27",
+  "scope": "Examen individuel des 19 questions sur le passage de paramètres, la préservation des registres, les appels imbriqués et les conventions d'appel. Les évaluations sont séparées des oracles automatiques.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "sections": "CALL/RET, stack operations and nested procedure control flow.",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Assembly Language Reference Manual",
+      "edition": "1979",
+      "sections": "Procedure interfaces, register conventions and stack-based parameter passing.",
+      "url": "https://bitsavers.trailing-edge.com/pdf/intel/ISIS_II/9800640A_MCS-86_Assembly_Language_Reference_Manual_Apr79.pdf"
+    }
+  ],
+  "records": [
+    {
+      "id": "C22-L1-Q1",
+      "result": "passed",
+      "finding": "Les paramètres peuvent être transmis par registres convenus ou par pile ; la convention est un contrat logiciel.",
+      "basis": "Intel MCS-86 Assembly Language Reference Manual, procedure interfaces."
+    },
+    {
+      "id": "C22-L1-Q2",
+      "result": "passed",
+      "finding": "AX=4 et BX=5 puis ADD AX,BX donnent AX=9.",
+      "basis": "Calcul arithmétique indépendant."
+    },
+    {
+      "id": "C22-L1-Q3",
+      "result": "passed",
+      "finding": "La documentation des registres d'entrée/sortie garantit une interprétation commune par l'appelant et la routine.",
+      "basis": "Principes d'interface de procédure ; conventions non imposées matériellement."
+    },
+    {
+      "id": "C22-L2-Q1",
+      "result": "passed",
+      "finding": "PUSH AX préserve la valeur avant réutilisation ; POP AX peut la restaurer si l'ordre LIFO est respecté.",
+      "basis": "Intel 8086 Family User's Manual, PUSH/POP."
+    },
+    {
+      "id": "C22-L2-Q2",
+      "result": "passed",
+      "finding": "PUSH AX de 1234h, modification à zéro puis POP AX restaurent 1234h.",
+      "basis": "Trace indépendante de pile."
+    },
+    {
+      "id": "C22-L2-Q3",
+      "result": "passed",
+      "finding": "Chaque PUSH doit être apparié à un POP sur chaque chemin de sortie, en respectant LIFO.",
+      "basis": "Invariant de pile."
+    },
+    {
+      "id": "C22-L3-Q1",
+      "result": "passed",
+      "finding": "Chaque CALL imbriqué empile son propre IP de retour ; les adresses sont dépilées en ordre inverse.",
+      "basis": "Intel 8086 Family User's Manual, near CALL/RET."
+    },
+    {
+      "id": "C22-L3-Q2",
+      "result": "passed",
+      "finding": "Le RET d'INTERNE s'exécute avant celui d'EXTERNE et reprend dans EXTERNE.",
+      "basis": "Trace de contrôle d'appels imbriqués."
+    },
+    {
+      "id": "C22-L3-Q3",
+      "result": "passed",
+      "finding": "Un SP différent de la valeur d'entrée après les retours révèle un chemin de pile déséquilibré ou une opération non appariée.",
+      "basis": "Invariant de pile sur tous les chemins de sortie."
+    },
+    {
+      "id": "C22-F-Q1",
+      "result": "passed",
+      "finding": "Un paramètre est une donnée d'entrée transmise à une routine.",
+      "basis": "Terminologie de programmation et interfaces de procédure."
+    },
+    {
+      "id": "C22-F-Q2",
+      "result": "passed",
+      "finding": "Une convention de registres fixe l'emplacement des entrées, des sorties et les registres à préserver.",
+      "basis": "Intel MCS-86 Assembly Language Reference Manual; conventions logicielles."
+    },
+    {
+      "id": "C22-F-Q3",
+      "result": "passed",
+      "finding": "PUSH AX empile le mot contenu dans AX.",
+      "basis": "Intel 8086 Family User's Manual, PUSH."
+    },
+    {
+      "id": "C22-F-Q4",
+      "result": "passed",
+      "finding": "Si BX est déclaré préservé, la routine doit restituer sa valeur d'entrée avant RET.",
+      "basis": "Contrat de préservation des registres."
+    },
+    {
+      "id": "C22-F-Q5",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait le calcul 4+5 déjà demandé dans la leçon. Elle est remplacée par une question sur l'ordre de dépilage de deux paramètres empilés A puis B ; LIFO impose B puis A.",
+      "basis": "Trace indépendante de paramètres sur pile et ordre LIFO."
+    },
+    {
+      "id": "C22-F-Q6",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait la restauration d'un registre par PUSH/POP. Elle est remplacée par le calcul de SP à l'entrée d'une routine après CALL near, lorsque SP vaut 0FFCh juste avant l'appel : SP devient 0FFAh.",
+      "basis": "CALL near empile un mot de retour et décrémente SP de deux octets."
+    },
+    {
+      "id": "C22-F-Q7",
+      "result": "passed",
+      "finding": "Chaque appel imbriqué conserve son propre site de retour sur la pile.",
+      "basis": "Trace CALL imbriqués et LIFO."
+    },
+    {
+      "id": "C22-F-Q8",
+      "result": "passed",
+      "finding": "Le retour interne reprend dans EXTERNE, puis le retour externe reprend dans l'appelant initial.",
+      "basis": "Trace de contrôle des deux retours."
+    },
+    {
+      "id": "C22-F-Q9",
+      "result": "passed",
+      "finding": "Pour préserver BX, la routine doit le sauvegarder à l'entrée et le restaurer avant RET.",
+      "basis": "Contrat de préservation des registres."
+    },
+    {
+      "id": "C22-F-Q10",
+      "result": "passed",
+      "finding": "Une convention explicite, plus la vérification des registres et de la pile, rend le passage de paramètres fiable.",
+      "basis": "Synthèse des conventions d'appel."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 17,
+    "corrected": 2,
+    "needsRevision": 0,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  },
+  "openFindings": []
+}
