@@ -438,7 +438,9 @@ const assert = require("node:assert/strict");
       {index:34,response:"",valid:true},
       {index:36,response:"",valid:true},
       {index:38,response:"Le simulateur ne mesure pas les cycles physiques : la BIU, la prélecture et les accès bus influencent le temps.",valid:true},
+      {index:32,response:"",valid:true},
       {index:40,response:"",valid:true},
+      {index:42,response:"",valid:true},
       {index:45,response:"",valid:true},
       {index:46,response:"",valid:true},
       {index:47,response:"",valid:true}
@@ -458,12 +460,12 @@ const assert = require("node:assert/strict");
     const unbalancedStackRejected = !api.validateExercise(40,unbalancedStackState,unbalancedStackSource,"");
     return {results,missingAnswerRejected,wrongEncodingRejected,unbalancedStackRejected};
   });
-  assert.deepEqual(advancedExerciseAudit.results.map(item=>item.valid),[true,true,true,true,true,true,true],
-    "EX35/37/39/41/46/47/48 must pass their independent pedagogical oracles: "+JSON.stringify(advancedExerciseAudit));
+  assert.deepEqual(advancedExerciseAudit.results.map(item=>item.valid),[true,true,true,true,true,true,true,true,true],
+    "EX33/35/37/39/41/43/46/47/48 must pass their independent pedagogical oracles: "+JSON.stringify(advancedExerciseAudit));
   assert.ok(advancedExerciseAudit.missingAnswerRejected,"EX39 must reject a missing written explanation.");
   assert.ok(advancedExerciseAudit.wrongEncodingRejected,"EX35 must reject a functionally correct but differently encoded program.");
   assert.ok(advancedExerciseAudit.unbalancedStackRejected,"EX41 must reject a program that leaves an extra stack word.");
-  console.log("Advanced exercise oracles: 7/7 valid corrections + 3 negative controls PASS.");
+  console.log("Advanced exercise oracles: 9/9 valid corrections + 3 negative controls PASS.");
 
   await page.locator('[data-view="learn"]').click();
   console.log("Exercise filters: 1,554 combinations + source search + combined search + reset PASS.");
