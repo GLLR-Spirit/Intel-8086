@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "title": "Oracles sémantiques indépendants — tranche initiale",
-  "scope": "Le manifeste conserve six oracles historiques. Les lots des chapitres 1 à 3 couvrent 57 questions distinctes : 19 au chapitre 1, 18 nouvelles au chapitre 2 (la 19e est l'oracle historique C02-F-Q4) et 19 au chapitre 3. Les autres questions restent non certifiées jusqu'à leur validation individuelle.",
+  "scope": "Le manifeste conserve six oracles historiques. Les lots des chapitres 1 à 4 couvrent 76 questions distinctes : 19 au chapitre 1, 19 au chapitre 2 (dont C02-F-Q4 réutilisé depuis le manifeste), 19 au chapitre 3 et 19 au chapitre 4 (dont C04-F-Q4 réutilisé). Les autres questions restent non certifiées jusqu'à leur validation individuelle.",
   "referenceBasis": [
     "Intel 8086 Family User's Manual (October 1979), architecture EU/BIU, file de prélecture, arithmétique, instructions de décalage, instructions de chaîne et indicateurs.",
     "Intel MCS-86 Assembly Language Reference Manual, formes d'opérandes et syntaxe assembleur."
@@ -234,14 +234,23 @@
       "newlyAdded": 19,
       "blocked": 0,
       "pending": 0
+    },
+    {
+      "path": "docs/question-oracle-batches/chapter-04.json",
+      "scope": "Chapitre 4 — 19 questions couvertes, dont C04-F-Q4 déjà présent dans le manifeste historique",
+      "certified": 19,
+      "newlyAdded": 18,
+      "reusedHistorical": 1,
+      "blocked": 0,
+      "pending": 0
     }
   ],
   "certificationSummary": {
     "questionCount": 684,
     "historicalOracles": 6,
-    "newSupplementalOracles": 56,
-    "uniqueCertifiedQuestions": 62,
-    "remainingUncertified": 622,
-    "calculation": "6 oracles historiques distincts + 56 nouveaux identifiants dans les lots des chapitres 1 à 3 ; C02-F-Q4 est réutilisé et non recompté."
+    "newSupplementalOracles": 74,
+    "uniqueCertifiedQuestions": 80,
+    "remainingUncertified": 604,
+    "calculation": "6 oracles historiques distincts + 74 nouveaux identifiants dans les lots des chapitres 1 à 4 ; C02-F-Q4 et C04-F-Q4 sont réutilisés sans double comptage."
   }
 }
