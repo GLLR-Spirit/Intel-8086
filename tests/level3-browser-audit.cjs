@@ -594,7 +594,7 @@ const assert = require("node:assert/strict");
     }));
   });
   await page.locator('[data-view="learn"]').click();
-  const chapterValues=await page.locator("#course-list-panel [data-lesson]").evaluateAll(nodes=>nodes.map(node=>node.getAttribute("data-lesson")));
+  const chapterValues=await page.locator(".course-list-panel [data-lesson]").evaluateAll(nodes=>nodes.map(node=>node.getAttribute("data-lesson")));
   assert.equal(chapterValues.length,36,"Accessibility audit must traverse all 36 lesson views.");
   for(const chapterValue of chapterValues){
     await page.locator('[data-lesson="'+chapterValue+'"]').click();
