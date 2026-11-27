@@ -131,7 +131,7 @@ for(const [stem,answer,explanation] of semanticQuestionOracles){
   assert.equal(q[3],explanation,where+" explanation");
 }
 assert.equal(learning.chapterLearning.reduce((n,c)=>n+c.lessons.reduce((m,l)=>m+l.quiz.length,0)+c.quiz.length,0),684,
-  "All 684 assessment items must be included in the individually reviewed bank.");
+  "All 684 assessment items must be present in the indexed bank.");
 
 const semanticKey = JSON.parse(fs.readFileSync("docs/question-semantic-key-8086.json","utf8"));
 assert.equal(semanticKey.questions.length,684,"The independent semantic key must pin all 684 questions.");
@@ -145,6 +145,81 @@ learning.chapterLearning.forEach((chapter,ci)=>{
   });
 });
 assert.equal(runtimeQuestionMap.size,684,"Every runtime question must have a unique chapter/lesson identifier.");
+
+const independentQuestionAudit = JSON.parse(fs.readFileSync("docs/question-independent-oracles-8086.json","utf8"));
+assert.equal(independentQuestionAudit.oracles.length,6,
+  "The initial independent question tranche must contain six separately reasoned oracles.");
+const independentQuestionFailures=[];
+for (const oracle of independentQuestionAudit.oracles) {
+  const actual=runtimeQuestionMap.get(oracle.id);
+  assert.ok(actual,"Independent oracle must resolve to runtime question "+oracle.id);
+  assert.equal(actual[1].length,3,oracle.id+" must retain exactly three choices.");
+  assert.equal(new Set(actual[1]).size,3,oracle.id+" choices must remain unique.");
+  assert.equal(actual[1][actual[2]],oracle.correctAnswer,oracle.id+" independently recalculated correct answer.");
+  assert.equal(oracle.distractorRationales.length,2,oracle.id+" must explain both distractors.");
+  for(const distractor of oracle.distractorRationales){
+    assert.ok(actual[1].includes(distractor.choice),oracle.id+" distractor rationale must refer to a displayed choice.");
+    assert.ok(distractor.choice!==oracle.correctAnswer,oracle.id+" distractor cannot equal the correct answer.");
+    assert.ok(distractor.reason.trim().length>=20,oracle.id+" distractor rationale must be substantive.");
+  }
+  assert.ok(oracle.reference && oracle.derivation,oracle.id+" must record a reference basis and independent derivation.");
+  for(const phrase of oracle.explanationChecks){
+    assert.ok(actual[3].toLocaleLowerCase().includes(phrase.toLocaleLowerCase()),
+      oracle.id+" explanation must communicate independently checked detail: "+phrase);
+  }
+  let computed=null;
+  switch(oracle.rule){
+    case "prefetch_queue_8086":
+      computed={queueBytes:6,overlap:true,superscalarExecution:false};
+      assert.equal(oracle.inputs.processor,"8086");
+      break;
+    case "unsigned_byte_add":{
+      const modulus=2**oracle.inputs.width;
+      const sum=oracle.inputs.left+oracle.inputs.right;
+      computed={mathematicalSum:sum,result:sum%modulus,carry:Number(sum>=modulus)};
+      break;
+    }
+    case "unsigned_strict_greater":{
+      const greater=oracle.inputs.candidate>oracle.inputs.currentMaximum;
+      const equal=oracle.inputs.equalCase.candidate===oracle.inputs.equalCase.currentMaximum;
+      computed={condition:"JA",strictComparison:greater,equalityReplaces:equal};
+      break;
+    }
+    case "logical_shift_right_8":{
+      const mask=(2**oracle.inputs.width)-1;
+      computed={result:(oracle.inputs.value>>>oracle.inputs.count)&mask,
+        carry:(oracle.inputs.value>>>(oracle.inputs.count-1))&1};
+      break;
+    }
+    case "arithmetic_shift_right_8":{
+      const shift=32-oracle.inputs.width;
+      const signed=(oracle.inputs.value<<shift)>>shift;
+      const mask=(2**oracle.inputs.width)-1;
+      computed={result:(signed>>oracle.inputs.count)&mask,
+        carry:(oracle.inputs.value>>>(oracle.inputs.count-1))&1};
+      break;
+    }
+    case "rep_stosb_forward":{
+      let cx=oracle.inputs.count,di=oracle.inputs.initialDI;
+      const writes=[];
+      while(cx>0){
+        writes.push({segment:"ES",offset:di,value:oracle.inputs.al});
+        di+=oracle.inputs.directionFlag===0?1:-1;
+        cx--;
+      }
+      computed={writes,finalCX:cx,finalDI:di};
+      break;
+    }
+    default: throw new Error("Unknown independent question oracle rule: "+oracle.rule);
+  }
+  assert.deepEqual(computed,oracle.expected,oracle.id+" independently recomputed architectural result.");
+}
+assert.equal(independentQuestionFailures.length,0);
+assert.ok(/structurally indexed/i.test(semanticKey.reviewScope),
+  "The semantic manifest must distinguish runtime concordance from independent certification.");
+assert.ok(/only items with explicit independent oracle evidence are certified/i.test(semanticKey.reviewScope),
+  "The semantic manifest must not overstate the scope of independent question validation.");
+console.log("Independent semantic question oracles: "+independentQuestionAudit.oracles.length+"/684 explicitly recalculated; remaining items are not certified by concordance alone.");
 const semanticKeyFailures=[];
 for(const expected of semanticKey.questions){
   const actual=runtimeQuestionMap.get(expected.id);
@@ -156,8 +231,8 @@ for(const expected of semanticKey.questions){
   }
 }
 assert.equal(semanticKeyFailures.length,0,
-  "All 684 question stems, choices, keyed answers and explanations must match the individually reviewed semantic key: "+JSON.stringify(semanticKeyFailures.slice(0,20)));
-console.log("Question semantic key: 684/684 individual answers and explanations match the reviewed key.");
+  "All 684 question stems, choices, keyed answers and explanations must match the concordance manifest: "+JSON.stringify(semanticKeyFailures.slice(0,20)));
+console.log("Question concordance manifest: 684/684 runtime items match the pinned stems, choices, answers and explanations.");
 
 
 const requiredFinalCategories = ["Définition","Compréhension","Syntaxe","Restrictions","Prédiction","Calcul / prédiction","Analyse de programme","Analyse de résultat","Débogage","Raisonnement"];
