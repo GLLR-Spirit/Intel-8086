@@ -8735,14 +8735,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "À quel offset physique se trouve l'entrée IVT du vecteur 30h ?",
+      "stem": "À quel offset physique commence l'entrée IVT du vecteur 21h ?",
       "choices": [
-        "00C0h",
-        "0030h",
-        "0300h"
+        "0084h",
+        "0021h",
+        "0210h"
       ],
-      "correctAnswer": "00C0h",
-      "explanation": "Chaque entrée occupe quatre octets : 30h×4=C0h.",
+      "correctAnswer": "0084h",
+      "explanation": "Chaque entrée occupe quatre octets. 21h×4=84h : l'entrée du vecteur 21h commence donc à l'adresse physique 00084h.",
       "category": "Prédiction"
     },
     {
@@ -8751,14 +8751,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Combien d'octets de contexte sont empilés par INT sur 8086 ?",
+      "stem": "SP vaut 1000h avant INT. Quelle valeur contient-il après l'empilement automatique du cadre d'interruption 8086 ?",
       "choices": [
-        "6 octets",
-        "2 octets",
-        "4 octets"
+        "0FFAh",
+        "0FFCh",
+        "0FFEh"
       ],
-      "correctAnswer": "6 octets",
-      "explanation": "INT sauvegarde FLAGS, CS et IP, trois mots de deux octets.",
+      "correctAnswer": "0FFAh",
+      "explanation": "INT empile trois mots de 16 bits. La pile descend de 2 octets par mot : 1000h−6=0FFAh.",
       "category": "Calcul / prédiction"
     },
     {
@@ -8783,14 +8783,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Quel état doit être restauré à la fin du gestionnaire ?",
+      "stem": "Avant INT, CS:IP=2000h:1234h, FLAGS=0202h et SP=1000h. Le gestionnaire ne modifie pas le cadre. Quel état retrouve-t-on après IRET ?",
       "choices": [
-        "IP, CS, FLAGS et SP cohérents",
-        "AX uniquement",
-        "CX et DX obligatoirement nuls"
+        "CS:IP=2000h:1234h, FLAGS=0202h et SP=1000h",
+        "CS:IP=0000h:0000h et SP=0FFAh",
+        "CS:IP=2000h:123Ah et SP=1000h"
       ],
-      "correctAnswer": "IP, CS, FLAGS et SP cohérents",
-      "explanation": "IRET restaure le contexte de retour et équilibre le cadre d'interruption.",
+      "correctAnswer": "CS:IP=2000h:1234h, FLAGS=0202h et SP=1000h",
+      "explanation": "INT sauvegarde FLAGS, CS et l'IP de continuation. IRET dépile IP, CS puis FLAGS ; après restauration des trois mots, SP revient à 1000h.",
       "category": "Analyse de résultat"
     },
     {
