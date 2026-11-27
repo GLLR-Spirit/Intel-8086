@@ -1143,6 +1143,8 @@ function independentlyCompute(oracle) {
       const value = Number.parseInt(i.hex, 16);
       return { binary: value.toString(2).padStart(i.hex.length * 4, "0"), decimal: value };
     }
+    case "binary_pattern_count":
+      return { bits: i.bits, distinctPatterns: 2 ** i.bits };
     case "binary_nibble_grouping": {
       const padded = i.bits.padStart(Math.ceil(i.bits.length / 4) * 4, "0");
       const groups = padded.match(/.{4}/g);
@@ -1340,4 +1342,23 @@ assert.equal(categoryCount("Syntaxe"), 2, "Chapter 2 final assessment must conta
 assert.equal(chapter2Final.filter(question => ["Prédiction", "Calcul / prédiction"].includes(question.category)).length, 2, "Chapter 2 final assessment must contain two calculation/prediction items");
 assert.equal(chapter2Final.filter(question => ["Analyse de programme", "Analyse de résultat"].includes(question.category)).length, 2, "Chapter 2 final assessment must contain two program-analysis items");
 assert.equal(chapter2Final.filter(question => ["Débogage", "Raisonnement"].includes(question.category)).length, 2, "Chapter 2 final assessment must contain two reasoning/debug items");
+
+const chapter3Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-03.json", "utf8"));
+const chapter3Ids = key.questions.filter(question => question.chapter === 3).map(question => question.id).sort();
+const reviewedChapter3Ids = chapter3Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter3Ids, chapter3Ids, "Chapter 3 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter3Ids).size, 19, "Chapter 3 review must not duplicate question IDs");
+assert.equal(chapter3Review.summary.questionsReviewed, 19, "Chapter 3 review count must match the complete question bank");
+assert.equal(chapter3Review.summary.passed, 16, "Chapter 3 review must report 16 passed questions");
+assert.equal(chapter3Review.summary.corrected, 3, "Chapter 3 review must record the two duplicate-item corrections and improved distractors");
+assert.equal(chapter3Review.summary.blocked, 0, "Chapter 3 review must have no unresolved blockers");
+assert.equal(chapter3Review.summary.officialCertificationCountBefore, 384, "Chapter 3 review starts from the official 384-question ledger");
+assert.equal(chapter3Review.summary.officialCertificationCountAfter, 384, "Chapter 3 review must not silently advance official certification");
+assert.equal(chapter3Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.notEqual(keyMap.get("C03-L1-Q1").stem, keyMap.get("C03-L1-Q3").stem, "Chapter 3 lesson 1 must not repeat the same binary conversion item");
+assert.notEqual(keyMap.get("C03-L3-Q1").stem, keyMap.get("C03-L3-Q3").stem, "Chapter 3 lesson 3 must not repeat the same FFh conversion item");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C03-L1-Q3").inputs, { bits: "1101" }, "The corrected binary-weight item must use a distinct binary pattern");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C03-L3-Q3").expected, { bits: 8, distinctPatterns: 256 }, "Eight-bit pattern cardinality must be independently recomputed");
+assert.equal(keyMap.get("C03-F-Q4").correctAnswer, "100h vaut 256, au-dessus de FFh (255)", "The AL-width item must use the corrected, unambiguous answer");
+
 console.log("Question oracle evaluator: chapters 1–36 — " + oracleRecordsChecked + "/684 oracle records passed automated checks; official certification ledger remains " + manifest.oracleCoverageSummary.officialCertificationCount + "/684 (" + manifest.oracleCoverageSummary.remainingOfficialCertification + " pending); " + blocked + " blocked.");
