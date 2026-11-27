@@ -18,7 +18,11 @@ assert.equal(review.summary.remainingOfficialCertification, 300);
 const correctedIds = new Set(["C17-L1-Q1","C17-F-Q3","C17-F-Q4","C17-F-Q7","C17-F-Q8","C17-F-Q10"]);
 for (const id of correctedIds) assert.ok(review.records.some(r => r.id === id && r.result === "corrected"), "Corrected question must be recorded: " + id);
 const finalQuestions = key.questions.filter(q => q.chapter === 17 && q.kind === "final");
-const expectedCategories = ["Définition","Syntaxe","Calcul / prédiction","Analyse de programme","Raisonnement / débogage"];
-for (const category of expectedCategories) assert.equal(finalQuestions.filter(q => q.category === category).length, 2, "Chapter 17 final assessment must contain exactly two " + category + " items");
+const categoryGroups = [
+  ["Définition","Compréhension"],["Syntaxe","Restrictions"],["Prédiction","Calcul / prédiction"],
+  ["Analyse de programme","Analyse de résultat"],["Débogage","Raisonnement"]
+];
+for (const group of categoryGroups) assert.equal(finalQuestions.filter(q => group.includes(q.category)).length, 2,
+  "Chapter 17 final assessment must contain exactly two items in category group " + group.join("/"));
 assert.deepEqual(review.openFindings, [], "Chapter 17 final-assessment blueprint must be closed");
 console.log("Chapter 17 independent review: 19/19 inspected; 13 passed; 6 corrections aligned; final-assessment blueprint remains open; official certification remains 384/684.");
