@@ -283,3 +283,14 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - CI [run 1869](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46033043857) passed both jobs after the four runtime question corrections and evaluator updates.
 - Separate browser audit [run 1232](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46033043862) passed.
 - The earlier first attempt failed only because the new review test still expected zero corrected items; the assertion was corrected to require four, matching the recorded source changes. The final run passed.
+
+
+## Mise à jour — audit éditorial des exercices (2026-11-27)
+
+- Première passe individuelle réalisée sur les 48 entrées : consigne, code de départ, correction, prédicat, difficulté/type et chapitres associés.
+- Les 48 corrections passent toujours les comparaisons d'exécution source/binaire du CI ; cette preuve ne certifie pas l'alignement complet entre consigne et validateur.
+- Écarts éditoriaux confirmés : EX35 encodage non contrôlé par le prédicat ; EX37 désassemblage demandé mais non évalué ; EX39 réponse conceptuelle non saisissable dans l'interface ; EX27/EX41 critère d'équilibre de pile incomplet ; EX47/EX48 sauvegarde de BX non démontrée par une valeur initiale non nulle ; EX33/EX46 invariants de retour d'interruption à renforcer.
+- Défaut de recherche confirmé : le champ promettait une recherche dans les instructions, mais n'indexait pas le programme de départ ni les explications guidées. Correction proposée sur la branche `audit/exercices-editorial-2026-11-27`.
+- Test navigateur renforcé sur cette branche : 1 554 combinaisons des filtres chapitre/difficulté/type, recherche dans le code source, combinaison recherche + filtres et réinitialisation.
+- Grille éditoriale détaillée et registre EX01–EX48 : `docs/exercise-editorial-audit-2026-11-27.md`.
+- Statut : audit éditorial en cours ; aucun changement fusionné dans `main`, aucun déploiement.
