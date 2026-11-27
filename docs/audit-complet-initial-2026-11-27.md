@@ -21,7 +21,7 @@ Ce document consigne une vérification reproductible du dépôt et des résultat
 | Questions finales | 360 | Concordance runtime/manifeste contrôlée |
 | Oracles de questions | 684/684 | Évaluateurs automatisés réussis ; **ce résultat n'est pas une certification humaine indépendante** |
 | Registre de certification officiel | 384/684 | 300 restent non certifiées dans le registre officiel ; compteur inchangé |
-| Revues individuelles documentées | 475 questions (chapitres 1 à 23) | 392 passées, 83 corrigées, 0 bloquée ; non réconciliées automatiquement avec le registre officiel |
+| Revues individuelles documentées | 494 questions (chapitres 1 à 24) | 407 passées, 87 corrigées, 0 bloquée ; non réconciliées automatiquement avec le registre officiel |
 | Exercices et corrections guidées | 48/48 | Métadonnées, validateurs et comparaison source/binaire réussis |
 | Smoke tests | 378/378 | Réussis |
 | Matrice ModR/M | 11 568/11 568 | Tests de génération, décodage et validité réussis |
@@ -45,7 +45,7 @@ Cause commune : les documents de suivi n'avaient pas été réconciliés après 
 
 ## Points qui restent ouverts — aucune clôture fictive
 
-1. **Questions :** les 684 évaluateurs automatisés réussissent, mais le registre officiel reste 384/684. Le registre officiel conserve 300 questions non certifiées. Des revues individuelles distinctes documentent déjà 475 questions des chapitres 1 à 23 (392 passées, 83 corrigées, 0 bloquée), mais ces fichiers ne sont pas automatiquement réconciliés avec le registre officiel. Les chapitres 20 à 36 restent à examiner individuellement. Le nombre de 300 questions restantes est un compteur historique ; il n'est pas encore associé à une liste vérifiable d'identifiants, car le dépôt ne fournit pas le registre nominatif des 384 questions déjà certifiées.
+1. **Questions :** les 684 évaluateurs automatisés réussissent, mais le registre officiel reste 384/684. Le registre officiel conserve 300 questions non certifiées. Des revues individuelles distinctes documentent déjà 494 questions des chapitres 1 à 24 (407 passées, 87 corrigées, 0 bloquée), mais ces fichiers ne sont pas automatiquement réconciliés avec le registre officiel. Les chapitres 20 à 36 restent à examiner individuellement. Le nombre de 300 questions restantes est un compteur historique ; il n'est pas encore associé à une liste vérifiable d'identifiants, car le dépôt ne fournit pas le registre nominatif des 384 questions déjà certifiées.
 2. **Cours :** la présence de 108 explications de longueur minimale et la réussite des tests structurels ne remplacent pas une relecture experte de chaque notion, prérequis, progression et exemple.
 3. **Exemples :** la comparaison source/binaire couvre 108/108 ; les quatre exemples conceptuels sont explicitement conservés. Les résultats du moteur logiciel ne constituent pas une comparaison avec un 8086 physique.
 4. **Simulateur, assembleur, désassembleur :** les matrices et vecteurs ciblés sont étendus, mais le balayage structurel des opcodes ne certifie pas la sémantique de chaque opcode ni toutes les combinaisons de préfixes, états indéfinis, interruptions matérielles et signaux de bus.
@@ -61,40 +61,47 @@ Les deux jobs du CI correctif run 1884 sont réussis sur la branche d'audit. L'i
 
 - Chapitre 17 : le plan d'évaluation finale est désormais équilibré, avec exactement deux questions dans chacune des cinq catégories attendues.
 - Chapitre 18 : 19 questions examinées individuellement ; 15 validées et 4 corrigées. Les corrections portent sur la précision des adresses segment:offset et sur l'analyse d'un programme comparant deux références mémoire aliasées.
-- Les revues documentées couvrent maintenant 475 questions des chapitres 1 à 23 : 392 validées, 83 corrigées, aucune bloquée.
+- Les revues documentées couvrent maintenant 494 questions des chapitres 1 à 24 : 407 validées, 87 corrigées, aucune bloquée.
 - Le compteur officiel reste 384/684 (300 restantes) : les fiches de revue ne sont pas automatiquement ajoutées au registre historique. Aucun registre historique complet listant les 384 identifiants certifiés n'a encore été trouvé ; le nombre 300 ne peut donc pas encore être associé à un ensemble d'identifiants vérifiable.
 
 
 ## Mise à jour — revue individuelle du chapitre 19
 
 - Chapitre 19 : 19 questions examinées individuellement ; 18 validées et 1 corrigée. L'ancienne question finale répétait le segment par défaut SS ; elle est remplacée par un cas frontière vérifiant le repliement de l'offset effectif 16 bits (`FFF0h + 0030h + 0004h = 10024h`, offset conservé `0024h`).
-- Les revues documentées couvrent maintenant 475 questions des chapitres 1 à 23 : 392 validées, 83 corrigées, aucune bloquée.
+- Les revues documentées couvrent maintenant 494 questions des chapitres 1 à 24 : 407 validées, 87 corrigées, aucune bloquée.
 - Le compteur officiel reste 384/684 (300 restantes), sans incrément automatique. L'absence d'une liste nominative des 384 identifiants historiques certifiés demeure un point de traçabilité ouvert.
 
 
 ## Mise à jour — revue individuelle du chapitre 20
 
 - Chapitre 20 : 19 questions examinées individuellement ; 16 validées et 3 corrigées. Les corrections précisent l'effet de POPF sans sauvegarde correspondante, lèvent une ambiguïté sur la destination du premier POP après deux PUSH et remplacent un doublon sur l'équilibre de SP par le calcul de l'adresse d'écriture du premier PUSH.
-- Les revues documentées couvrent maintenant 475 questions des chapitres 1 à 23 : 392 validées, 83 corrigées, aucune bloquée.
+- Les revues documentées couvrent maintenant 494 questions des chapitres 1 à 24 : 407 validées, 87 corrigées, aucune bloquée.
 - Le compteur officiel reste 384/684 (300 restantes) et n'est pas incrémenté automatiquement ; la liste historique des 384 identifiants certifiés reste à reconstruire.
 
 
 ## Mise à jour — revue individuelle du chapitre 21
 
 - Chapitre 21 : 19 questions examinées individuellement ; 19 validées, aucune correction nécessaire. Les règles CALL/RET near, l'adresse de retour, l'équilibre de pile et le résultat DX:AX de MUL mot ont été vérifiés.
-- Les revues documentées couvrent maintenant 475 questions des chapitres 1 à 23 : 392 validées, 83 corrigées, aucune bloquée.
+- Les revues documentées couvrent maintenant 494 questions des chapitres 1 à 24 : 407 validées, 87 corrigées, aucune bloquée.
 - Le compteur officiel reste 384/684 (300 restantes) ; il n'est pas incrémenté automatiquement tant que le registre nominatif historique n'est pas reconstruit.
 
 
 ## Mise à jour — revue individuelle du chapitre 22
 
 - Chapitre 22 : 19 questions examinées individuellement ; 17 validées et 2 corrigées. Deux questions finales répétaient des calculs déjà présents dans les leçons ; elles évaluent maintenant l'ordre de dépilage de paramètres et l'effet d'un CALL near sur SP après empilement des paramètres.
-- Les revues documentées couvrent maintenant 475 questions des chapitres 1 à 23 : 392 validées, 83 corrigées, aucune bloquée.
+- Les revues documentées couvrent maintenant 494 questions des chapitres 1 à 24 : 407 validées, 87 corrigées, aucune bloquée.
 - Le compteur officiel reste 384/684 (300 restantes) ; il n'est pas incrémenté automatiquement tant que le registre nominatif historique n'est pas reconstruit.
 
 
 ## Mise à jour — revue individuelle du chapitre 23
 
 - Chapitre 23 : 19 questions examinées individuellement ; 17 validées et 2 corrigées. Deux questions finales qui répétaient des exemples de leçon ont été remplacées par un cas de dépassement 16 bits et un cas de transmission de deux paramètres en registres.
-- Les revues documentées couvrent maintenant 475 questions des chapitres 1 à 23 : 392 validées, 83 corrigées, aucune bloquée.
+- Les revues documentées couvrent maintenant 494 questions des chapitres 1 à 24 : 407 validées, 87 corrigées, aucune bloquée.
+- Le compteur officiel reste 384/684 (300 restantes) ; il n'est pas incrémenté automatiquement tant que le registre nominatif historique n'est pas reconstruit.
+
+
+## Mise à jour — revue individuelle du chapitre 24
+
+- Chapitre 24 : 19 questions examinées individuellement ; 15 validées et 4 corrigées. La formulation de MUL mot a été précisée, deux calculs finaux redondants ont été remplacés par des cas contrastant 80h signé et non signé, et la condition CF/OF a été explicitement rattachée à MUL mot.
+- Les revues documentées couvrent maintenant 494 questions des chapitres 1 à 24 : 407 validées, 87 corrigées, aucune bloquée.
 - Le compteur officiel reste 384/684 (300 restantes) ; il n'est pas incrémenté automatiquement tant que le registre nominatif historique n'est pas reconstruit.
