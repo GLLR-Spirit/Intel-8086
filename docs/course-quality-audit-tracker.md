@@ -245,3 +245,15 @@ The mission remains in progress. Passing automated suites is evidence for the te
   - C14-F-Q8 now traces JO after 7Fh+1 produces signed overflow.
 - Added independent evaluators and CI assertions for unsigned comparisons, parity branches and overflow branches.
 - Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
+
+
+### Independent question review — chapter 15
+
+- Reviewed all 19 questions individually against the Intel 8086 Family User's Manual and MCS-86 condition-code reference.
+- 12 items passed; seven were diversified:
+  - C15-L2-Q1 and FQ6 now test distinct signed boundary values (80h = −128; 7Fh = +127).
+  - C15-L2-Q2 now tests JGE (SF=OF), complementing JL (SF≠OF).
+  - C15-F-Q3 and FQ4 now test JAE and JLE, covering the complementary unsigned/signed inclusive conditions.
+  - C15-F-Q7 and FQ8 now trace concrete unsigned and signed comparisons using the same FFh/01h bit patterns, proving their different interpretations.
+- Added an independent signed comparison trace evaluator and CI assertions for both branch outcomes.
+- Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
