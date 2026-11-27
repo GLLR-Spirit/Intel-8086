@@ -5743,14 +5743,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Quel segment est sélectionné par défaut pour [BP+4] ?",
+      "stem": "Après MOV BX,FFF0h / MOV SI,0030h / MOV AX,[BX+SI+4], quel offset effectif est utilisé pour lire le mot ?",
       "choices": [
-        "SS",
-        "DS",
-        "ES"
+        "0024h (repli sur 16 bits)",
+        "10024h (offset 20 bits)",
+        "0020h (déplacement ignoré)"
       ],
-      "correctAnswer": "SS",
-      "explanation": "BP sélectionne SS sauf override explicite.",
+      "correctAnswer": "0024h (repli sur 16 bits)",
+      "explanation": "FFF0h+0030h+0004h=10024h. L'adresse effective est un offset 16 bits : seuls les 16 bits faibles sont conservés, soit 0024h. Le segment est appliqué ensuite.",
       "category": "Analyse de résultat"
     },
     {
