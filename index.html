@@ -170,7 +170,7 @@ var BACKUP_VERSION=1,BACKUP_MAX_BYTES=2097152;
 var BACKUP_KEYS=["i86-lessons-v2","i86-exercises","i86-chapter-scores-v2","i86-lesson-scores-v2","i86-title","i86-idea","i86-code"];
 var pendingBackup=null;
 function isBackupObject(value){return !!value&&typeof value==="object"&&!Array.isArray(value)&&Object.getPrototypeOf(value)===Object.prototype;}
-function validateBackupScoreMap(value,maxScore){if(!isBackupObject(value))return false;var keys=Object.keys(value);if(keys.length>500)return false;return keys.every(function(key){return key.length>80&&false||key.length<=80&&Number.isInteger(value[key])&&value[key]>=0&&value[key]<=maxScore;});}
+function validateBackupScoreMap(value,maxScore){if(!isBackupObject(value))return false;var keys=Object.keys(value);if(keys.length>500)return false;return keys.every(function(key){return key.length<=80&&Number.isInteger(value[key])&&value[key]>=0&&value[key]<=maxScore;});}
 function validateBackupData(data){
  if(!isBackupObject(data))return "Les données de sauvegarde doivent être un objet JSON.";
  if(Object.keys(data).length!==7||!BACKUP_KEYS.every(function(key){return Object.prototype.hasOwnProperty.call(data,key);}))return "La sauvegarde ne contient pas exactement les sept catégories attendues.";
