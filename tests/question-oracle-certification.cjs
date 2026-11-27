@@ -119,7 +119,7 @@ for (const oracle of batch.oracles) {
   const live = runtimeQuestions.get(oracle.id);
   assert.ok(keyed, "Oracle must resolve to semantic-key item " + oracle.id);
   assert.ok(live, "Oracle must resolve to runtime question " + oracle.id);
-  assert.deepEqual(Array.from(keyed.choices), Array.from(live[1]), oracle.id + " runtime choices must match the semantic key");
+  assert.deepEqual(Array.from(keyed.choices).slice().sort(), Array.from(live[1]).slice().sort(), oracle.id + " runtime choices must match the semantic key as a set (display order may be shuffled)");
   assert.equal(keyed.correctAnswer, live[1][live[2]], oracle.id + " runtime answer must match the semantic key");
   assert.equal(oracle.correctAnswer, keyed.correctAnswer, oracle.id + " oracle answer must be independently aligned to the actual item");
   assert.deepEqual(oracle.expected, independentlyCompute(oracle), oracle.id + " independent rule calculation");
