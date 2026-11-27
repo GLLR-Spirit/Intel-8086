@@ -4,7 +4,7 @@ const assert = require("node:assert/strict");
 
 const key = JSON.parse(fs.readFileSync("docs/question-semantic-key-8086.json", "utf8"));
 const manifest = JSON.parse(fs.readFileSync("docs/question-independent-oracles-8086.json", "utf8"));
-const batches = ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20"].map(name => JSON.parse(fs.readFileSync("docs/question-oracle-batches/" + name + ".json", "utf8")));
+const batches = ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21"].map(name => JSON.parse(fs.readFileSync("docs/question-oracle-batches/" + name + ".json", "utf8")));
 const html = fs.readFileSync("index.html", "utf8");
 const match = html.match(/<script>([\s\S]*?)<\/script>/);
 assert.ok(match, "Inline application script must exist");
@@ -513,6 +513,42 @@ function independentlyCompute(oracle) {
       return { requiredCorrection: "POP_corresponding_register", stackWordsRemaining: i.pushWords - i.popWords };
     case "stack_validation":
       return { checksAll: true };
+    case "near_call_stack":
+      return { saved: "IP", CSChanged: false, SPDecrement: 2 };
+    case "call_return_address":
+      return { returnAddress: "IP_after_CALL" };
+    case "near_call_segment":
+      return { CSChanged: false, IPChanged: true };
+    case "ret_near":
+      return { operation: "pop", destination: "IP", restoresContinuation: true };
+    case "call_ret_balance":
+      return { IPRestored: true, finalSP: i.initialSP + 2 * i.retWords - 2 * i.callWords, stackBalanced: i.callWords === i.retWords };
+    case "mul_word_result_registers":
+      return { lowWord: "AX", highWord: "DX" };
+    case "mul_word_trace": {
+      const product = i.left * i.right;
+      return { DX: (product >>> 16) & 0xffff, AX: product & 0xffff, product };
+    }
+    case "mul_word_high_half":
+      return { highWord: "DX", lowWord: "AX" };
+    case "call_near_semantics":
+      return { IPChanged: true, CSChanged: false };
+    case "call_return_purpose":
+      return { savedValue: "return_IP", purpose: "resume_after_call" };
+    case "stack_parasite_error":
+      return { wrongReturnAddressPossible: true, SPUnbalanced: true };
+    case "procedure_double":
+      return { finalAX: i.initialAX * 2 };
+    case "call_stack_pointer":
+      return { finalSP: i.initialSP - 2, storedReturnIP: i.returnIP };
+    case "procedure_double_and_return":
+      return { finalAX: i.initialAX * 2, returnsAfterCall: true };
+    case "near_return_state":
+      return { IPRestored: true, finalSP: i.initialSP, CSChanged: false };
+    case "stack_procedure_audit":
+      return { verifyPushPopOrder: true, verifySPBalance: true };
+    case "procedure_contract":
+      return { interfaceExplicit: true, stackDisciplineExplicit: true };
     case "lea_effective_offset":
       return { offset: i.base + (i.index || 0) + i.displacement, memoryRead: false };
     case "lea_symbolic_expression":
@@ -672,8 +708,8 @@ function independentlyCompute(oracle) {
 }
 
 const keyMap = new Map(key.questions.map(q => [q.id, q]));
-assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20"]);
-assert.deepEqual(batches.map(batch => batch.oracles.length), [19, 18, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19], "Chapters 2 and 4 each reuse one historical oracle rather than duplicating its ID");
+assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21"]);
+assert.deepEqual(batches.map(batch => batch.oracles.length), [19, 18, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19], "Chapters 2 and 4 each reuse one historical oracle rather than duplicating its ID");
 const historicalChapterOracles = manifest.oracles.filter(oracle => ["C02-F-Q4", "C04-F-Q4"].includes(oracle.id)).map(oracle => ({ ...oracle, status: "certified" }));
 assert.equal(historicalChapterOracles.length, 2, "The historical chapter 2 and chapter 4 final question oracles must each be reused exactly once");
 const allOracleRecords = [...batches.flatMap(batch => batch.oracles), ...historicalChapterOracles];
@@ -715,13 +751,13 @@ for (const oracle of allOracleRecords) {
     assert.fail("Unknown oracle status for " + oracle.id + ": " + oracle.status);
   }
 }
-assert.equal(certified, 380, "All 380 questions across chapters 1 to 20 are certified, including the two reused historical chapter oracles");
+assert.equal(certified, 399, "All 399 questions across chapters 1 to 21 are certified, including the two reused historical chapter oracles");
 assert.equal(blocked, 0, "No question in the certified batches remains blocked");
-for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]) {
+for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]) {
   const prefix = "C" + String(chapter).padStart(2, "0") + "-";
   const expectedIds = key.questions.filter(question => question.id.startsWith(prefix)).map(question => question.id);
   assert.equal(expectedIds.length, 19, "Each audited chapter must contain exactly 19 keyed questions");
   for (const id of expectedIds) assert.ok(allIds.includes(id), "Missing independent oracle for " + id);
 }
 assert.match(keyMap.get("C01-L1-Q2").explanation, /octets machine distincts/i, "Source assembly must be distinguished from its encoded machine bytes");
-console.log("Question oracle certification: chapters 1–20 — " + certified + "/380 certified; " + blocked + " blocked; runtime/key alignment and independent evaluators passed.");
+console.log("Question oracle certification: chapters 1–21 — " + certified + "/399 certified; " + blocked + " blocked; runtime/key alignment and independent evaluators passed.");
