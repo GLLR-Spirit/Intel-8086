@@ -45,15 +45,15 @@ function exerciseByTitle(title) {
 for (const spec of [
   {
     title: "Procédure : CALL et RET near",
-    bypass: "MOV AX, 10\\nHLT"
+    bypass: "MOV AX, 10\nHLT"
   },
   {
     title: "Paramètre sur pile : lire avec BP",
-    bypass: "MOV AX, 10\\nHLT"
+    bypass: "MOV AX, 10\nHLT"
   },
   {
     title: "Programmation modulaire : deux routines",
-    bypass: "MOV AX, 10\\nHLT"
+    bypass: "MOV AX, 10\nHLT"
   }
 ]) {
   const { index, exercise } = exerciseByTitle(spec.title);
