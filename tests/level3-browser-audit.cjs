@@ -437,7 +437,7 @@ const assert = require("node:assert/strict");
     const checks = [
       {index:34,response:"",valid:true},
       {index:36,response:"",valid:true},
-      {index:38,response:"Le simulateur ne mesure pas les cycles physiques : la BIU, la prélecture et les accès bus influencent le temps.",valid:true},
+      {index:38,response:"Le résultat fonctionnel est identique, mais cela ne prouve pas un gain de cycles : la BIU et la prélecture ainsi que les accès au bus influencent le temps, que le simulateur ne modélise pas.",valid:true},
       {index:32,response:"",valid:true},
       {index:40,response:"",valid:true},
       {index:42,response:"",valid:true},
@@ -484,13 +484,15 @@ const assert = require("node:assert/strict");
     });
     const missingWrittenAnswer = api.executeAll(api.exercises[38][4].solution);
     const missingAnswerRejected = !api.validateExercise(38,missingWrittenAnswer,api.exercises[38][4].solution,"");
+    const misleadingResponse = "Le résultat fonctionnel est identique, le simulateur mesure les cycles physiques ; la BIU ne fait pas de prélecture et le bus n'a aucun accès mémoire.";
+    const misleadingAnswerRejected = !api.validateExercise(38,missingWrittenAnswer,api.exercises[38][4].solution,misleadingResponse);
     const wrongEncodingSource = "MOV AX, 1234h\nNOP\nHLT";
     const wrongEncodingState = api.executeAll(wrongEncodingSource);
     const wrongEncodingRejected = !api.validateExercise(34,wrongEncodingState,wrongEncodingSource,"");
     const unbalancedStackSource = api.exercises[40][4].solution.replace("\nHLT","\nPUSH AX\nHLT");
     const unbalancedStackState = api.executeAll(unbalancedStackSource);
     const unbalancedStackRejected = !api.validateExercise(40,unbalancedStackState,unbalancedStackSource,"");
-    return {results,branchVariants,requiredTechniques,missingAnswerRejected,wrongEncodingRejected,unbalancedStackRejected};
+    return {results,branchVariants,requiredTechniques,missingAnswerRejected,misleadingAnswerRejected,wrongEncodingRejected,unbalancedStackRejected};
   });
   assert.deepEqual(advancedExerciseAudit.results.map(item=>item.valid),[true,true,true,true,true,true,true,true,true],
     "EX33/35/37/39/41/43/46/47/48 must pass their independent pedagogical oracles: "+JSON.stringify(advancedExerciseAudit));
@@ -499,6 +501,7 @@ const assert = require("node:assert/strict");
   assert.ok(advancedExerciseAudit.requiredTechniques.every(item=>item.valid),
     "Explicitly required techniques must appear in the guided corrections: "+JSON.stringify(advancedExerciseAudit.requiredTechniques));
   assert.ok(advancedExerciseAudit.missingAnswerRejected,"EX39 must reject a missing written explanation.");
+  assert.ok(advancedExerciseAudit.misleadingAnswerRejected,"EX39 must reject a keyword-rich explanation that contradicts the required model limits.");
   assert.ok(advancedExerciseAudit.wrongEncodingRejected,"EX35 must reject a functionally correct but differently encoded program.");
   assert.ok(advancedExerciseAudit.unbalancedStackRejected,"EX41 must reject a program that leaves an extra stack word.");
   console.log("Advanced exercise oracles: 9/9 valid corrections + 3 negative controls PASS.");
@@ -880,7 +883,7 @@ const assert = require("node:assert/strict");
     assert.equal(await page.locator("#code").inputValue(),exercise.solution,
       "Exercise "+(exercise.index+1)+" must load its complete correction into the editor.");
     await page.locator('[data-view="exercises"]').click();
-    if(exercise.index===38){await page.locator("#exerciseResponse-38").fill("Le simulateur ne mesure pas les cycles physiques : la BIU, la prélecture et les accès bus influencent le temps.");}
+    if(exercise.index===38){await page.locator("#exerciseResponse-38").fill("Le résultat fonctionnel est identique, mais cela ne prouve pas un gain de cycles : la BIU et la prélecture ainsi que les accès au bus influencent le temps, que le simulateur ne modélise pas.");}
     await page.locator("#exerciseList [data-check]").nth(exercise.index).click();
     assert.match(await page.locator("#exerciseList .exercise").nth(exercise.index).textContent(),/Réussi/,
       "Exercise "+(exercise.index+1)+" correction must pass its own UI validator.");
