@@ -5199,14 +5199,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 2,
-      "stem": "Avec DS=1000h et BX=0020h, quelle adresse logique désigne BX ?",
+      "stem": "Quelle adresse logique utilise la référence mémoire [BX] lorsque DS=1000h et BX=0020h ?",
       "choices": [
         "1000h:0020h",
         "0020h:1000h",
         "1000h:1000h"
       ],
       "correctAnswer": "1000h:0020h",
-      "explanation": "DS fournit le segment et BX fournit l'offset de la référence mémoire.",
+      "explanation": "[BX] utilise DS comme segment par défaut et BX comme offset : l'adresse logique est DS:BX, soit 1000h:0020h.",
       "category": "Application"
     },
     {
@@ -5215,14 +5215,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 3,
-      "stem": "Pourquoi un offset seul ne suffit-il pas à identifier l'adresse logique ?",
+      "stem": "Pourquoi un offset seul ne suffit-il pas à calculer une adresse physique unique ?",
       "choices": [
         "Il faut aussi connaître le segment",
         "Il faut connaître AX",
         "Il faut connaître le code machine"
       ],
       "correctAnswer": "Il faut aussi connaître le segment",
-      "explanation": "Le segment participe au calcul de l'adresse physique avec l'offset.",
+      "explanation": "L'adresse physique dépend du couple segment:offset. Un même offset associé à des segments différents peut produire des adresses physiques différentes.",
       "category": "Vérification"
     },
     {
@@ -5343,15 +5343,15 @@
       "kind": "final",
       "lesson": null,
       "number": 2,
-      "stem": "Pourquoi l'espace physique dépasse-t-il 64 Kio ?",
+      "stem": "Quelle caractéristique permet au 8086 d'adresser 1 Mio malgré des offsets de 16 bits ?",
       "choices": [
         "Le bus d'adresses est large de 20 bits malgré les offsets 16 bits",
         "Les registres généraux sont 32 bits",
         "Chaque segment contient 1 Mio indépendant"
       ],
       "correctAnswer": "Le bus d'adresses est large de 20 bits malgré les offsets 16 bits",
-      "explanation": "Les segments et offsets permettent de former des adresses physiques sur 20 bits.",
-      "category": "Compréhension"
+      "explanation": "Le bus physique comporte 20 bits. Le couple segment:offset forme l'adresse par segment×16+offset, dans un espace de 1 Mio.",
+      "category": "Définition"
     },
     {
       "id": "C18-F-Q3",
@@ -5383,7 +5383,7 @@
       ],
       "correctAnswer": "Cette destination est interdite",
       "explanation": "CS ne peut pas être destination de MOV dans le jeu documenté du 8086.",
-      "category": "Restrictions"
+      "category": "Syntaxe"
     },
     {
       "id": "C18-F-Q5",
@@ -5399,7 +5399,7 @@
       ],
       "correctAnswer": "10020h",
       "explanation": "1000h×10h+20h=10020h.",
-      "category": "Prédiction"
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C18-F-Q6",
@@ -5439,15 +5439,15 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Pourquoi 1000h:0010h et 1001h:0000h sont-ils équivalents ?",
+      "stem": "Après MOV AX,1000h / MOV DS,AX / MOV BX,0010h / MOV AX,1001h / MOV ES,AX / MOV DI,0000h, que désignent DS:[BX] et ES:[DI] ?",
       "choices": [
-        "Ils calculent tous deux 10010h",
-        "Leurs offsets sont égaux",
-        "Ils utilisent le même segment"
+        "La même adresse physique 10010h",
+        "10010h et 10001h",
+        "Deux segments indépendants"
       ],
-      "correctAnswer": "Ils calculent tous deux 10010h",
-      "explanation": "Les deux expressions segment×16+offset donnent 10010h.",
-      "category": "Analyse de résultat"
+      "correctAnswer": "La même adresse physique 10010h",
+      "explanation": "DS:BX vaut 1000h×10h+0010h=10010h. ES:DI vaut 1001h×10h+0000h=10010h : les deux références désignent le même octet physique.",
+      "category": "Analyse de programme"
     },
     {
       "id": "C18-F-Q9",
@@ -5463,7 +5463,7 @@
       ],
       "correctAnswer": "Conserver les 20 bits d'adresse physique (repli sur 1 Mio)",
       "explanation": "Le bus physique 8086 expose 20 bits ; les adresses se replient modulo 1 Mio.",
-      "category": "Débogage"
+      "category": "Raisonnement / débogage"
     },
     {
       "id": "C18-F-Q10",
@@ -5479,7 +5479,7 @@
       ],
       "correctAnswer": "Calculer segment×16+offset puis appliquer le bus 20 bits",
       "explanation": "Le calcul doit respecter le décalage du segment et la largeur physique.",
-      "category": "Raisonnement"
+      "category": "Raisonnement / débogage"
     },
     {
       "id": "C19-L1-Q1",
