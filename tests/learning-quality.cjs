@@ -300,6 +300,13 @@ for (const oracle of courseExampleOracles.examples) {
   }
 }
 assert.equal(checkedExampleIds.size, 108, "Every chapter/lesson pair must have exactly one independent result oracle.");
+const segmentOverrideLesson = learning.curriculum[33][5][0];
+assert.match(segmentOverrideLesson[2], /MOV BYTE PTR DS:\\[BX\\], 0A5h/,
+  "C34-L01 must seed DS with a value distinct from the override segments.");
+assert.match(segmentOverrideLesson[2], /MOV BYTE PTR ES:\\[BX\\], 5Ah/);
+assert.match(segmentOverrideLesson[2], /MOV BYTE PTR CS:\\[BX\\], 3Ch/);
+assert.match(segmentOverrideLesson[3], /AL=3Ch/,
+  "C34-L01 must explain the value read through the CS override.");
 console.log("Course example result audit: 108/108 independent end-state oracles match.");
 
 
