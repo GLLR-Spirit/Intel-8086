@@ -306,7 +306,7 @@ const assert = require("node:assert/strict");
   // Exhaustive exercise-filter matrix: every chapter × difficulty × exercise type,
   // including the unfiltered value for each dimension.
   await page.locator('[data-view="exercises"]').click();
-  const filterMatrix = await page.evaluate(() => {
+  const exhaustiveFilterMatrix = await page.evaluate(() => {
     const api = window.__8086Audit;
     const chapter = document.querySelector("#exerciseChapter");
     const difficulty = document.querySelector("#exerciseDifficulty");
@@ -413,11 +413,11 @@ const assert = require("node:assert/strict");
     return { combinations, failures, chapters: chapters.length,
       difficulties: difficulties.length, types: types.length };
   });
-  assert.equal(filterMatrix.combinations, 37 * 6 * 7,
+  assert.equal(exhaustiveFilterMatrix.combinations, 37 * 6 * 7,
     "The exercise filter audit must cover all 1,554 chapter/difficulty/type combinations.");
-  assert.deepEqual(filterMatrix.failures, [],
+  assert.deepEqual(exhaustiveFilterMatrix.failures, [],
     "Every exercise filter combination and source/combined search must match the independent expected set: " +
-    JSON.stringify(filterMatrix.failures));
+    JSON.stringify(exhaustiveFilterMatrix.failures));
   await page.locator("#resetExerciseFilters").click();
   const resetCount = (await page.locator("#exerciseCount").textContent()).trim();
   assert.match(resetCount, /^48 exercice\(s\) affiché\(s\) sur 48$/,
