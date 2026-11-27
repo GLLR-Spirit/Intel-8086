@@ -28,12 +28,12 @@
       "derivation": "CMP effectue une soustraction conceptuelle de la source depuis la destination afin de mettre à jour les indicateurs. Le résultat n'est écrit dans aucun des deux opérandes ; les registres ou cases mémoire restent inchangés.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le résultat dans AX",
+          "reason": "CMP ne stocke pas le résultat dans AX ; il ne modifie que les indicateurs."
         },
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le résultat dans BX",
+          "reason": "CMP ne stocke pas le résultat dans BX non plus ; les deux opérandes sont préservés."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CMP/TEST semantics, arithmetic FLAGS and conditional jumps; Intel MCS-86 Assembly Language Reference Manual, condition-code definitions."
@@ -56,12 +56,12 @@
       "derivation": "03h−05h nécessite un emprunt en interprétation non signée, donc CF=1. Le résultat tronqué sur huit bits est FEh ; OF n'est pas obligatoirement activé pour cette opération.",
       "distractorRationales": [
         {
-          "choice": "O",
-          "reason": "F"
+          "choice": "OF obligatoirement",
+          "reason": "OF signale un débordement signé, pas un emprunt non signé obligatoire pour 3−5."
         },
         {
-          "choice": "D",
-          "reason": "F"
+          "choice": "DF",
+          "reason": "DF contrôle la direction des chaînes et n'est pas l'indicateur d'emprunt de CMP."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CMP/TEST semantics, arithmetic FLAGS and conditional jumps; Intel MCS-86 Assembly Language Reference Manual, condition-code definitions."
@@ -82,12 +82,12 @@
       "derivation": "TEST calcule le ET logique des opérandes pour déterminer les indicateurs, mais ne stocke pas le résultat dans AL. Le registre conserve donc sa valeur initiale.",
       "distractorRationales": [
         {
-          "choice": "O",
-          "reason": "u"
+          "choice": "Oui, AL devient 04h",
+          "reason": "TEST ne réécrit pas AL avec 04h ; le registre reste à sa valeur initiale."
         },
         {
-          "choice": "O",
-          "reason": "u"
+          "choice": "Oui, AL devient 00h",
+          "reason": "TEST ne force pas AL à zéro ; seul le résultat logique sert au calcul des FLAGS."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CMP/TEST semantics, arithmetic FLAGS and conditional jumps; Intel MCS-86 Assembly Language Reference Manual, condition-code definitions."
@@ -110,12 +110,12 @@
       "derivation": "CMP de deux valeurs égales produit une différence conceptuelle nulle. ZF est donc mis à 1 ; cela indique l'égalité, pas une relation inférieur ou un débordement signé.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le premier est inférieur en non signé",
+          "reason": "ZF=1 signifie que la différence est nulle, pas que le premier opérande est inférieur en non signé."
         },
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Un débordement signé s'est produit",
+          "reason": "Un débordement signé est signalé par OF ; ZF=1 indique ici l'égalité."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CMP/TEST semantics, arithmetic FLAGS and conditional jumps; Intel MCS-86 Assembly Language Reference Manual, condition-code definitions."
@@ -136,12 +136,12 @@
       "derivation": "Pour une comparaison signée, la condition inférieur est vraie lorsque SF diffère de OF. CF seul sert aux relations non signées et ZF seul exprime l'égalité.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "F"
+          "choice": "CF=1 uniquement",
+          "reason": "CF=1 seul sert à une relation non signée et ne suffit pas pour inférieur signé."
         },
         {
-          "choice": "Z",
-          "reason": "F"
+          "choice": "ZF=1",
+          "reason": "ZF=1 décrit l'égalité, pas la relation inférieur signé."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CMP/TEST semantics, arithmetic FLAGS and conditional jumps; Intel MCS-86 Assembly Language Reference Manual, condition-code definitions."
@@ -164,12 +164,12 @@
       "derivation": "03h−05h vaut −2 mathématiquement. Sur huit bits, le motif conservé est 11111110b, soit FEh ; l'emprunt non signé est signalé par CF=1.",
       "distractorRationales": [
         {
-          "choice": "F",
-          "reason": "D"
+          "choice": "FDh",
+          "reason": "03h−05h donne FEh modulo 256 ; FDh serait une différence différente."
         },
         {
-          "choice": "0",
-          "reason": "2"
+          "choice": "02h",
+          "reason": "02h ne correspond pas à la soustraction 03h−05h sur huit bits."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CMP/TEST semantics, arithmetic FLAGS and conditional jumps; Intel MCS-86 Assembly Language Reference Manual, condition-code definitions."
@@ -194,12 +194,12 @@
       "derivation": "05h AND 04h vaut 04h. TEST utilise ce résultat pour les indicateurs, mais ne l'écrit pas dans AL, qui reste à 05h. Le résultat non nul donne ZF=0 et les opérations logiques remettent CF/OF à zéro.",
       "distractorRationales": [
         {
-          "choice": "0",
-          "reason": "4"
+          "choice": "04h stocké dans AL",
+          "reason": "TEST ne stocke pas le résultat 04h dans AL ; il préserve 05h."
         },
         {
-          "choice": "0",
-          "reason": "0"
+          "choice": "00h stocké dans AL",
+          "reason": "Le résultat logique est 04h, pas zéro ; AL n'est toutefois pas modifié."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CMP/TEST semantics, arithmetic FLAGS and conditional jumps; Intel MCS-86 Assembly Language Reference Manual, condition-code definitions."
@@ -221,11 +221,12 @@
       "derivation": "02h vaut 00000010b et 01h vaut 00000001b ; leur ET est nul. TEST met donc ZF à 1 puisque le résultat logique est égal à zéro.",
       "distractorRationales": [
         {
-          "choice": "0"
+          "choice": "0",
+          "reason": "Le ET logique vaut zéro, donc ZF vaut 1 et non 0."
         },
         {
-          "choice": "I",
-          "reason": "n"
+          "choice": "Indéfini",
+          "reason": "Le résultat est défini : 02h AND 01h vaut zéro, donc ZF n'est pas indéfini."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CMP/TEST semantics, arithmetic FLAGS and conditional jumps; Intel MCS-86 Assembly Language Reference Manual, condition-code definitions."
@@ -245,12 +246,12 @@
       "derivation": "TEST suit les effets des opérations logiques sur les indicateurs : CF et OF sont remis à zéro. SF, ZF et PF dépendent du résultat logique ; AF est indéfini.",
       "distractorRationales": [
         {
-          "choice": "S",
-          "reason": "F"
+          "choice": "SF et ZF",
+          "reason": "SF et ZF reflètent le résultat logique ; CF et OF sont les indicateurs remis à zéro."
         },
         {
-          "choice": "A",
-          "reason": "F"
+          "choice": "AF et PF",
+          "reason": "AF est indéfini pour TEST et PF est calculé selon la parité ; ils ne constituent pas la paire remise à zéro."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CMP/TEST semantics, arithmetic FLAGS and conditional jumps; Intel MCS-86 Assembly Language Reference Manual, condition-code definitions."
@@ -272,12 +273,12 @@
       "derivation": "CMP calcule une différence pour mettre à jour FLAGS, mais ne conserve pas cette différence dans l'un des opérandes. Les valeurs des deux opérandes restent intactes.",
       "distractorRationales": [
         {
-          "choice": "O",
-          "reason": "u"
+          "choice": "Oui",
+          "reason": "CMP ne modifie pas les opérandes ; c'est précisément le rôle d'une comparaison non destructive."
         },
         {
-          "choice": "S",
-          "reason": "e"
+          "choice": "Seulement si CF=1",
+          "reason": "CF=1 ne change pas le fait que CMP ne stocke pas le résultat dans les opérandes."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CMP/TEST semantics, arithmetic FLAGS and conditional jumps; Intel MCS-86 Assembly Language Reference Manual, condition-code definitions."
@@ -299,12 +300,12 @@
       "derivation": "CMP AX,BX ne modifie ni AX ni BX. Seuls les indicateurs sont déterminés par la soustraction conceptuelle AX−BX.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "X"
+          "choice": "AX seulement",
+          "reason": "CMP préserve AX et BX ; il n'écrit pas le résultat uniquement dans AX."
         },
         {
-          "choice": "B",
-          "reason": "X"
+          "choice": "BX seulement",
+          "reason": "CMP ne modifie pas BX seul ; les deux opérandes restent inchangés."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CMP/TEST semantics, arithmetic FLAGS and conditional jumps; Intel MCS-86 Assembly Language Reference Manual, condition-code definitions."
@@ -323,12 +324,12 @@
       "derivation": "CF signale la retenue ou l'emprunt dans l'interprétation non signée de la soustraction effectuée par CMP. OF concerne le débordement signé et DF le sens des chaînes.",
       "distractorRationales": [
         {
-          "choice": "O",
-          "reason": "F"
+          "choice": "OF",
+          "reason": "OF signale un débordement signé, pas la retenue ou l'emprunt non signé."
         },
         {
-          "choice": "D",
-          "reason": "F"
+          "choice": "DF",
+          "reason": "DF est le drapeau de direction des chaînes, pas l'indicateur d'emprunt."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CMP/TEST semantics, arithmetic FLAGS and conditional jumps; Intel MCS-86 Assembly Language Reference Manual, condition-code definitions."
@@ -351,12 +352,12 @@
       "derivation": "Lorsque CMP compare deux opérandes égaux, leur différence conceptuelle est zéro et ZF est mis à 1. CF et OF ne sont pas les indicateurs directs d'égalité.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "F"
+          "choice": "CF",
+          "reason": "ZF=1 indique l'égalité ; CF n'est pas l'indicateur direct d'égalité."
         },
         {
-          "choice": "O",
-          "reason": "F"
+          "choice": "OF",
+          "reason": "OF indique un débordement signé, pas une différence nulle."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CMP/TEST semantics, arithmetic FLAGS and conditional jumps; Intel MCS-86 Assembly Language Reference Manual, condition-code definitions."
@@ -381,12 +382,12 @@
       "derivation": "TEST calcule un AND entre les opérandes et utilise le résultat pour mettre à jour FLAGS, mais ne l'écrit pas dans AL. Une soustraction stockée ou une addition avec retenue correspond à d'autres instructions.",
       "distractorRationales": [
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Une soustraction stockée dans AL",
+          "reason": "TEST ne stocke pas de soustraction dans AL ; il calcule un AND uniquement pour FLAGS."
         },
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Une addition avec retenue",
+          "reason": "Une addition avec retenue est réalisée par ADC, pas par TEST."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CMP/TEST semantics, arithmetic FLAGS and conditional jumps; Intel MCS-86 Assembly Language Reference Manual, condition-code definitions."
@@ -408,11 +409,12 @@
       "derivation": "02h AND 01h donne zéro car les deux motifs n'ont aucun bit à 1 en commun. ZF vaut donc 1 après TEST.",
       "distractorRationales": [
         {
-          "choice": "0"
+          "choice": "0",
+          "reason": "02h AND 01h vaut zéro, donc ZF=1 et non 0."
         },
         {
-          "choice": "T",
-          "reason": "o"
+          "choice": "Toujours indéfini",
+          "reason": "Le résultat logique est déterminé par les opérandes ; ZF n'est pas indéfini dans ce cas."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CMP/TEST semantics, arithmetic FLAGS and conditional jumps; Intel MCS-86 Assembly Language Reference Manual, condition-code definitions."
@@ -432,12 +434,12 @@
       "derivation": "TEST est une opération logique de test ; comme AND, OR et XOR, elle remet CF et OF à zéro. Elle ne les inverse pas et ne les préserve pas systématiquement.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Les inverse",
+          "reason": "TEST remet CF et OF à zéro ; il ne les inverse pas."
         },
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Les préserve toujours",
+          "reason": "TEST ne préserve pas CF/OF ; la spécification des opérations logiques les définit à zéro."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CMP/TEST semantics, arithmetic FLAGS and conditional jumps; Intel MCS-86 Assembly Language Reference Manual, condition-code definitions."
@@ -458,12 +460,12 @@
       "derivation": "TEST met à jour les indicateurs sans écrire le résultat logique dans AL. AND écrirait le résultat dans la destination, tandis que NOT inverse les bits de l'opérande.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "N"
+          "choice": "AND",
+          "reason": "AND stocke son résultat dans la destination ; TEST ne le stocke pas."
         },
         {
-          "choice": "N",
-          "reason": "O"
+          "choice": "NOT",
+          "reason": "NOT inverse les bits de l'opérande au lieu de simplement tester sans modifier la destination."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CMP/TEST semantics, arithmetic FLAGS and conditional jumps; Intel MCS-86 Assembly Language Reference Manual, condition-code definitions."
@@ -484,12 +486,12 @@
       "derivation": "La condition inférieur signé utilise la relation SF≠OF. SF seul ne suffit pas, car un débordement signé peut rendre le bit de signe trompeur ; CF seul concerne les comparaisons non signées.",
       "distractorRationales": [
         {
-          "choice": "O",
-          "reason": "u"
+          "choice": "Oui dans tous les cas",
+          "reason": "La relation inférieur signé utilise SF différent de OF ; CF seul concerne l'interprétation non signée."
         },
         {
-          "choice": "N",
-          "reason": "o"
+          "choice": "Non, il faut CF uniquement",
+          "reason": "CF ne suffit pas à exprimer inférieur signé ; il faut comparer SF et OF."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CMP/TEST semantics, arithmetic FLAGS and conditional jumps; Intel MCS-86 Assembly Language Reference Manual, condition-code definitions."
@@ -510,12 +512,12 @@
       "derivation": "Une instruction Jcc ne compare pas directement les opérandes. Elle lit les indicateurs déjà établis par une instruction précédente telle que CMP ou TEST et décide du branchement à partir de ces bits.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "h"
+          "choice": "Changer directement IP",
+          "reason": "Jcc ne change pas directement IP sans lire les indicateurs ; il prend sa décision à partir de FLAGS."
         },
         {
-          "choice": "É",
-          "reason": "c"
+          "choice": "Écrire le résultat dans AX",
+          "reason": "Jcc ne stocke pas un résultat arithmétique dans AX ; il teste les indicateurs déjà établis."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CMP/TEST semantics, arithmetic FLAGS and conditional jumps; Intel MCS-86 Assembly Language Reference Manual, condition-code definitions."
