@@ -406,29 +406,37 @@
     {
       "id": "C28-F-Q8",
       "status": "certified",
-      "rule": "rep_movsb_completion",
+      "rule": "rep_movsb_memory_copy",
       "inputs": {
         "initialCX": 2,
         "initialSI": 256,
         "initialDI": 512,
         "elementWidth": 8,
-        "DF": 0
+        "DF": 0,
+        "sourceBytes": [
+          65,
+          66
+        ]
       },
       "expected": {
         "CX": 0,
         "SI": 258,
-        "DI": 514
+        "DI": 514,
+        "destinationBytes": [
+          65,
+          66
+        ]
       },
-      "correctAnswer": "CX=0, SI et DI augmentés de 2",
-      "derivation": "REP MOVSB exécute deux transferts d'un octet. CX atteint zéro ; DF=0 fait avancer SI et DI de deux positions au total.",
+      "correctAnswer": "41h puis 42h",
+      "derivation": "Deux itérations de MOVSB lisent successivement DS:0100h=41h puis DS:0101h=42h et écrivent ces octets à ES:0200h puis ES:0201h. CX atteint zéro ; DF=0 incrémente SI et DI d’un octet après chaque transfert.",
       "distractorRationales": [
         {
-          "choice": "CX=2, SI et DI diminués de 2",
-          "reason": "Deux transferts avec DF=0 augmentent SI et DI de deux, ils ne diminuent pas."
+          "choice": "42h puis 41h",
+          "reason": "MOVSB conserve l’ordre de lecture et d’écriture ; aucun échange des deux octets n’a lieu."
         },
         {
-          "choice": "CX=0, SI inchangé",
-          "reason": "Après deux itérations, CX vaut zéro et SI avance ; il ne reste pas inchangé."
+          "choice": "Deux zéros",
+          "reason": "Les valeurs initiales de la source sont explicitement 41h et 42h ; MOVSB copie ces valeurs vers la destination."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
