@@ -29,12 +29,12 @@
       "derivation": "Une trace utile enregistre les états observables avant et après les instructions, dans leur ordre d'exécution. Les commentaires et la taille du fichier ne permettent pas de reconstituer l'évolution réelle des registres, FLAGS et de la mémoire.",
       "distractorRationales": [
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Uniquement les commentaires",
+          "reason": "Les commentaires sont des annotations du source et ne décrivent pas l'état machine réellement parcouru."
         },
         {
-          "choice": "L",
-          "reason": "a"
+          "choice": "La taille du fichier",
+          "reason": "La taille du fichier ne montre pas les valeurs successives des registres, FLAGS ou de la mémoire."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -53,12 +53,12 @@
       "derivation": "La première divergence entre l'état attendu et l'état observé précède souvent toutes les erreurs en cascade. La repérer permet de rechercher la cause initiale plutôt que de corriger seulement le dernier résultat erroné.",
       "distractorRationales": [
         {
-          "choice": "E",
-          "reason": "l"
+          "choice": "Elle donne toujours le dernier résultat",
+          "reason": "La trace permet de retrouver le premier écart ; elle ne garantit pas que le dernier résultat soit toujours correct."
         },
         {
-          "choice": "E",
-          "reason": "l"
+          "choice": "Elle remplace les tests",
+          "reason": "Une trace complète ne remplace pas les tests ; elle les complète en montrant l'évolution de l'état."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -79,12 +79,12 @@
       "derivation": "IP contient l'offset dans le segment de code ; avec CS, il forme l'adresse logique de l'instruction à exécuter. AL et BH sont des registres de données, pas des pointeurs d'instruction.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "L"
+          "choice": "AL",
+          "reason": "AL est un registre de données 8 bits ; il ne contient pas l'offset de l'instruction."
         },
         {
-          "choice": "D",
-          "reason": "H"
+          "choice": "DH",
+          "reason": "DH est un sous-registre de données ; il n'est pas le pointeur d'instruction."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -106,12 +106,12 @@
       "derivation": "Une valeur non initialisée ou une largeur d'opérande incorrecte peut fausser un calcul même si l'instruction est syntaxiquement valide. Ces deux paramètres doivent être vérifiés avant d'attribuer l'erreur à l'ALU ou au simulateur.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "o"
+          "choice": "Couleur de l'éditeur",
+          "reason": "La couleur de l'éditeur n'influence pas le calcul ni le résultat machine."
         },
         {
-          "choice": "N",
-          "reason": "o"
+          "choice": "Nom du fichier",
+          "reason": "Le nom du fichier n'explique pas une valeur incorrecte ou une largeur d'opérande erronée."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -131,12 +131,12 @@
       "derivation": "La terminaison sans erreur d'exécution prouve seulement que le programme a suivi un chemin qui s'est terminé. Il faut encore comparer les registres, la mémoire et les indicateurs aux résultats attendus pour établir la correction logique.",
       "distractorRationales": [
         {
-          "choice": "O",
-          "reason": "u"
+          "choice": "Oui",
+          "reason": "La terminaison ne prouve pas que les valeurs produites correspondent aux résultats attendus."
         },
         {
-          "choice": "S",
-          "reason": "e"
+          "choice": "Seulement avec HLT",
+          "reason": "HLT arrête l'exécution, mais ne certifie pas la correction logique du programme."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -156,12 +156,12 @@
       "derivation": "Modifier une seule cause à la fois permet d'observer si cette modification corrige la première divergence. Des changements multiples rendent l'effet de chaque correction difficile à attribuer et à reproduire.",
       "distractorRationales": [
         {
-          "choice": "P",
-          "reason": "o"
+          "choice": "Pour accélérer le CPU",
+          "reason": "Isoler un changement sert au diagnostic reproductible, pas à accélérer le processeur."
         },
         {
-          "choice": "P",
-          "reason": "o"
+          "choice": "Pour changer tous les opcodes",
+          "reason": "Modifier tous les opcodes à la fois empêche d'attribuer précisément l'effet de chaque changement."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -185,12 +185,12 @@
       "derivation": "FFh représente 255. Ajouter 1 donne 100h mathématiquement ; sur huit bits le résultat conservé est 00h et la retenue non signée est signalée par CF=1. C'est un cas limite révélant le débordement de capacité.",
       "distractorRationales": [
         {
-          "choice": "1",
-          "reason": "0"
+          "choice": "10h+1",
+          "reason": "10h+1 ne dépasse pas la capacité d'un octet ; FFh+1 est le cas de retenue à la frontière."
         },
         {
-          "choice": "0",
-          "reason": "2"
+          "choice": "02h+1",
+          "reason": "02h+1 reste dans la plage non signée d'un octet et ne produit pas le débordement étudié."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -211,12 +211,12 @@
       "derivation": "INC ne modifie pas CF sur le 8086. Si CF valait 1 avant l'instruction, il reste à 1 après INC, même si d'autres indicateurs comme ZF ou OF peuvent être mis à jour.",
       "distractorRationales": [
         {
-          "choice": "I",
-          "reason": "l"
+          "choice": "Il vaut toujours 1",
+          "reason": "INC conserve la valeur antérieure de CF ; il ne la force pas systématiquement à 1."
         },
         {
-          "choice": "I",
-          "reason": "l"
+          "choice": "Il vaut toujours 0",
+          "reason": "INC conserve CF même si sa valeur antérieure est zéro ; il ne la force pas à zéro."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -237,12 +237,12 @@
       "derivation": "Un branchement possède au moins un chemin pris et un chemin non pris. Tester les deux permet de vérifier la cible, l'instruction atteinte et les états produits dans chacun des cas.",
       "distractorRationales": [
         {
-          "choice": "P",
-          "reason": "o"
+          "choice": "Pour modifier ZF",
+          "reason": "La validation de branchement porte sur les chemins pris et non pris, pas sur la modification directe de ZF."
         },
         {
-          "choice": "P",
-          "reason": "o"
+          "choice": "Pour changer la taille du code",
+          "reason": "Tester les chemins ne change pas la taille du code ; cela vérifie le flot d'exécution."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -263,12 +263,12 @@
       "derivation": "IP contient l'offset de la prochaine instruction à exécuter dans le segment sélectionné par CS. Il ne s'agit pas d'un registre de données tel que AL ou BH.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "L"
+          "choice": "AL",
+          "reason": "AL est un registre de données 8 bits et ne contient pas l'offset de l'instruction."
         },
         {
-          "choice": "B",
-          "reason": "H"
+          "choice": "BH",
+          "reason": "BH est un octet haut de BX, pas le pointeur d'instruction."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -291,12 +291,12 @@
       "derivation": "L'ordre chronologique permet d'identifier quelle instruction a précédé une modification de registre, de mémoire ou de FLAGS. Trier les registres par valeur détruirait la relation de causalité ; masquer les erreurs empêcherait le diagnostic.",
       "distractorRationales": [
         {
-          "choice": "P",
-          "reason": "o"
+          "choice": "Pour trier les registres par valeur",
+          "reason": "Trier les registres par valeur ne permet pas de relier une variation à l'instruction qui l'a produite."
         },
         {
-          "choice": "P",
-          "reason": "o"
+          "choice": "Pour masquer les erreurs",
+          "reason": "Masquer les erreurs détruit les informations nécessaires à l'analyse causale."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -316,12 +316,12 @@
       "derivation": "Une instruction peut être valide mais lire ou écrire au mauvais emplacement. Il faut donc recalculer l'adresse effective, vérifier la taille de l'opérande et examiner les octets réellement lus ou écrits.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "a"
+          "choice": "La couleur du panneau",
+          "reason": "La couleur du panneau ne permet pas de vérifier l'adresse mémoire réellement calculée."
         },
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le registre CS",
+          "reason": "CS seul ne suffit pas : il faut calculer l'adresse effective et vérifier les octets de l'opérande."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -341,12 +341,12 @@
       "derivation": "Un programme peut s'exécuter jusqu'à HLT sans exception et néanmoins produire une valeur incorrecte. L'absence d'erreur d'exécution n'est pas une preuve que les résultats attendus sont obtenus.",
       "distractorRationales": [
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Une preuve de correction",
+          "reason": "La terminaison sans exception ne prouve pas que le programme a produit le résultat attendu."
         },
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Un problème obligatoirement matériel",
+          "reason": "Un mauvais résultat peut venir d'une erreur logique dans le programme, sans défaillance matérielle."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -371,12 +371,12 @@
       "derivation": "7Fh représente +127. Ajouter 1 produit le motif 80h, interprété comme −128 en complément à deux ; le résultat signé dépasse +127 et OF=1, tandis que CF=0.",
       "distractorRationales": [
         {
-          "choice": "0",
-          "reason": "1"
+          "choice": "01h+1",
+          "reason": "01h+1 ne teste pas le dépassement de la borne signée +127 sur huit bits."
         },
         {
-          "choice": "0",
-          "reason": "2"
+          "choice": "02h+2",
+          "reason": "02h+2 reste dans la plage signée et ne produit pas le débordement de 7Fh+1."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -397,12 +397,12 @@
       "derivation": "INC conserve CF sans le recalculer. La valeur antérieure de CF doit donc être vérifiée avant et après l'instruction ; les autres indicateurs peuvent évoluer selon le résultat.",
       "distractorRationales": [
         {
-          "choice": "I",
-          "reason": "l"
+          "choice": "Il est remis à zéro",
+          "reason": "INC préserve CF ; il ne le remet pas à zéro."
         },
         {
-          "choice": "I",
-          "reason": "l"
+          "choice": "Il est inversé",
+          "reason": "INC ne complète ni n'inverse CF ; il conserve exactement sa valeur précédente."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -424,12 +424,12 @@
       "derivation": "Il faut exécuter le cas où la condition est vraie et celui où elle est fausse, puis relever IP pour confirmer la cible réellement suivie. Lire uniquement le résultat final peut masquer une branche incorrecte.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "i"
+          "choice": "Lire uniquement le résultat final",
+          "reason": "Lire seulement le résultat final peut masquer une mauvaise cible ou un chemin non exécuté."
         },
         {
-          "choice": "C",
-          "reason": "h"
+          "choice": "Changer le registre source au hasard",
+          "reason": "Changer le registre source au hasard ne valide pas les deux issues d'un branchement."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -451,12 +451,12 @@
       "derivation": "Une assertion compare l'état observé à une valeur précise attendue. Ici AX=0005h satisfait la propriété ; l'absence d'erreur ou la présence de HLT ne suffisent pas à vérifier le résultat.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le simulateur n'affiche pas d'erreur",
+          "reason": "L'absence d'erreur ne prouve pas que AX vaut exactement la valeur attendue."
         },
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Le programme contient HLT",
+          "reason": "La présence de HLT indique une fin d'exécution, pas que la valeur calculée dans AX est correcte."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -477,12 +477,12 @@
       "derivation": "Comparer l'état attendu et l'état observé instruction par instruction localise le premier écart. Une correction isolée permet ensuite de vérifier la cause sans masquer d'autres défauts.",
       "distractorRationales": [
         {
-          "choice": "M",
-          "reason": "o"
+          "choice": "Modifier plusieurs lignes au hasard",
+          "reason": "Modifier plusieurs lignes au hasard empêche d'isoler la cause et rend le diagnostic non reproductible."
         },
         {
-          "choice": "S",
-          "reason": "u"
+          "choice": "Supprimer le cas de test",
+          "reason": "Supprimer le test masque l'échec au lieu de corriger la première divergence."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
@@ -509,12 +509,12 @@
       "derivation": "Les cas limites sollicitent précisément les transitions de plage, retenue, emprunt, égalité et branchement. Ils révèlent des erreurs que des valeurs ordinaires peuvent laisser passer.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Les cas ordinaires sont toujours invalides",
+          "reason": "Les valeurs ordinaires sont utiles ; ce sont les frontières qui révèlent souvent les dépassements et erreurs de condition."
         },
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Les FLAGS ne changent que pour zéro",
+          "reason": "Les FLAGS changent selon les instructions et les résultats, pas uniquement lorsque le résultat vaut zéro."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), IP, registers, FLAGS and instruction execution; Intel 8086 Lab trace/debugging validation rules and independent boundary calculations."
