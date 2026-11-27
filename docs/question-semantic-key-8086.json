@@ -182,7 +182,7 @@
       ],
       "correctAnswer": "Il peut sélectionner 2^20 adresses d'octets",
       "explanation": "Les 20 lignes d'adresse permettent de sélectionner 1 048 576 adresses d'octets, soit 1 Mio.",
-      "category": "Définition"
+      "category": "Compréhension"
     },
     {
       "id": "C01-F-Q3",
@@ -198,7 +198,7 @@
       ],
       "correctAnswer": "Destination",
       "explanation": "La syntaxe Intel place la destination en premier ; AX reçoit la constante 1234h.",
-      "category": "Définition"
+      "category": "Syntaxe"
     },
     {
       "id": "C01-F-Q4",
@@ -214,7 +214,7 @@
       ],
       "correctAnswer": "La constante dépasse la capacité de 8 bits de AL",
       "explanation": "AL accepte une valeur immédiate de 8 bits au maximum, soit FFh ; 1234h exige 16 bits.",
-      "category": "Définition"
+      "category": "Restrictions"
     },
     {
       "id": "C01-F-Q5",
@@ -230,7 +230,7 @@
       ],
       "correctAnswer": "1256h",
       "explanation": "AL remplace seulement l'octet faible ; AH conserve 12h, donc AX vaut 1256h.",
-      "category": "Définition"
+      "category": "Prédiction"
     },
     {
       "id": "C01-F-Q6",
@@ -246,7 +246,7 @@
       ],
       "correctAnswer": "1 048 576",
       "explanation": "2^20 = 1 048 576 adresses d'octets, soit 1 Mio d'espace adressable.",
-      "category": "Définition"
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C01-F-Q7",
@@ -262,7 +262,7 @@
       ],
       "correctAnswer": "Il place 5 dans AX puis arrête l'exécution",
       "explanation": "MOV charge la constante dans AX ; HLT arrête ensuite l'exécution du processeur simulé.",
-      "category": "Définition"
+      "category": "Analyse de programme"
     },
     {
       "id": "C01-F-Q8",
@@ -278,7 +278,7 @@
       ],
       "correctAnswer": "00000h à FFFFFh",
       "explanation": "Une adresse physique 20 bits varie de 0 à 2^20−1, soit 00000h à FFFFFh.",
-      "category": "Définition"
+      "category": "Analyse de résultat"
     },
     {
       "id": "C01-F-Q9",
@@ -294,7 +294,7 @@
       ],
       "correctAnswer": "Distinguer largeur des registres et largeur d'adresse physique : le bus d'adresses a 20 bits",
       "explanation": "La largeur générale 16 bits et le bus d'adresses 20 bits décrivent des propriétés différentes.",
-      "category": "Définition"
+      "category": "Débogage"
     },
     {
       "id": "C01-F-Q10",
@@ -310,7 +310,7 @@
       ],
       "correctAnswer": "Le 8086 a des registres généraux 16 bits, un bus de données 16 bits et un bus d'adresses 20 bits",
       "explanation": "Il faut distinguer les trois largeurs : registres, bus de données et bus d'adresses.",
-      "category": "Définition"
+      "category": "Raisonnement"
     },
     {
       "id": "C02-L1-Q1",
@@ -470,7 +470,7 @@
       ],
       "correctAnswer": "Décoder et exécuter les instructions",
       "explanation": "L'EU décode les instructions et commande leur exécution à l'aide de l'ALU et des registres.",
-      "category": "Compréhension"
+      "category": "Définition"
     },
     {
       "id": "C02-F-Q2",
@@ -502,7 +502,7 @@
       ],
       "correctAnswer": "AX",
       "explanation": "La destination est le premier opérande ; AX reçoit la constante 4.",
-      "category": "Compréhension"
+      "category": "Syntaxe"
     },
     {
       "id": "C02-F-Q4",
@@ -518,7 +518,7 @@
       ],
       "correctAnswer": "Elle contient six octets et n'implique pas une exécution superscalaire",
       "explanation": "La file du 8086 contient six octets ; elle chevauche la récupération et l'exécution sans exécution superscalaire.",
-      "category": "Compréhension"
+      "category": "Restrictions"
     },
     {
       "id": "C02-F-Q5",
@@ -534,7 +534,7 @@
       ],
       "correctAnswer": "7",
       "explanation": "L'EU fait exécuter l'addition par l'ALU : 4+3 donne 7.",
-      "category": "Compréhension"
+      "category": "Prédiction"
     },
     {
       "id": "C02-F-Q6",
@@ -550,7 +550,7 @@
       ],
       "correctAnswer": "10020h",
       "explanation": "1000h × 10h + 0020h = 10000h + 0020h = 10020h.",
-      "category": "Compréhension"
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C02-F-Q7",
@@ -566,7 +566,7 @@
       ],
       "correctAnswer": "MOV AX,2 est sauté et AX reste 1",
       "explanation": "JMP transfère le contrôle à SUITE ; l'instruction qui suit immédiatement le saut n'est pas exécutée.",
-      "category": "Compréhension"
+      "category": "Analyse de programme"
     },
     {
       "id": "C02-F-Q8",
@@ -582,7 +582,7 @@
       ],
       "correctAnswer": "Les octets préchargés appartiennent au chemin séquentiel abandonné",
       "explanation": "Le changement de IP rend inutilisables les octets de prélecture du chemin précédent.",
-      "category": "Compréhension"
+      "category": "Analyse de résultat"
     },
     {
       "id": "C02-F-Q9",
@@ -598,7 +598,7 @@
       ],
       "correctAnswer": "Les rôles sont inversés : EU exécute, BIU gère l'interface de bus",
       "explanation": "L'EU contient l'ALU et la logique d'exécution ; la BIU gère les échanges externes.",
-      "category": "Compréhension"
+      "category": "Débogage"
     },
     {
       "id": "C02-F-Q10",
@@ -614,7 +614,7 @@
       ],
       "correctAnswer": "Chevauchement de récupération des octets et d'exécution, sans exécution superscalaire de plusieurs instructions",
       "explanation": "La file permet à BIU et EU de travailler en chevauchement ; elle ne transforme pas le 8086 en processeur superscalaire.",
-      "category": "Compréhension"
+      "category": "Raisonnement"
     },
     {
       "id": "C03-L1-Q1",
@@ -774,7 +774,7 @@
       ],
       "correctAnswer": "Une puissance de deux",
       "explanation": "Chaque position en base 2 porte le poids 2^n, en partant de 2^0 à droite.",
-      "category": "Syntaxe"
+      "category": "Définition"
     },
     {
       "id": "C03-F-Q2",
@@ -790,7 +790,7 @@
       ],
       "correctAnswer": "Chaque chiffre code quatre bits, donc deux chiffres codent huit bits",
       "explanation": "Un chiffre hexadécimal représente quatre bits ; deux chiffres forment huit bits.",
-      "category": "Syntaxe"
+      "category": "Compréhension"
     },
     {
       "id": "C03-F-Q3",
@@ -822,7 +822,7 @@
       ],
       "correctAnswer": "100h nécessite neuf bits alors que AL en contient huit",
       "explanation": "AL accepte au maximum FFh ; 100h vaut 256 et nécessite plus de huit bits.",
-      "category": "Syntaxe"
+      "category": "Restrictions"
     },
     {
       "id": "C03-F-Q5",
@@ -838,7 +838,7 @@
       ],
       "correctAnswer": "60",
       "explanation": "3Ch = 3×16 + 12 = 60 en décimal.",
-      "category": "Syntaxe"
+      "category": "Prédiction"
     },
     {
       "id": "C03-F-Q6",
@@ -854,7 +854,7 @@
       ],
       "correctAnswer": "45",
       "explanation": "101101b = 32 + 8 + 4 + 1 = 45.",
-      "category": "Syntaxe"
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C03-F-Q7",
@@ -870,7 +870,7 @@
       ],
       "correctAnswer": "00FFh dans AX",
       "explanation": "La constante 0FFh vaut 255 ; le registre AX reçoit 00FFh, avec son octet fort à zéro.",
-      "category": "Syntaxe"
+      "category": "Analyse de programme"
     },
     {
       "id": "C03-F-Q8",
@@ -886,7 +886,7 @@
       ],
       "correctAnswer": "2Ah = 00101010b = 42",
       "explanation": "2Ah se décompose en 2×16+10=42 et en binaire 0010 1010.",
-      "category": "Syntaxe"
+      "category": "Analyse de résultat"
     },
     {
       "id": "C03-F-Q9",
@@ -902,7 +902,7 @@
       ],
       "correctAnswer": "Ajouter 10 au produit 2×16 : le chiffre A vaut 10",
       "explanation": "En base 16, A vaut 10 ; la conversion correcte est 2×16+10=42.",
-      "category": "Syntaxe"
+      "category": "Débogage"
     },
     {
       "id": "C03-F-Q10",
@@ -918,7 +918,7 @@
       ],
       "correctAnswer": "Regrouper les bits par paquets de quatre depuis la droite",
       "explanation": "Chaque paquet de quatre bits correspond exactement à un chiffre hexadécimal.",
-      "category": "Syntaxe"
+      "category": "Raisonnement"
     },
     {
       "id": "C04-L1-Q1",
@@ -1078,7 +1078,7 @@
       ],
       "correctAnswer": "L'octet faible d'un mot est stocké à l'adresse la plus basse",
       "explanation": "Le little-endian fixe l'ordre des octets en mémoire : le poids faible précède le poids fort.",
-      "category": "Restrictions"
+      "category": "Définition"
     },
     {
       "id": "C04-F-Q2",
@@ -1094,7 +1094,7 @@
       ],
       "correctAnswer": "La mémoire est adressée par octet et un mot contient deux octets",
       "explanation": "L'espace mémoire du 8086 est adressé par octet ; deux octets consécutifs composent un mot.",
-      "category": "Restrictions"
+      "category": "Compréhension"
     },
     {
       "id": "C04-F-Q3",
@@ -1110,7 +1110,7 @@
       ],
       "correctAnswer": "MOV [0100h],AX",
       "explanation": "La mémoire est la destination et AX la source ; la taille est déduite du registre AX.",
-      "category": "Restrictions"
+      "category": "Syntaxe"
     },
     {
       "id": "C04-F-Q4",
@@ -1142,7 +1142,7 @@
       ],
       "correctAnswer": "80h",
       "explanation": "7Fh+1 donne 80h sur huit bits ; ce motif représente −128 en signé.",
-      "category": "Restrictions"
+      "category": "Prédiction"
     },
     {
       "id": "C04-F-Q6",
@@ -1158,7 +1158,7 @@
       ],
       "correctAnswer": "−128 à +127",
       "explanation": "La formule est −2^7 à 2^7−1, soit −128 à +127.",
-      "category": "Restrictions"
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C04-F-Q7",
@@ -1174,7 +1174,7 @@
       ],
       "correctAnswer": "Écrit 34h à 0100h puis 12h à 0101h",
       "explanation": "Le 8086 stocke les mots en little-endian : l'octet faible 34h est à l'adresse la plus basse.",
-      "category": "Restrictions"
+      "category": "Analyse de programme"
     },
     {
       "id": "C04-F-Q8",
@@ -1190,7 +1190,7 @@
       ],
       "correctAnswer": "OF=1 et CF=0",
       "explanation": "La somme signée +127+1 déborde (OF=1), mais il n'y a pas de retenue hors de l'octet (CF=0).",
-      "category": "Restrictions"
+      "category": "Analyse de résultat"
     },
     {
       "id": "C04-F-Q9",
@@ -1206,7 +1206,7 @@
       ],
       "correctAnswer": "Conclure que le résultat mathématique 256 est stocké dans AL",
       "explanation": "AL ne peut stocker que huit bits ; le résultat 256 n'est pas conservé intégralement dans AL.",
-      "category": "Restrictions"
+      "category": "Débogage"
     },
     {
       "id": "C04-F-Q10",
@@ -1222,7 +1222,7 @@
       ],
       "correctAnswer": "CF signale une retenue/emprunt non signé ; OF un débordement signé",
       "explanation": "Les indicateurs répondent à des interprétations différentes de l'opération binaire.",
-      "category": "Restrictions"
+      "category": "Raisonnement"
     },
     {
       "id": "C05-L1-Q1",
@@ -1382,7 +1382,7 @@
       ],
       "correctAnswer": "16 bits",
       "explanation": "Les quatre registres généraux sont des registres 16 bits du 8086.",
-      "category": "Prédiction"
+      "category": "Définition"
     },
     {
       "id": "C05-F-Q2",
@@ -1398,7 +1398,7 @@
       ],
       "correctAnswer": "AX est divisé en deux octets accessibles séparément",
       "explanation": "AH représente les bits 15 à 8 et AL les bits 7 à 0 du même registre AX.",
-      "category": "Prédiction"
+      "category": "Compréhension"
     },
     {
       "id": "C05-F-Q3",
@@ -1414,7 +1414,7 @@
       ],
       "correctAnswer": "MOV AL,56h",
       "explanation": "Une écriture dans AL modifie les bits 7 à 0 sans changer AH.",
-      "category": "Prédiction"
+      "category": "Syntaxe"
     },
     {
       "id": "C05-F-Q4",
@@ -1430,7 +1430,7 @@
       ],
       "correctAnswer": "SS",
       "explanation": "Les formes d'adressage utilisant BP sélectionnent SS par défaut sur le 8086.",
-      "category": "Prédiction"
+      "category": "Restrictions"
     },
     {
       "id": "C05-F-Q5",
@@ -1462,7 +1462,7 @@
       ],
       "correctAnswer": "10020h",
       "explanation": "1000h×10h+0020h=10020h : CS:IP désigne l'instruction en cours.",
-      "category": "Prédiction"
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C05-F-Q7",
@@ -1478,7 +1478,7 @@
       ],
       "correctAnswer": "AH",
       "explanation": "AL est remplacé par 56h tandis que AH conserve 12h.",
-      "category": "Prédiction"
+      "category": "Analyse de programme"
     },
     {
       "id": "C05-F-Q8",
@@ -1494,7 +1494,7 @@
       ],
       "correctAnswer": "CS:IP pour le code, SS:SP pour le sommet de pile",
       "explanation": "CS:IP forme l'adresse logique d'instruction ; SS:SP désigne le sommet de pile.",
-      "category": "Prédiction"
+      "category": "Analyse de résultat"
     },
     {
       "id": "C05-F-Q9",
@@ -1510,7 +1510,7 @@
       ],
       "correctAnswer": "CS ne peut pas être destination de MOV sur le 8086",
       "explanation": "Le chargement direct de CS par MOV est interdit ; les transferts de contrôle modifient CS:IP selon leur forme.",
-      "category": "Prédiction"
+      "category": "Débogage"
     },
     {
       "id": "C05-F-Q10",
@@ -1526,7 +1526,7 @@
       ],
       "correctAnswer": "Leur rôle courant guide leur usage, mais plusieurs registres peuvent être manipulés explicitement selon les instructions",
       "explanation": "Les noms reflètent des usages conventionnels ou implicites de certaines instructions, pas une exclusivité absolue.",
-      "category": "Prédiction"
+      "category": "Raisonnement"
     },
     {
       "id": "C06-L1-Q1",
@@ -2406,7 +2406,7 @@
       ],
       "correctAnswer": "Le code machine chargé",
       "explanation": "Le processeur exécute les octets machine, pas les annotations du source.",
-      "category": "Calcul / prédiction"
+      "category": "Définition"
     },
     {
       "id": "C06-F-Q2",
@@ -2422,7 +2422,7 @@
       ],
       "correctAnswer": "À l'assemblage ou à l'édition de liens",
       "explanation": "L'assembleur calcule les offsets des symboles.",
-      "category": "Calcul / prédiction"
+      "category": "Compréhension"
     },
     {
       "id": "C06-F-Q3",
@@ -2438,7 +2438,7 @@
       ],
       "correctAnswer": "MOV AX,BX",
       "explanation": "La destination est le premier opérande.",
-      "category": "Calcul / prédiction"
+      "category": "Syntaxe"
     },
     {
       "id": "C06-F-Q4",
@@ -2454,7 +2454,7 @@
       ],
       "correctAnswer": "La forme mémoire vers mémoire n'est pas autorisée",
       "explanation": "Un registre intermédiaire est requis pour transférer entre deux cases mémoire.",
-      "category": "Calcul / prédiction"
+      "category": "Restrictions"
     },
     {
       "id": "C06-F-Q5",
@@ -2470,7 +2470,7 @@
       ],
       "correctAnswer": "5678h",
       "explanation": "XCHG échange les contenus des registres.",
-      "category": "Calcul / prédiction"
+      "category": "Prédiction"
     },
     {
       "id": "C06-F-Q6",
@@ -2502,7 +2502,7 @@
       ],
       "correctAnswer": "Le flot de contrôle, via IP",
       "explanation": "JMP transfère l'exécution à la cible.",
-      "category": "Calcul / prédiction"
+      "category": "Analyse de programme"
     },
     {
       "id": "C06-F-Q8",
@@ -2518,7 +2518,7 @@
       ],
       "correctAnswer": "Exécuter une mauvaise zone ou boucler",
       "explanation": "La cible détermine l'adresse de reprise du programme.",
-      "category": "Calcul / prédiction"
+      "category": "Analyse de résultat"
     },
     {
       "id": "C06-F-Q9",
@@ -2534,7 +2534,7 @@
       ],
       "correctAnswer": "Contrôler l'offset résolu et l'instruction atteinte",
       "explanation": "Il faut comparer la cible assemblée et le flot effectivement suivi.",
-      "category": "Calcul / prédiction"
+      "category": "Débogage"
     },
     {
       "id": "C06-F-Q10",
@@ -2550,7 +2550,7 @@
       ],
       "correctAnswer": "La directive guide l'assembleur ; l'instruction est exécutée par le CPU",
       "explanation": "Les directives organisent l'assemblage et ne sont pas nécessairement du code exécutable.",
-      "category": "Calcul / prédiction"
+      "category": "Raisonnement"
     },
     {
       "id": "C07-F-Q1",
@@ -2566,7 +2566,7 @@
       ],
       "correctAnswer": "L'offset calculé d'une expression d'adresse",
       "explanation": "LEA calcule une adresse effective sans charger la donnée pointée.",
-      "category": "Analyse de programme"
+      "category": "Définition"
     },
     {
       "id": "C07-F-Q2",
@@ -2582,7 +2582,7 @@
       ],
       "correctAnswer": "Recevoir l'offset du pointeur",
       "explanation": "Le premier mot du pointeur far est l'offset.",
-      "category": "Analyse de programme"
+      "category": "Compréhension"
     },
     {
       "id": "C07-F-Q3",
@@ -2598,7 +2598,7 @@
       ],
       "correctAnswer": "XCHG AX,[BX]",
       "explanation": "XCHG autorise une forme registre-mémoire, mais pas mémoire-mémoire.",
-      "category": "Analyse de programme"
+      "category": "Syntaxe"
     },
     {
       "id": "C07-F-Q4",
@@ -2614,7 +2614,7 @@
       ],
       "correctAnswer": "LEA calcule l'offset ; MOV lit le mot mémoire",
       "explanation": "Les deux instructions ont des effets différents sur l'accès mémoire.",
-      "category": "Analyse de programme"
+      "category": "Restrictions"
     },
     {
       "id": "C07-F-Q5",
@@ -2630,7 +2630,7 @@
       ],
       "correctAnswer": "0124h",
       "explanation": "0100h+0020h+0004h=0124h.",
-      "category": "Analyse de programme"
+      "category": "Prédiction"
     },
     {
       "id": "C07-F-Q6",
@@ -2646,7 +2646,7 @@
       ],
       "correctAnswer": "Le mot segment",
       "explanation": "La représentation en mémoire est offset puis segment.",
-      "category": "Analyse de programme"
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C07-F-Q7",
@@ -2678,7 +2678,7 @@
       ],
       "correctAnswer": "Non",
       "explanation": "LEA ne lit pas le contenu mémoire.",
-      "category": "Analyse de programme"
+      "category": "Analyse de résultat"
     },
     {
       "id": "C07-F-Q9",
@@ -2694,7 +2694,7 @@
       ],
       "correctAnswer": "Initialiser les quatre octets du pointeur en mémoire",
       "explanation": "LDS lit un offset et un segment à partir de quatre octets.",
-      "category": "Analyse de programme"
+      "category": "Débogage"
     },
     {
       "id": "C07-F-Q10",
@@ -2710,7 +2710,7 @@
       ],
       "correctAnswer": "Identifier si l'instruction calcule un offset ou lit le contenu mémoire",
       "explanation": "Les crochets désignent un accès mémoire ; LEA est l'exception de calcul d'adresse.",
-      "category": "Analyse de programme"
+      "category": "Raisonnement"
     },
     {
       "id": "C08-F-Q1",
@@ -2726,7 +2726,7 @@
       ],
       "correctAnswer": "CF",
       "explanation": "ADC additionne l'ancienne retenue.",
-      "category": "Analyse de résultat"
+      "category": "Définition"
     },
     {
       "id": "C08-F-Q2",
@@ -2742,7 +2742,7 @@
       ],
       "correctAnswer": "CF",
       "explanation": "INC préserve CF, contrairement à ADD.",
-      "category": "Analyse de résultat"
+      "category": "Compréhension"
     },
     {
       "id": "C08-F-Q3",
@@ -2758,7 +2758,7 @@
       ],
       "correctAnswer": "ADC AX,BX",
       "explanation": "ADC inclut CF dans la somme.",
-      "category": "Analyse de résultat"
+      "category": "Syntaxe"
     },
     {
       "id": "C08-F-Q4",
@@ -2774,7 +2774,7 @@
       ],
       "correctAnswer": "La retenue du mot faible doit être propagée au mot fort",
       "explanation": "La retenue est générée lors du calcul du mot faible.",
-      "category": "Analyse de résultat"
+      "category": "Restrictions"
     },
     {
       "id": "C08-F-Q5",
@@ -2790,7 +2790,7 @@
       ],
       "correctAnswer": "FFh avec CF=1",
       "explanation": "Le résultat est modulo 256 et nécessite un emprunt.",
-      "category": "Analyse de résultat"
+      "category": "Prédiction"
     },
     {
       "id": "C08-F-Q6",
@@ -2806,7 +2806,7 @@
       ],
       "correctAnswer": "4",
       "explanation": "SBB soustrait aussi CF : 5−0−1=4.",
-      "category": "Analyse de résultat"
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C08-F-Q7",
@@ -2822,7 +2822,7 @@
       ],
       "correctAnswer": "NEG 80h",
       "explanation": "Le négatif de −128 n'est pas représentable sur 8 bits signés.",
-      "category": "Analyse de résultat"
+      "category": "Analyse de programme"
     },
     {
       "id": "C08-F-Q8",
@@ -2854,7 +2854,7 @@
       ],
       "correctAnswer": "Exécuter une instruction qui modifie CF avant ADC",
       "explanation": "ADC doit consommer la retenue produite par le calcul précédent.",
-      "category": "Analyse de résultat"
+      "category": "Débogage"
     },
     {
       "id": "C08-F-Q10",
@@ -2870,7 +2870,7 @@
       ],
       "correctAnswer": "Cas sans retenue et cas avec retenue, en vérifiant chaque mot",
       "explanation": "Les deux chemins de propagation doivent être vérifiés.",
-      "category": "Analyse de résultat"
+      "category": "Raisonnement"
     },
     {
       "id": "C09-F-Q1",
@@ -2886,7 +2886,7 @@
       ],
       "correctAnswer": "AND",
       "explanation": "AND conserve les bits dont le masque vaut 1.",
-      "category": "Débogage"
+      "category": "Définition"
     },
     {
       "id": "C09-F-Q2",
@@ -2902,7 +2902,7 @@
       ],
       "correctAnswer": "F0h",
       "explanation": "F0h contient quatre uns dans le quartet fort.",
-      "category": "Débogage"
+      "category": "Compréhension"
     },
     {
       "id": "C09-F-Q3",
@@ -2918,7 +2918,7 @@
       ],
       "correctAnswer": "OR",
       "explanation": "OR active les bits présents dans au moins un opérande.",
-      "category": "Débogage"
+      "category": "Syntaxe"
     },
     {
       "id": "C09-F-Q4",
@@ -2934,7 +2934,7 @@
       ],
       "correctAnswer": "XOR avec un masque",
       "explanation": "XOR inverse les bits où le masque contient des uns.",
-      "category": "Débogage"
+      "category": "Restrictions"
     },
     {
       "id": "C09-F-Q5",
@@ -2950,7 +2950,7 @@
       ],
       "correctAnswer": "NOT AL",
       "explanation": "NOT complète chaque bit de l'octet.",
-      "category": "Débogage"
+      "category": "Prédiction"
     },
     {
       "id": "C09-F-Q6",
@@ -2966,7 +2966,7 @@
       ],
       "correctAnswer": "1000b",
       "explanation": "Les bits communs à 1 sont seulement le bit de poids 3.",
-      "category": "Débogage"
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C09-F-Q7",
@@ -2982,7 +2982,7 @@
       ],
       "correctAnswer": "Non",
       "explanation": "TEST actualise les indicateurs sans modifier la destination.",
-      "category": "Débogage"
+      "category": "Analyse de programme"
     },
     {
       "id": "C09-F-Q8",
@@ -2998,7 +2998,7 @@
       ],
       "correctAnswer": "Au moins un bit commun au masque est actif",
       "explanation": "ZF=0 indique un résultat logique non nul.",
-      "category": "Débogage"
+      "category": "Analyse de résultat"
     },
     {
       "id": "C09-F-Q9",
@@ -3030,7 +3030,7 @@
       ],
       "correctAnswer": "CF et OF",
       "explanation": "Les opérations logiques remettent CF et OF à zéro.",
-      "category": "Débogage"
+      "category": "Raisonnement"
     },
     {
       "id": "C10-F-Q1",
@@ -3046,7 +3046,7 @@
       ],
       "correctAnswer": "PF",
       "explanation": "PF décrit la parité paire de l'octet faible.",
-      "category": "Raisonnement"
+      "category": "Définition"
     },
     {
       "id": "C10-F-Q2",
@@ -3062,7 +3062,7 @@
       ],
       "correctAnswer": "OF",
       "explanation": "OF signale que le résultat signé sort de la plage représentable.",
-      "category": "Raisonnement"
+      "category": "Compréhension"
     },
     {
       "id": "C10-F-Q3",
@@ -3078,7 +3078,7 @@
       ],
       "correctAnswer": "STI",
       "explanation": "STI active les interruptions masquables en positionnant IF.",
-      "category": "Raisonnement"
+      "category": "Syntaxe"
     },
     {
       "id": "C10-F-Q4",
@@ -3094,7 +3094,7 @@
       ],
       "correctAnswer": "Une instruction peut définir, préserver ou laisser indéfinis certains bits",
       "explanation": "Les effets dépendent de la spécification de chaque instruction.",
-      "category": "Raisonnement"
+      "category": "Restrictions"
     },
     {
       "id": "C10-F-Q5",
@@ -3110,7 +3110,7 @@
       ],
       "correctAnswer": "DF=0",
       "explanation": "CLD efface le drapeau de direction.",
-      "category": "Raisonnement"
+      "category": "Prédiction"
     },
     {
       "id": "C10-F-Q6",
@@ -3126,7 +3126,7 @@
       ],
       "correctAnswer": "Empiler FLAGS puis le dépiler plus tard",
       "explanation": "POPF restaure le mot précédemment empilé.",
-      "category": "Raisonnement"
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C10-F-Q7",
@@ -3142,7 +3142,7 @@
       ],
       "correctAnswer": "TF",
       "explanation": "TF est le Trap Flag.",
-      "category": "Raisonnement"
+      "category": "Analyse de programme"
     },
     {
       "id": "C10-F-Q8",
@@ -3158,7 +3158,7 @@
       ],
       "correctAnswer": "Il restaure le mot FLAGS et peut aussi affecter des bits de contrôle",
       "explanation": "POPF restaure plusieurs indicateurs, avec des effets sur l'état de contrôle.",
-      "category": "Raisonnement"
+      "category": "Analyse de résultat"
     },
     {
       "id": "C10-F-Q9",
@@ -3174,7 +3174,7 @@
       ],
       "correctAnswer": "Une restauration depuis le mauvais mot et une corruption de l'état",
       "explanation": "LIFO et SP doivent rester cohérents.",
-      "category": "Raisonnement"
+      "category": "Débogage"
     },
     {
       "id": "C10-F-Q10",
