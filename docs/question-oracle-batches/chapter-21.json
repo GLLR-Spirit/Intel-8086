@@ -364,7 +364,7 @@
         },
         {
           "choice": "25",
-          "reason": "5×2 vaut 10, pas 25."
+          "reason": "Le double de 5 est 10 ; 25 correspondrait à 5×5 et ne suit pas l'opération exécutée par la routine."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), near CALL/RET stack behavior and unsigned MUL result registers; Intel MCS-86 Assembly Language Reference Manual, procedure calls and multiplication."
