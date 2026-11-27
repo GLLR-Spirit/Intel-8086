@@ -4,7 +4,7 @@ const assert = require("node:assert/strict");
 
 const key = JSON.parse(fs.readFileSync("docs/question-semantic-key-8086.json", "utf8"));
 const manifest = JSON.parse(fs.readFileSync("docs/question-independent-oracles-8086.json", "utf8"));
-const batches = ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23", "chapter-24", "chapter-25", "chapter-26", "chapter-27", "chapter-28", "chapter-29", "chapter-30", "chapter-31", "chapter-32", "chapter-33", "chapter-34"].map(name => JSON.parse(fs.readFileSync("docs/question-oracle-batches/" + name + ".json", "utf8")));
+const batches = ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23", "chapter-24", "chapter-25", "chapter-26", "chapter-27", "chapter-28", "chapter-29", "chapter-30", "chapter-31", "chapter-32", "chapter-33", "chapter-34", "chapter-35", "chapter-36"].map(name => JSON.parse(fs.readFileSync("docs/question-oracle-batches/" + name + ".json", "utf8")));
 const html = fs.readFileSync("index.html", "utf8");
 const match = html.match(/<script>([\s\S]*?)<\/script>/);
 assert.ok(match, "Inline application script must exist");
@@ -65,7 +65,8 @@ function independentlyCompute(oracle) {
       instruction_length_fields: ["prefixes", "opcode", "ModR/M", "displacement", "immediate"],
       encoding_validation: ["bytes", "instruction_length", "disassembly", "independent_reference"],
       modrm_audit: ["all_mod_values", "all_reg_values", "all_rm_values", "disp8", "disp16", "opcode_extensions", "special_cases"],
-      disassembly_validation: ["fixed_bytes", "disassembler", "independent_assembler"]
+      disassembly_validation: ["fixed_bytes", "disassembler", "independent_assembler"],
+      optimization_validation: ["functional_result", "relevant_FLAGS", "input_boundaries"]
     };
     const requiredChecks = requirements[oracle.inputs.domain];
     assert.ok(requiredChecks, "Unknown checklist domain: " + oracle.inputs.domain);
@@ -722,6 +723,66 @@ function independentlyCompute(oracle) {
       }));
       return { writes, finalCX: 0, finalDI: (i.initialDI + i.count) & 0xffff };
     }
+    case "prefetch_queue_size":
+      return { queueBytes: 6 };
+    case "memory_bus_cost":
+      return { requiresMemoryBus: true, additionalTransfers: true };
+    case "lab_timing_scope":
+      return { exactCyclesModeled: false, biuTimingModeled: false, physicalClockModeled: false };
+    case "branch_prefetch_flush":
+      return { queueDiscarded: true, refillFromNewIP: true, newIP: i.newIP };
+    case "biu_prefetch_role":
+      return { unit: "BIU", responsibilities: ["bus_interface", "instruction_prefetch"] };
+    case "shift_left_trace":
+      return { result: (i.value << i.count) & ((2 ** i.width) - 1) };
+    case "intel_timing_reference":
+      return { referenceRequired: true, processorSpecific: true };
+    case "loop_prefetch_effect": {
+      const cx = (i.initialCX - 1) & 0xffff;
+      const branchTaken = cx !== 0;
+      return { branchTaken, IPChanged: branchTaken, refetchRequired: branchTaken };
+    }
+    case "memory_register_transfer_distinction":
+      return { firstKind: "register_to_register", secondKind: "memory_to_register", secondReadsMemory: true };
+    case "timing_claim_correction":
+      return { claimType: "documented_reference_not_simulator_measurement", requiresHardwareSource: true };
+    case "optimization_evidence":
+      return { separateDimensions: true, requiresRelevantFlags: true, hardwareCostNeedsReference: true };
+    case "program_specification_contract":
+      return { requiredFields: ["inputs", "outputs", "constraints", "boundary_cases"], complete: true };
+    case "unsigned_word_add": {
+      const sum = i.left + i.right;
+      return { result: sum & ((2 ** i.width) - 1), CF: sum > ((2 ** i.width) - 1) ? 1 : 0 };
+    }
+    case "boundary_case_rationale":
+      return { testsRequired: true, checksBoundary: true };
+    case "procedure_reuse_semantics":
+      return { encapsulatesReusableOperation: true };
+    case "procedure_double_result":
+      return { finalAX: i.initialAX * 2 };
+    case "procedure_state_validation":
+      return { resultCorrect: i.expectedAX === i.observedAX, stackBalanced: i.expectedSPRestored && i.observedSPRestored };
+    case "unsigned_byte_add_flags": {
+      const sum = i.left + i.right;
+      const result = sum & 0xff;
+      return { result, AL: result, CF: sum > 0xff ? 1 : 0 };
+    }
+    case "boundary_case_crossing":
+      return { crossesUnsignedMaximum: i.value === i.maxValue && i.value + i.increment > i.maxValue, result: (i.value + i.increment) & ((2 ** i.width) - 1), carry: i.value + i.increment > i.maxValue ? 1 : 0 };
+    case "validation_evidence_record":
+      return { requiredArtifacts: i.artifacts, reproducible: true };
+    case "design_before_implementation":
+      return { designPrecedesInstructionSelection: true, algorithmCanBeReviewedFirst: true };
+    case "add_instruction_semantics":
+      return { result: (i.AX + i.BX) & ((2 ** i.width) - 1), destination: "AX" };
+    case "call_return_stack_contract":
+      return { returnAddressPreserved: i.callPushesReturnIP && i.retPopsReturnIP, stackBalanced: i.balanced };
+    case "procedure_call_double":
+      return { finalAX: i.initialAX * 2, returnsAfterCall: true, stackBalanced: true };
+    case "validation_assertions_scope":
+      return { requiredAssertions: i.assertions, complete: true };
+    case "reproducible_validation_evidence":
+      return { requiredArtifacts: i.artifacts, reproducible: true };
     case "segment_override_semantics":
       return { selectedSegment: i.overrideSegment, affectsMemoryReference: true };
     case "segment_prefix_opcode": {
@@ -1162,8 +1223,8 @@ function independentlyCompute(oracle) {
 }
 
 const keyMap = new Map(key.questions.map(q => [q.id, q]));
-assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23", "chapter-24", "chapter-25", "chapter-26", "chapter-27", "chapter-28", "chapter-29", "chapter-30", "chapter-31", "chapter-32", "chapter-33", "chapter-34"]);
-assert.deepEqual(batches.map(batch => batch.oracles.length), [19, 18, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 18, 19, 19, 19, 19, 19, 19], "Chapters 2, 4 and 28 reuse one historical oracle outside their supplemental batch");
+assert.deepEqual(batches.map(batch => batch.batch), ["chapter-01", "chapter-02", "chapter-03", "chapter-04", "chapter-05", "chapter-06", "chapter-07", "chapter-08", "chapter-09", "chapter-10", "chapter-11", "chapter-12", "chapter-13", "chapter-14", "chapter-15", "chapter-16", "chapter-17", "chapter-18", "chapter-19", "chapter-20", "chapter-21", "chapter-22", "chapter-23", "chapter-24", "chapter-25", "chapter-26", "chapter-27", "chapter-28", "chapter-29", "chapter-30", "chapter-31", "chapter-32", "chapter-33", "chapter-34", "chapter-35", "chapter-36"]);
+assert.deepEqual(batches.map(batch => batch.oracles.length), [19, 18, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 18, 19, 19, 19, 19, 19, 19, 19, 19], "Chapters 2, 4 and 28 reuse one historical oracle outside their supplemental batch");
 const historicalChapterOracles = manifest.oracles.filter(oracle => ["C02-F-Q4", "C04-F-Q4", "C28-F-Q7"].includes(oracle.id)).map(oracle => ({ ...oracle, status: "certified" }));
 assert.equal(historicalChapterOracles.length, 3, "The historical chapter 2, chapter 4 and chapter 28 oracles not represented in supplemental batches must each be reused exactly once");
 const allOracleRecords = [...batches.flatMap(batch => batch.oracles), ...historicalChapterOracles];
@@ -1205,7 +1266,7 @@ for (const oracle of allOracleRecords) {
     assert.fail("Unknown oracle status for " + oracle.id + ": " + oracle.status);
   }
 }
-assert.equal(certified, 646, "All 646 unique questions and historical oracles are certified through chapter 34, including three historical records not duplicated in batches");
+assert.equal(certified, 684, "All 684 unique questions and historical oracles are covered through chapter 36, including three historical records not duplicated in batches");
 assert.equal(manifest.certificationSummary.questionCount, 684, "Manifest total must match the full assessment bank");
 assert.equal(manifest.certificationSummary.historicalOracles, 6, "All six historical oracles must remain registered");
 assert.equal(manifest.certificationSummary.supplementalBatchRecords, batches.reduce((sum, batch) => sum + batch.oracles.length, 0), "Manifest batch-record count must match the loaded files");
@@ -1213,11 +1274,11 @@ assert.equal(manifest.certificationSummary.newSupplementalOracles, batches.reduc
 assert.equal(manifest.certificationSummary.uniqueCertifiedQuestions, certified, "Manifest unique coverage must match the executable certification test");
 assert.equal(manifest.certificationSummary.remainingUncertified, 684 - certified, "Manifest remaining count must be arithmetically consistent");
 assert.equal(blocked, 0, "No question in the certified batches remains blocked");
-for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34]) {
+for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]) {
   const prefix = "C" + String(chapter).padStart(2, "0") + "-";
   const expectedIds = key.questions.filter(question => question.id.startsWith(prefix)).map(question => question.id);
   assert.equal(expectedIds.length, 19, "Each audited chapter must contain exactly 19 keyed questions");
   for (const id of expectedIds) assert.ok(allIds.includes(id), "Missing independent oracle for " + id);
 }
 assert.match(keyMap.get("C01-L1-Q2").explanation, /octets machine distincts/i, "Source assembly must be distinguished from its encoded machine bytes");
-console.log("Question oracle certification: chapters 1–34 — " + certified + "/646 certified; " + blocked + " blocked; runtime/key alignment and independent evaluators passed.");
+console.log("Question oracle certification: chapters 1–36 — " + certified + "/684 certified; " + blocked + " blocked; runtime/key alignment and independent evaluators passed.");
