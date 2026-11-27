@@ -380,7 +380,7 @@
     {
       "id": "C09-F-Q6",
       "status": "certified",
-      "rule": "bitwise_and",
+      "rule": "bitwise_xor",
       "inputs": {
         "left": 14,
         "right": 11,
