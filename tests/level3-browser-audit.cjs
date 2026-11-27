@@ -669,7 +669,7 @@ const assert = require("node:assert/strict");
     type.dispatchEvent(new Event("change",{bubbles:true}));
     return {checked,failed:null};
   });
-  assert.equal(exhaustiveFilterResult.checked,1554,"All 1,554 structured filter combinations must be exercised.");
+  assert.equal(exhaustiveFilterResult.checked,1554,"All 1,554 structured filter combinations must be exercised: "+JSON.stringify(exhaustiveFilterResult.failed));
   assert.equal(exhaustiveFilterResult.failed,null,"Every structured filter combination must match the metadata oracle.");
 
   // Search must index source, hint, guided steps and solution, not only titles and prompts.
