@@ -194,3 +194,8 @@ Les 48 fiches disposent maintenant d'un complément éditorial individuel affich
 - Le test navigateur vérifie que les 48 entrées possèdent chacune ces deux champs non vides, en plus du parcours des 48 corrections guidées.
 
 Cette passe améliore l'explicitation des prérequis et l'apprentissage par l'erreur. Elle ne transforme pas le contrôle lexical d'EX39 en correction sémantique automatique et ne remplace pas l'examen des variantes de branchement ; ces limites restent explicites dans le registre.
+
+
+### Justification individuelle des niveaux
+
+Un troisième champ éditorial a été ajouté à chacune des 48 fiches : une justification courte du niveau attribué (Débutant, Facile, Intermédiaire, Avancé ou Expert). Elle explicite la charge technique attendue — nombre de notions combinées, complexité du flot de contrôle, adressage, pile, encodage ou raisonnement architectural. Le guide affiche maintenant les prérequis, le piège fréquent et la justification du niveau. Le test navigateur exige 48/48 justifications non vides.
