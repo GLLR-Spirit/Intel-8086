@@ -430,6 +430,7 @@ const assert = require("node:assert/strict");
   const resetCount = (await page.locator("#exerciseCount").textContent()).trim();
   assert.match(resetCount, /^48 exercice\(s\) affiché\(s\) sur 48$/,
     "Reset must clear text search and all three structured filters.");
+  await page.locator('[data-view="learn"]').click();
   console.log("Exercise filters: 1,554 combinations + source search + combined search + reset PASS.");
 
   console.log("Keyboard navigation, focus retention/transfer, course, exercise filter and editor activation PASS.");
