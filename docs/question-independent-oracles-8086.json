@@ -4100,28 +4100,29 @@
       "inputs": {
         "value": 129,
         "width": 8,
-        "count": 1
+        "count": 2
       },
       "expected": {
-        "result": 64,
-        "carry": 1
+        "result": 32,
+        "carry": 0
       },
-      "correctAnswer": "40h avec CF=1",
-      "derivation": "81h = 10000001b. SHR insère zéro à gauche : 01000000b = 40h ; le bit sortant de poids faible vaut 1 et est copié dans CF.",
+      "correctAnswer": "20h avec CF=0",
+      "derivation": "Avec AL=81h et CL=2, SHR effectue deux décalages logiques successifs : 81h → 40h → 20h. Le dernier bit expulsé vaut 0, donc CF=0.",
       "distractorRationales": [
         {
-          "choice": "C0h avec CF=0",
-          "reason": "Ne correspond pas au décalage logique à droite d'un bit de 81h."
+          "choice": "40h avec CF=1",
+          "reason": "Cette valeur et ce CF correspondent au premier décalage seulement ; CL=2 impose une seconde opération."
         },
         {
-          "choice": "02h avec CF=1",
-          "reason": "Ne correspond ni à la direction ni au résultat binaire du décalage demandé."
+          "choice": "10h avec CF=1",
+          "reason": "Après deux décalages de 81h, le résultat est 20h et le dernier bit expulsé vaut 0."
         }
       ],
       "reference": "Intel 8086 Family User's Manual — SHR operation.",
       "explanationChecks": [
-        "CF",
-        "40h"
+        "20h",
+        "CF=0",
+        "deux décalages"
       ]
     },
     {
