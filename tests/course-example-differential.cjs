@@ -21,7 +21,7 @@ const context = {
 };
 const injection = [
   "globalThis.__courseDifferentialApi = {",
-  " curriculum, exercises, exerciseMetadata, executeAll, executeBinary, assembleProgram, parseProgram, disassembleBytes",
+  " curriculum, exercises, exerciseMetadata, executeAll, executeBinary, assembleProgram, parseProgram, disassembleBytes, exerciseMethodSatisfied",
   "};",
   "})();"
 ].join("\n");
@@ -36,6 +36,39 @@ assert.equal(oracleFile.schema, "intel-8086-course-example-oracles-v1");
 assert.equal(oracleFile.examples.length, 108, "The independent oracle must cover all 108 lessons");
 
 function plain(value) { return JSON.parse(JSON.stringify(value)); }
+
+function exerciseByTitle(title) {
+  const index = api.exercises.findIndex(entry => entry[0] === title);
+  assert.notEqual(index, -1, "Missing exercise: " + title);
+  return { index, exercise: api.exercises[index] };
+}
+for (const spec of [
+  {
+    title: "Procédure : CALL et RET near",
+    bypass: "MOV AX, 10\\nHLT"
+  },
+  {
+    title: "Paramètre sur pile : lire avec BP",
+    bypass: "MOV AX, 10\\nHLT"
+  },
+  {
+    title: "Programmation modulaire : deux routines",
+    bypass: "MOV AX, 10\\nHLT"
+  }
+]) {
+  const { index, exercise } = exerciseByTitle(spec.title);
+  const solution = api.executeAll(exercise[4].solution);
+  assert.ok(!solution.error, spec.title + " reference solution must execute: " + (solution.error || ""));
+  assert.equal(exercise[3](solution), true, spec.title + " reference result oracle");
+  assert.equal(api.exerciseMethodSatisfied(index, solution), true, spec.title + " required executed method");
+  const bypass = api.executeAll(spec.bypass);
+  assert.ok(!bypass.error, spec.title + " bypass fixture must execute");
+  assert.equal(exercise[3](bypass), true, spec.title + " demonstrates the old result-only false positive");
+  assert.equal(api.exerciseMethodSatisfied(index, bypass), false,
+    spec.title + " must reject a fabricated result that skips the requested procedure/stack method");
+}
+console.log("CALL/RET, BP+4/RET 2 and modular-routine method gates reject result-only bypasses.");
+
 function compareRecord(a, b, label) {
   assert.deepEqual(plain(a), plain(b), label);
 }
