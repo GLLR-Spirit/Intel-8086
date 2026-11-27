@@ -829,6 +829,10 @@ const assert = require("node:assert/strict");
     index, title:exercise[0], solution:(exercise[4]&&exercise[4].solution)||exercise[2]
   })));
   assert.equal(allExerciseSolutions.length,48,"The browser audit must cover all 48 exercise correction interactions.");
+  const editorialNotes=await page.evaluate(()=>window.__8086Audit.exerciseEditorialNotes);
+  assert.equal(editorialNotes.length,48,"Every exercise must have an individual prerequisite and common-error note.");
+  assert.ok(editorialNotes.every(note=>note&&note.prerequisites.trim()&&note.pitfall.trim()),
+    "All 48 editorial records must contain non-empty prerequisites and a specific common pitfall.");
   for(const exercise of allExerciseSolutions){
     const card=page.locator("#exerciseList .exercise").nth(exercise.index);
     await card.locator("details.exercise-guide > summary").click();
