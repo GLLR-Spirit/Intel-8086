@@ -180,7 +180,7 @@
         "initialIF": 1
       },
       "expected": {
-        "finalIF": 0,
+        "IF": 0,
         "maskableInterruptsEnabled": false
       },
       "correctAnswer": "IF est effacé",
@@ -205,7 +205,7 @@
         "initialIF": 0
       },
       "expected": {
-        "finalIF": 1,
+        "IF": 1,
         "maskableInterruptsEnabled": true
       },
       "correctAnswer": "Positionne IF",
