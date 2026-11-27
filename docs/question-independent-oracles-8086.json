@@ -3773,7 +3773,10 @@
       34,
       35,
       36
-    ]
+    ],
+    "individuallyReviewedPassed": 575,
+    "individuallyReviewedCorrected": 109,
+    "individuallyReviewedBlocked": 0
   },
   "independentReviewBatches": [
     {
