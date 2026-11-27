@@ -492,7 +492,15 @@ const assert = require("node:assert/strict");
     const unbalancedStackSource = api.exercises[40][4].solution.replace("\nHLT","\nPUSH AX\nHLT");
     const unbalancedStackState = api.executeAll(unbalancedStackSource);
     const unbalancedStackRejected = !api.validateExercise(40,unbalancedStackState,unbalancedStackSource,"");
-    return {results,branchVariants,requiredTechniques,missingAnswerRejected,misleadingAnswerRejected,wrongEncodingRejected,unbalancedStackRejected};
+    const requiredTraceChecks=Object.entries(api.exerciseRequiredInstructionSequences).map(([rawIndex,sequence])=>{
+      const index=Number(rawIndex),source=api.exercises[index][4].solution,state=api.executeAll(source);
+      return {index,sequence,valid:!state.error&&api.validateExercise(index,state,source,"")};
+    });
+    const callSource=api.exercises[26][4].solution,callState=api.executeAll(callSource);
+    const callWithoutExecutionRejected=!api.validateExercise(26,{...callState,executedInstructions:callState.executedInstructions.filter(op=>op!=="CALL")},callSource,"");
+    const retSource=api.exercises[40][4].solution,retState=api.executeAll(retSource);
+    const retWithoutExecutionRejected=!api.validateExercise(40,{...retState,executedInstructions:retState.executedInstructions.filter(op=>op!=="RET")},retSource,"");
+    return {results,branchVariants,requiredTechniques,requiredTraceChecks,callWithoutExecutionRejected,retWithoutExecutionRejected,missingAnswerRejected,misleadingAnswerRejected,wrongEncodingRejected,unbalancedStackRejected};
   });
   assert.deepEqual(advancedExerciseAudit.results.map(item=>item.valid),[true,true,true,true,true,true,true,true,true],
     "EX33/35/37/39/41/43/46/47/48 must pass their independent pedagogical oracles: "+JSON.stringify(advancedExerciseAudit));
@@ -500,6 +508,12 @@ const assert = require("node:assert/strict");
     "Conditional exercises must exercise alternate, equality and no-match paths: "+JSON.stringify(advancedExerciseAudit.branchVariants));
   assert.ok(advancedExerciseAudit.requiredTechniques.every(item=>item.valid),
     "Explicitly required techniques must appear in the guided corrections: "+JSON.stringify(advancedExerciseAudit.requiredTechniques));
+  assert.ok(advancedExerciseAudit.requiredTraceChecks.length>=15&&advancedExerciseAudit.requiredTraceChecks.every(item=>item.valid),
+    "Every mapped required technique must be observed in the actually executed instruction trace: "+JSON.stringify(advancedExerciseAudit.requiredTraceChecks));
+  assert.ok(advancedExerciseAudit.callWithoutExecutionRejected,
+    "EX27 must reject an otherwise identical final state when CALL was not executed.");
+  assert.ok(advancedExerciseAudit.retWithoutExecutionRejected,
+    "EX41 must reject an otherwise identical final state when RET was not executed.");
   assert.ok(advancedExerciseAudit.missingAnswerRejected,"EX39 must reject a missing written explanation.");
   assert.ok(advancedExerciseAudit.misleadingAnswerRejected,"EX39 must reject a keyword-rich explanation that contradicts the required model limits.");
   assert.ok(advancedExerciseAudit.wrongEncodingRejected,"EX35 must reject a functionally correct but differently encoded program.");
