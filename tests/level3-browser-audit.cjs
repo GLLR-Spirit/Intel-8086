@@ -302,6 +302,128 @@ const assert = require("node:assert/strict");
     "The disassembler action must be keyboard-operable and render decoded instructions.");
 
   await keyboardPage.close();
+
+  // Exhaustive exercise-filter matrix: every chapter × difficulty × exercise type,
+  // including the unfiltered value for each dimension.
+  await page.locator('[data-view="exercises"]').click();
+  const filterMatrix = await page.evaluate(() => {
+    const api = window.__8086Audit;
+    const chapter = document.querySelector("#exerciseChapter");
+    const difficulty = document.querySelector("#exerciseDifficulty");
+    const type = document.querySelector("#exerciseType");
+    const search = document.querySelector("#exerciseSearch");
+    const chapters = [...chapter.options].map(option => option.value);
+    const difficulties = [...difficulty.options].map(option => option.value);
+    const types = [...type.options].map(option => option.value);
+    const failures = [];
+    let combinations = 0;
+    const expectedFor = (chapterValue, difficultyValue, typeValue, query) =>
+      api.exercises.map((exercise, index) => {
+        const metadata = api.exerciseMetadata(exercise, index);
+        const chapterNames = metadata.chapters.map(number => api.curriculum[number][0]);
+        const searchText = [
+          exercise[0], exercise[1], exercise[2],
+          api.exerciseTypeLabel(metadata.type),
+          chapterNames.join(" "),
+          exercise[4]?.hint || "",
+          (exercise[4]?.steps || []).join(" "),
+          exercise[4]?.solution || ""
+        ].join(" ").toLowerCase();
+        return { exercise, index, metadata, searchText };
+      }).filter(item =>
+        (!query || item.searchText.includes(query)) &&
+        (chapterValue === "all" || item.metadata.chapters.includes(Number(chapterValue))) &&
+        (difficultyValue === "all" || item.metadata.difficulty === difficultyValue) &&
+        (typeValue === "all" || item.metadata.type === typeValue)
+      ).map(item => (item.index + 1) + ". " + item.exercise[0]);
+
+    for (const chapterValue of chapters) {
+      for (const difficultyValue of difficulties) {
+        for (const typeValue of types) {
+          chapter.value = chapterValue;
+          difficulty.value = difficultyValue;
+          type.value = typeValue;
+          chapter.dispatchEvent(new Event("change", { bubbles: true }));
+          difficulty.dispatchEvent(new Event("change", { bubbles: true }));
+          type.dispatchEvent(new Event("change", { bubbles: true }));
+          const expected = expectedFor(chapterValue, difficultyValue, typeValue, "");
+          const actual = [...document.querySelectorAll("#exerciseList .exercise > b")]
+            .map(node => node.textContent.trim());
+          combinations++;
+          if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+            failures.push({
+              chapter: chapterValue, difficulty: difficultyValue, type: typeValue,
+              expected, actual
+            });
+            if (failures.length >= 10) return { combinations, failures };
+          }
+          const countText = document.querySelector("#exerciseCount").textContent.trim();
+          const match = countText.match(/(\d+) exercice\(s\) affiché\(s\) sur (\d+)/);
+          if (!match || Number(match[1]) !== expected.length || Number(match[2]) !== api.exercises.length) {
+            failures.push({ chapter: chapterValue, difficulty: difficultyValue, type: typeValue,
+              countText, expectedCount: expected.length });
+            if (failures.length >= 10) return { combinations, failures };
+          }
+        }
+      }
+    }
+
+    // Search must include the starter source, the guided explanation and chapter names.
+    chapter.value = "all";
+    difficulty.value = "all";
+    type.value = "all";
+    const sourceTarget = api.exercises.find(exercise => /MOV\s/.test(exercise[2]));
+    const sourceQuery = sourceTarget ? sourceTarget[2].match(/MOV\s+[A-Z]+/)?.[0]?.toLowerCase() : null;
+    if (!sourceQuery) failures.push({ search: "source", error: "No MOV source token found for search audit." });
+    else {
+      search.value = sourceQuery;
+      search.dispatchEvent(new Event("input", { bubbles: true }));
+      const expected = expectedFor("all", "all", "all", sourceQuery);
+      const actual = [...document.querySelectorAll("#exerciseList .exercise > b")]
+        .map(node => node.textContent.trim());
+      if (JSON.stringify(actual) !== JSON.stringify(expected))
+        failures.push({ search: sourceQuery, expected, actual });
+    }
+
+    // Search, chapter, difficulty and type must compose rather than overwrite one another.
+    const targetIndex = api.exercises.findIndex((exercise, index) => {
+      const metadata = api.exerciseMetadata(exercise, index);
+      return metadata.chapters.length > 0;
+    });
+    if (targetIndex < 0) failures.push({ search: "combined", error: "No chapter-assigned exercise exists." });
+    else {
+      const target = api.exercises[targetIndex];
+      const metadata = api.exerciseMetadata(target, targetIndex);
+      const query = target[0].slice(0, Math.min(8, target[0].length)).toLowerCase();
+      search.value = query;
+      chapter.value = String(metadata.chapters[0]);
+      difficulty.value = metadata.difficulty;
+      type.value = metadata.type;
+      search.dispatchEvent(new Event("input", { bubbles: true }));
+      chapter.dispatchEvent(new Event("change", { bubbles: true }));
+      difficulty.dispatchEvent(new Event("change", { bubbles: true }));
+      type.dispatchEvent(new Event("change", { bubbles: true }));
+      const expected = expectedFor(chapter.value, difficulty.value, type.value, query);
+      const actual = [...document.querySelectorAll("#exerciseList .exercise > b")]
+        .map(node => node.textContent.trim());
+      if (JSON.stringify(actual) !== JSON.stringify(expected))
+        failures.push({ search: query, chapter: chapter.value, difficulty: difficulty.value,
+          type: type.value, expected, actual });
+    }
+    return { combinations, failures, chapters: chapters.length,
+      difficulties: difficulties.length, types: types.length };
+  });
+  assert.equal(filterMatrix.combinations, 37 * 6 * 7,
+    "The exercise filter audit must cover all 1,554 chapter/difficulty/type combinations.");
+  assert.deepEqual(filterMatrix.failures, [],
+    "Every exercise filter combination and source/combined search must match the independent expected set: " +
+    JSON.stringify(filterMatrix.failures));
+  await page.locator("#resetExerciseFilters").click();
+  const resetCount = (await page.locator("#exerciseCount").textContent()).trim();
+  assert.match(resetCount, /^48 exercice\(s\) affiché\(s\) sur 48$/,
+    "Reset must clear text search and all three structured filters.");
+  console.log("Exercise filters: 1,554 combinations + source search + combined search + reset PASS.");
+
   console.log("Keyboard navigation, focus retention/transfer, course, exercise filter and editor activation PASS.");
 
   // Course example hand-off must load the selected lesson's exact source into the editor.
