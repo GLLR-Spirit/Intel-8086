@@ -9087,14 +9087,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Que vérifie le modèle après OUT DX,AL ?",
+      "stem": "Après MOV DX,20h / MOV AL,A5h / OUT DX,AL, quelle valeur doit apparaître dans l'état du port 20h ?",
       "choices": [
-        "L'état du port et la valeur écrite",
-        "Une adresse mémoire DS",
-        "Le contenu de CS"
+        "A5h",
+        "20h",
+        "00h"
       ],
-      "correctAnswer": "L'état du port et la valeur écrite",
-      "explanation": "Le modèle expose les ports configurés dans son état d'E/S.",
+      "correctAnswer": "A5h",
+      "explanation": "DX sélectionne le port 20h et AL fournit A5h ; OUT écrit donc A5h dans l'état du port 20h.",
       "category": "Analyse de résultat"
     },
     {
