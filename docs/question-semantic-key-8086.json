@@ -5919,14 +5919,14 @@
       "kind": "intermediate",
       "lesson": 3,
       "number": 3,
-      "stem": "Quel risque présente un POPF sans mot préalablement empilé ?",
+      "stem": "Que risque un POPF exécuté sans sauvegarde FLAGS correspondante ?",
       "choices": [
-        "Il restaure des données arbitraires comme FLAGS et déséquilibre la pile",
+        "Il interprète le mot courant SS:SP comme FLAGS puis avance SP de 2",
         "Il ne fait rien dans tous les cas",
         "Il incrémente CX"
       ],
-      "correctAnswer": "Il restaure des données arbitraires comme FLAGS et déséquilibre la pile",
-      "explanation": "POPF consomme le mot présent à SS:SP ; l'état de pile doit être valide.",
+      "correctAnswer": "Il interprète le mot courant SS:SP comme FLAGS puis avance SP de 2",
+      "explanation": "POPF consomme toujours le mot au sommet. Sans sauvegarde correspondante, il peut interpréter une donnée sans rapport comme FLAGS et avancer SP de deux octets.",
       "category": "Vérification"
     },
     {
@@ -5999,14 +5999,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Après PUSH AX puis PUSH BX, quel registre reçoit la valeur initiale de BX en premier ?",
+      "stem": "Après PUSH AX puis PUSH BX, si le programme exécute POP CX puis POP DX, dans quel registre la valeur initiale de BX est-elle copiée en premier ?",
       "choices": [
-        "CX avec POP CX",
-        "DX avec POP DX",
-        "AX avec POP AX"
+        "CX",
+        "DX",
+        "AX"
       ],
-      "correctAnswer": "CX avec POP CX",
-      "explanation": "BX est le dernier empilé et le premier dépilé.",
+      "correctAnswer": "CX",
+      "explanation": "BX est le dernier empilé. Le premier POP est POP CX : il copie donc la valeur initiale de BX dans CX.",
       "category": "Prédiction"
     },
     {
@@ -6047,14 +6047,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Quel résultat confirme une pile équilibrée ?",
+      "stem": "Si SP=0100h, à quelle adresse logique le premier PUSH AX écrit-il le mot ?",
       "choices": [
-        "SP final égale SP initial",
-        "SP final égale zéro",
-        "IP final égale SP initial"
+        "SS:00FEh",
+        "SS:0100h",
+        "DS:00FEh"
       ],
-      "correctAnswer": "SP final égale SP initial",
-      "explanation": "L'équilibre se vérifie en comparant le pointeur avant et après la séquence.",
+      "correctAnswer": "SS:00FEh",
+      "explanation": "PUSH décrémente SP de deux avant l'écriture : SP devient 00FEh et l'accès se fait dans SS.",
       "category": "Analyse de résultat"
     },
     {
