@@ -1423,14 +1423,14 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "Quel segment est utilisé par défaut pour une référence mémoire basée sur BP ?",
+      "stem": "Pourquoi MOV AX,AL est-il invalide sur le 8086 ?",
       "choices": [
-        "DS",
-        "SS",
-        "ES"
+        "AX est un registre 16 bits et AL un registre 8 bits : les tailles diffèrent",
+        "AX et AL ne peuvent jamais être utilisés dans la même instruction",
+        "AL est un registre de segment"
       ],
-      "correctAnswer": "SS",
-      "explanation": "Les formes d'adressage utilisant BP sélectionnent SS par défaut sur le 8086.",
+      "correctAnswer": "AX est un registre 16 bits et AL un registre 8 bits : les tailles diffèrent",
+      "explanation": "MOV exige des opérandes de même taille ; AX fait 16 bits et AL 8 bits. Une copie entre octets peut utiliser MOV AH,AL.",
       "category": "Restrictions"
     },
     {
@@ -1471,14 +1471,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Dans MOV AX,1234h / MOV AL,56h / HLT, quelle partie de AX est préservée ?",
+      "stem": "Dans MOV AX,1234h / MOV AH,56h / HLT, quelle partie de AX est préservée ?",
       "choices": [
-        "AH",
         "AL",
+        "AH",
         "Aucun octet"
       ],
-      "correctAnswer": "AH",
-      "explanation": "AL est remplacé par 56h tandis que AH conserve 12h.",
+      "correctAnswer": "AL",
+      "explanation": "AH est remplacé par 56h tandis que AL conserve 34h.",
       "category": "Analyse de programme"
     },
     {
@@ -1503,14 +1503,14 @@
       "kind": "final",
       "lesson": null,
       "number": 9,
-      "stem": "Quelle erreur faut-il corriger dans MOV CS,AX ?",
+      "stem": "Quelle erreur faut-il corriger dans l'analyse de MOVSB : « la source et la destination utilisent DS:SI » ?",
       "choices": [
-        "CS ne peut pas être destination de MOV sur le 8086",
-        "AX doit être un registre 8 bits",
-        "MOV ne peut pas copier entre registres"
+        "La source est DS:SI et la destination ES:DI",
+        "La source et la destination utilisent CS:IP",
+        "MOVSB n'accède pas à la mémoire"
       ],
-      "correctAnswer": "CS ne peut pas être destination de MOV sur le 8086",
-      "explanation": "Le chargement direct de CS par MOV est interdit ; les transferts de contrôle modifient CS:IP selon leur forme.",
+      "correctAnswer": "La source est DS:SI et la destination ES:DI",
+      "explanation": "Par défaut, MOVSB lit l'octet source via DS:SI et écrit l'octet destination via ES:DI.",
       "category": "Débogage"
     },
     {
