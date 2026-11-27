@@ -1,0 +1,494 @@
+{
+  "schemaVersion": 1,
+  "batch": "chapter-28",
+  "title": "Oracles indépendants — chapitre 28 : REP, REPE et REPNE",
+  "reviewDate": "2026-11-27",
+  "statusLegend": {
+    "certified": "Compteurs, conditions ZF, index et transferts répétés vérifiés indépendamment"
+  },
+  "referenceBasis": [
+    "Intel 8086 Family User's Manual (October 1979), REP/REPE/REPNE prefixes and string instruction behavior.",
+    "Intel MCS-86 Assembly Language Reference Manual, repeat prefixes and string instructions."
+  ],
+  "oracles": [
+    {
+      "id": "C28-L1-Q1",
+      "status": "certified",
+      "rule": "rep_counter_register",
+      "inputs": {
+        "instruction": "REP MOVSB"
+      },
+      "expected": {
+        "counter": "CX"
+      },
+      "correctAnswer": "CX",
+      "derivation": "Le préfixe REP utilise CX comme compteur d'itérations sur le 8086. Chaque exécution de l'instruction de chaîne décrémente CX ; AX et SP ne remplacent pas ce compteur implicite.",
+      "distractorRationales": [
+        {
+          "choice": "AX",
+          "reason": "AX est un registre de données ; REP utilise CX comme compteur d'itérations implicite."
+        },
+        {
+          "choice": "SP",
+          "reason": "SP est le pointeur de pile et ne contrôle pas le nombre de répétitions de REP."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
+    },
+    {
+      "id": "C28-L1-Q2",
+      "status": "certified",
+      "rule": "direction_flag_control",
+      "inputs": {
+        "instruction": "MOVSB"
+      },
+      "expected": {
+        "controls": "DF"
+      },
+      "correctAnswer": "DF",
+      "derivation": "DF sélectionne le sens de progression des index de chaîne. Avec DF=0, SI et DI sont incrémentés ; avec DF=1, ils sont décrémentés.",
+      "distractorRationales": [
+        {
+          "choice": "CF",
+          "reason": "CF indique une retenue ou un emprunt arithmétique, pas la direction des index de chaîne."
+        },
+        {
+          "choice": "OF",
+          "reason": "OF signale un débordement signé et ne contrôle pas SI/DI."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
+    },
+    {
+      "id": "C28-L1-Q3",
+      "status": "certified",
+      "rule": "cld_index_update",
+      "inputs": {
+        "SI": 256,
+        "DI": 512,
+        "DF": 0
+      },
+      "expected": {
+        "SI": 257,
+        "DI": 513
+      },
+      "correctAnswer": "SI et DI progressent après chaque transfert",
+      "derivation": "CLD efface DF. Après un transfert MOVSB d'un octet, SI et DI avancent chacun d'une unité ; CX est géré par REP, pas effacé par CLD.",
+      "distractorRationales": [
+        {
+          "choice": "SI et DI diminuent",
+          "reason": "CLD efface DF et les index avancent ; ils ne diminuent pas."
+        },
+        {
+          "choice": "CX est effacé",
+          "reason": "CX n'est pas effacé par CLD ; le préfixe REP décrémente CX pendant les répétitions."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
+    },
+    {
+      "id": "C28-L2-Q1",
+      "status": "certified",
+      "rule": "repne_stop_condition",
+      "inputs": {
+        "CX": 2,
+        "ZF": 0
+      },
+      "expected": {
+        "condition": "CX=0 || ZF=1"
+      },
+      "correctAnswer": "Quand ZF devient 1 ou CX devient 0",
+      "derivation": "REPNE continue tant que CX est non nul et ZF reste à zéro. Il s'arrête dès que le compteur atteint zéro ou que l'instruction de chaîne établit ZF=1.",
+      "distractorRationales": [
+        {
+          "choice": "Seulement quand ZF vaut 0",
+          "reason": "REPNE continue tant que ZF=0 ; ZF=1 déclenche l'arrêt."
+        },
+        {
+          "choice": "Quand DI vaut zéro",
+          "reason": "DI=0 n'est pas la condition d'arrêt de REPNE ; le compteur et ZF sont testés."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
+    },
+    {
+      "id": "C28-L2-Q2",
+      "status": "certified",
+      "rule": "repne_scasb",
+      "inputs": {
+        "AL": 65,
+        "memoryByte": 65,
+        "CX": 2
+      },
+      "expected": {
+        "ZF": 1,
+        "repeatContinues": false
+      },
+      "correctAnswer": "1 et la répétition s'arrête",
+      "derivation": "SCASB compare AL à ES:DI. L'égalité donne ZF=1 ; REPNE exige ZF=0 pour continuer, donc la répétition s'arrête après cette comparaison.",
+      "distractorRationales": [
+        {
+          "choice": "0 et la répétition continue toujours",
+          "reason": "ZF=0 signifie que SCASB n'a pas trouvé l'égalité ; REPNE peut alors continuer si CX reste non nul."
+        },
+        {
+          "choice": "ZF est inchangé",
+          "reason": "ZF est modifié par la comparaison ; il n'est pas inchangé dans le cas d'égalité."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
+    },
+    {
+      "id": "C28-L2-Q3",
+      "status": "certified",
+      "rule": "rep_effects",
+      "inputs": {
+        "instruction": "REP MOVSB"
+      },
+      "expected": {
+        "stateAffected": [
+          "CX",
+          "SI",
+          "DI",
+          "FLAGS"
+        ]
+      },
+      "correctAnswer": "CX, SI/DI et FLAGS",
+      "derivation": "REP modifie CX et l'instruction de chaîne met à jour les index selon DF. Les indicateurs dépendent de l'instruction de chaîne ; il faut donc suivre l'état de contrôle et les registres impliqués.",
+      "distractorRationales": [
+        {
+          "choice": "Seulement AX",
+          "reason": "AX seul ne décrit pas le compteur, les index et les effets de l'instruction de chaîne."
+        },
+        {
+          "choice": "Seulement CS",
+          "reason": "CS est le segment de code et n'est pas le seul état modifié par une répétition de chaîne."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
+    },
+    {
+      "id": "C28-L3-Q1",
+      "status": "certified",
+      "rule": "rep_movsb_copy",
+      "inputs": {
+        "CX": 2,
+        "source": "DS:SI",
+        "destination": "ES:DI",
+        "elementWidth": 8
+      },
+      "expected": {
+        "copies": "CX_bytes",
+        "source": "DS:SI",
+        "destination": "ES:DI"
+      },
+      "correctAnswer": "Copie CX octets de DS:SI vers ES:DI",
+      "derivation": "REP MOVSB exécute MOVSB autant de fois que le compteur CX l'indique. Chaque itération copie un octet de DS:SI vers ES:DI puis ajuste SI/DI selon DF.",
+      "distractorRationales": [
+        {
+          "choice": "Copie CX mots de SS:SP vers CS:IP",
+          "reason": "Cette proposition décrit un transfert de mots de pile vers code et ne correspond pas à MOVSB."
+        },
+        {
+          "choice": "Compare AL avec DS:SI",
+          "reason": "MOVSB copie un octet de DS:SI vers ES:DI ; elle ne compare pas AL à DS:SI."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
+    },
+    {
+      "id": "C28-L3-Q2",
+      "status": "certified",
+      "rule": "string_word_index_update",
+      "inputs": {
+        "elementWidth": 16,
+        "count": 1,
+        "DF": 0
+      },
+      "expected": {
+        "SIIncrement": 2,
+        "DIIncrement": 2
+      },
+      "correctAnswer": "+2 chacun",
+      "derivation": "Pour un élément de 16 bits, une instruction de chaîne avance chaque index de deux octets lorsque DF=0. Le pas dépend de la largeur de l'élément, pas du nombre de registres utilisés.",
+      "distractorRationales": [
+        {
+          "choice": "+1 chacun",
+          "reason": "Un mot contient deux octets ; les index augmentent donc de deux lorsque DF=0."
+        },
+        {
+          "choice": "-2 chacun",
+          "reason": "−2 correspondrait à une progression vers les adresses décroissantes, sélectionnée par DF=1."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
+    },
+    {
+      "id": "C28-L3-Q3",
+      "status": "certified",
+      "rule": "rep_iteration_count",
+      "inputs": {
+        "initialCX": 2
+      },
+      "expected": {
+        "iterations": 2
+      },
+      "correctAnswer": "CX détermine le nombre d'itérations",
+      "derivation": "REP utilise CX comme compteur et exécute l'instruction de chaîne jusqu'à épuisement du compte ou jusqu'à ce qu'une condition supplémentaire de REPE/REPNE arrête la répétition.",
+      "distractorRationales": [
+        {
+          "choice": "CX choisit le segment de destination",
+          "reason": "CX ne choisit pas le segment de destination ; ES est le segment destination des chaînes concernées."
+        },
+        {
+          "choice": "CX contient l'adresse physique",
+          "reason": "CX ne contient pas l'adresse physique ; il détermine le nombre de répétitions."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
+    },
+    {
+      "id": "C28-F-Q1",
+      "status": "certified",
+      "rule": "rep_semantics",
+      "inputs": {
+        "prefix": "REP",
+        "instruction": "MOVSB"
+      },
+      "expected": {
+        "repeatsStringInstruction": true,
+        "usesCX": true,
+        "conditionalVariantsUseZF": true
+      },
+      "correctAnswer": "Répéter une instruction de chaîne selon CX et, pour REPE/REPNE, selon ZF",
+      "derivation": "REP répète une instruction de chaîne en fonction de CX. REPE et REPNE ajoutent une condition liée à ZF ; le préfixe ne transforme pas une instruction arithmétique quelconque en boucle de répétition.",
+      "distractorRationales": [
+        {
+          "choice": "Répéter n'importe quelle instruction arithmétique",
+          "reason": "REP ne répète pas une instruction arithmétique quelconque ; il préfixe des instructions de chaîne."
+        },
+        {
+          "choice": "Changer le segment de code",
+          "reason": "REP ne change pas CS ; il contrôle la répétition via CX et parfois ZF."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
+    },
+    {
+      "id": "C28-F-Q2",
+      "status": "certified",
+      "rule": "df_semantics",
+      "inputs": {
+        "instruction": "CLD/STD"
+      },
+      "expected": {
+        "controls": "SI_DI_direction"
+      },
+      "correctAnswer": "Détermine si SI et DI s'incrémentent ou se décrémentent",
+      "derivation": "CLD efface DF et STD le positionne. Ce bit sélectionne le sens d'ajustement des index SI/DI pour les instructions de chaîne ; il ne définit pas la longueur de la copie.",
+      "distractorRationales": [
+        {
+          "choice": "Détermine le nombre d'octets",
+          "reason": "DF règle le sens des index et non le nombre d'octets transférés."
+        },
+        {
+          "choice": "Choisit le segment de code",
+          "reason": "DF n'est pas le registre segment de code ; il ne choisit pas CS."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
+    },
+    {
+      "id": "C28-F-Q3",
+      "status": "certified",
+      "rule": "rep_movsb_setup",
+      "inputs": {
+        "count": 2
+      },
+      "expected": {
+        "sequence": [
+          "MOV CX,2",
+          "REP MOVSB"
+        ]
+      },
+      "correctAnswer": "MOV CX,2 puis REP MOVSB",
+      "derivation": "CX contient le nombre d'octets à transférer et REP précède l'instruction de chaîne MOVSB. MOV AX,2 ne définit pas le compteur implicite de répétition.",
+      "distractorRationales": [
+        {
+          "choice": "MOV AX,2 puis REP ADD",
+          "reason": "MOV AX,2 ne charge pas CX ; REP lit CX comme compteur implicite."
+        },
+        {
+          "choice": "MOV SP,2 puis LOOP",
+          "reason": "MOV SP,2 puis LOOP utiliserait une autre logique de pile et de boucle, pas REP MOVSB."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
+    },
+    {
+      "id": "C28-F-Q4",
+      "status": "certified",
+      "rule": "repne_stop_condition",
+      "inputs": {
+        "CX": 2,
+        "ZF": 0
+      },
+      "expected": {
+        "condition": "CX=0 || ZF=1"
+      },
+      "correctAnswer": "Quand CX=0 ou ZF=1",
+      "derivation": "REPNE continue tant que CX reste non nul et ZF=0. Il s'arrête lorsque CX atteint zéro ou que la comparaison de chaîne rend ZF égal à 1.",
+      "distractorRationales": [
+        {
+          "choice": "Quand ZF=0 uniquement",
+          "reason": "ZF=0 permet à REPNE de continuer ; il ne déclenche pas l'arrêt."
+        },
+        {
+          "choice": "Quand SI=0",
+          "reason": "SI=0 n'est pas testé par REPNE ; l'arrêt dépend de CX et ZF."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
+    },
+    {
+      "id": "C28-F-Q5",
+      "status": "certified",
+      "rule": "rep_iteration_count",
+      "inputs": {
+        "initialCX": 2
+      },
+      "expected": {
+        "iterations": 2
+      },
+      "correctAnswer": "2",
+      "derivation": "Avec CX initialisé à deux, REP exécute deux itérations si aucune condition supplémentaire n'interrompt la répétition. DF=0 détermine le sens de progression, pas le nombre d'itérations.",
+      "distractorRationales": [
+        {
+          "choice": "1",
+          "reason": "CX initial vaut deux ; un seul n'est pas le nombre d'itérations attendu si aucune condition n'arrête tôt."
+        },
+        {
+          "choice": "4",
+          "reason": "Quatre dépasse le compte initial ; REP ne répète que deux fois dans ce cas."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
+    },
+    {
+      "id": "C28-F-Q6",
+      "status": "certified",
+      "rule": "rep_completion",
+      "inputs": {
+        "initialCX": 2,
+        "initialSI": 256,
+        "initialDI": 512,
+        "elementWidth": 8,
+        "DF": 0
+      },
+      "expected": {
+        "CX": 0,
+        "SI": 258,
+        "DI": 514
+      },
+      "correctAnswer": "0",
+      "derivation": "Deux transferts octet décrémentent CX jusqu'à zéro et incrémentent SI et DI de deux au total lorsque DF=0. Les offsets finaux sont donc 0102h et 0202h.",
+      "distractorRationales": [
+        {
+          "choice": "1",
+          "reason": "Le compteur est décrémenté jusqu'à zéro ; il ne reste pas à un après deux itérations."
+        },
+        {
+          "choice": "2",
+          "reason": "Deux octets copiés font avancer SI/DI de deux ; les index ne diminuent pas avec DF=0."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
+    },
+    {
+      "id": "C28-F-Q8",
+      "status": "certified",
+      "rule": "rep_movsb_completion",
+      "inputs": {
+        "initialCX": 2,
+        "initialSI": 256,
+        "initialDI": 512,
+        "elementWidth": 8,
+        "DF": 0
+      },
+      "expected": {
+        "CX": 0,
+        "SI": 258,
+        "DI": 514
+      },
+      "correctAnswer": "CX=0, SI et DI augmentés de 2",
+      "derivation": "REP MOVSB exécute deux transferts d'un octet. CX atteint zéro ; DF=0 fait avancer SI et DI de deux positions au total.",
+      "distractorRationales": [
+        {
+          "choice": "CX=2, SI et DI diminués de 2",
+          "reason": "Deux transferts avec DF=0 augmentent SI et DI de deux, ils ne diminuent pas."
+        },
+        {
+          "choice": "CX=0, SI inchangé",
+          "reason": "Après deux itérations, CX vaut zéro et SI avance ; il ne reste pas inchangé."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
+    },
+    {
+      "id": "C28-F-Q9",
+      "status": "certified",
+      "rule": "rep_initialization",
+      "inputs": {
+        "initialCX": 0
+      },
+      "expected": {
+        "mustInitializeCXNonzero": true,
+        "segmentsAndIndexesRequired": true
+      },
+      "correctAnswer": "Initialiser CX à une valeur non nulle et les index/segments",
+      "derivation": "Si CX vaut zéro avant REP, aucune itération n'est exécutée. Il faut initialiser CX, les index SI/DI et les segments source/destination avant de lancer le transfert.",
+      "distractorRationales": [
+        {
+          "choice": "Remplacer CX par IP",
+          "reason": "CX=0 signifie aucune itération ; il faut donc un compte non nul ainsi que des segments et index valides."
+        },
+        {
+          "choice": "Effacer DF avec STD",
+          "reason": "IP n'est pas le compteur REP ; CX contrôle la répétition."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
+    },
+    {
+      "id": "C28-F-Q10",
+      "status": "certified",
+      "rule": "rep_audit",
+      "inputs": {
+        "checks": [
+          "copied_data",
+          "CX",
+          "SI",
+          "DI",
+          "DF",
+          "FLAGS"
+        ]
+      },
+      "expected": {
+        "checksAll": true
+      },
+      "correctAnswer": "Données copiées, CX, SI, DI, DF et FLAGS pertinents",
+      "derivation": "Une validation de REP doit vérifier le contenu transféré, le compteur restant, les index après répétition, la direction choisie par DF et les indicateurs pertinents. Le seul opcode ne suffit pas.",
+      "distractorRationales": [
+        {
+          "choice": "AX uniquement",
+          "reason": "AX seul ne permet pas de contrôler le nombre d'itérations, les index et les données copiées."
+        },
+        {
+          "choice": "Le seul octet opcode",
+          "reason": "L'octet opcode ne prouve pas que les données, les index et les indicateurs ont évolué correctement."
+        }
+      ],
+      "reference": "Intel 8086 Family User's Manual (1979), REP/REPE/REPNE, string instruction SI/DI/CX behavior and DF; Intel MCS-86 Assembly Language Reference Manual, repeat prefixes."
+    }
+  ]
+}
