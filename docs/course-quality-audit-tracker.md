@@ -14,7 +14,7 @@ For every finding: detect the symptom, inspect the complete affected path, ident
 |---|---|---|---|
 | 1 | Navigation of 36 chapters | Automated browser verification passed | Active chapter state, invalid-index guards, accessible state attributes, desktop/mobile DOM order, and 36-chapter browser assertions. Playwright workflow run 1143 succeeded on commit 96a7bdf. Manual screen-reader/keyboard review remains open. |
 | 2 | 108 assembly examples and expected results | Source/binary differential passed | CI run 1775 reports 108/108 examples compared and 108/108 independent end-state oracles matched. Four conceptual examples are explicitly retained. |
-| 3 | 684 questions and corrections | Automated oracle checks passed; independent certification remains 384/684 | CI run 1775 reports 684/684 oracle records passed automated evaluators and runtime concordance. Official certification ledger remains 384/684; 300 questions remain for individual independent review. Chapter 1 has 19 individually reviewed questions, with five corrections recorded; no other chapter is certified by that review. |
+| 3 | 684 questions and corrections | Automated oracle checks passed; independent certification remains 384/684 | CI run 1775 reports 684/684 oracle records passed automated evaluators and runtime concordance. Official certification ledger remains 384/684; 300 questions remain for individual independent review. Chapter 1 has 19 individually reviewed questions, with five corrections recorded. Chapter 2 has 19 individually reviewed items: 18 passed and one remains blocked by the final-assessment category balance; the official certification ledger is unchanged. |
 | 4 | Pedagogical quality of all 36 chapters | Automated structure passed; expert review remains open | 108/108 lesson theories meet the enforced minimum length. Continue individual review of accuracy, progression, prerequisites, terminology, conceptual examples and teaching quality. |
 | 5 | Exercises and solutions | 48/48 automated corrections and source/binary comparisons passed | CI run 1775 reports 48 guided corrections compared across source and binary execution. Metadata, validators and exercise filters are covered by automated tests. Manual pedagogical review remains open. |
 | 6 | Simulator/course integration | Automated source/binary and browser checks passed | CI run 1775 passes the differential and targeted instruction suites; browser run 1143 passes the full Playwright desktop/mobile job. Hardware-level equivalence is not established. |
@@ -95,3 +95,13 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - Added `tests/audit-report-consistency.cjs` and wired it into CI. The test protects the 48-exercise inventory, the 384/684 individual certification ledger, the 300 pending reviews, and the distinction between automated oracle checks and independent certification.
 - Renamed the question-oracle CI step to state explicitly that it is automated validation, not independent certification.
 - This commit also changes a workflow file and a test file, so the pull-request path filters should now allow CI to run. The result must still be inspected before this tranche is marked validated.
+
+
+### Independent question review — chapter 2
+
+- Reviewed all 19 chapter 2 questions individually against the Intel 8086 Family User's Manual, the MCS-86 assembly reference, and independent arithmetic/control-flow traces.
+- 18 items passed technical and item-level checks.
+- One item remains blocked: `C02-F-Q4` is factually correct but does not satisfy the required final-assessment blueprint because it does not provide the second syntax item. No runtime question was changed in this tranche.
+- Added `docs/question-independent-review/chapter-02.json` with one record per question and explicit findings.
+- Added CI assertions that the review covers exactly the 19 chapter 2 IDs, preserves the blocker, and does not increment the official ledger.
+- Official individual certification remains 384/684; 300 questions remain. This chapter review does not count as official certification while its blocker is open.
