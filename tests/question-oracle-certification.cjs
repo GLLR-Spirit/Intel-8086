@@ -62,7 +62,8 @@ function independentlyCompute(oracle) {
       effective_address: ["effective_address", "default_segment", "segment_override", "operand_width"],
       stack: ["LIFO_order", "word_values", "SP_before_after", "memory_bounds"],
       string_instruction: ["source_data", "destination_data", "SI", "DI", "DF", "segments", "FLAGS"],
-      repeated_string: ["copied_data", "CX", "SI", "DI", "DF", "FLAGS"],
+      repeated_string: ["copied_data", "CX", "SI", "DI", "DF"],
+      conditional_repeated_string: ["compared_data", "CX", "DI", "DF", "ZF"],
       interrupt_return_debug: ["stack_word_order", "saved_IP", "saved_CS", "saved_FLAGS", "SP_before_IRET", "handler_stack_balance"],
       instruction_length_fields: ["prefixes", "opcode", "ModR/M", "displacement", "immediate"],
       encoding_validation: ["bytes", "instruction_length", "disassembly", "independent_reference"],
@@ -848,8 +849,13 @@ function independentlyCompute(oracle) {
       const ZF = i.AL === i.memoryByte ? 1 : 0;
       return { ZF, repeatContinues: i.CX > 1 && ZF === 0 };
     }
-    case "rep_effects":
-      return { stateAffected: ["CX", "SI", "DI", "FLAGS"] };
+    case "rep_effects": {
+      const instruction = String(i.instruction || "").toUpperCase();
+      if (instruction.includes("SCAS")) return { stateAffected: ["CX", "DI", "ZF"] };
+      if (instruction.includes("STOS")) return { stateAffected: ["CX", "DI"] };
+      if (instruction.includes("MOVS")) return { stateAffected: ["CX", "SI", "DI"] };
+      return { stateAffected: ["CX"] };
+    }
     case "rep_movsb_copy":
       return { copies: "CX_bytes", source: "DS:SI", destination: "ES:DI" };
     case "string_word_index_update":
