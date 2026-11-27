@@ -461,17 +461,17 @@ const assert = require("node:assert/strict");
       return {index:item.index,register:item.register,expected:item.expected,actual:state.error?null:state.reg[item.register],valid:!state.error&&state.reg[item.register]===item.expected};
     });
     const requiredTechniques = [
-      [1,[/MOV\\s+DX\\s*,\\s*AX/i,/MOV\\s+AX\\s*,\\s*BX/i,/MOV\\s+BX\\s*,\\s*DX/i]],
-      [2,[/\\bCX\\b/i,/\\bLOOP\\b/i]],
-      [4,[/\\bCX\\b/i,/\\bLOOP\\b/i]],
-      [24,[/\\bSTD\\b/i,/REP\\s+MOVSW/i,/\\bCLD\\b/i]],
-      [32,[/INT\\s+30h/i,/\\bIRET\\b/i]],
-      [33,[/\\bIN\\s+AL\\s*,\\s*DX/i]],
-      [42,[/\\bPUSHF\\b/i,/\\bPOPF\\b/i]],
-      [44,[/REPNE\\s+SCASB/i]],
-      [45,[/INT\\s+30h/i,/\\bIRET\\b/i]],
-      [46,[/PUSH\\s+BX/i,/POP\\s+BX/i,/INT\\s+30h/i]],
-      [47,[/\\bSTD\\b/i,/REP\\s+MOVSW/i,/\\bCLD\\b/i,/PUSH\\s+BX/i,/POP\\s+BX/i,/INT\\s+31h/i]]
+      [1,[/MOV\s+DX\s*,\s*AX/i,/MOV\s+AX\s*,\s*BX/i,/MOV\s+BX\s*,\s*DX/i]],
+      [2,[/\bCX\b/i,/\bLOOP\b/i]],
+      [4,[/\bCX\b/i,/\bLOOP\b/i]],
+      [24,[/\bSTD\b/i,/REP\s+MOVSW/i,/\bCLD\b/i]],
+      [32,[/INT\s+30h/i,/\bIRET\b/i]],
+      [33,[/\bIN\s+AL\s*,\s*DX/i]],
+      [42,[/\bPUSHF\b/i,/\bPOPF\b/i]],
+      [44,[/REPNE\s+SCASB/i]],
+      [45,[/INT\s+30h/i,/\bIRET\b/i]],
+      [46,[/PUSH\s+BX/i,/POP\s+BX/i,/INT\s+30h/i]],
+      [47,[/\bSTD\b/i,/REP\s+MOVSW/i,/\bCLD\b/i,/PUSH\s+BX/i,/POP\s+BX/i,/INT\s+31h/i]]
     ].map(([index,patterns]) => {
       const source = api.exercises[index][4].solution;
       return {index,valid:patterns.every(pattern=>pattern.test(source))};
