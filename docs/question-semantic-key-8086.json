@@ -7823,14 +7823,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Avec AL=81h, que donne SHR AL,1 ?",
+      "stem": "Avec AL=81h et CL=2, que donne SHR AL,CL ?",
       "choices": [
+        "20h avec CF=0",
         "40h avec CF=1",
-        "C0h avec CF=0",
-        "02h avec CF=1"
+        "10h avec CF=1"
       ],
-      "correctAnswer": "40h avec CF=1",
-      "explanation": "Le bit faible 1 sort dans CF et le résultat est 40h.",
+      "correctAnswer": "20h avec CF=0",
+      "explanation": "Deux décalages logiques donnent 81h→40h→20h ; le dernier bit expulsé vaut 0, donc CF=0.",
       "category": "Prédiction"
     },
     {
@@ -7839,14 +7839,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Avec AL=FCh, que donne SAR AL,1 ?",
+      "stem": "Avec AL=80h, que donne SAR AL,1 ?",
       "choices": [
-        "FEh",
-        "7Eh",
-        "F8h"
+        "C0h",
+        "40h",
+        "00h"
       ],
-      "correctAnswer": "FEh",
-      "explanation": "Le bit de signe 1 est recopié ; FCh devient FEh.",
+      "correctAnswer": "C0h",
+      "explanation": "80h représente −128 ; SAR recopie le bit de signe et donne C0h (−64).",
       "category": "Calcul / prédiction"
     },
     {
@@ -7855,14 +7855,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Que fait ROL AL,1 avec AL=81h ?",
+      "stem": "Que fait ROL AL,1 avec AL=80h ?",
       "choices": [
-        "AL=03h et CF=1",
-        "AL=02h et CF=0",
-        "AL=C0h et CF=1"
+        "AL=01h et CF=1",
+        "AL=00h et CF=1",
+        "AL=80h et CF=0"
       ],
-      "correctAnswer": "AL=03h et CF=1",
-      "explanation": "Le bit 7 circule vers le bit 0 et CF reçoit le bit sortant.",
+      "correctAnswer": "AL=01h et CF=1",
+      "explanation": "Le bit 7 sort dans CF et revient en bit 0 ; 80h devient 01h.",
       "category": "Analyse de programme"
     },
     {
@@ -7871,14 +7871,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Quel état confirme SHR AL,1 sur 81h ?",
+      "stem": "Quel résultat donne ROL AL,2 avec AL=81h ?",
       "choices": [
-        "AL=40h, CF=1",
-        "AL=40h, CF=0",
-        "AL=81h, CF=1"
+        "AL=06h, CF=0",
+        "AL=03h, CF=1",
+        "AL=81h, CF=0"
       ],
-      "correctAnswer": "AL=40h, CF=1",
-      "explanation": "Le décalage donne 40h et le bit sortant vaut 1.",
+      "correctAnswer": "AL=06h, CF=0",
+      "explanation": "Deux rotations circulaires donnent 81h→03h→06h ; le dernier bit sortant vaut 0, donc CF=0.",
       "category": "Analyse de résultat"
     },
     {
