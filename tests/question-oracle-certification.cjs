@@ -1315,4 +1315,20 @@ for (const chapter of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17
   for (const id of expectedIds) assert.ok(allIds.includes(id), "Missing independent oracle for " + id);
 }
 assert.match(keyMap.get("C01-L1-Q2").explanation, /octets machine distincts/i, "Source assembly must be distinguished from its encoded machine bytes");
+
+const chapter2Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-02.json", "utf8"));
+const chapter2Ids = key.questions.filter(question => question.chapter === 2).map(question => question.id).sort();
+const reviewedChapter2Ids = chapter2Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter2Ids, chapter2Ids, "Chapter 2 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter2Ids).size, 19, "Chapter 2 review must not duplicate question IDs");
+assert.equal(chapter2Review.summary.questionsReviewed, 19, "Chapter 2 review count must match the complete question bank");
+assert.equal(chapter2Review.summary.passed, 18, "Chapter 2 review must report 18 technically and pedagogically passed items");
+assert.equal(chapter2Review.summary.blocked, 1, "Chapter 2 review must preserve the unresolved assessment-blueprint blocker");
+assert.equal(chapter2Review.summary.corrected, 0, "No chapter 2 runtime question has been changed in this review tranche");
+assert.equal(chapter2Review.summary.officialCertificationCountBefore, 384, "Chapter 2 review starts from the official 384-question ledger");
+assert.equal(chapter2Review.summary.officialCertificationCountAfter, 384, "A blocked chapter review must not advance official certification");
+assert.equal(chapter2Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+const chapter2Blocker = chapter2Review.records.find(record => record.id === "C02-F-Q4");
+assert.equal(chapter2Blocker?.result, "blocked", "C02-F-Q4 must remain blocked until the final-assessment category balance is corrected");
+assert.match(chapter2Blocker.finding, /second item of syntax/i, "The chapter 2 blocker must explain the missing second syntax assessment item");
 console.log("Question oracle evaluator: chapters 1–36 — " + oracleRecordsChecked + "/684 oracle records passed automated checks; official certification ledger remains " + manifest.oracleCoverageSummary.officialCertificationCount + "/684 (" + manifest.oracleCoverageSummary.remainingOfficialCertification + " pending); " + blocked + " blocked.");
