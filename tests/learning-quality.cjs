@@ -28,6 +28,27 @@ const chapterVisuals = Array.from({length:36},(_,index)=>learning.courseVisual(i
 assert.equal(chapterVisuals.length,36,"Visual audit must inspect all 36 chapters");
 assert.ok(chapterVisuals.every(markup=>typeof markup==="string"&&markup.includes("course-visual")),
   "Every chapter must have a chapter-specific visual explanation.");
+const expectedCourseVisualTitles = [
+  "Vue d'ensemble du 8086","Architecture fonctionnelle","Regroupement binaire et hexadécimal",
+  "Little-endian — ordre des octets en mémoire","Registre AX — décomposition interactive",
+  "Du programme source aux instructions","Transfert de données avec MOV","Arithmétique — résultat et indicateurs",
+  "Opérations logiques bit à bit","Registre FLAGS — indicateurs suivis",
+  "Trace pas à pas — registres, IP, pile et FLAGS","Comparaison CMP — calcul des FLAGS",
+  "JMP relatif — calcul de la cible","Branchement conditionnel","Une valeur, deux interprétations",
+  "LOOP — compteur CX","Algorithme de parcours d'un tableau","Calculateur segment:offset",
+  "Modes d'adressage effectif 8086","Pile LIFO — démonstration interactive","CALL proche et RET",
+  "Paramètres et pile d'appels","Décomposition modulaire","MUL / IMUL — destinations implicites",
+  "DIV / IDIV — quotient et reste","Décalages et rotations — circulation des bits",
+  "Transfert d'une chaîne","Préfixes REP et instructions de chaîne","Cadre d'interruption",
+  "Espace d'entrées-sorties","Structure générale d'un encodage","Décodeur ModR/M interactif",
+  "Chaîne assembleur / désassembleur","Préfixes 8086","Temps d'exécution — facteurs distincts",
+  "Cycle de réalisation d'un projet"
+];
+assert.equal(expectedCourseVisualTitles.length,36);
+chapterVisuals.forEach((markup,index)=>{
+  assert.ok(markup.includes("<b>"+expectedCourseVisualTitles[index]+"</b>"),
+    "Chapter "+(index+1)+" must display its own topic-specific visual, not a neighboring chapter's visual.");
+});
 assert.match(match[1], /function annotateAssembly\(/, "Course examples must receive instruction-level annotations");
 assert.match(match[1], /function courseVisual\(/, "The course must include chapter-specific visualizations");
 assert.match(match[1], /courseVisual\(i\)/, "Chapter visualizations must be rendered in the lesson view");
