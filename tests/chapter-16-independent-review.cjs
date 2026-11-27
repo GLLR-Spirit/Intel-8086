@@ -17,4 +17,4 @@ assert.equal(review.summary.officialCertificationCountAfter, 384);
 assert.equal(review.summary.remainingOfficialCertification, 300);
 const expectedFindings = new Set(["C16-L1-Q1","C16-L1-Q2","C16-L1-Q3","C16-L2-Q3","C16-F-Q1","C16-F-Q8","C16-L2-Q1","C16-L3-Q1"]);
 for (const id of expectedFindings) assert.ok(review.records.some(r => r.id === id && r.result === "needs_revision"), "Repeated item must remain flagged: " + id);
-console.log("Chapter 16 independent review: 19/19 inspected; 15 passed; 4 repetition findings remain open; official certification remains 384/684.");
+console.log("Chapter 16 independent review: 19/19 inspected; 11 passed; 8 question entries flagged across 4 repeated concepts; official certification remains 384/684.");
