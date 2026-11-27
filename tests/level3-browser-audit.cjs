@@ -691,6 +691,15 @@ const assert = require("node:assert/strict");
   assert.ok(searchCoverage.every(result=>result.found),
     "Exercise search must index instruction text in hints, starter code and guided solutions: "+JSON.stringify(searchCoverage));
 
+  // Restore the original one-result filter used by the subsequent starter/solution hand-off checks.
+  await page.locator("#exerciseSearch").fill("");
+  await page.locator("#exerciseChapter").selectOption(firstChapterValue);
+  await page.locator("#exerciseDifficulty").selectOption("Débutant");
+  await page.locator("#exerciseType").selectOption("completion");
+  assert.equal(await readExerciseCount(),filteredCount,
+    "The focused beginner/completion hand-off fixture must be restored after exhaustive matrix testing.");
+
+
   const firstExerciseStarter=await page.evaluate(()=>window.__8086Audit.exercises[5][2]);
   const firstExerciseSolution=await page.evaluate(()=>window.__8086Audit.exercises[5][4].solution||window.__8086Audit.exercises[5][2]);
   const firstExerciseAX=await page.evaluate(src=>window.__8086Audit.executeAll(src).reg.AX,firstExerciseSolution);
