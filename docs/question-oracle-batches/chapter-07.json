@@ -204,7 +204,8 @@
       "expected": {
         "offsetDestination": "SI",
         "segmentDestination": "DS",
-        "firstWord": "offset"
+        "firstWord": "offset",
+        "secondWord": "segment"
       },
       "correctAnswer": "SI",
       "derivation": "LDS charge le premier mot du pointeur far dans le registre général destination, ici SI. Ce premier mot est l'offset ; le mot suivant est chargé dans DS.",
@@ -230,6 +231,7 @@
       "expected": {
         "offsetDestination": "SI",
         "segmentDestination": "DS",
+        "firstWord": "offset",
         "secondWord": "segment"
       },
       "correctAnswer": "Le second mot",
@@ -283,7 +285,8 @@
       "expected": {
         "offsetDestination": "SI",
         "segmentDestination": "DS",
-        "firstWord": "offset"
+        "firstWord": "offset",
+        "secondWord": "segment"
       },
       "correctAnswer": "Recevoir l'offset du pointeur",
       "derivation": "Pour LDS SI,[PTR], le premier mot du pointeur far est l'offset et est chargé dans SI. Le second mot est le segment et est chargé dans DS.",
