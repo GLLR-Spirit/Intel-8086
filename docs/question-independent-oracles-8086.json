@@ -4129,30 +4129,31 @@
       "id": "C26-F-Q6",
       "rule": "arithmetic_shift_right_8",
       "inputs": {
-        "value": 252,
+        "value": 128,
         "width": 8,
         "count": 1
       },
       "expected": {
-        "result": 254,
+        "result": 192,
         "carry": 0
       },
-      "correctAnswer": "FEh",
-      "derivation": "FCh représente 11111100b. SAR conserve le bit de signe à 1 et décale les autres bits vers la droite : 11111110b = FEh.",
+      "correctAnswer": "C0h",
+      "derivation": "80h représente −128 en complément à deux. SAR AL,1 recopie le bit de signe 1 et décale : 11000000b = C0h (−64). Le bit expulsé vaut 0, donc CF=0.",
       "distractorRationales": [
         {
-          "choice": "7Eh",
-          "reason": "Insère un zéro en tête, ce qui correspond au principe de SHR et non à la conservation du signe de SAR."
+          "choice": "40h",
+          "reason": "Cette réponse correspond à SHR, qui insère zéro à gauche et ne conserve pas le bit de signe."
         },
         {
-          "choice": "F8h",
-          "reason": "Décale de deux positions au lieu d'une."
+          "choice": "00h",
+          "reason": "Elle ignore la propagation du bit de signe ; SAR transforme 80h en C0h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual — SAR operation.",
       "explanationChecks": [
         "signe",
-        "FEh"
+        "C0h",
+        "−64"
       ]
     },
     {
