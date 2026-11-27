@@ -1334,6 +1334,8 @@ assert.match(chapter2Correction.finding, /ADD AX,3/i, "The chapter 2 review must
 const chapter2Final = key.questions.filter(question => question.chapter === 2 && question.kind === "final");
 const categoryCount = category => chapter2Final.filter(question => question.category === category).length;
 assert.equal(categoryCount("Définition"), 2, "Chapter 2 final assessment must contain two definition items");
+assert.equal(runtimeQuestions.get("C02-F-Q2")[4], "Définition", "Chapter 2 runtime bank must expose the corrected second definition item");
+assert.equal(runtimeQuestions.get("C02-F-Q4")[4], "Syntaxe", "Chapter 2 runtime bank must expose the corrected second syntax item");
 assert.equal(categoryCount("Syntaxe"), 2, "Chapter 2 final assessment must contain two syntax items");
 assert.equal(chapter2Final.filter(question => ["Prédiction", "Calcul / prédiction"].includes(question.category)).length, 2, "Chapter 2 final assessment must contain two calculation/prediction items");
 assert.equal(chapter2Final.filter(question => ["Analyse de programme", "Analyse de résultat"].includes(question.category)).length, 2, "Chapter 2 final assessment must contain two program-analysis items");
