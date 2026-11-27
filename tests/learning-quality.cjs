@@ -168,10 +168,10 @@ learning.chapterLearning.forEach((chapter,ci)=>{
 assert.equal(runtimeQuestionMap.size,684,"Every runtime question must have a unique chapter/lesson identifier.");
 
 const independentQuestionAudit = JSON.parse(fs.readFileSync("docs/question-independent-oracles-8086.json","utf8"));
-assert.equal(independentQuestionAudit.oracles.length,6,
+assert.equal(independentQuestionAudit.historicalOracles.length,6,
   "The initial independent question tranche must contain six separately reasoned oracles.");
 const independentQuestionFailures=[];
-for (const oracle of independentQuestionAudit.oracles) {
+for (const oracle of independentQuestionAudit.historicalOracles) {
   const actual=runtimeQuestionMap.get(oracle.id);
   assert.ok(actual,"Independent oracle must resolve to runtime question "+oracle.id);
   assert.equal(actual[1].length,3,oracle.id+" must retain exactly three choices.");
@@ -250,7 +250,7 @@ assert.ok(/structurally indexed/i.test(semanticKey.reviewScope),
   "The semantic manifest must distinguish runtime concordance from independent certification.");
 assert.ok(/only items with explicit independent oracle evidence are certified/i.test(semanticKey.reviewScope),
   "The semantic manifest must not overstate the scope of independent question validation.");
-console.log("Initial semantic tranche: "+independentQuestionAudit.oracles.length+" historical oracles explicitly recalculated; supplemental oracle records are evaluated by tests/question-oracle-certification.cjs. Automated checks do not advance the official certification ledger (384/684; 300 pending).");
+console.log("Initial semantic tranche: "+independentQuestionAudit.historicalOracles.length+" historical oracles explicitly recalculated; supplemental oracle records are evaluated by tests/question-oracle-certification.cjs. Automated checks do not advance the official certification ledger (384/684; 300 pending).");
 const semanticKeyFailures=[];
 for(const expected of semanticKey.questions){
   const actual=runtimeQuestionMap.get(expected.id);
