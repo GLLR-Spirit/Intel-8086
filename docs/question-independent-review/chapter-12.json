@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue indépendante — chapitre 12",
+  "reviewDate": "2026-11-27",
+  "scope": "Contrôle individuel des 19 questions du chapitre 12 : CMP, TEST, FLAGS de comparaison, conditions signées et non signées et préparation des Jcc.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Macro Assembly Language Reference Manual",
+      "edition": "1979",
+      "url": "https://manuals.plus/m/3aa41c4d0f61cee77e606f5d25d65c409e33c472f7869184e8bf69d9a2c89b98"
+    }
+  ],
+  "records": [
+    {"id":"C12-L1-Q1","result":"passed","finding":"CMP calcule une soustraction pour FLAGS sans écrire le résultat dans AX ou BX.","basis":"Intel 8086 Family User's Manual, CMP."},
+    {"id":"C12-L1-Q2","result":"passed","finding":"CMP 03h,05h nécessite un emprunt non signé, donc CF=1 ; le résultat tronqué est FEh.","basis":"Recalcul indépendant 03h−05h modulo 256."},
+    {"id":"C12-L1-Q3","result":"corrected","finding":"La question répétait le caractère non destructif de TEST. Elle teste maintenant ZF : 05h AND 04h vaut 04h, donc ZF=0.","basis":"Recalcul indépendant du résultat logique et de ZF."},
+    {"id":"C12-L2-Q1","result":"passed","finding":"Après CMP d'opérandes égaux, la différence conceptuelle vaut zéro et ZF=1.","basis":"Intel 8086 Family User's Manual, ZF et CMP."},
+    {"id":"C12-L2-Q2","result":"passed","finding":"L'inférieur signé utilise SF différent de OF ; CF seul concerne l'inférieur non signé.","basis":"Intel 8086 Family User's Manual, conditions signées."},
+    {"id":"C12-L2-Q3","result":"corrected","finding":"Répétait la soustraction 03h−05h de L1-Q2. Elle utilise maintenant CMP 05h,03h : résultat 02h, CF=0.","basis":"Recalcul indépendant 05h−03h=02h sans emprunt."},
+    {"id":"C12-L3-Q1","result":"corrected","finding":"Répétait TEST sans écriture mémoire/registre. Elle vérifie maintenant AF, indéfini après TEST sur le 8086, tandis que CF et OF sont remis à zéro.","basis":"Intel 8086 Family User's Manual, effets FLAGS des opérations logiques."},
+    {"id":"C12-L3-Q2","result":"passed","finding":"02h AND 01h vaut zéro, donc TEST met ZF=1.","basis":"Recalcul indépendant du ET logique."},
+    {"id":"C12-L3-Q3","result":"passed","finding":"TEST remet CF et OF à zéro ; SF/ZF/PF dépendent du résultat et AF est indéfini.","basis":"Intel 8086 Family User's Manual, TEST et FLAGS."},
+    {"id":"C12-F-Q1","result":"passed","finding":"CMP ne stocke pas la soustraction dans sa destination ; seuls les indicateurs sont mis à jour.","basis":"Intel 8086 Family User's Manual, CMP."},
+    {"id":"C12-F-Q2","result":"passed","finding":"CMP AX,BX préserve les deux opérandes AX et BX.","basis":"Intel 8086 Family User's Manual, CMP."},
+    {"id":"C12-F-Q3","result":"passed","finding":"CF signale l'emprunt non signé d'une comparaison CMP.","basis":"Intel 8086 Family User's Manual, CF."},
+    {"id":"C12-F-Q4","result":"passed","finding":"CMP 5,5 donne une différence nulle et ZF=1.","basis":"Recalcul indépendant de l'égalité."},
+    {"id":"C12-F-Q5","result":"passed","finding":"TEST calcule un AND pour FLAGS sans écrire le résultat dans AL.","basis":"Intel 8086 Family User's Manual, TEST."},
+    {"id":"C12-F-Q6","result":"corrected","finding":"Répétait le cas nul 02h AND 01h de L3-Q2. Elle utilise maintenant 80h AND 80h=80h, donc ZF=0.","basis":"Recalcul indépendant du ET logique et de ZF."},
+    {"id":"C12-F-Q7","result":"corrected","finding":"Répétait simplement CF/OF remis à zéro. Elle vérifie maintenant une trace : TEST 03h,03h donne PF=1, CF=0 et OF=0.","basis":"Recalcul indépendant : 03h AND 03h=03h, deux bits à 1 donc parité paire."},
+    {"id":"C12-F-Q8","result":"passed","finding":"TEST est préférable à AND pour examiner un masque sans modifier AL.","basis":"Intel 8086 Family User's Manual, TEST et AND."},
+    {"id":"C12-F-Q9","result":"corrected","finding":"Répétait la condition inférieur signé de L2-Q2. Elle vérifie maintenant supérieur ou égal signé, SF=OF.","basis":"Intel 8086 Family User's Manual, JGE/JNL et conditions signées."},
+    {"id":"C12-F-Q10","result":"passed","finding":"CMP établit les indicateurs que Jcc lit ; Jcc ne compare pas directement les opérandes et ne stocke pas la différence.","basis":"Intel 8086 Family User's Manual, CMP et sauts conditionnels."}
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 13,
+    "corrected": 6,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  }
+}
