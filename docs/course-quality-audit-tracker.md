@@ -262,9 +262,10 @@ The mission remains in progress. Passing automated suites is evidence for the te
 ### Independent question review — chapter 16
 
 - Inspected all 19 questions in chapter 16 against the Intel 8086 Family User's Manual and the MCS-86 assembly reference.
-- 11 items passed the technical check; eight question entries remain flagged because four concepts are repeated across paired items: implicit CX counter (C16-L1-Q1/C16-F-Q1), LOOPE condition (C16-L1-Q2/C16-L2-Q1), JCXZ preserving CX (C16-L1-Q3/C16-L3-Q1), and LOOPE reading the existing ZF (C16-L2-Q3/C16-F-Q8).
-- No question is marked corrected: the current runtime bank has not yet been changed. The findings are deliberately left open rather than claiming a documentary review fixed the product.
-- Added `docs/question-independent-review/chapter-16.json` and a CI regression test that requires all 19 unique question IDs and preserves the open findings.
+- Initially found four repeated concepts across paired questions: LOOP's implicit counter, the LOOPE condition, JCXZ's preservation of CX, and the source of the ZF read by LOOPE.
+- Corrected four questions in the runtime bank to test distinct aspects: LOOP operation order; the LOOPE boundary case where CX=1 becomes zero; JCXZ preservation of FLAGS; and CMP/TEST as producers of ZF.
+- Aligned the runtime question bank, semantic key, chapter-16 oracle batch and independent evaluators. Added independent calculations for the decrement boundary and state preservation.
+- Final individual review: 19/19 inspected, 15 passed, four corrected, zero blocked. CI checks the 19 unique IDs, corrected status and all oracle calculations.
 - Official individual certification remains 384/684; 300 remain. This review does not advance the official ledger.
 
 
@@ -275,3 +276,10 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - Added the independent mappings `JAE → CF=0` and `JLE → ZF=1 || SF!=OF`. The chapter 15 oracle inputs and expected values were retained; no expected result was weakened.
 - Follow-up CI run [1863](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46032333572) passed both jobs. Separate browser audit [1226](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46032333568) also passed.
 - The chapter 16 inventory test passed. Its eight flagged question entries represent four repeated concepts; none is marked corrected until the runtime bank is actually revised.
+
+
+### Chapter 16 correction verification
+
+- CI [run 1869](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46033043857) passed both jobs after the four runtime question corrections and evaluator updates.
+- Separate browser audit [run 1232](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46033043862) passed.
+- The earlier first attempt failed only because the new review test still expected zero corrected items; the assertion was corrected to require four, matching the recorded source changes. The final run passed.
