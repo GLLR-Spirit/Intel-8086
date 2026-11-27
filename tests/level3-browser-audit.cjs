@@ -248,6 +248,54 @@ const assert = require("node:assert/strict");
   assert.ok((await page.locator("#regs").textContent()).includes("0055h"),
     "A byte-identical source program may provide its PORT directive metadata to binary execution.");
 
+  // Atelier controls: assembler, disassembler, binary export/upload, example, save and reset.
+  const binaryDemo="MOV AX, 1234h\nHLT";
+  await page.locator("#code").fill(binaryDemo);
+  await page.locator("#assemble").click();
+  assert.match(await page.locator("#assemblerReport").textContent(),/ASSEMBLAGE RÉUSSI/);
+  assert.match(await page.locator("#assemblerReport").textContent(),/B8 34 12 F4/);
+  const [binaryDownload]=await Promise.all([
+    page.waitForEvent("download"),
+    page.locator("#exportBin").click()
+  ]);
+  assert.equal(binaryDownload.suggestedFilename(),"programme-8086.bin");
+  await page.locator("#disassemblyInput").fill("B8 34 12 F4");
+  await page.locator("#disassemble").click();
+  assert.match(await page.locator("#disassemblerReport").textContent(),/DÉSASSEMBLAGE/);
+  assert.match(await page.locator("#disassemblerReport").textContent(),/MOV AX/);
+  assert.match(await page.locator("#disassemblerReport").textContent(),/HLT/);
+  await page.locator("#disassemblyInput").fill("B8 34");
+  await page.locator("#disassemble").click();
+  assert.match(await page.locator("#disassemblerReport").textContent(),/Désassemblage interrompu/,
+    "A truncated binary stream must produce a visible diagnostic.");
+  await page.locator("#binaryFile").setInputFiles({
+    name:"sample-8086.bin",
+    mimeType:"application/octet-stream",
+    buffer:Buffer.from([0xB8,0x34,0x12,0xF4])
+  });
+  assert.equal(await page.locator("#disassemblyInput").inputValue(),"B8 34 12 F4");
+  assert.match(await page.locator("#disassemblerReport").textContent(),/DÉSASSEMBLAGE/);
+  await page.locator("#example").click();
+  assert.match(await page.locator("#code").inputValue(),/LOOP DEBUT/);
+  await page.locator("#run").click();
+  assert.ok((await page.locator("#regs").textContent()).includes("000Ch"),
+    "The built-in loop example must calculate 4 × 3 = 12.");
+  assert.ok((await page.locator("#regs").textContent()).includes("CX")&&
+    (await page.locator("#regs").textContent()).includes("0000h"),
+    "The built-in loop example must finish with CX=0.");
+  await page.locator("#reset").click();
+  assert.ok((await page.locator("#regs").textContent()).includes("0000h"),
+    "Reset must restore the initial register state.");
+  const savedProgram="MOV AX, 4321h\nHLT";
+  await page.locator("#code").fill(savedProgram);
+  await page.locator("#save").click();
+  assert.match(await page.locator("#status").textContent(),/Code sauvegardé localement/);
+  assert.equal(await page.evaluate(()=>localStorage.getItem("i86-code")),savedProgram);
+  await page.reload({waitUntil:"networkidle"});
+  await page.locator('[data-view="editor"]').click();
+  assert.equal(await page.locator("#code").inputValue(),savedProgram,
+    "Saved source must be restored after a page reload.");
+
   await page.locator("#code").fill("MOV AX, 4321h\nHLT");
   await page.locator("#step").click();
   assert.ok((await page.locator("#regs").textContent()).includes("4321h"),
