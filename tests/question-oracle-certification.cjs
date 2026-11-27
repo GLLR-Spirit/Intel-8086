@@ -60,7 +60,6 @@ function independentlyCompute(oracle) {
     case "instruction_data_distinction":
     case "x86_family_variation":
     case "lab_scope":
-    case "intel_operand_order":
     case "separate_register_and_address_width":
     case "8086_widths_tuple":
     case "eu_function":
@@ -73,16 +72,12 @@ function independentlyCompute(oracle) {
       return fact[oracle.rule];
     case "intel_operand_order":
       if (i.instruction) {
-        const operands = i.instruction.replace(/^MOV\\s+/i, "").split(",");
+        const operands = i.instruction.replace(/^MOV\s+/i, "").split(",");
         return { destination: operands[0].trim(), source: operands[1].trim() };
       }
       return fact[oracle.rule];
     case "source_instruction_vs_data":
       return "assembly_statement_is_instruction";
-    case "intel_operand_order_generic": {
-      const operands = i.instruction.replace(/^MOV\s+/i, "").split(",");
-      return { destination: operands[0].trim(), source: operands[1].trim() };
-    }
     case "segment_offset_address": {
       const linear = i.segment * (2 ** i.shift) + i.offset;
       return { linear, physical: linear % (2 ** i.addressBits) };
