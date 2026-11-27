@@ -212,6 +212,7 @@ const assert = require("node:assert/strict");
   const exercisesNavigation=keyboardPage.locator('[data-view="exercises"]');
   await exercisesNavigation.focus();
   await keyboardPage.keyboard.press("Enter");
+  const unfilteredExerciseCountText=(await keyboardPage.locator("#exerciseCount").textContent()).trim();
   const difficulty=keyboardPage.locator("#exerciseDifficulty");
   await difficulty.focus();
   await keyboardPage.keyboard.press("ArrowDown");
@@ -228,11 +229,12 @@ const assert = require("node:assert/strict");
     return null;
   });
   assert.ok(filterTarget,"At least one beginner exercise must be available for a combined filter test.");
-  const allExerciseCountText=(await keyboardPage.locator("#exerciseCount").textContent()).trim();
-  const allExerciseCounts=allExerciseCountText.match(/(\d+) exercice\(s\) affiché\(s\) sur (\d+)/);
-  assert.ok(allExerciseCounts,"The exercise result counter must expose visible and total counts: "+allExerciseCountText);
-  const totalExerciseCount=Number(allExerciseCounts[2]);
-  assert.ok(totalExerciseCount>0,"The unfiltered exercise list must not be empty.");
+  const beginnerExerciseCountText=(await keyboardPage.locator("#exerciseCount").textContent()).trim();
+  const beginnerExerciseCounts=beginnerExerciseCountText.match(/(\d+) exercice\(s\) affiché\(s\) sur (\d+)/);
+  assert.ok(beginnerExerciseCounts,"The exercise result counter must expose visible and total counts: "+beginnerExerciseCountText);
+  const beginnerCount=Number(beginnerExerciseCounts[1]),totalExerciseCount=Number(beginnerExerciseCounts[2]);
+  assert.ok(beginnerCount>0&&beginnerCount<totalExerciseCount,
+    "Keyboard difficulty filtering must reduce the actual result set, not only change the select value.");
   const beginnerLabels=await keyboardPage.locator("#exerciseList .exercise .eyebrow").allTextContents();
   assert.ok(beginnerLabels.length>0&&beginnerLabels.every(label=>label.includes("Débutant")),
     "Every visible result must satisfy the selected beginner difficulty.");
@@ -244,7 +246,7 @@ const assert = require("node:assert/strict");
   assert.equal(await chapterFilter.inputValue(),String(filterTarget.chapter),
     "The chapter filter must be keyboard-selectable.");
   const chapterResults=await keyboardPage.locator("#exerciseList .exercise").allTextContents();
-  assert.ok(chapterResults.length>0&&chapterResults.every(text=>new RegExp("Chapitres : "+(filterTarget.chapter+1)+"\\\\.").test(text)),
+  assert.ok(chapterResults.length>0&&chapterResults.every(text=>new RegExp("Chapitres : "+(filterTarget.chapter+1)+"\\.").test(text)),
     "Combined difficulty/chapter filters must return only exercises assigned to the selected chapter.");
 
   const typeFilter=keyboardPage.locator("#exerciseType");
@@ -262,7 +264,7 @@ const assert = require("node:assert/strict");
     "Combined filters must enforce difficulty, chapter and type on every visible card.");
   await keyboardPage.locator("#resetExerciseFilters").focus();
   await keyboardPage.keyboard.press("Enter");
-  assert.equal((await keyboardPage.locator("#exerciseCount").textContent()).trim(),allExerciseCountText,
+  assert.equal((await keyboardPage.locator("#exerciseCount").textContent()).trim(),unfilteredExerciseCountText,
     "Keyboard reset must restore the complete exercise result set.");
 
   const editorAgain=keyboardPage.locator('[data-view="editor"]');
