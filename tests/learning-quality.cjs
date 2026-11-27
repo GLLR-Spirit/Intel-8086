@@ -390,7 +390,7 @@ for (let i = 0; i < learning.exercises.length; i++) {
 }
 const renderer = match[1].slice(match[1].indexOf("function renderExercises()"), match[1].indexOf("\nfunction renderProjects()"));
 assert.ok(renderer.includes("Prérequis, piège fréquent, indice et correction expliquée"), "Exercise UI must expose individual prerequisites and common pitfalls");
-assert.ok(renderer.includes("m.editorial.prerequisites") && renderer.includes("m.editorial.pitfall"), "Exercise UI must render the editorial guidance for each exercise");
+assert.ok(renderer.includes("m.editorial.prerequisites") && renderer.includes("m.editorial.pitfall") && renderer.includes("m.levelRationale"), "Exercise UI must render prerequisites, common pitfalls and level rationale for each exercise");
 assert.ok(renderer.includes("guide.steps"), "Exercise UI must render step-by-step solutions");
 assert.ok(renderer.includes("data-solution"), "Exercise UI must let the learner load the complete correction");
 
