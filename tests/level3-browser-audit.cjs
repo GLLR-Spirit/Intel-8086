@@ -578,6 +578,53 @@ const assert = require("node:assert/strict");
 
 
 
+  // Accessibility: visible names, keyboard order and responsive width across all primary views.
+  const unnamedControlsFor = async rootSelector => page.locator(rootSelector).evaluate(root=>{
+    const controls=[...root.querySelectorAll('button,input:not([type="hidden"]),select,textarea,a[href],[role="button"],[role="link"]')];
+    const nameOf=el=>{
+      const labelledBy=(el.getAttribute("aria-labelledby")||"").split(/\s+/).filter(Boolean)
+        .map(id=>document.getElementById(id)?.textContent||"").join(" ").trim();
+      const labels=el.labels?[...el.labels].map(label=>label.textContent.trim()).filter(Boolean).join(" "):"";
+      return (el.getAttribute("aria-label")||labelledBy||labels||el.getAttribute("title")||
+        el.innerText||el.textContent||el.getAttribute("value")||el.getAttribute("alt")||"").trim();
+    };
+    return controls.filter(el=>!nameOf(el)).map(el=>({
+      tag:el.tagName.toLowerCase(),id:el.id,type:el.getAttribute("type"),role:el.getAttribute("role"),
+      html:el.outerHTML.slice(0,180)
+    }));
+  });
+  await page.locator('[data-view="learn"]').click();
+  const chapterValues=await page.locator("#course-list-panel [data-lesson]").evaluateAll(nodes=>nodes.map(node=>node.getAttribute("data-lesson")));
+  assert.equal(chapterValues.length,36,"Accessibility audit must traverse all 36 lesson views.");
+  for(const chapterValue of chapterValues){
+    await page.locator('[data-lesson="'+chapterValue+'"]').click();
+    const unnamed=await unnamedControlsFor("#lessonDetail");
+    assert.deepEqual(unnamed,[],"Chapter "+(Number(chapterValue)+1)+" contains controls without accessible names: "+JSON.stringify(unnamed));
+  }
+  for(const view of ["learn","exercises","editor","tools"]){
+    await page.locator('[data-view="'+view+'"]').click();
+    const unnamed=await unnamedControlsFor("#view-"+view);
+    assert.deepEqual(unnamed,[],"The "+view+" view contains controls without accessible names: "+JSON.stringify(unnamed));
+  }
+  const positiveTabIndexes=await page.locator("[tabindex]").evaluateAll(nodes=>nodes
+    .filter(node=>Number(node.getAttribute("tabindex"))>0)
+    .map(node=>({tag:node.tagName,id:node.id,value:node.getAttribute("tabindex")})));
+  assert.deepEqual(positiveTabIndexes,[],"Positive tabindex values must not disrupt natural keyboard order.");
+  for(const width of [320,390,768,1280]){
+    await page.setViewportSize({width,height:900});
+    for(const view of ["learn","exercises","editor","tools"]){
+      await page.locator('[data-view="'+view+'"]').click();
+      const metrics=await page.evaluate(()=>({
+        viewport:window.innerWidth,
+        document:document.documentElement.scrollWidth,
+        body:document.body.scrollWidth
+      }));
+      assert.ok(metrics.document<=metrics.viewport+1&&metrics.body<=metrics.viewport+1,
+        "Horizontal page overflow in "+view+" at "+width+"px: "+JSON.stringify(metrics));
+    }
+  }
+  console.log("Accessible control names, natural keyboard order and 320/390/768/1280px layout checks PASS.");
+
   assert.deepEqual(report.failures, [], report.failures.join("\n"));
   assert.deepEqual(errors, [], "Erreurs JavaScript dans la page : "+errors.join("; "));
   console.log(JSON.stringify({integratedSelfTests:summary,...report},null,2));
