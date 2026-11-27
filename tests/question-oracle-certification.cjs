@@ -1205,8 +1205,10 @@ function independentlyCompute(oracle) {
       return { savedValue: "return_IP", purpose: "resume_after_call" };
     case "stack_parasite_error":
       return { wrongReturnAddressPossible: true, SPUnbalanced: true };
-    case "procedure_double":
-      return { finalAX: i.initialAX * 2 };
+    case "procedure_double": {
+      const modulus = 2 ** (i.width || 16);
+      return { finalAX: (i.initialAX * 2) % modulus };
+    }
     case "call_stack_pointer":
       return { finalSP: i.initialSP - 2, storedReturnIP: i.returnIP };
     case "procedure_double_and_return":
