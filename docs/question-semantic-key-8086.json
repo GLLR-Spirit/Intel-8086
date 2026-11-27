@@ -3839,14 +3839,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 1,
-      "stem": "Quelle valeur signée représente FFh sur 8 bits ?",
+      "stem": "Quelle valeur signée représente 80h sur 8 bits ?",
       "choices": [
-        "−1",
-        "255",
-        "−128"
+        "−128",
+        "128",
+        "−127"
       ],
-      "correctAnswer": "−1",
-      "explanation": "FFh représente −1 en complément à deux.",
+      "correctAnswer": "−128",
+      "explanation": "80h représente −128 en complément à deux sur huit bits.",
       "category": "Compréhension"
     },
     {
@@ -3855,14 +3855,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 2,
-      "stem": "Quelle condition teste inférieur signé après CMP ?",
+      "stem": "Quelle condition teste supérieur ou égal signé après CMP ?",
       "choices": [
+        "JGE",
         "JL",
-        "JB",
-        "JA"
+        "JB"
       ],
-      "correctAnswer": "JL",
-      "explanation": "JL utilise SF≠OF.",
+      "correctAnswer": "JGE",
+      "explanation": "JGE utilise SF=OF et exprime supérieur ou égal signé.",
       "category": "Application"
     },
     {
@@ -4735,14 +4735,14 @@
       "kind": "final",
       "lesson": null,
       "number": 3,
-      "stem": "Après CMP AL,BL, JB correspond à…",
+      "stem": "Après CMP AL,BL, JAE correspond à…",
       "choices": [
-        "AL inférieur à BL en non signé",
+        "AL supérieur ou égal à BL en non signé",
         "AL inférieur à BL en signé",
-        "AL égal à BL"
+        "AL égal à BL uniquement"
       ],
-      "correctAnswer": "AL inférieur à BL en non signé",
-      "explanation": "JB teste CF=1.",
+      "correctAnswer": "AL supérieur ou égal à BL en non signé",
+      "explanation": "JAE teste CF=0 et exprime supérieur ou égal non signé.",
       "category": "Syntaxe"
     },
     {
@@ -4751,14 +4751,14 @@
       "kind": "final",
       "lesson": null,
       "number": 4,
-      "stem": "JL correspond à…",
+      "stem": "JLE correspond à…",
       "choices": [
-        "Inférieur signé",
+        "Inférieur ou égal signé",
         "Inférieur non signé",
         "Supérieur non signé"
       ],
-      "correctAnswer": "Inférieur signé",
-      "explanation": "JL teste SF≠OF.",
+      "correctAnswer": "Inférieur ou égal signé",
+      "explanation": "JLE branche si ZF=1 ou SF≠OF, soit inférieur ou égal signé.",
       "category": "Restrictions"
     },
     {
@@ -4783,14 +4783,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "FFh interprété comme signé vaut…",
+      "stem": "7Fh interprété comme signé vaut…",
       "choices": [
+        "127",
         "−1",
-        "255",
         "−128"
       ],
-      "correctAnswer": "−1",
-      "explanation": "FFh vaut −1 en complément à deux.",
+      "correctAnswer": "127",
+      "explanation": "7Fh vaut +127 en complément à deux sur huit bits.",
       "category": "Calcul / prédiction"
     },
     {
@@ -4799,14 +4799,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Pour tester supérieur strict non signé, choisir…",
+      "stem": "Après CMP FFh,01h en non signé, JA branche-t-il ?",
       "choices": [
-        "JA",
-        "JG",
-        "JL"
+        "Oui, car 255 est supérieur à 1",
+        "Non, car FFh vaut −1",
+        "Non, car ZF=1"
       ],
-      "correctAnswer": "JA",
-      "explanation": "JA combine CF=0 et ZF=0.",
+      "correctAnswer": "Oui, car 255 est supérieur à 1",
+      "explanation": "En non signé, FFh vaut 255 et 01h vaut 1 ; CMP donne CF=0 et ZF=0, donc JA branche.",
       "category": "Analyse de programme"
     },
     {
@@ -4815,14 +4815,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Pour tester supérieur strict signé, choisir…",
+      "stem": "Après CMP FFh,01h en signé, JG branche-t-il ?",
       "choices": [
-        "JG",
-        "JA",
-        "JB"
+        "Non, car −1 n'est pas supérieur à 1",
+        "Oui, car FFh vaut 255",
+        "Oui, car CF=1"
       ],
-      "correctAnswer": "JG",
-      "explanation": "JG combine ZF=0 et SF=OF.",
+      "correctAnswer": "Non, car −1 n'est pas supérieur à 1",
+      "explanation": "En signé, FFh vaut −1 et 01h vaut +1 ; −1 n'est pas supérieur à 1, donc JG n'est pas pris.",
       "category": "Analyse de résultat"
     },
     {
