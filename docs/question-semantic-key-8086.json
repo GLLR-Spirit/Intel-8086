@@ -5463,7 +5463,7 @@
       ],
       "correctAnswer": "Conserver les 20 bits d'adresse physique (repli sur 1 Mio)",
       "explanation": "Le bus physique 8086 expose 20 bits ; les adresses se replient modulo 1 Mio.",
-      "category": "Raisonnement / débogage"
+      "category": "Débogage"
     },
     {
       "id": "C18-F-Q10",
@@ -5479,7 +5479,7 @@
       ],
       "correctAnswer": "Calculer segment×16+offset puis appliquer le bus 20 bits",
       "explanation": "Le calcul doit respecter le décalage du segment et la largeur physique.",
-      "category": "Raisonnement / débogage"
+      "category": "Raisonnement"
     },
     {
       "id": "C19-L1-Q1",
