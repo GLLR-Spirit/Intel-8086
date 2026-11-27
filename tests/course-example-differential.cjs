@@ -262,6 +262,20 @@ assert.deepEqual(disassembly.rows.map(row => row.bytes), disassemblyAssembly.row
 assert.ok(disassembly.rows.some(row => /^JMP\b/.test(row.instruction)), "EX37 must decode its relative jump.");
 assert.ok(disassembly.rows.some(row => row.instruction === "NOP"), "EX37 must decode the NOP on the skipped execution path.");
 assert.ok(disassembly.rows.some(row => /^MOV AX, 1234h$/i.test(row.instruction)), "EX37 must decode MOV AX,1234h.");
+const reverseCopyExercise = api.exercises[47];
+assert.equal(reverseCopyExercise[0], "Intégration : parcours inverse et contrôle de mot", "EX48 identity must remain stable.");
+const reverseCopyState = api.executeAll(reverseCopyExercise[4].solution);
+assert.ok(!reverseCopyState.error, "EX48 reference solution must execute: " + (reverseCopyState.error || ""));
+for (const [address, expected] of [[0x20200,0x78],[0x20201,0x56],[0x20202,0x34],[0x20203,0x12]]) {
+  assert.equal(reverseCopyState.mem[address], expected,
+    "EX48 must copy every byte of both words; destination address " + address.toString(16) + "h.");
+  const corrupted = plain(reverseCopyState);
+  corrupted.mem[address] ^= 0xFF;
+  assert.equal(reverseCopyExercise[3](corrupted), false,
+    "EX48 validator must reject corruption of destination byte " + address.toString(16) + "h.");
+}
+console.log("EX48 four-byte reverse-copy oracle and per-byte negative mutations PASS.");
+
 console.log("EX35 exact encoding oracle and EX37 disassembly-boundary oracle PASS.");
 
 console.log("Course and exercise source/binary differential audit PASS: 108 examples + 48 corrections.");
