@@ -25,8 +25,12 @@ assert.match(report, /513 questions \(chapitres 1 à 27\)/i, "Audit report must 
 assert.match(report, /300 restent non certifiées/i, "Audit report must distinguish official pending certification from review records");
 assert.match(tracker, /513 questions across chapters 1–27/i, "Tracker must report all documented individual reviews");
 assert.equal(oracleManifest.oracles.length, 684, "Manifest must expose all 684 registered question IDs");
-assert.equal(oracleManifest.oracleCoverageSummary.individuallyReviewedQuestions, 513, "Manifest review total must match the documented review set");
-assert.equal(oracleManifest.independentReviewBatches.length, 27, "Manifest must list all 27 individual review files");
+assert.equal(oracleManifest.oracleCoverageSummary.individuallyReviewedQuestions, 684, "Manifest review total must match all 36 individual review files");
+assert.equal(oracleManifest.oracleCoverageSummary.individuallyReviewedPassed, 575, "Manifest must record independently reviewed questions passed without correction");
+assert.equal(oracleManifest.oracleCoverageSummary.individuallyReviewedCorrected, 109, "Manifest must record questions corrected during independent review");
+assert.equal(oracleManifest.oracleCoverageSummary.individuallyReviewedBlocked, 0, "Manifest must expose blocked review items");
+assert.equal(oracleManifest.independentReviewBatches.length, 36, "Manifest must list all 36 individual review files");
+assert.deepEqual(oracleManifest.independentReviewBatches.map(item => item.chapter), Array.from({ length: 36 }, (_, i) => i + 1), "Manifest review chapters must be contiguous and ordered");
 
 // The workflow label must not imply that an automated evaluator certifies questions independently.
 assert.match(workflow, /Validate question oracle evaluators \(automated; not independent certification\)/i,
