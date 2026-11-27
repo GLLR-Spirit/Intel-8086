@@ -239,7 +239,7 @@ $("exportBackup").onclick=function(){
 $("backupFile").onchange=function(){
  var file=this.files&&this.files[0];pendingBackup=null;$("restoreBackup").disabled=true;
  if(!file){$("backupStatus").textContent="Aucun fichier sélectionné.";return;}
- if(file.size>BACKUP_MAX_BYTES){$("backupStatus").textContent="Fichier trop volumineux (limite : 2 Mio).";$("backupPreview").textContent="Choisis un fichier de sauvegarde valide.";this.value="";return;}
+ if(file.size>BACKUP_MAX_BYTES){$("backupStatus").textContent="Fichier trop volumineux (limite : 10 Mio).";$("backupPreview").textContent="Choisis un fichier de sauvegarde valide.";this.value="";return;}
  var reader=new FileReader();
  reader.onload=function(){
   try{
