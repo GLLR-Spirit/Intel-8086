@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue pédagogique indépendante — chapitre 30",
+  "reviewDate": "2026-11-27",
+  "scope": "Examen individuel des 19 questions sur l'espace d'E/S, les formes IN/OUT, l'état de ports configurable et le contrôle IF/HLT. Les formes d'opérandes et les limites propres au simulateur ont été vérifiées séparément.",
+  "sources": [
+    {
+      "id": "intel-8086-family-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "sections": "Input/Output Instructions; Interrupt Flag; HLT."
+    },
+    {
+      "id": "intel-mcs86-reference",
+      "title": "Intel MCS-86 Assembly Language Reference Manual",
+      "edition": "1979",
+      "sections": "IN/OUT syntax and operand restrictions."
+    },
+    {
+      "id": "lab-implementation",
+      "title": "Intel-8086 Lab source and documentation",
+      "sections": "Configurable port state, input initialization and HLT simulation scope."
+    }
+  ],
+  "records": [
+    {
+      "id": "C30-L1-Q1",
+      "result": "passed",
+      "finding": "Les formes indirectes IN/OUT utilisent DX comme numéro de port 16 bits.",
+      "basis": "Vérification indépendante de la syntaxe 8086, des valeurs hexadécimales et du contrat du modèle logiciel du laboratoire."
+    },
+    {
+      "id": "C30-L1-Q2",
+      "result": "passed",
+      "finding": "MOV DX,03F8h charge exactement l'immédiat 16 bits dans DX.",
+      "basis": "Vérification indépendante de la syntaxe 8086, des valeurs hexadécimales et du contrat du modèle logiciel du laboratoire."
+    },
+    {
+      "id": "C30-L1-Q3",
+      "result": "passed",
+      "finding": "L'espace des ports d'E/S est distinct de l'espace mémoire segment:offset.",
+      "basis": "Vérification indépendante de la syntaxe 8086, des valeurs hexadécimales et du contrat du modèle logiciel du laboratoire."
+    },
+    {
+      "id": "C30-L2-Q1",
+      "result": "passed",
+      "finding": "OUT DX,AL transfère l'octet AL vers le port dont le numéro est dans DX.",
+      "basis": "Vérification indépendante de la syntaxe 8086, des valeurs hexadécimales et du contrat du modèle logiciel du laboratoire."
+    },
+    {
+      "id": "C30-L2-Q2",
+      "result": "passed",
+      "finding": "IN AL,DX lit le port sélectionné dans AL sans modifier DX.",
+      "basis": "Vérification indépendante de la syntaxe 8086, des valeurs hexadécimales et du contrat du modèle logiciel du laboratoire."
+    },
+    {
+      "id": "C30-L2-Q3",
+      "result": "passed",
+      "finding": "Le laboratoire utilise un état logiciel configurable et ne prétend pas piloter des broches physiques.",
+      "basis": "Vérification indépendante de la syntaxe 8086, des valeurs hexadécimales et du contrat du modèle logiciel du laboratoire."
+    },
+    {
+      "id": "C30-L3-Q1",
+      "result": "passed",
+      "finding": "CLI efface IF ; il ne modifie pas DF ni CF.",
+      "basis": "Vérification indépendante de la syntaxe 8086, des valeurs hexadécimales et du contrat du modèle logiciel du laboratoire."
+    },
+    {
+      "id": "C30-L3-Q2",
+      "result": "passed",
+      "finding": "STI positionne IF pour activer les interruptions masquables, sous réserve du modèle d'exécution.",
+      "basis": "Vérification indépendante de la syntaxe 8086, des valeurs hexadécimales et du contrat du modèle logiciel du laboratoire."
+    },
+    {
+      "id": "C30-L3-Q3",
+      "result": "passed",
+      "finding": "La limite de la simulation HLT est explicitement signalée ; le réveil matériel n'est pas reproduit.",
+      "basis": "Vérification indépendante de la syntaxe 8086, des valeurs hexadécimales et du contrat du modèle logiciel du laboratoire."
+    },
+    {
+      "id": "C30-F-Q1",
+      "result": "passed",
+      "finding": "Définition correcte de l'espace de ports.",
+      "basis": "Vérification indépendante de la syntaxe 8086, des valeurs hexadécimales et du contrat du modèle logiciel du laboratoire."
+    },
+    {
+      "id": "C30-F-Q2",
+      "result": "passed",
+      "finding": "DX est le registre de port pour la forme indirecte 16 bits.",
+      "basis": "Vérification indépendante de la syntaxe 8086, des valeurs hexadécimales et du contrat du modèle logiciel du laboratoire."
+    },
+    {
+      "id": "C30-F-Q3",
+      "result": "passed",
+      "finding": "IN AL,DX est la syntaxe correcte pour lire le port désigné par DX.",
+      "basis": "Vérification indépendante de la syntaxe 8086, des valeurs hexadécimales et du contrat du modèle logiciel du laboratoire."
+    },
+    {
+      "id": "C30-F-Q4",
+      "result": "passed",
+      "finding": "OUT DX,BX est invalide : OUT accepte AL ou AX, pas BX ; la forme immédiate de port est limitée à 8 bits.",
+      "basis": "Vérification indépendante de la syntaxe 8086, des valeurs hexadécimales et du contrat du modèle logiciel du laboratoire."
+    },
+    {
+      "id": "C30-F-Q5",
+      "result": "passed",
+      "finding": "La valeur 55h est écrite au port 10h lorsque DX=10h et AL=55h.",
+      "basis": "Vérification indépendante de la syntaxe 8086, des valeurs hexadécimales et du contrat du modèle logiciel du laboratoire."
+    },
+    {
+      "id": "C30-F-Q6",
+      "result": "passed",
+      "finding": "03F8h vaut 3×256+15×16+8=1016 en décimal.",
+      "basis": "Vérification indépendante de la syntaxe 8086, des valeurs hexadécimales et du contrat du modèle logiciel du laboratoire."
+    },
+    {
+      "id": "C30-F-Q7",
+      "result": "passed",
+      "finding": "IN AL,10h utilise un numéro de port immédiat 8 bits et charge la valeur configurée dans AL.",
+      "basis": "Vérification indépendante de la syntaxe 8086, des valeurs hexadécimales et du contrat du modèle logiciel du laboratoire."
+    },
+    {
+      "id": "C30-F-Q8",
+      "result": "corrected",
+      "finding": "L'ancienne question demandait seulement un principe général d'observation. Elle exige désormais la trace concrète DX=20h, AL=A5h et l'état attendu du port 20h.",
+      "basis": "Vérification indépendante de la syntaxe 8086, des valeurs hexadécimales et du contrat du modèle logiciel du laboratoire."
+    },
+    {
+      "id": "C30-F-Q9",
+      "result": "passed",
+      "finding": "L'initialisation d'une valeur d'entrée est une exigence du modèle logiciel du laboratoire, pas une règle électrique universelle.",
+      "basis": "Vérification indépendante de la syntaxe 8086, des valeurs hexadécimales et du contrat du modèle logiciel du laboratoire."
+    },
+    {
+      "id": "C30-F-Q10",
+      "result": "passed",
+      "finding": "La question distingue correctement l'état de ports simulé d'un périphérique matériel réel.",
+      "basis": "Vérification indépendante de la syntaxe 8086, des valeurs hexadécimales et du contrat du modèle logiciel du laboratoire."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 18,
+    "corrected": 1,
+    "needsRevision": 0,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  },
+  "openFindings": []
+}
