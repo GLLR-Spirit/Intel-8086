@@ -293,3 +293,13 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - CI run [46057864009](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46057864009), commit `7a7efb50b3f43a096794c3cfc0186ae4142a981f`: simulator job and browser audit job both succeeded. Logs confirm 378/378 integrated self-tests, 108/108 course examples with independent result oracles, and 48/48 guided-correction hand-offs.
 - These controls improve the tested execution-method requirements; they do not constitute individual pedagogical certification of all 48 exercises. The full exercise-by-exercise editorial review remains open.
 - No deployment was triggered.
+
+
+### Réconciliation de l'audit des exercices — 28 novembre 2026
+
+- La branche d'audit initiale reposait sur une trace `executedInstructions` de mnémoniques. Entre-temps, `main` a évolué vers une trace structurée `instructionTrace` (mnémonique, opérandes, CS et IP) et une validation de méthode dédiée. La réconciliation conserve cette implémentation plus récente et ne réintroduit pas l'ancien mécanisme.
+- Report des 21 contrats de séquences d'instructions vers les métadonnées des exercices, en complément des contrats et opérandes déjà contrôlés sur `main`.
+- Ajout de tests navigateur vérifiant les 21 corrections guidées et deux cas négatifs : état final identique sans exécution de CALL (EX27) ou RET (EX41).
+- Le rapport individuel des 48 exercices est conservé comme document de travail ; ses observations doivent être relues au regard des corrections déjà présentes sur `main`.
+- Cette réconciliation n'établit pas une certification pédagogique indépendante des 48 exercices. Les contrôles automatisés ne remplacent pas la revue humaine des consignes, explications et critères qualitatifs.
+- CI de cette nouvelle branche : en attente de résultat automatique après le commit. Aucun déploiement ni changement de `main`.
