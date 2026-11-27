@@ -172,3 +172,16 @@ The mission remains in progress. Passing automated suites is evidence for the te
   - C08-F-Q2 now tests the complete INC flag set: OF/SF/ZF/AF/PF updated, CF preserved.
 - Updated runtime bank, semantic key and chapter-08 oracle batch; added independent evaluators and CI assertions for carry propagation and INC flag effects.
 - Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
+
+
+### Independent question review — chapter 9
+
+- Reviewed all 19 questions individually against the Intel 8086 Family User's Manual and independent bitwise calculations.
+- 14 items passed; five were corrected to reduce repeated checks:
+  - C09-L1-Q3 now calculates 08h OR 05h = 0Dh.
+  - C09-L2-Q2 now tests the fact that NOT changes the operand but preserves FLAGS.
+  - C09-F-Q4 now contrasts selective XOR toggling with global NOT inversion.
+  - C09-F-Q6 now uses a distinct XOR calculation, 1110b XOR 1011b = 0101b, instead of repeating the AND calculation from L1-Q1.
+  - C09-F-Q7 now uses a MOV/TEST trace to verify that AL remains A5h while TEST computes 05h for FLAGS.
+- Updated runtime bank, semantic key and chapter-09 oracle batch; added independent evaluators and CI assertions for NOT flags and TEST destination preservation.
+- Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
