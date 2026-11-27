@@ -19,39 +19,14 @@
   ],
   "records": [
     {
-      "id": "C16-L1-Q1",
+      "id": "C16-F-Q1",
       "result": "needs_revision",
-      "finding": "Répète C16-F-Q1 : les deux demandent quel registre LOOP utilise."
+      "finding": "Répète C16-L1-Q1 sur le registre implicite CX."
     },
     {
-      "id": "C16-L1-Q2",
-      "result": "needs_revision",
-      "finding": "Répète la condition CX non nul et ZF=1 déjà demandée par C16-L2-Q1."
-    },
-    {
-      "id": "C16-L1-Q3",
-      "result": "needs_revision",
-      "finding": "Répète le fait que JCXZ ne décrémente pas CX, déjà demandé par C16-L3-Q1."
-    },
-    {
-      "id": "C16-L2-Q3",
-      "result": "needs_revision",
-      "finding": "Répète le fait que LOOPE lit le ZF existant, également demandé par C16-F-Q8."
-    },
-    {
-      "id": "C16-L2-Q2",
+      "id": "C16-F-Q10",
       "result": "passed",
-      "finding": "La condition LOOPNE est exacte : CX non nul après décrémentation et ZF=0."
-    },
-    {
-      "id": "C16-L3-Q2",
-      "result": "passed",
-      "finding": "Le calcul 0000h−1 donne FFFFh en arithmétique 16 bits modulo 65536."
-    },
-    {
-      "id": "C16-L3-Q3",
-      "result": "passed",
-      "finding": "L'encodage JCXZ est E3 rel8."
+      "finding": "Le test préalable de CX=0 évite le sous-dépassement initial de LOOP."
     },
     {
       "id": "C16-F-Q2",
@@ -94,24 +69,49 @@
       "finding": "JCXZ utilise un déplacement relatif court signé sur 8 bits."
     },
     {
-      "id": "C16-F-Q10",
-      "result": "passed",
-      "finding": "Le test préalable de CX=0 évite le sous-dépassement initial de LOOP."
+      "id": "C16-L1-Q1",
+      "result": "needs_revision",
+      "finding": "Répète C16-F-Q1 : les deux demandent quel registre LOOP utilise."
     },
     {
-      "id": "C16-F-Q1",
+      "id": "C16-L1-Q2",
       "result": "needs_revision",
-      "finding": "Répète C16-L1-Q1 sur le registre implicite CX."
+      "finding": "Répète la condition CX non nul et ZF=1 déjà demandée par C16-L2-Q1."
     },
     {
-      "id": "C16-F-Q1",
+      "id": "C16-L1-Q3",
       "result": "needs_revision",
-      "finding": "Répète C16-L1-Q1 sur le registre implicite CX."
+      "finding": "Répète le fait que JCXZ ne décrémente pas CX, déjà demandé par C16-L3-Q1."
     },
     {
       "id": "C16-L2-Q1",
       "result": "needs_revision",
       "finding": "Répète C16-L1-Q2 sur la condition LOOPE."
+    },
+    {
+      "id": "C16-L2-Q2",
+      "result": "passed",
+      "finding": "La condition LOOPNE est exacte : CX non nul après décrémentation et ZF=0."
+    },
+    {
+      "id": "C16-L2-Q3",
+      "result": "needs_revision",
+      "finding": "Répète le fait que LOOPE lit le ZF existant, également demandé par C16-F-Q8."
+    },
+    {
+      "id": "C16-L3-Q1",
+      "result": "needs_revision",
+      "finding": "Répète C16-L1-Q3 : JCXZ ne décrémente pas CX."
+    },
+    {
+      "id": "C16-L3-Q2",
+      "result": "passed",
+      "finding": "Le calcul 0000h−1 donne FFFFh en arithmétique 16 bits modulo 65536."
+    },
+    {
+      "id": "C16-L3-Q3",
+      "result": "passed",
+      "finding": "L'encodage JCXZ est E3 rel8."
     }
   ],
   "summary": {
