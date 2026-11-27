@@ -73,28 +73,29 @@
     {
       "id": "C08-L1-Q3",
       "status": "certified",
-      "rule": "unsigned_add_flags",
+      "rule": "byte_carry_propagation",
       "inputs": {
-        "left": 255,
-        "right": 1,
-        "width": 8
+        "lowA": 255,
+        "lowB": 1,
+        "highA": 18,
+        "highB": 0
       },
       "expected": {
-        "mathematicalSum": 256,
-        "result": 0,
-        "CF": 1,
-        "OF": 0
+        "lowResult": 0,
+        "carryFromLow": 1,
+        "highResult": 19,
+        "combined": 4864
       },
-      "correctAnswer": "AL=00h et CF=1",
-      "derivation": "FFh+1 donne 100h mathématiquement. Sur huit bits, AL conserve 00h et CF reçoit la retenue sortante. L'interprétation signée ne déborde pas pour −1+1.",
+      "correctAnswer": "1300h",
+      "derivation": "AX commence à 12FFh. ADD AL,1 calcule FFh+1=100h : AL devient 00h et CF=1. ADC AH,0 calcule ensuite 12h+0+1=13h. Le mot final AX vaut donc 1300h.",
       "distractorRationales": [
         {
-          "choice": "AL=FFh et CF=0",
-          "reason": "Après FFh+1, AL devient 00h ; FFh n'est pas conservé."
+          "choice": "1200h",
+          "reason": "Cette valeur oublie de propager CF=1 au calcul de l'octet fort AH."
         },
         {
-          "choice": "AL=01h et CF=0",
-          "reason": "Le résultat modulo 256 est 00h, pas 01h, et la retenue sortante met CF à 1."
+          "choice": "12FFh",
+          "reason": "Cette valeur correspond à l'état initial et ignore les deux instructions d'addition."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -161,27 +162,27 @@
     {
       "id": "C08-L2-Q3",
       "status": "certified",
-      "rule": "unsigned_subtract_flags",
+      "rule": "sbb_includes_borrow",
       "inputs": {
-        "left": 0,
-        "right": 1,
+        "destination": 16,
+        "source": 1,
+        "CF": 1,
         "width": 8
       },
       "expected": {
-        "mathematicalDifference": -1,
-        "result": 255,
-        "CF": 1
+        "result": 14,
+        "borrowIn": 1
       },
-      "correctAnswer": "AL=FFh et CF=1",
-      "derivation": "Sur huit bits, 00h−01h produit FFh modulo 256. Comme la soustraction non signée nécessite un emprunt, CF est mis à 1.",
+      "correctAnswer": "0Eh",
+      "derivation": "SBB calcule destination−source−CF entrant. Avec AL=10h, source=01h et CF=1, le résultat est 10h−1−1=0Eh.",
       "distractorRationales": [
         {
-          "choice": "AL=00h et CF=0",
-          "reason": "La différence 00h−01h modulo 256 donne FFh et non 00h."
+          "choice": "0Fh",
+          "reason": "0Fh correspondrait à 10h−1 en ignorant l'emprunt entrant CF=1."
         },
         {
-          "choice": "AL=01h et CF=1",
-          "reason": "00h−01h donne FFh avec emprunt CF=1 ; 01h avec CF=1 n'est pas le résultat."
+          "choice": "10h",
+          "reason": "10h est la valeur initiale ; SBB doit soustraire la source et l'emprunt entrant."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -243,24 +244,24 @@
       "status": "certified",
       "rule": "neg_signed_overflow",
       "inputs": {
-        "value": 128,
+        "value": 1,
         "width": 8
       },
       "expected": {
-        "result": 128,
-        "OF": 1,
+        "result": 255,
+        "OF": 0,
         "CF": 1
       },
-      "correctAnswer": "80h avec OF=1",
-      "derivation": "80h représente −128 en signé sur huit bits. Son opposé mathématique +128 n'est pas représentable ; le motif reste 80h et OF est activé. NEG met également CF à 1 car l'opérande initial n'était pas nul.",
+      "correctAnswer": "FFh avec CF=1 et OF=0",
+      "derivation": "NEG 01h calcule 00h−01h, ce qui donne FFh modulo 256. L'opérande initial est non nul, donc CF=1 ; −1 est représentable sur huit bits signés, donc OF=0.",
       "distractorRationales": [
         {
-          "choice": "7Fh avec OF=0",
-          "reason": "NEG 80h produit 80h avec OF=1 ; il ne donne pas 7Fh sans débordement."
+          "choice": "01h avec CF=0",
+          "reason": "NEG inverse le signe par complément à deux ; le résultat est FFh et CF=1 puisque l'opérande initial n'est pas nul."
         },
         {
-          "choice": "00h avec CF=0",
-          "reason": "Le résultat de NEG 80h n'est pas nul ; le motif reste 80h et OF signale le débordement."
+          "choice": "00h avec OF=1",
+          "reason": "L'opposé de +1 est −1, qui est représentable sur huit bits ; il n'y a pas de débordement signé."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
@@ -292,25 +293,32 @@
     {
       "id": "C08-F-Q2",
       "status": "certified",
-      "rule": "inc_preserves_cf",
+      "rule": "inc_flag_set",
       "inputs": {
-        "instruction": "INC AX",
-        "initialCF": 1
+        "instruction": "INC AX"
       },
       "expected": {
-        "CFModified": false,
-        "otherFlagsUpdated": true
+        "updated": [
+          "OF",
+          "SF",
+          "ZF",
+          "AF",
+          "PF"
+        ],
+        "preserved": [
+          "CF"
+        ]
       },
-      "correctAnswer": "CF",
-      "derivation": "INC préserve explicitement CF sur le 8086, contrairement à ADD qui met CF à jour selon la retenue de l'addition. ZF peut en revanche être modifié par INC.",
+      "correctAnswer": "OF, SF, ZF, AF et PF ; CF est préservé",
+      "derivation": "Sur le 8086, INC met à jour OF, SF, ZF, AF et PF selon le résultat, mais ne modifie pas CF. Cette distinction le sépare d'ADD AX,1, qui met CF à jour.",
       "distractorRationales": [
         {
-          "choice": "OF",
-          "reason": "INC préserve CF ; OF est modifiable par INC si le résultat déborde en signé."
+          "choice": "CF uniquement",
+          "reason": "INC préserve CF ; il met à jour les autres indicateurs arithmétiques concernés."
         },
         {
-          "choice": "ZF",
-          "reason": "INC modifie ZF selon le résultat, mais préserve CF."
+          "choice": "Aucun indicateur",
+          "reason": "INC met à jour OF, SF, ZF, AF et PF ; seuls CF est préservé."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), ADD/ADC, SUB/SBB, INC/NEG and arithmetic FLAGS; Intel MCS-86 Assembly Language Reference Manual, instruction semantics."
