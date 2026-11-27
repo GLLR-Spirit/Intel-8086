@@ -38,7 +38,7 @@
         "Une adresse mémoire"
       ],
       "correctAnswer": "MOV AX,1234h",
-      "explanation": "MOV AX,1234h est une instruction encodée ; 1234h est ici son opérande immédiat.",
+      "explanation": "MOV AX,1234h est une instruction en langage assembleur ; 1234h est son opérande immédiat. L'assembleur traduit cette instruction en octets machine distincts.",
       "category": "Application"
     },
     {
