@@ -725,7 +725,7 @@ function independentlyCompute(oracle) {
       return { offset, hex: offset.toString(16).toUpperCase().padStart(4, "0") + "h", bytes: i.entryBytes };
     }
     case "ivt_entry_layout":
-      return { pointerType: "far", offsetBits: i.offsetBits, segmentBits: i.segmentBits, totalBytes: (i.offsetBits + i.segmentBits) / i.byteBits, memoryOrder: i.memoryOrder };
+      return { pointerType: "far", offsetBits: i.offsetBits, segmentBits: i.segmentBits, offsetBytes: i.offsetBits / i.byteBits, segmentBytes: i.segmentBits / i.byteBits, totalBytes: (i.offsetBits + i.segmentBits) / i.byteBits, memoryOrder: i.memoryOrder };
     case "interrupt_frame_push_order":
       return { pushOrder: i.words, topFirst: i.words.slice().reverse(), bytesPushed: i.words.length * i.wordBytes };
     case "interrupt_frame_top_word":
