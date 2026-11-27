@@ -21,7 +21,7 @@ const context = {
 };
 const injection = [
   "globalThis.__courseDifferentialApi = {",
-  " curriculum, executeAll, executeBinary, assembleProgram, parseProgram",
+  " curriculum, exercises, exerciseMetadata, executeAll, executeBinary, assembleProgram, parseProgram",
   "};",
   "})();"
 ].join("\n");
@@ -159,4 +159,34 @@ console.log("Oracle dimensions: " + JSON.stringify(categoryCounts));
 if (failures.length) console.error("Differential failures:\n" + failures.join("\n"));
 assert.equal(compared, 108, "Every one of the 108 course examples must be compared.");
 assert.deepEqual(failures, [], "Source/binary parity and independent course oracles must match for all 108 examples.");
-console.log("Course source/binary differential audit PASS: 108/108.");
+
+const exerciseFailures = [];
+let exercisesCompared = 0;
+for (let index = 0; index < api.exercises.length; index++) {
+  const exercise = api.exercises[index];
+  const guide = exercise[4];
+  const id = "EX" + String(index + 1).padStart(2, "0");
+  try {
+    assert.ok(guide && typeof guide.solution === "string" && guide.solution.trim(),
+      id + " must expose its complete guided correction.");
+    const parsed = api.parseProgram(guide.solution);
+    const assembled = api.assembleProgram(guide.solution);
+    const sourceState = api.executeAll(guide.solution);
+    assert.ok(!sourceState.error, id + " source correction: " + (sourceState.error || ""));
+    const binaryState = api.executeBinary(assembled.bytes, 0, 0,
+      seedForBinary(guide.solution, assembled, parsed));
+    assert.ok(!binaryState.error, id + " binary correction: " + (binaryState.error || ""));
+    assertSameArchitecturalState(sourceState, binaryState, id, Object.keys(parsed.vectors || {}).map(Number).map(vector => vector * 4));
+    assert.ok(exercise[3](sourceState), id + " source correction must satisfy its exercise validator.");
+    assert.ok(exercise[3](binaryState), id + " binary correction must satisfy its exercise validator.");
+    exercisesCompared++;
+  } catch (error) {
+    exerciseFailures.push(id + " (" + exercise[0] + "): " + error.message);
+  }
+}
+console.log("Guided correction source/binary differential: " + exercisesCompared + "/" + api.exercises.length + " solutions compared.");
+if (exerciseFailures.length) console.error("Correction differential failures:\\n" + exerciseFailures.join("\\n"));
+assert.equal(api.exercises.length, 48, "The exercise correction audit must cover all 48 exercises.");
+assert.equal(exercisesCompared, 48, "Every guided correction must pass source/binary parity.");
+assert.deepEqual(exerciseFailures, [], "All 48 source and binary corrections must agree and satisfy their validators.");
+console.log("Course and exercise source/binary differential audit PASS: 108 examples + 48 corrections.");
