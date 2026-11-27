@@ -492,9 +492,10 @@
     {
       "id": "C19-F-Q10",
       "status": "certified",
-      "rule": "memory_address_components",
+      "rule": "audit_checklist_coverage",
       "inputs": {
-        "components": [
+        "domain": "effective_address",
+        "checks": [
           "effective_address",
           "default_segment",
           "segment_override",
@@ -502,18 +503,25 @@
         ]
       },
       "expected": {
-        "checksAll": true
+        "requiredChecks": [
+          "effective_address",
+          "default_segment",
+          "segment_override",
+          "operand_width"
+        ],
+        "missingChecks": [],
+        "complete": true
       },
       "correctAnswer": "Vérifier EA, segment par défaut, override et largeur",
-      "derivation": "Une référence mémoire correcte dépend du calcul de l'offset effectif, du segment sélectionné par défaut, d'un éventuel override et de la largeur de l'opérande. Vérifier seulement BX ou ignorer le déplacement laisse des causes d'erreur importantes non contrôlées.",
+      "derivation": "Un accès mémoire 8086 exige de calculer l'offset effectif à partir de la base, de l'index et du déplacement, puis de déterminer le segment par défaut (DS ou SS selon le mode d'adressage). Un préfixe de segment peut remplacer ce choix. Enfin, la largeur de l'opérande détermine le nombre d'octets lus ou écrits. Contrôler seulement BX ou omettre le déplacement ne suffit donc pas.",
       "distractorRationales": [
         {
           "choice": "Vérifier uniquement la valeur de BX",
-          "reason": "BX seul ne suffit pas si SI, le déplacement, le segment et la taille influencent l'accès."
+          "reason": "La valeur de BX seule ne détermine pas toujours l'adresse : il faut tenir compte des autres registres d'adressage, du déplacement et du segment sélectionné."
         },
         {
           "choice": "Ignorer le déplacement",
-          "reason": "Ignorer le déplacement change l'offset effectif et peut conduire à lire ou écrire la mauvaise case."
+          "reason": "Le déplacement fait partie du calcul de l'offset effectif lorsqu'il est présent ; l'ignorer peut conduire à une adresse différente."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."
