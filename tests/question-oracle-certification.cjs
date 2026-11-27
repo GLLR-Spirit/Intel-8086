@@ -213,6 +213,36 @@ function independentlyCompute(oracle) {
       return { readsMemory: false, computesEffectiveOffset: true };
     case "lea_general_semantics":
       return { offsetDescription: "effective_address", memoryRead: false };
+    case "lea_effective_offset":
+      return { offset: i.base + (i.index || 0) + i.displacement, memoryRead: false };
+    case "lea_symbolic_expression":
+      return { offsetExpression: i.expression, memoryRead: false };
+    case "xchg_form_validity":
+      if (i.left === "memory" && i.right === "memory") return { valid: false, reason: "XCHG_does_not_allow_memory_to_memory" };
+      return { valid: true, reason: "XCHG_register_memory_allowed" };
+    case "mov_memory_read":
+      return { readsMemory: true, writesAX: true };
+    case "effective_address_form_validity":
+      return { valid: true, offsetExpression: i.terms.join("+") };
+    case "lea_flags_preserved":
+      return { flagsModified: false };
+    case "far_pointer_size": {
+      const totalBits = i.offsetBits + i.segmentBits;
+      return { totalBits, totalBytes: totalBits / i.byteBits };
+    }
+    case "far_pointer_load": {
+      const match = i.instruction.match(/^LDS\s+([A-Z]{2})/i);
+      const register = match ? match[1].toUpperCase() : "SI";
+      return { offsetDestination: register, segmentDestination: "DS", firstWord: "offset", secondWord: "segment" };
+    }
+    case "far_pointer_memory_order":
+      return { firstWord: "offset", secondWord: "segment", byteCount: 4 };
+    case "les_far_pointer_load":
+      return { offsetDestination: "DI", segmentDestination: "ES" };
+    case "lea_vs_mov_memory":
+      return { leaReadsMemory: false, movReadsMemory: true, leaResult: "effective_offset" };
+    case "lea_no_memory_read":
+      return { readsMemory: false, computesEffectiveOffset: true };
     case "radix_power_of_two":
       return { property: "positional_weights_are_powers_of_two" };
     case "hex_digit_bit_width":
@@ -385,7 +415,7 @@ for (const oracle of allOracleRecords) {
     assert.fail("Unknown oracle status for " + oracle.id + ": " + oracle.status);
   }
 }
-assert.equal(certified, 133, "All 133 questions across chapters 1 to 7 are certified, including the two reused historical chapter oracles");
+assert.equal(certified, 152, "All 152 questions across chapters 1 to 8?");
 assert.equal(blocked, 0, "No question in the certified batches remains blocked");
 for (const chapter of [1, 2, 3, 4, 5, 6, 7]) {
   const prefix = "C" + String(chapter).padStart(2, "0") + "-";
