@@ -642,7 +642,7 @@ const assert = require("node:assert/strict");
   assert.equal(await page.locator("#code").inputValue(),firstExerciseStarter,
     "Loading an exercise statement must copy its starter source into the editor.");
   await page.locator('[data-view="exercises"]').click();
-  await page.locator("#exerciseList details.exercise-guide summary").first().click();
+  await page.locator("#exerciseList details.exercise-guide > summary").first().click();
   await page.locator("#exerciseList [data-solution]").first().click();
   assert.equal(await page.locator("#code").inputValue(),firstExerciseSolution,
     "Loading the correction must copy the complete guided solution into the editor.");
@@ -663,7 +663,7 @@ const assert = require("node:assert/strict");
   assert.equal(allExerciseSolutions.length,48,"The browser audit must cover all 48 exercise correction interactions.");
   for(const exercise of allExerciseSolutions){
     const card=page.locator("#exerciseList .exercise").nth(exercise.index);
-    await card.locator("details.exercise-guide summary").click();
+    await card.locator("details.exercise-guide > summary").click();
     await card.locator("[data-solution]").click();
     assert.equal(await page.locator("#code").inputValue(),exercise.solution,
       "Exercise "+(exercise.index+1)+" must load its complete correction into the editor.");
