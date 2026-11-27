@@ -16,9 +16,12 @@ assert.equal(review.summary.needsRevision, 0);
 assert.equal(review.summary.blocked, 0);
 assert.deepEqual(review.openFindings, [], "Chapter 18 review must have no open item-level findings");
 const finalQuestions = key.questions.filter(q => q.chapter === 18 && q.kind === "final");
-const categories = ["Définition","Syntaxe","Calcul / prédiction","Analyse de programme","Raisonnement / débogage"];
-for (const category of categories) assert.equal(finalQuestions.filter(q => q.category === category).length, 2,
-  "Chapter 18 final assessment must contain exactly two " + category + " items");
+const categoryGroups = [
+  ["Définition","Compréhension"],["Syntaxe","Restrictions"],["Prédiction","Calcul / prédiction"],
+  ["Analyse de programme","Analyse de résultat"],["Débogage","Raisonnement"]
+];
+for (const group of categoryGroups) assert.equal(finalQuestions.filter(q => group.includes(q.category)).length, 2,
+  "Chapter 18 final assessment must contain exactly two items in category group " + group.join("/"));
 const f8 = batch.oracles.find(q => q.id === "C18-F-Q8");
 assert.ok(f8, "Chapter 18 F8 oracle must exist");
 assert.equal(f8.correctAnswer, key.questions.find(q => q.id === "C18-F-Q8").correctAnswer);
