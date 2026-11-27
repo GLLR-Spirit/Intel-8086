@@ -29,12 +29,12 @@
       "derivation": "Une adresse logique du 8086 associe un registre de segment à un offset de 16 bits. Le processeur combine ces deux composantes pour former une adresse physique ; ce n'est ni deux registres généraux ni un opcode.",
       "distractorRationales": [
         {
-          "choice": "D",
-          "reason": "e"
+          "choice": "Deux registres généraux",
+          "reason": "Une adresse logique n'est pas deux registres généraux ; elle associe un registre de segment et un offset."
         },
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Un opcode et un déplacement",
+          "reason": "Un opcode et un déplacement décrivent un encodage d'instruction, pas une adresse logique segmentée."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."
@@ -57,12 +57,12 @@
       "derivation": "DS contient 1000h et BX contient 0020h. La référence mémoire [BX] utilise donc l'adresse logique DS:BX, soit 1000h:0020h, qui correspond physiquement à 10020h.",
       "distractorRationales": [
         {
-          "choice": "0",
-          "reason": "0"
+          "choice": "0020h:1000h",
+          "reason": "La notation segment:offset place DS avant BX ; l'ordre inverse ne correspond pas au couple DS:BX."
         },
         {
-          "choice": "1",
-          "reason": "0"
+          "choice": "1000h:1000h",
+          "reason": "1000h:1000h ne reprend pas l'offset 0020h contenu dans BX."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."
@@ -81,12 +81,12 @@
       "derivation": "Un offset seul ne détermine pas une adresse physique unique. Il faut connaître le segment associé afin de calculer segment×16+offset et obtenir l'adresse physique sur 20 bits.",
       "distractorRationales": [
         {
-          "choice": "I",
-          "reason": "l"
+          "choice": "Il faut connaître AX",
+          "reason": "AX n'est pas une composante obligatoire de l'adresse physique ; il faut le segment avec l'offset."
         },
         {
-          "choice": "I",
-          "reason": "l"
+          "choice": "Il faut connaître le code machine",
+          "reason": "Le code machine ne remplace pas le registre de segment requis pour calculer l'adresse physique."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."
@@ -103,12 +103,12 @@
       "derivation": "Le registre de segment fournit une base alignée sur 16 octets : sa valeur est décalée de quatre bits, soit multipliée par 16. L'offset est ensuite ajouté à cette base.",
       "distractorRationales": [
         {
-          "choice": "s",
-          "reason": "e"
+          "choice": "segment + offset × 16",
+          "reason": "Cette expression multiplie l'offset au lieu de décaler le segment ; l'ordre des opérations est inversé."
         },
         {
-          "choice": "s",
-          "reason": "e"
+          "choice": "segment × offset",
+          "reason": "Le segment et l'offset ne sont pas multipliés entre eux ; la base est segment×16 puis on ajoute l'offset."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."
@@ -131,12 +131,12 @@
       "derivation": "1000h×10h donne 10000h. En ajoutant l'offset 0020h, l'adresse physique vaut 10020h, qui tient déjà sur 20 bits.",
       "distractorRationales": [
         {
-          "choice": "1",
-          "reason": "0"
+          "choice": "1002h",
+          "reason": "1002h oublie le décalage du segment de quatre bits et ne représente pas 1000h×16+20h."
         },
         {
-          "choice": "1",
-          "reason": "0"
+          "choice": "10000h",
+          "reason": "10000h est seulement la base du segment ; l'offset 20h doit encore être ajouté."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."
@@ -158,12 +158,12 @@
       "derivation": "Avec 20 bits d'adresse, il existe 2²⁰ positions distinctes. Pour une mémoire adressée par octet, la plage va de 00000h à FFFFFh, soit 1 048 576 octets.",
       "distractorRationales": [
         {
-          "choice": "0",
-          "reason": "0"
+          "choice": "0000h à FFFFh",
+          "reason": "0000h à FFFFh ne couvre que 16 bits, soit 64 Kio, pas l'espace 20 bits."
         },
         {
-          "choice": "0",
-          "reason": "0"
+          "choice": "000000h à FFFFFFh",
+          "reason": "000000h à FFFFFFh décrit 24 bits ; le bus 8086 en expose 20."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."
@@ -184,12 +184,12 @@
       "derivation": "Chaque segment peut décrire une fenêtre de 64 Kio, mais les bases de segments successifs ne sont espacées que de 16 octets. Les fenêtres se recouvrent donc largement et plusieurs couples peuvent désigner la même adresse physique.",
       "distractorRationales": [
         {
-          "choice": "N",
-          "reason": "o"
+          "choice": "Non, chaque segment est isolé",
+          "reason": "Les fenêtres de segments se recouvrent car les bases sont espacées de 16 octets, pas de 64 Kio."
         },
         {
-          "choice": "S",
-          "reason": "e"
+          "choice": "Seulement si les offsets sont identiques",
+          "reason": "Des offsets différents peuvent produire la même adresse ; l'égalité des offsets n'est pas nécessaire au recouvrement."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."
@@ -223,12 +223,12 @@
       "derivation": "1001h×10h+0000h=10010h. De même, 1000h×10h+0010h=10010h. Les deux adresses logiques distinctes produisent la même adresse physique.",
       "distractorRationales": [
         {
-          "choice": "1",
-          "reason": "0"
+          "choice": "1000h:0001h",
+          "reason": "1000h:0001h donne 10001h, pas 10010h."
         },
         {
-          "choice": "1",
-          "reason": "0"
+          "choice": "1010h:0000h",
+          "reason": "1010h:0000h donne 10100h, pas 10010h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."
@@ -247,12 +247,12 @@
       "derivation": "Comme les bases de segments sont espacées de 16 octets alors que chaque offset peut couvrir 64 Kio, plusieurs couples segment:offset peuvent se recouvrir et calculer la même adresse physique.",
       "distractorRationales": [
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Un segment ne peut contenir qu'un mot",
+          "reason": "Un segment peut décrire une fenêtre de 64 Kio ; il n'est pas limité à un seul mot."
         },
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Les offsets sont automatiquement arrondis",
+          "reason": "Les offsets ne sont pas automatiquement arrondis ; ils participent directement au calcul de l'adresse."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."
@@ -275,12 +275,12 @@
       "derivation": "L'adresse logique est formée d'un segment et d'un offset. L'adresse physique est le résultat du calcul appliqué à ce couple, pas un numéro d'interruption ni une adresse 32 bits native du 8086.",
       "distractorRationales": [
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Une adresse physique 32 bits",
+          "reason": "Une adresse physique est calculée à partir du couple ; elle n'est pas une adresse 32 bits native du 8086."
         },
         {
-          "choice": "U",
-          "reason": "n"
+          "choice": "Un numéro d'interruption",
+          "reason": "Un numéro d'interruption n'est pas une adresse logique mémoire segmentée."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."
@@ -301,12 +301,12 @@
       "derivation": "Les registres de segment et les offsets sont de 16 bits, mais le calcul segment×16+offset forme une adresse physique sur 20 bits. Le 8086 peut donc adresser 1 Mio sans disposer d'offsets 20 bits.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Les registres généraux sont 32 bits",
+          "reason": "Les registres généraux du 8086 sont de 16 bits, pas 32 bits."
         },
         {
-          "choice": "C",
-          "reason": "h"
+          "choice": "Chaque segment contient 1 Mio indépendant",
+          "reason": "Un segment n'est pas une zone indépendante de 1 Mio ; les segments décrivent des fenêtres qui se recouvrent dans le même espace physique."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."
@@ -328,12 +328,12 @@
       "derivation": "MOV autorise le transfert d'un registre général 16 bits vers un registre de segment tel que DS. Cette forme ne permet pas de charger CS, dont l'écriture par MOV est interdite.",
       "distractorRationales": [
         {
-          "choice": "M",
-          "reason": "O"
+          "choice": "MOV AX,DS",
+          "reason": "MOV AX,DS copie DS vers AX ; ce n'est pas le transfert demandé vers DS."
         },
         {
-          "choice": "M",
-          "reason": "O"
+          "choice": "MOV CS,AX",
+          "reason": "MOV CS,AX est interdit ; la destination segment autorisée ici est DS."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."
@@ -353,12 +353,12 @@
       "derivation": "Sur le 8086, MOV ne peut pas avoir CS comme destination. Le changement de segment de code est réalisé par des transferts de contrôle appropriés qui mettent à jour CS:IP.",
       "distractorRationales": [
         {
-          "choice": "E",
-          "reason": "l"
+          "choice": "Elle est toujours valide",
+          "reason": "MOV ne peut pas charger CS comme destination, même si la valeur source est disponible."
         },
         {
-          "choice": "E",
-          "reason": "l"
+          "choice": "Elle est valide uniquement si AX=0",
+          "reason": "AX=0 ne rend pas valide une destination CS interdite par la forme d'instruction."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."
@@ -381,12 +381,12 @@
       "derivation": "Le calcul donne 1000h×10h=10000h, puis 10000h+0020h=10020h. Cette adresse est inférieure à 100000h et ne subit donc aucun repliement.",
       "distractorRationales": [
         {
-          "choice": "1",
-          "reason": "0"
+          "choice": "10002h",
+          "reason": "10002h ne correspond pas au décalage de segment ; le calcul donne 10020h."
         },
         {
-          "choice": "1",
-          "reason": "0"
+          "choice": "10000h",
+          "reason": "10000h omet l'ajout de l'offset 0020h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."
@@ -409,12 +409,12 @@
       "derivation": "1001h décalé de quatre bits vaut 10010h. L'offset étant nul, il n'ajoute aucune valeur ; l'adresse physique est donc 10010h.",
       "distractorRationales": [
         {
-          "choice": "1",
-          "reason": "0"
+          "choice": "10001h",
+          "reason": "10001h ne correspond pas à 1001h×10h ; le décalage donne 10010h."
         },
         {
-          "choice": "1",
-          "reason": "0"
+          "choice": "10000h",
+          "reason": "10000h utilise le segment 1000h et non 1001h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."
@@ -436,12 +436,12 @@
       "derivation": "MOV AX,1000h puis MOV DS,AX charge 1000h dans DS ; MOV BX,0020h place l'offset dans BX. La paire DS:BX représente alors l'adresse logique 1000h:0020h.",
       "distractorRationales": [
         {
-          "choice": "C",
-          "reason": "h"
+          "choice": "Charge l'adresse physique dans AX",
+          "reason": "La séquence charge DS et BX ; elle ne place pas l'adresse physique dans AX."
         },
         {
-          "choice": "M",
-          "reason": "o"
+          "choice": "Modifie CS:IP",
+          "reason": "La séquence ne modifie pas CS:IP ; elle prépare une adresse de donnée DS:BX."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."
@@ -475,12 +475,12 @@
       "derivation": "1000h×10h+0010h=10010h et 1001h×10h+0000h=10010h. Les deux couples segment:offset sont différents mais désignent la même adresse physique.",
       "distractorRationales": [
         {
-          "choice": "L",
-          "reason": "e"
+          "choice": "Leurs offsets sont égaux",
+          "reason": "Les deux adresses physiques sont égales à 10010h ; leurs offsets ne sont pas égaux."
         },
         {
-          "choice": "I",
-          "reason": "l"
+          "choice": "Ils utilisent le même segment",
+          "reason": "Les segments 1000h et 1001h sont différents, même si le résultat physique est identique."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."
@@ -503,12 +503,12 @@
       "derivation": "Le calcul brut FFFFh×10h+FFFFh vaut 10FFEFh. Le bus 8086 n'expose que 20 bits ; le résultat physique est donc ramené modulo 100000h, soit 0FFEFh.",
       "distractorRationales": [
         {
-          "choice": "É",
-          "reason": "t"
+          "choice": "Étendre l'adresse à 24 bits",
+          "reason": "Le bus 8086 est limité à 20 bits ; il ne prolonge pas l'adresse à 24 bits."
         },
         {
-          "choice": "S",
-          "reason": "u"
+          "choice": "Supprimer l'offset",
+          "reason": "Le repliement conserve les bits physiques modulo 1 Mio ; il ne supprime pas l'offset avant addition."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."
@@ -530,12 +530,12 @@
       "derivation": "La procédure correcte est de décaler le segment de quatre bits, d'ajouter l'offset, puis de conserver les 20 bits physiques du 8086. Additionner directement segment et offset omet la base segmentée.",
       "distractorRationales": [
         {
-          "choice": "A",
-          "reason": "d"
+          "choice": "Additionner le segment et l'offset sans décalage",
+          "reason": "Le segment doit être multiplié par 16 avant l'addition ; l'addition directe est incorrecte."
         },
         {
-          "choice": "U",
-          "reason": "t"
+          "choice": "Utiliser systématiquement DS",
+          "reason": "Le registre de segment dépend de l'opérande et du contexte ; DS n'est pas utilisé systématiquement pour toutes les références."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."
