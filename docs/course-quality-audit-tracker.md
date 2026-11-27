@@ -194,3 +194,14 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - C10-L3-Q2 described STC/PUSHF/CLC/POPF and expected CF=1, but its oracle used saved FLAGS=0200h, where CF=0. The oracle now uses 0201h, and a dedicated evaluator verifies both restored IF=1 and CF=1.
 - Added `docs/question-independent-review/chapter-10.json` and CI assertions for the 19-question review and exact restored flags.
 - Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
+
+
+### Independent question review — chapter 11
+
+- Reviewed all 19 questions individually against the Intel 8086 Family User's Manual and independent execution traces.
+- 16 items passed; three were corrected to avoid repeated checks and improve coverage:
+  - C11-F-Q6 now combines signed overflow with INC's preservation of CF: 7FFFh+1 gives 8000h, OF=1, while CF remains 1.
+  - C11-F-Q7 now traces a concrete not-taken JZ after CMP 1,2 (ZF=0).
+  - C11-F-Q9 now tests the purpose of retaining regression cases after a correction.
+- Added `docs/question-independent-review/chapter-11.json`, independent evaluators and CI assertions for all 19 questions and the three corrected cases.
+- Official individual certification remains 384/684; 300 questions remain. This review does not advance the official ledger.
