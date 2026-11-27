@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue individuelle — chapitre 19",
+  "reviewDate": "2026-11-27",
+  "scope": "Examen individuel des 19 questions sur les modes d'adressage 8086, les offsets effectifs, les segments par défaut, les overrides et l'encodage de l'adressage direct. Cette revue est distincte des évaluateurs automatiques.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "sections": "Table 2-2, effective-address calculation, default segment selection, memory operand sizes and 16-bit offsets.",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Assembly Language Reference Manual",
+      "edition": "1979",
+      "sections": "MOV operand forms, direct addressing, ModR/M and segment override syntax.",
+      "url": "https://bitsavers.trailing-edge.com/pdf/intel/ISIS_II/9800640A_MCS-86_Assembly_Language_Reference_Manual_Apr79.pdf"
+    }
+  ],
+  "records": [
+    {
+      "id": "C19-L1-Q1",
+      "result": "passed",
+      "finding": "La distinction est exacte : l'immédiat est une valeur encodée dans l'instruction ; l'opérande direct désigne un emplacement mémoire.",
+      "basis": "Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
+    },
+    {
+      "id": "C19-L1-Q2",
+      "result": "passed",
+      "finding": "MOV BX,AX utilise deux opérandes registres ; aucun accès mémoire ni immédiat n'est présent.",
+      "basis": "Syntaxe Intel MOV."
+    },
+    {
+      "id": "C19-L1-Q3",
+      "result": "passed",
+      "finding": "Les crochets indiquent l'accès mémoire direct à l'offset 0100h ; WORD PTR précise une lecture de 16 bits. Sans override, DS est le segment par défaut.",
+      "basis": "Intel 8086 Family User's Manual, Table 2-2; MCS-86 MOV operand forms."
+    },
+    {
+      "id": "C19-L2-Q1",
+      "result": "passed",
+      "finding": "BX+SI forme l'offset effectif par addition 16 bits ; il ne s'agit pas d'une adresse physique complète.",
+      "basis": "Intel 8086 Family User's Manual, effective-address calculation."
+    },
+    {
+      "id": "C19-L2-Q2",
+      "result": "passed",
+      "finding": "0100h+0002h=0102h ; le résultat tient dans 16 bits.",
+      "basis": "Calcul hexadécimal indépendant."
+    },
+    {
+      "id": "C19-L2-Q3",
+      "result": "passed",
+      "finding": "L'offset effectif doit être associé au segment par défaut ou à un segment override pour former l'adresse physique.",
+      "basis": "Intel 8086 Family User's Manual, Figure 2-18 and Table 2-2."
+    },
+    {
+      "id": "C19-L3-Q1",
+      "result": "passed",
+      "finding": "La présence de BP dans l'adresse effective sélectionne SS par défaut.",
+      "basis": "Intel 8086 Family User's Manual, Table 2-2."
+    },
+    {
+      "id": "C19-L3-Q2",
+      "result": "passed",
+      "finding": "BP=0100h et déplacement 4 donnent l'offset 0104h ; BP impose SS par défaut.",
+      "basis": "Calcul indépendant et Table 2-2."
+    },
+    {
+      "id": "C19-L3-Q3",
+      "result": "passed",
+      "finding": "Le préfixe DS: remplace SS pour la référence mémoire concernée ; REP ne modifie pas le segment.",
+      "basis": "Intel 8086 Family User's Manual, segment override prefixes."
+    },
+    {
+      "id": "C19-F-Q1",
+      "result": "passed",
+      "finding": "Définition exacte : l'adresse effective est l'offset calculé avant l'application du segment.",
+      "basis": "Intel 8086 Family User's Manual, effective-address calculation."
+    },
+    {
+      "id": "C19-F-Q2",
+      "result": "passed",
+      "finding": "BP sélectionne SS par défaut même si un registre d'index participe à l'offset ; DS reste possible par override.",
+      "basis": "Intel 8086 Family User's Manual, Table 2-2."
+    },
+    {
+      "id": "C19-F-Q3",
+      "result": "passed",
+      "finding": "MOV AX, WORD PTR [BX+SI+4] est une forme valide : BX+SI+disp forme l'EA et WORD PTR précise la largeur.",
+      "basis": "Intel MCS-86 Assembly Language Reference Manual, memory operands and size qualifiers."
+    },
+    {
+      "id": "C19-F-Q4",
+      "result": "passed",
+      "finding": "MOV n'encode pas directement mémoire-vers-mémoire ; un registre intermédiaire est requis.",
+      "basis": "Intel MCS-86 Assembly Language Reference Manual, MOV operand forms."
+    },
+    {
+      "id": "C19-F-Q5",
+      "result": "passed",
+      "finding": "0100h+0002h+0004h=0106h ; les trois composantes de l'EA sont correctement additionnées.",
+      "basis": "Calcul hexadécimal indépendant."
+    },
+    {
+      "id": "C19-F-Q6",
+      "result": "passed",
+      "finding": "L'adressage direct utilise Mod=00 et R/M=110, suivi d'un déplacement de 16 bits.",
+      "basis": "Intel 8086 Family User's Manual, effective-address encoding; MCS-86 encoding reference."
+    },
+    {
+      "id": "C19-F-Q7",
+      "result": "passed",
+      "finding": "La lecture à DS:0102h place le mot ABCDh dans AX ; BX et SI ne reçoivent pas le résultat.",
+      "basis": "Trace d'opérande mémoire et syntaxe MOV."
+    },
+    {
+      "id": "C19-F-Q8",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait le segment par défaut SS. Elle est remplacée par une analyse de frontière : FFF0h+0030h+0004h=10024h, puis l'offset effectif 16 bits devient 0024h.",
+      "basis": "Calcul indépendant modulo 2^16 et règle 8086 de calcul de l'offset effectif."
+    },
+    {
+      "id": "C19-F-Q9",
+      "result": "passed",
+      "finding": "MOV AX, DS:[BP+4] est une forme correcte qui remplace le segment SS par défaut par DS pour cet accès.",
+      "basis": "Intel 8086 Family User's Manual, segment override prefixes; MCS-86 syntax."
+    },
+    {
+      "id": "C19-F-Q10",
+      "result": "passed",
+      "finding": "La démarche couvre les quatre dimensions nécessaires : EA, segment par défaut, override éventuel et largeur de l'opérande.",
+      "basis": "Synthèse des règles d'adressage 8086 documentées dans le manuel Intel."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 18,
+    "corrected": 1,
+    "needsRevision": 0,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  },
+  "openFindings": []
+}
