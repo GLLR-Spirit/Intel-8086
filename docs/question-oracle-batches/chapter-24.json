@@ -358,7 +358,7 @@
         "product": 256
       },
       "correctAnswer": "0100h",
-      "derivation": "80h vaut 128 en non signé. 128×2=256, soit 0100h ; AH=01h et AL=00h.",
+      "derivation": "80h représente 128 en non signé et BL vaut 02h. MUL BL calcule 128 × 2 = 256, soit 0100h. Le produit complet est placé dans AX : AH reçoit 01h et AL reçoit 00h. La moitié haute étant non nulle, CF et OF sont positionnés.",
       "distractorRationales": [
         {
           "choice": "FF00h",
