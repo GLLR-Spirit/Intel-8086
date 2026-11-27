@@ -232,6 +232,16 @@ function independentlyCompute(oracle) {
       const highResult = (i.highA + i.highB + carryFromLow) & 0xff;
       return { lowResult, carryFromLow, highResult, combined: (highResult << 8) | lowResult };
     }
+    case "inc_overflow_and_cf": {
+      const modulus = 2 ** i.width;
+      const mask = modulus - 1;
+      const sign = 2 ** (i.width - 1);
+      const signedInput = (i.initialAX & sign) ? i.initialAX - modulus : i.initialAX;
+      const signedResult = signedInput + 1;
+      const result = (i.initialAX + 1) & mask;
+      const OF = signedResult < -sign || signedResult > sign - 1 ? 1 : 0;
+      return { result, OF, CF: i.initialCF };
+    }
     case "inc_flag_set":
       return { updated: ["OF", "SF", "ZF", "AF", "PF"], preserved: ["CF"] };
     case "unsigned_subtract_flags": {
@@ -340,6 +350,8 @@ function independentlyCompute(oracle) {
       return { recordsBeforeAfter: true, orderPreserved: true };
     case "first_divergence_diagnostic":
       return { locatesEarliestDivergence: true };
+    case "regression_test_purpose":
+      return { detectsRecurrence: i.previouslyFailingCaseRetained, retainsCase: i.previouslyFailingCaseRetained };
     case "first_divergence_and_isolate":
       return { locatesEarliestDivergence: true, isolatesCause: true };
     case "ip_instruction_offset":
@@ -352,6 +364,11 @@ function independentlyCompute(oracle) {
       return { isolatesEffect: true, reproducible: true };
     case "inc_preserves_cf_value":
       return { CFAfter: i.initialCF, CFModified: false };
+    case "conditional_branch_trace": {
+      const ZF = i.left === i.right ? 1 : 0;
+      const branchTaken = i.condition === "JZ" ? ZF === 1 : false;
+      return { ZF, branchTaken, next: branchTaken ? "target" : "fallthrough" };
+    }
     case "branch_paths_validation":
       return i.IPChecked ? { takenPathTested: true, notTakenPathTested: true, IPChecked: true } : { takenPathTested: true, notTakenPathTested: true };
     case "trace_order_causality":
@@ -1506,5 +1523,22 @@ assert.equal(chapter10Review.summary.officialCertificationCountAfter, 384, "Chap
 assert.equal(chapter10Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C10-L3-Q2").inputs, { savedFLAGS: 513 }, "PUSHF must save CF=1 in the tested word");
 assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C10-L3-Q2").expected, { restoredFLAGS: 513, IF: 1, CF: 1 }, "POPF must restore the saved CF and IF bits");
+
+
+const chapter11Review = JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-11.json", "utf8"));
+const chapter11Ids = key.questions.filter(question => question.chapter === 11).map(question => question.id).sort();
+const reviewedChapter11Ids = chapter11Review.records.map(record => record.id).sort();
+assert.deepEqual(reviewedChapter11Ids, chapter11Ids, "Chapter 11 independent review must cover all 19 questions exactly once");
+assert.equal(new Set(reviewedChapter11Ids).size, 19, "Chapter 11 review must not duplicate question IDs");
+assert.equal(chapter11Review.summary.questionsReviewed, 19, "Chapter 11 review count must match the complete question bank");
+assert.equal(chapter11Review.summary.passed, 16, "Chapter 11 review must report 16 passed questions");
+assert.equal(chapter11Review.summary.corrected, 3, "Chapter 11 review must record INC, conditional branch and regression-test improvements");
+assert.equal(chapter11Review.summary.blocked, 0, "Chapter 11 review must have no unresolved blockers");
+assert.equal(chapter11Review.summary.officialCertificationCountBefore, 384, "Chapter 11 review starts from the official 384-question ledger");
+assert.equal(chapter11Review.summary.officialCertificationCountAfter, 384, "Chapter 11 review must not silently advance official certification");
+assert.equal(chapter11Review.summary.remainingOfficialCertification, 300, "The official certification backlog remains 300");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C11-F-Q6").expected, { result: 32768, OF: 1, CF: 1 }, "INC 7FFFh must set OF and preserve CF=1");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C11-F-Q7").expected, { ZF: 0, branchTaken: false, next: "fallthrough" }, "JZ must not be taken after CMP 1,2");
+assert.deepEqual(allOracleRecords.find(oracle => oracle.id === "C11-F-Q9").expected, { detectsRecurrence: true, retainsCase: true }, "A regression test must retain and replay the previously failing case");
 
 console.log("Question oracle evaluator: chapters 1–36 — " + oracleRecordsChecked + "/684 oracle records passed automated checks; official certification ledger remains " + manifest.oracleCoverageSummary.officialCertificationCount + "/684 (" + manifest.oracleCoverageSummary.remainingOfficialCertification + " pending); " + blocked + " blocked.");
