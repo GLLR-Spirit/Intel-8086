@@ -30,7 +30,11 @@
           "reason": "Confond le chevauchement BIU/EU avec une exécution superscalaire."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual — Bus Interface Unit and instruction queue."
+      "reference": "Intel 8086 Family User's Manual — Bus Interface Unit and instruction queue.",
+      "explanationChecks": [
+        "six octets",
+        "sans exécution superscalaire"
+      ]
     },
     {
       "id": "C04-F-Q4",
@@ -57,7 +61,12 @@
           "reason": "Ignore la largeur de 8 bits du registre AL et traite le résultat mathématique comme s'il pouvait y être stocké intégralement."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual — ADD operation and CF definition."
+      "reference": "Intel 8086 Family User's Manual — ADD operation and CF definition.",
+      "explanationChecks": [
+        "00h",
+        "CF=1",
+        "opérande immédiat invalide"
+      ]
     },
     {
       "id": "C17-F-Q2",
@@ -87,7 +96,13 @@
           "reason": "Teste une relation signée, alors que l'énoncé impose une comparaison non signée."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual — conditional transfer instructions JA/JAE/JL."
+      "reference": "Intel 8086 Family User's Manual — conditional transfer instructions JA/JAE/JL.",
+      "explanationChecks": [
+        "strictement supérieure",
+        "CF=0",
+        "ZF=0",
+        "égalité"
+      ]
     },
     {
       "id": "C26-F-Q5",
@@ -113,7 +128,11 @@
           "reason": "Ne correspond ni à la direction ni au résultat binaire du décalage demandé."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual — SHR operation."
+      "reference": "Intel 8086 Family User's Manual — SHR operation.",
+      "explanationChecks": [
+        "CF",
+        "40h"
+      ]
     },
     {
       "id": "C26-F-Q6",
@@ -139,7 +158,11 @@
           "reason": "Décale de deux positions au lieu d'une."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual — SAR operation."
+      "reference": "Intel 8086 Family User's Manual — SAR operation.",
+      "explanationChecks": [
+        "signe",
+        "FEh"
+      ]
     },
     {
       "id": "C28-F-Q7",
@@ -178,7 +201,12 @@
           "reason": "STOSB utilise AL comme source et ES:DI comme destination ; cette proposition confond registres, segment et direction du transfert."
         }
       ],
-      "reference": "Intel 8086 Family User's Manual — STOSB, REP and direction flag semantics."
+      "reference": "Intel 8086 Family User's Manual — STOSB, REP and direction flag semantics.",
+      "explanationChecks": [
+        "DF=0",
+        "DI augmente",
+        "CX atteint zéro"
+      ]
     }
   ]
 }
