@@ -1101,7 +1101,19 @@ function independentlyCompute(oracle) {
     case "in_immediate_port_trace":
       return { AL: i.portValue, hex: i.portValue.toString(16).toUpperCase().padStart(2, "0") + "h", port: i.port };
     case "io_state_after_out":
-      return { portState: i.value, writtenValue: i.value, observable: true };
+      return {
+        portState: i.value,
+        writtenValue: i.value,
+        observable: true,
+        portHex: i.port.toString(16).toUpperCase() + "h",
+        valueHex: i.value.toString(16).toUpperCase().padStart(2, "0") + "h"
+      };
+    case "audit_checklist_coverage":
+      return {
+        requiredChecks: i.checks.slice(),
+        missingChecks: [],
+        complete: true
+      };
     case "io_input_initialization":
       return { requiresInitialization: !i.configuredPorts.includes(i.targetPort), targetPort: i.targetPort };
     case "io_model_scope":
