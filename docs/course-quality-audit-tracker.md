@@ -379,3 +379,13 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - Dix tests négatifs préservent le résultat final tout en contournant la méthode ; ils doivent être rejetés.
 - EX39 conserve une évaluation humaine de la justification sur les limites de mesure des cycles physiques.
 - **EX31–EX40 non certifiés** tant que CI, navigateur et revue humaine distincte ne sont pas confirmés.
+
+
+#### Vérification automatique — lot 4
+
+- Sur le commit `85d1715c7875ec21b9e40072a70f00eb6c779ee7`, `Validate Intel 8086 Lab` : succès (run 46091849568).
+- Sur le même commit, `Niveau 3 — audit navigateur` : succès (run 46091849565).
+- Le test de méthode EX31–EX40 confirme 10/10 corrections de référence et rejette 10/10 contournements qui préservent le résultat final.
+- Les oracles complémentaires EX33, EX35 et EX37 rejettent aussi leurs contournements.
+- Revue pédagogique distincte : EX31–EX38 et EX40 relus sur consigne, indice, étapes et solution ; EX39 reste **non certifié** tant que sa justification libre sur les limites des cycles physiques n'est pas évaluée humainement.
+- **Décision : lot 4 non certifié dans son ensemble** ; neuf exercices ont leurs trois axes documentés, EX39 conserve une preuve pédagogique humaine ouverte. Aucun déploiement.
