@@ -357,3 +357,13 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - Première CI du lot 2 : les tests de méthode (10/10 positifs, 10/10 contournements rejetés), les corrections guidées et le différentiel source/binaire passent. L'audit navigateur a révélé une ancienne variante EX20 encore fondée sur FCh/03h ; le test a été actualisé pour la nouvelle comparaison 7Fh/80h. Nouvelle CI attendue.
 
 - **Lot 2 EX11–EX20 : certifié dans le cadre de l'audit pédagogique**, après vérification séparée du résultat, de la méthode (10/10 positifs, 10/10 contournements rejetés, alternative JLE signée) et de la correction pédagogique. CI et navigateur réussis sur le commit `9e82880` (runs 46090695090 et 46090695164).
+
+
+### Lot 3 — correction des méthodes obligatoires EX21–EX30 — 28 novembre 2026
+
+- Matrice individuelle ajoutée : `docs/exercise-method-matrix-batch-03-2026-11-28.md`.
+- Extension du validateur : alternatives ordonnées de séquences d'opérandes et instructions/opérandes interdites.
+- Contrats ajoutés pour le maximum à deux chemins, la boucle de débogage, l'échange DX, la sélection des pairs par TEST et le saut direct JMP ; contrats existants des procédures, du paramètre sur pile et de MUL conservés.
+- EX26 ne fournit plus directement le JMP à l'apprenant.
+- Dix tests négatifs ajoutés, plus un test positif du chemin AX>BX pour EX21.
+- **EX21–EX30 restent non certifiés** jusqu'à réussite des tests, de l'audit navigateur et de la vérification pédagogique indépendante.
