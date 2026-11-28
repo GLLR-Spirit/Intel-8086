@@ -324,3 +324,15 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - EX39 conserve sa grille d'autoévaluation et son exemple de réponse sur `main` ; aucune validation sémantique automatique n'est revendiquée.
 - La certification pédagogique complète des 48 exercices reste ouverte : les contrôles automatisés ne remplacent pas l'évaluation humaine indépendante.
 - Aucun déploiement n'est déclenché par cette réconciliation.
+
+
+### Lot 1 — correction des méthodes obligatoires EX01–EX10 — 28 novembre 2026
+
+- Ajout d'une matrice individuelle séparant résultat, méthode exécutée et correction pédagogique : `docs/exercise-method-matrix-batch-01-2026-11-28.md`.
+- Ajout de contrats d'opérandes ordonnés pour EX01, EX02, EX04 et EX06–EX10 ; conservation des contrats LOOP existants pour EX03 et EX05 ; renforcement du contrat de pile d'EX10.
+- Extension du validateur pour contrôler les séquences exactes d'opérandes et accepter des familles de branchements conditionnels équivalents.
+- Ajout de dix programmes négatifs qui satisfont chacun le prédicat de résultat tout en omettant la méthode demandée ; le contrôle de méthode doit les rejeter.
+- Ajout d'une variante JNE positive pour EX04 afin de ne pas imposer uniquement la forme JE de la correction de référence.
+- Correction éditoriale des programmes de départ EX07–EX10, qui contenaient auparavant déjà leur solution complète.
+- **Aucun exercice du lot 1 n'est déclaré certifié** : l'exécution des tests, la vérification navigateur et la revue pédagogique indépendante restent à confirmer.
+- Aucun workflow n'a été déclenché manuellement et aucun déploiement n'a été effectué.
