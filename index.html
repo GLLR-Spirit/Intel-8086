@@ -1013,9 +1013,9 @@ setExerciseMethod("Intégration : parcours inverse et contrôle de mot",{
   {op:"MOV",args:["AX","DX"]}
  ]
 });
-exerciseEditorialNotes[40]="EX41 est différencié d'EX27 : la compétence évaluée est la préservation d'un registre de l'appelant dans une procédure, avec sauvegarde/restauration explicite.";
+exerciseEditorialNotes[40]={prerequisites:"CALL/RET, PUSH/POP et convention de préservation des registres.",pitfall:"Une procédure qui modifie BX doit le sauvegarder avant le calcul puis le restaurer avant RET."};
 exerciseDifficultyRationales[40]="Expert : l'élève doit respecter une convention de registre, gérer la pile dans une procédure et vérifier que le registre de l'appelant reste inchangé.";
-exerciseEditorialNotes[45]="EX46 est différencié d'EX33 : le gestionnaire doit préserver un registre général au-dessus du cadre d'interruption avant IRET.";
+exerciseEditorialNotes[45]={prerequisites:"INT/IRET, cadre FLAGS/CS/IP, PUSH/POP et préservation des registres.",pitfall:"Le gestionnaire empile BX au-dessus du cadre INT et doit le restaurer avant IRET, sans dépiler le cadre d'interruption."};
 exerciseDifficultyRationales[45]="Expert : combine cadre INT, pile imbriquée dans le gestionnaire, préservation d'un registre et restauration architecturale par IRET.";
 
 // Contrats de méthode complémentaires issus de la revue EX01–EX48.
