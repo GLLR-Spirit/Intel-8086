@@ -134,10 +134,10 @@ exercises[8][4]={level:"Débutant",hint:"La première opérande de MOV est toujo
 exercises[9][4]={level:"Intermédiaire",hint:"PUSH empile le mot ; POP le récupère dans l'ordre LIFO.",steps:["AX reçoit 1234h.","PUSH AX place 1234h au sommet de la pile.","MOV AX,0 modifie AX mais ne change pas le mot empilé.","POP BX récupère le mot dans BX : BX vaut 1234h."],solution:exercises[9][2]};
 exercises[10][4]={level:"Intermédiaire",hint:"AND avec un masque 0Fh conserve uniquement les quatre bits de poids faible.",steps:["ACh vaut 10101100b.","0Fh vaut 00001111b.","AND bit à bit donne 00001100b.","Le résultat dans AL est 0Ch."],solution:exercises[10][2]};
 exercises[11][4]={level:"Avancé",hint:"Charge d'abord la valeur dans un registre général, puis transfère-la vers DS.",steps:["MOV AX,1000h prépare le sélecteur de segment.","MOV DS,AX copie 1000h dans DS.","MOV BX,0010h initialise le déplacement.","DS et BX contiennent respectivement 1000h et 0010h."],solution:exercises[11][2]};
-exercises[6][4].solution="MOV AL, 2Ah\\nMOV BL, 6\\nADD AL, BL\\nHLT";
-exercises[7][4].solution="MOV AX, 1234h\\nMOV AL, 56h\\nHLT";
-exercises[8][4].solution="MOV AX, 25\\nMOV BX, AX\\nHLT";
-exercises[9][4].solution="MOV AX, 1234h\\nPUSH AX\\nMOV AX, 0\\nPOP BX\\nHLT";
+exercises[6][4].solution="MOV AL, 2Ah\nMOV BL, 6\nADD AL, BL\nHLT";
+exercises[7][4].solution="MOV AX, 1234h\nMOV AL, 56h\nHLT";
+exercises[8][4].solution="MOV AX, 25\nMOV BX, AX\nHLT";
+exercises[9][4].solution="MOV AX, 1234h\nPUSH AX\nMOV AX, 0\nPOP BX\nHLT";
 for(var guidedIndex=12;guidedIndex<exercises.length;guidedIndex++)exercises[guidedIndex][4].solution=exercises[guidedIndex][2];
 exercises.push(
 ["Raisonnement : comparaison signée","Interprète AL=FCh et BL=02h comme des valeurs signées sur 8 bits. Place 1 dans DX si AL est inférieur à BL. Choisis le branchement adapté.","MOV AL, 0FCh\nMOV BL, 2\nCMP AL, BL\n; Choisis le saut signé approprié\nMOV DX, 0\nJMP FIN\nINFERIEUR:\nMOV DX, 1\nFIN:\nHLT",function(s){return s.reg.DX===1;},{level:"Intermédiaire",hint:"FCh représente −4 en complément à deux sur 8 bits. Le branchement doit interpréter les opérandes comme signées.",steps:["AL contient FCh, soit −4 en signé sur 8 bits.","CMP AL,BL actualise les indicateurs comme AL−BL sans modifier les opérandes.","JL teste une relation strictement inférieure en signé.","Le saut doit atteindre INFERIEUR et placer 1 dans DX."],solution:"MOV AL, 0FCh\nMOV BL, 2\nCMP AL, BL\nJL INFERIEUR\nMOV DX, 0\nJMP FIN\nINFERIEUR:\nMOV DX, 1\nFIN:\nHLT"},{type:"raisonnement",difficulty:"Intermédiaire"}],
