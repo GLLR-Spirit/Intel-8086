@@ -369,3 +369,13 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - **EX21–EX30 restent non certifiés** jusqu'à réussite des tests, de l'audit navigateur et de la vérification pédagogique indépendante.
 
 - Première CI du lot 3 : les lots 1 et 2 repassent ; le test de branche alternative EX21 utilisait le prédicat fixe DX=23 sur une entrée modifiée AX=30/BX=23. Le test a été corrigé pour vérifier indépendamment DX=30. Nouvelle CI attendue.
+
+
+### Lot 4 — correction des méthodes obligatoires EX31–EX40 — 28 novembre 2026
+
+- Matrice individuelle ajoutée : `docs/exercise-method-matrix-batch-04-2026-11-28.md`.
+- Contrats ajoutés/renforcés pour DIV, SHR, INT/IRET, IN, encodage MOV immédiat, adressage [BX+SI+4], désassemblage symbolique, overrides DS/ES, SHL et parcours de tableau SI/CX.
+- Oracles complémentaires EX33 (IP de reprise), EX35 (octets exacts) et EX37 (frontières de désassemblage) conservés et testés sur les contournements.
+- Dix tests négatifs préservent le résultat final tout en contournant la méthode ; ils doivent être rejetés.
+- EX39 conserve une évaluation humaine de la justification sur les limites de mesure des cycles physiques.
+- **EX31–EX40 non certifiés** tant que CI, navigateur et revue humaine distincte ne sont pas confirmés.
