@@ -71,3 +71,25 @@ Les échecs ont été identifiés dans les journaux des jobs `learning-quality` 
 ### Renforcement final d'EX04
 
 Le premier contrat acceptait toute instruction Jcc. Une solution pouvait donc exécuter CMP puis un branchement non pertinent (par exemple JA sur des opérandes égaux) et obtenir malgré tout CX=1. Le contrat a été resserré à JE/JZ/JNE/JNZ. Un test négatif supplémentaire vérifie que JA est rejeté malgré le résultat final correct.
+
+
+## Vérification séparée et décision — lot 1
+
+La vérification a été réalisée sur les trois axes distincts, sans utiliser le résultat d'un axe comme substitut d'un autre :
+
+| Axe | Contrôle | Résultat |
+|---|---|---|
+| Résultat | Corrections de référence exécutées, prédicats attendus satisfaits ; audit différentiel des 48 corrections source/binaire réussi | PASS |
+| Méthode | 10/10 méthodes de référence acceptées ; 10/10 contournements résultat-seul rejetés ; JNE équivalent accepté ; JA non pertinent rejeté pour EX04 | PASS |
+| Correction pédagogique | Relecture individuelle des consignes, indices, étapes, solutions et cohérence avec le niveau de chaque exercice | PASS |
+
+**Décision : EX01–EX10 sont certifiés dans le cadre de cet audit pédagogique.** Cette décision est limitée à ces dix exercices ; elle ne certifie pas les 38 autres.
+
+### CI et navigateur
+
+Sur le commit `851c21ebe83f917d15c6eedfe994508e04fe1162` :
+
+- `Validate Intel 8086 Lab` : succès — run [46090112358](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46090112358).
+- `Niveau 3 — audit navigateur` : succès — run [46090112357](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46090112357).
+- La suite différentielle a confirmé explicitement les 10 cas positifs, les 10 contournements négatifs, l'alternative JNE et le rejet de JA pour EX04.
+- Aucun workflow n'a été lancé manuellement.
