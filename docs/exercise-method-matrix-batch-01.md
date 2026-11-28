@@ -19,9 +19,9 @@ Règle : la validation du résultat final et celle de la méthode sont deux cont
 ## Résultats des contrôles
 
 Le test \`tests/exercise-method-batch-01.cjs\` exécute pour chacun des dix exercices :
-- la correction de référence sur l'interpréteur source et sur le chemin binaire ;
+- la correction de référence sur l'interpréteur source et sur le chemin binaire (oracle de résultat) ;
 - l'oracle de résultat final ;
-- le contrat de méthode sur la trace réellement exécutée ;
+- le contrat de méthode sur la trace source réellement exécutée (le chemin binaire n'expose pas actuellement cette trace) ;
 - un programme alternatif qui conserve le résultat final mais contourne la méthode ;
 - une mutation de trace qui retire la première instruction et doit être rejetée.
 
