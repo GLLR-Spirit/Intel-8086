@@ -389,3 +389,13 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - Les oracles complémentaires EX33, EX35 et EX37 rejettent aussi leurs contournements.
 - Revue pédagogique distincte : EX31–EX38 et EX40 relus sur consigne, indice, étapes et solution ; EX39 reste **non certifié** tant que sa justification libre sur les limites des cycles physiques n'est pas évaluée humainement.
 - **Décision : lot 4 non certifié dans son ensemble** ; neuf exercices ont leurs trois axes documentés, EX39 conserve une preuve pédagogique humaine ouverte. Aucun déploiement.
+
+
+### Lot 5 — correction des méthodes obligatoires EX41–EX48 — 28 novembre 2026
+
+- Matrice individuelle ajoutée : `docs/exercise-method-matrix-batch-05-2026-11-28.md`.
+- EX41 redessiné pour évaluer la préservation de BX dans une procédure, afin de supprimer la duplication avec EX27.
+- EX46 redessiné pour évaluer la préservation de BX dans un gestionnaire d'interruption, afin de supprimer la duplication avec EX33.
+- Contrats d'opérandes ajoutés ou renforcés pour MUL/DIV, PUSHF/POPF, REP MOVSB, REPNE SCASB, les deux procédures/interruption refondues et les intégrations EX47/EX48.
+- Huit tests négatifs conservent les états finaux attendus tout en contournant les méthodes.
+- **EX41–EX48 non certifiés** tant que CI, navigateur et revue pédagogique distincte ne sont pas confirmés.
