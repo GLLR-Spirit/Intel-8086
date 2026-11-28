@@ -355,3 +355,5 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - **EX11–EX20 restent non certifiés** jusqu'à réussite des tests, de l'audit navigateur et de la vérification pédagogique indépendante.
 
 - Première CI du lot 2 : les tests de méthode (10/10 positifs, 10/10 contournements rejetés), les corrections guidées et le différentiel source/binaire passent. L'audit navigateur a révélé une ancienne variante EX20 encore fondée sur FCh/03h ; le test a été actualisé pour la nouvelle comparaison 7Fh/80h. Nouvelle CI attendue.
+
+- **Lot 2 EX11–EX20 : certifié dans le cadre de l'audit pédagogique**, après vérification séparée du résultat, de la méthode (10/10 positifs, 10/10 contournements rejetés, alternative JLE signée) et de la correction pédagogique. CI et navigateur réussis sur le commit `9e82880` (runs 46090695090 et 46090695164).
