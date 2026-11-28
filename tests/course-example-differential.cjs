@@ -110,7 +110,17 @@ assert.equal(compareAlternativeExercise.exercise[3](compareAlternative), true,
 assert.equal(api.exerciseMethodSatisfied(compareAlternativeExercise.index, compareAlternative), true,
   "EX04 must accept an equivalent JNE implementation");
 
-console.log("Exercise method batch 1 PASS: 10/10 reference methods accepted; 10/10 result-only bypasses rejected; EX04 JNE alternative accepted.");
+const compareIrrelevantBranch = api.executeAll([
+  "MOV AX, 15", "MOV BX, 15", "CMP AX, BX", "JA SKIP",
+  "MOV CX, 1", "HLT", "SKIP:", "MOV CX, 0", "HLT"
+].join("\n"));
+assert.ok(!compareIrrelevantBranch.error, "EX04 irrelevant-branch bypass must execute");
+assert.equal(compareAlternativeExercise.exercise[3](compareIrrelevantBranch), true,
+  "EX04 irrelevant-branch bypass must preserve the expected result");
+assert.equal(api.exerciseMethodSatisfied(compareAlternativeExercise.index, compareIrrelevantBranch), false,
+  "EX04 must reject an unsigned branch that does not test equality");
+
+console.log("Exercise method batch 1 PASS: 10/10 reference methods accepted; 10/10 result-only bypasses rejected; EX04 JNE alternative accepted and irrelevant JA rejected.");
 
 function compareRecord(a, b, label) {
   assert.deepEqual(plain(a), plain(b), label);
