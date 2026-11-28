@@ -21,7 +21,7 @@ Les tests négatifs doivent construire un programme qui atteint le même état f
 | EX01 | AX = 20 | `ADD AX,BX` | Affecter directement 20 à AX | Étapes AX=12, BX=8, addition, résultat |
 | EX02 | AX = 9, BX = 4 | Sauvegarder AX dans DX, transférer BX vers AX, restaurer DX vers BX — dans cet ordre | Affecter directement les deux valeurs finales sans DX | Explication de DX comme temporaire et prévention de l'écrasement |
 | EX03 | AX = 20, CX = 0 | Quatre exécutions de LOOP | Affecter directement AX=20 et CX=0 | Explication du compteur CX et des quatre itérations |
-| EX04 | CX = 1 pour AX=BX | CMP AX,BX puis au moins un branchement conditionnel 8086 | Affecter directement CX=1 | Explication de CMP/ZF et du chemin égal ; une forme JE ou JNE équivalente est acceptée |
+| EX04 | CX = 1 pour AX=BX | CMP AX,BX puis un branchement d'égalité (JE/JZ ou JNE/JNZ) | Affecter directement CX=1 ; utiliser JA, branchement non pertinent pour l'égalité | Explication de CMP/ZF et du chemin égal ; une forme JE ou JNE équivalente est acceptée |
 | EX05 | AX = 21, CX = 0 | Six exécutions de LOOP | Affecter directement AX=21 et CX=0 | Explication de BX comme valeur courante et de CX comme compteur |
 | EX06 | AX = BX = 1234h | MOV AX,1234h puis MOV BX,AX | Charger séparément 1234h dans les deux registres | Explication du transfert source → destination |
 | EX07 | AL = 30h | ADD AL,BL | Charger directement 30h dans AL | Programme de départ corrigé : l'addition n'est plus déjà écrite |
@@ -66,3 +66,8 @@ La première exécution automatique de la PR a révélé deux défauts dans cett
 - **EX04** : le contrat de branchement acceptait les alias ZF mais omettait les mnémoniques JE/JNE. Ces deux formes sont maintenant admises.
 
 Les échecs ont été identifiés dans les journaux des jobs `learning-quality` et `level3-browser-audit`. Les corrections sont poussées sur la branche ; une nouvelle exécution automatique est nécessaire pour vérifier qu'elles règlent les deux défauts. **Le lot reste non certifié.**
+
+
+### Renforcement final d'EX04
+
+Le premier contrat acceptait toute instruction Jcc. Une solution pouvait donc exécuter CMP puis un branchement non pertinent (par exemple JA sur des opérandes égaux) et obtenir malgré tout CX=1. Le contrat a été resserré à JE/JZ/JNE/JNZ. Un test négatif supplémentaire vérifie que JA est rejeté malgré le résultat final correct.
