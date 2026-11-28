@@ -71,16 +71,16 @@ console.log("CALL/RET, BP+4/RET 2 and modular-routine method gates reject result
 
 // Lot 1 — contrôles indépendants des méthodes obligatoires EX01–EX10.
 const firstTenMethodCases = [
-  { title: "Additionner deux nombres", bypass: "MOV AX, 20\\nHLT" },
-  { title: "Échanger deux valeurs", bypass: "MOV AX, 9\\nMOV BX, 4\\nHLT" },
-  { title: "Somme répétée", bypass: "MOV AX, 20\\nMOV CX, 0\\nHLT" },
-  { title: "Comparer deux valeurs", bypass: "MOV CX, 1\\nHLT" },
-  { title: "Somme de 1 à 6", bypass: "MOV AX, 21\\nMOV CX, 0\\nHLT" },
-  { title: "Architecture : transfert entre registres", bypass: "MOV AX, 1234h\\nMOV BX, 1234h\\nHLT" },
-  { title: "Numération : addition en hexadécimal", bypass: "MOV AL, 30h\\nHLT" },
-  { title: "Registres : modifier un octet", bypass: "MOV AX, 1256h\\nHLT" },
-  { title: "MOV : respecter destination et source", bypass: "MOV AX, 25\\nMOV BX, 25\\nHLT" },
-  { title: "Pile : vérifier PUSH et POP", bypass: "MOV BX, 1234h\\nHLT" }
+  { title: "Additionner deux nombres", bypass: "MOV AX, 20\nHLT" },
+  { title: "Échanger deux valeurs", bypass: "MOV AX, 9\nMOV BX, 4\nHLT" },
+  { title: "Somme répétée", bypass: "MOV AX, 20\nMOV CX, 0\nHLT" },
+  { title: "Comparer deux valeurs", bypass: "MOV CX, 1\nHLT" },
+  { title: "Somme de 1 à 6", bypass: "MOV AX, 21\nMOV CX, 0\nHLT" },
+  { title: "Architecture : transfert entre registres", bypass: "MOV AX, 1234h\nMOV BX, 1234h\nHLT" },
+  { title: "Numération : addition en hexadécimal", bypass: "MOV AL, 30h\nHLT" },
+  { title: "Registres : modifier un octet", bypass: "MOV AX, 1256h\nHLT" },
+  { title: "MOV : respecter destination et source", bypass: "MOV AX, 25\nMOV BX, 25\nHLT" },
+  { title: "Pile : vérifier PUSH et POP", bypass: "MOV BX, 1234h\nHLT" }
 ];
 assert.equal(firstTenMethodCases.length, 10, "Batch 1 must cover exactly ten exercises");
 for (const spec of firstTenMethodCases) {
@@ -102,7 +102,7 @@ for (const spec of firstTenMethodCases) {
 const compareAlternative = api.executeAll([
   "MOV AX, 15", "MOV BX, 15", "CMP AX, BX", "JNE DIFFERENT",
   "MOV CX, 1", "HLT", "DIFFERENT:", "MOV CX, 0", "HLT"
-].join("\\n"));
+].join("\n"));
 const compareAlternativeExercise = exerciseByTitle("Comparer deux valeurs");
 assert.ok(!compareAlternative.error, "EX04 alternative conditional solution must execute");
 assert.equal(compareAlternativeExercise.exercise[3](compareAlternative), true,
