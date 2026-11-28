@@ -56,3 +56,13 @@ Les tests négatifs doivent construire un programme qui atteint le même état f
 4. Il doit accepter la variante JNE d'EX04.
 5. Le navigateur doit toujours charger les dix exercices et leurs corrections.
 6. Les dix corrections pédagogiques doivent être relues séparément ; une réussite technique ne suffit pas.
+
+
+## Diagnostic de la première CI automatique
+
+La première exécution automatique de la PR a révélé deux défauts dans cette correction :
+
+- **EX07** : le guide pédagogique réutilisait le programme de départ comme solution. En retirant la solution du programme de départ, la solution guidée était devenue incomplète. La solution de référence complète est maintenant rétablie séparément.
+- **EX04** : le contrat de branchement acceptait les alias ZF mais omettait les mnémoniques JE/JNE. Ces deux formes sont maintenant admises.
+
+Les échecs ont été identifiés dans les journaux des jobs `learning-quality` et `level3-browser-audit`. Les corrections sont poussées sur la branche ; une nouvelle exécution automatique est nécessaire pour vérifier qu'elles règlent les deux défauts. **Le lot reste non certifié.**
