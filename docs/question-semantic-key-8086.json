@@ -5047,7 +5047,7 @@
       ],
       "correctAnswer": "JA",
       "explanation": "JA branche si CF=0 et ZF=0 : la nouvelle valeur non signée est strictement supérieure. JAE inclurait aussi l'égalité.",
-      "category": "Compréhension"
+      "category": "Syntaxe"
     },
     {
       "id": "C17-F-Q3",
@@ -5063,7 +5063,7 @@
       ],
       "correctAnswer": "AX",
       "explanation": "AX reçoit les additions successives.",
-      "category": "Syntaxe"
+      "category": "Définition"
     },
     {
       "id": "C17-F-Q4",
@@ -5079,7 +5079,7 @@
       ],
       "correctAnswer": "Débordement de la capacité et perte de retenue si elle n'est pas propagée",
       "explanation": "Une somme multi-mots doit traiter la retenue avec ADC.",
-      "category": "Restrictions"
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C17-F-Q5",
@@ -5095,7 +5095,7 @@
       ],
       "correctAnswer": "CX",
       "explanation": "LOOP décrémente CX.",
-      "category": "Prédiction"
+      "category": "Syntaxe"
     },
     {
       "id": "C17-F-Q6",
@@ -5199,14 +5199,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 2,
-      "stem": "Avec DS=1000h et BX=0020h, quelle adresse logique désigne BX ?",
+      "stem": "Quelle adresse logique utilise la référence mémoire [BX] lorsque DS=1000h et BX=0020h ?",
       "choices": [
         "1000h:0020h",
         "0020h:1000h",
         "1000h:1000h"
       ],
       "correctAnswer": "1000h:0020h",
-      "explanation": "DS fournit le segment et BX fournit l'offset de la référence mémoire.",
+      "explanation": "[BX] utilise DS comme segment par défaut et BX comme offset : l'adresse logique est DS:BX, soit 1000h:0020h.",
       "category": "Application"
     },
     {
@@ -5215,14 +5215,14 @@
       "kind": "intermediate",
       "lesson": 1,
       "number": 3,
-      "stem": "Pourquoi un offset seul ne suffit-il pas à identifier l'adresse logique ?",
+      "stem": "Pourquoi un offset seul ne suffit-il pas à calculer une adresse physique unique ?",
       "choices": [
         "Il faut aussi connaître le segment",
         "Il faut connaître AX",
         "Il faut connaître le code machine"
       ],
       "correctAnswer": "Il faut aussi connaître le segment",
-      "explanation": "Le segment participe au calcul de l'adresse physique avec l'offset.",
+      "explanation": "L'adresse physique dépend du couple segment:offset. Un même offset associé à des segments différents peut produire des adresses physiques différentes.",
       "category": "Vérification"
     },
     {
@@ -5343,15 +5343,15 @@
       "kind": "final",
       "lesson": null,
       "number": 2,
-      "stem": "Pourquoi l'espace physique dépasse-t-il 64 Kio ?",
+      "stem": "Quelle caractéristique permet au 8086 d'adresser 1 Mio malgré des offsets de 16 bits ?",
       "choices": [
         "Le bus d'adresses est large de 20 bits malgré les offsets 16 bits",
         "Les registres généraux sont 32 bits",
         "Chaque segment contient 1 Mio indépendant"
       ],
       "correctAnswer": "Le bus d'adresses est large de 20 bits malgré les offsets 16 bits",
-      "explanation": "Les segments et offsets permettent de former des adresses physiques sur 20 bits.",
-      "category": "Compréhension"
+      "explanation": "Le bus physique comporte 20 bits. Le couple segment:offset forme l'adresse par segment×16+offset, dans un espace de 1 Mio.",
+      "category": "Définition"
     },
     {
       "id": "C18-F-Q3",
@@ -5383,7 +5383,7 @@
       ],
       "correctAnswer": "Cette destination est interdite",
       "explanation": "CS ne peut pas être destination de MOV dans le jeu documenté du 8086.",
-      "category": "Restrictions"
+      "category": "Syntaxe"
     },
     {
       "id": "C18-F-Q5",
@@ -5399,7 +5399,7 @@
       ],
       "correctAnswer": "10020h",
       "explanation": "1000h×10h+20h=10020h.",
-      "category": "Prédiction"
+      "category": "Calcul / prédiction"
     },
     {
       "id": "C18-F-Q6",
@@ -5439,15 +5439,15 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Pourquoi 1000h:0010h et 1001h:0000h sont-ils équivalents ?",
+      "stem": "Après MOV AX,1000h / MOV DS,AX / MOV BX,0010h / MOV AX,1001h / MOV ES,AX / MOV DI,0000h, que désignent DS:[BX] et ES:[DI] ?",
       "choices": [
-        "Ils calculent tous deux 10010h",
-        "Leurs offsets sont égaux",
-        "Ils utilisent le même segment"
+        "La même adresse physique 10010h",
+        "10010h et 10001h",
+        "Deux segments indépendants"
       ],
-      "correctAnswer": "Ils calculent tous deux 10010h",
-      "explanation": "Les deux expressions segment×16+offset donnent 10010h.",
-      "category": "Analyse de résultat"
+      "correctAnswer": "La même adresse physique 10010h",
+      "explanation": "DS:BX vaut 1000h×10h+0010h=10010h. ES:DI vaut 1001h×10h+0000h=10010h : les deux références désignent le même octet physique.",
+      "category": "Analyse de programme"
     },
     {
       "id": "C18-F-Q9",
@@ -5743,14 +5743,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Quel segment est sélectionné par défaut pour [BP+4] ?",
+      "stem": "Après MOV BX,FFF0h / MOV SI,0030h / MOV AX,[BX+SI+4], quel offset effectif est utilisé pour lire le mot ?",
       "choices": [
-        "SS",
-        "DS",
-        "ES"
+        "0024h (repli sur 16 bits)",
+        "10024h (offset 20 bits)",
+        "0020h (déplacement ignoré)"
       ],
-      "correctAnswer": "SS",
-      "explanation": "BP sélectionne SS sauf override explicite.",
+      "correctAnswer": "0024h (repli sur 16 bits)",
+      "explanation": "FFF0h+0030h+0004h=10024h. L'adresse effective est un offset 16 bits : seuls les 16 bits faibles sont conservés, soit 0024h. Le segment est appliqué ensuite.",
       "category": "Analyse de résultat"
     },
     {
@@ -5919,14 +5919,14 @@
       "kind": "intermediate",
       "lesson": 3,
       "number": 3,
-      "stem": "Quel risque présente un POPF sans mot préalablement empilé ?",
+      "stem": "Que risque un POPF exécuté sans sauvegarde FLAGS correspondante ?",
       "choices": [
-        "Il restaure des données arbitraires comme FLAGS et déséquilibre la pile",
+        "Il interprète le mot courant SS:SP comme FLAGS puis avance SP de 2",
         "Il ne fait rien dans tous les cas",
         "Il incrémente CX"
       ],
-      "correctAnswer": "Il restaure des données arbitraires comme FLAGS et déséquilibre la pile",
-      "explanation": "POPF consomme le mot présent à SS:SP ; l'état de pile doit être valide.",
+      "correctAnswer": "Il interprète le mot courant SS:SP comme FLAGS puis avance SP de 2",
+      "explanation": "POPF consomme toujours le mot au sommet. Sans sauvegarde correspondante, il peut interpréter une donnée sans rapport comme FLAGS et avancer SP de deux octets.",
       "category": "Vérification"
     },
     {
@@ -5999,14 +5999,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Après PUSH AX puis PUSH BX, quel registre reçoit la valeur initiale de BX en premier ?",
+      "stem": "Après PUSH AX puis PUSH BX, si le programme exécute POP CX puis POP DX, dans quel registre la valeur initiale de BX est-elle copiée en premier ?",
       "choices": [
-        "CX avec POP CX",
-        "DX avec POP DX",
-        "AX avec POP AX"
+        "CX",
+        "DX",
+        "AX"
       ],
-      "correctAnswer": "CX avec POP CX",
-      "explanation": "BX est le dernier empilé et le premier dépilé.",
+      "correctAnswer": "CX",
+      "explanation": "BX est le dernier empilé. Le premier POP est POP CX : il copie donc la valeur initiale de BX dans CX.",
       "category": "Prédiction"
     },
     {
@@ -6047,14 +6047,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Quel résultat confirme une pile équilibrée ?",
+      "stem": "Si SP=0100h, à quelle adresse logique le premier PUSH AX écrit-il le mot ?",
       "choices": [
-        "SP final égale SP initial",
-        "SP final égale zéro",
-        "IP final égale SP initial"
+        "SS:00FEh",
+        "SS:0100h",
+        "DS:00FEh"
       ],
-      "correctAnswer": "SP final égale SP initial",
-      "explanation": "L'équilibre se vérifie en comparant le pointeur avant et après la séquence.",
+      "correctAnswer": "SS:00FEh",
+      "explanation": "PUSH décrémente SP de deux avant l'écriture : SP devient 00FEh et l'accès se fait dans SS.",
       "category": "Analyse de résultat"
     },
     {
@@ -6607,14 +6607,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Si AX=4 et BX=5, quelle sortie donne ADD AX,BX ?",
+      "stem": "Si l'appelant empile le paramètre A puis le paramètre B, quel ordre la routine doit-elle utiliser pour les dépiler ?",
       "choices": [
-        "AX=9",
-        "AX=20",
-        "AX=1"
+        "B puis A",
+        "A puis B",
+        "A et B simultanément"
       ],
-      "correctAnswer": "AX=9",
-      "explanation": "L'addition produit 9 dans AX.",
+      "correctAnswer": "B puis A",
+      "explanation": "La pile suit LIFO : le dernier paramètre empilé, B, doit être dépilé en premier.",
       "category": "Prédiction"
     },
     {
@@ -6623,14 +6623,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Après PUSH AX, MOV AX,0, POP AX avec AX=1234h, quelle valeur revient ?",
+      "stem": "Après l'empilement de deux paramètres mots, SP=0FFCh juste avant CALL near. Quelle valeur SP a-t-il à l'entrée de la routine ?",
       "choices": [
-        "1234h",
-        "0000h",
-        "FFFFh"
+        "0FFAh",
+        "0FFCh",
+        "0FF8h"
       ],
-      "correctAnswer": "1234h",
-      "explanation": "Le mot sauvegardé est restauré par POP AX.",
+      "correctAnswer": "0FFAh",
+      "explanation": "CALL near empile un mot contenant l'IP de retour : SP est décrémenté de deux octets, de 0FFCh à 0FFAh.",
       "category": "Calcul / prédiction"
     },
     {
@@ -6911,14 +6911,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Quel résultat produit DOUBLE avec AX=6 ?",
+      "stem": "Quel résultat AX produit DOUBLE si AX=FFFFh et que la routine exécute ADD AX,AX ?",
       "choices": [
-        "12",
-        "6",
-        "36"
+        "FFFEh",
+        "FFFFh",
+        "0000h"
       ],
-      "correctAnswer": "12",
-      "explanation": "La routine ajoute AX à lui-même.",
+      "correctAnswer": "FFFEh",
+      "explanation": "FFFFh+FFFFh=1FFFEh ; AX conserve les 16 bits faibles, soit FFFEh.",
       "category": "Prédiction"
     },
     {
@@ -6927,14 +6927,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Quel résultat produit DOUBLE avec AX=0 ?",
+      "stem": "Une routine ADDITION reçoit AX=0006h et BX=0004h puis exécute ADD AX,BX. Quelle valeur retourne-t-elle dans AX ?",
       "choices": [
-        "0",
-        "1",
-        "FFFFh"
+        "000Ah",
+        "0002h",
+        "0018h"
       ],
-      "correctAnswer": "0",
-      "explanation": "Le double de zéro reste zéro.",
+      "correctAnswer": "000Ah",
+      "explanation": "0006h+0004h=000Ah ; la convention de sortie place le résultat dans AX.",
       "category": "Calcul / prédiction"
     },
     {
@@ -7135,14 +7135,14 @@
       "kind": "intermediate",
       "lesson": 3,
       "number": 3,
-      "stem": "Pourquoi vérifier simultanément DX:AX et CF/OF ?",
+      "stem": "Pourquoi vérifier simultanément DX:AX et CF/OF après MUL r/m16 ?",
       "choices": [
-        "Le produit complet et l'indication de dépassement répondent à deux contrôles différents",
+        "DX:AX contient le produit complet et CF/OF signalent si DX est non nul",
         "CF et OF contiennent les deux octets hauts",
         "DX est toujours indéfini"
       ],
-      "correctAnswer": "Le produit complet et l'indication de dépassement répondent à deux contrôles différents",
-      "explanation": "Le résultat est dans DX:AX ; CF/OF indiquent si la moitié haute est non nulle.",
+      "correctAnswer": "DX:AX contient le produit complet et CF/OF signalent si DX est non nul",
+      "explanation": "Pour MUL mot, DX:AX contient le produit 32 bits ; CF et OF indiquent si la moitié haute DX est non nulle.",
       "category": "Vérification"
     },
     {
@@ -7215,14 +7215,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Que donne 6×7 ?",
+      "stem": "Que produit MUL BL avec AL=80h et BL=02h en non signé ?",
       "choices": [
-        "42",
-        "13",
-        "36"
+        "0100h",
+        "FF00h",
+        "0080h"
       ],
-      "correctAnswer": "42",
-      "explanation": "Le produit est 42 décimal, soit 002Ah.",
+      "correctAnswer": "0100h",
+      "explanation": "80h vaut 128 en non signé ; 128×2=256, soit 0100h dans AX.",
       "category": "Prédiction"
     },
     {
@@ -7231,14 +7231,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Que vaut FFh×2 en non signé ?",
+      "stem": "Que produit IMUL BL avec AL=80h et BL=02h en signé ?",
       "choices": [
-        "01FEh",
-        "00FEh",
-        "0100h"
+        "FF00h (−256)",
+        "0100h (256)",
+        "FFFEh (−2)"
       ],
-      "correctAnswer": "01FEh",
-      "explanation": "255×2=510, soit 01FEh.",
+      "correctAnswer": "FF00h (−256)",
+      "explanation": "80h vaut −128 en signé sur 8 bits ; −128×2=−256, encodé FF00h sur 16 bits.",
       "category": "Calcul / prédiction"
     },
     {
@@ -7279,14 +7279,14 @@
       "kind": "final",
       "lesson": null,
       "number": 9,
-      "stem": "Comment interpréter CF=OF=1 après MUL ?",
+      "stem": "Après MUL r/m16, que signifie CF=OF=1 lorsque DX est non nul ?",
       "choices": [
         "La moitié haute du produit est non nulle",
         "Le produit est toujours négatif",
         "Le diviseur vaut zéro"
       ],
       "correctAnswer": "La moitié haute du produit est non nulle",
-      "explanation": "Pour MUL, CF et OF signalent que la moitié haute n'est pas nulle.",
+      "explanation": "Pour MUL mot, CF et OF signalent que DX, moitié haute du produit, est non nul.",
       "category": "Débogage"
     },
     {
@@ -7379,7 +7379,7 @@
       "choices": [
         "FFFCh",
         "00FCh",
-        "F C00h"
+        "FC00h"
       ],
       "correctAnswer": "FFFCh",
       "explanation": "FCh représente -4 ; son extension signée sur 16 bits est FFFCh.",
@@ -7519,14 +7519,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Quel résultat donne 42/5 en DIV byte ?",
+      "stem": "Que donne DIV BL avec AX=00FFh et BL=02h ?",
       "choices": [
-        "AL=8, AH=2",
-        "AL=2, AH=8",
-        "AL=5, AH=42"
+        "AL=7Fh, AH=01h",
+        "AL=01h, AH=7Fh",
+        "AL=FFh, AH=00h"
       ],
-      "correctAnswer": "AL=8, AH=2",
-      "explanation": "42=8×5+2, donc quotient 8 et reste 2.",
+      "correctAnswer": "AL=7Fh, AH=01h",
+      "explanation": "255/2 donne quotient 127 (7Fh) et reste 1 ; AL reçoit le quotient et AH le reste.",
       "category": "Prédiction"
     },
     {
@@ -7535,14 +7535,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Pourquoi 0100h/1 déborde-t-il en DIV byte ?",
+      "stem": "Quel quotient et reste donne IDIV BL avec AX=FFF9h (−7) et BL=03h ?",
       "choices": [
-        "256 ne tient pas dans AL",
-        "Le reste vaut zéro",
-        "Le diviseur est non signé"
+        "AL=FEh, AH=FFh",
+        "AL=FDh, AH=00h",
+        "AL=02h, AH=01h"
       ],
-      "correctAnswer": "256 ne tient pas dans AL",
-      "explanation": "AL ne peut représenter que 0 à 255.",
+      "correctAnswer": "AL=FEh, AH=FFh",
+      "explanation": "−7/3 donne un quotient tronqué vers zéro de −2 et un reste de −1 ; AL=FEh et AH=FFh.",
       "category": "Calcul / prédiction"
     },
     {
@@ -7551,14 +7551,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Que fait CBW avant IDIV BL avec AL=FCh ?",
+      "stem": "Après MOV AL,80h puis CBW, quelle valeur obtient-on dans AX ?",
       "choices": [
-        "Étend FCh en FFFCh dans AX",
-        "Efface AH",
-        "Copie BL dans AH"
+        "FF80h",
+        "0080h",
+        "8000h"
       ],
-      "correctAnswer": "Étend FCh en FFFCh dans AX",
-      "explanation": "CBW étend le signe négatif de l'octet vers le mot AX.",
+      "correctAnswer": "FF80h",
+      "explanation": "80h représente −128 sur huit bits ; CBW propage le bit de signe dans AH et forme FF80h.",
       "category": "Analyse de programme"
     },
     {
@@ -7823,14 +7823,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Avec AL=81h, que donne SHR AL,1 ?",
+      "stem": "Avec AL=81h et CL=2, que donne SHR AL,CL ?",
       "choices": [
+        "20h avec CF=0",
         "40h avec CF=1",
-        "C0h avec CF=0",
-        "02h avec CF=1"
+        "10h avec CF=1"
       ],
-      "correctAnswer": "40h avec CF=1",
-      "explanation": "Le bit faible 1 sort dans CF et le résultat est 40h.",
+      "correctAnswer": "20h avec CF=0",
+      "explanation": "Deux décalages logiques donnent 81h→40h→20h ; le dernier bit expulsé vaut 0, donc CF=0.",
       "category": "Prédiction"
     },
     {
@@ -7839,14 +7839,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Avec AL=FCh, que donne SAR AL,1 ?",
+      "stem": "Avec AL=80h, que donne SAR AL,1 ?",
       "choices": [
-        "FEh",
-        "7Eh",
-        "F8h"
+        "C0h",
+        "40h",
+        "00h"
       ],
-      "correctAnswer": "FEh",
-      "explanation": "Le bit de signe 1 est recopié ; FCh devient FEh.",
+      "correctAnswer": "C0h",
+      "explanation": "80h représente −128 ; SAR recopie le bit de signe et donne C0h (−64).",
       "category": "Calcul / prédiction"
     },
     {
@@ -7855,14 +7855,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Que fait ROL AL,1 avec AL=81h ?",
+      "stem": "Que fait ROL AL,1 avec AL=80h ?",
       "choices": [
-        "AL=03h et CF=1",
-        "AL=02h et CF=0",
-        "AL=C0h et CF=1"
+        "AL=01h et CF=1",
+        "AL=00h et CF=1",
+        "AL=80h et CF=0"
       ],
-      "correctAnswer": "AL=03h et CF=1",
-      "explanation": "Le bit 7 circule vers le bit 0 et CF reçoit le bit sortant.",
+      "correctAnswer": "AL=01h et CF=1",
+      "explanation": "Le bit 7 sort dans CF et revient en bit 0 ; 80h devient 01h.",
       "category": "Analyse de programme"
     },
     {
@@ -7871,14 +7871,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Quel état confirme SHR AL,1 sur 81h ?",
+      "stem": "Quel résultat donne ROL AL,2 avec AL=81h ?",
       "choices": [
-        "AL=40h, CF=1",
-        "AL=40h, CF=0",
-        "AL=81h, CF=1"
+        "AL=06h, CF=0",
+        "AL=03h, CF=1",
+        "AL=81h, CF=0"
       ],
-      "correctAnswer": "AL=40h, CF=1",
-      "explanation": "Le décalage donne 40h et le bit sortant vaut 1.",
+      "correctAnswer": "AL=06h, CF=0",
+      "explanation": "Deux rotations circulaires donnent 81h→03h→06h ; le dernier bit sortant vaut 0, donc CF=0.",
       "category": "Analyse de résultat"
     },
     {
@@ -8127,14 +8127,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Avec SI=0100h, DI=0200h et DF=0, quels index suivent MOVSB ?",
+      "stem": "Avec SI=0100h, DI=0200h et DF=1, que deviennent les index après MOVSB ?",
       "choices": [
-        "SI=0101h, DI=0201h",
-        "SI=00FFh, DI=01FFh",
-        "SI=0100h, DI=0200h"
+        "SI=00FFh et DI=01FFh",
+        "SI=0101h et DI=0201h",
+        "Ils restent inchangés"
       ],
-      "correctAnswer": "SI=0101h, DI=0201h",
-      "explanation": "Un octet est transféré et les deux index sont incrémentés.",
+      "correctAnswer": "SI=00FFh et DI=01FFh",
+      "explanation": "Avec DF=1, MOVSB décrémente SI et DI d'un octet après le transfert.",
       "category": "Prédiction"
     },
     {
@@ -8143,14 +8143,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Quelle donnée AL=41h stocke STOSB à DI=0100h ?",
+      "stem": "Après STOSB avec DF=1 et DI=0000h, quelle valeur DI obtient-il ?",
       "choices": [
-        "41h à ES:0100h",
-        "41h à DS:0100h",
-        "0100h dans AL"
+        "FFFFh",
+        "0001h",
+        "0000h"
       ],
-      "correctAnswer": "41h à ES:0100h",
-      "explanation": "STOSB écrit AL à l'adresse destination ES:DI.",
+      "correctAnswer": "FFFFh",
+      "explanation": "STOSB utilise DI puis le décrémente d'un octet lorsque DF=1 ; 0000h devient FFFFh modulo 16 bits.",
       "category": "Calcul / prédiction"
     },
     {
@@ -8159,14 +8159,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Que fait SCASB avec AL=41h et ES:DI contenant 41h ?",
+      "stem": "Que fait SCASB avec AL=41h et ES:DI contenant 42h ?",
       "choices": [
-        "Compare les octets et positionne ZF=1",
+        "Compare les octets et positionne ZF=0",
         "Copie AL vers ES:DI",
         "Charge ES:DI dans AX"
       ],
-      "correctAnswer": "Compare les octets et positionne ZF=1",
-      "explanation": "SCASB effectue une comparaison entre AL et la mémoire destination.",
+      "correctAnswer": "Compare les octets et positionne ZF=0",
+      "explanation": "SCASB compare AL à l'octet mémoire ; 41h est différent de 42h, donc ZF=0.",
       "category": "Analyse de programme"
     },
     {
@@ -8303,14 +8303,14 @@
       "kind": "intermediate",
       "lesson": 2,
       "number": 3,
-      "stem": "Quel état doit être vérifié après une répétition ?",
+      "stem": "Quel état faut-il vérifier après REPNE SCASB ?",
       "choices": [
-        "CX, SI/DI et FLAGS",
+        "CX, DI et ZF",
         "Seulement AX",
         "Seulement CS"
       ],
-      "correctAnswer": "CX, SI/DI et FLAGS",
-      "explanation": "Le compteur, les indices et les indicateurs dépendent de l'instruction de chaîne.",
+      "correctAnswer": "CX, DI et ZF",
+      "explanation": "REPNE SCASB décrémente CX, ajuste DI selon DF et utilise ZF pour décider si la répétition continue.",
       "category": "Vérification"
     },
     {
@@ -8335,14 +8335,14 @@
       "kind": "intermediate",
       "lesson": 3,
       "number": 2,
-      "stem": "Avec CX=2 et DF=0, de combien SI et DI avancent-ils ?",
+      "stem": "Avec REP MOVSW, CX=1 et DF=0, de combien SI et DI avancent-ils ?",
       "choices": [
         "+2 chacun",
         "+1 chacun",
         "-2 chacun"
       ],
       "correctAnswer": "+2 chacun",
-      "explanation": "Deux octets sont traités ; les deux indices augmentent de deux.",
+      "explanation": "MOVSW transfère un mot de deux octets ; avec DF=0 et une itération, chaque index avance de deux.",
       "category": "Application"
     },
     {
@@ -8479,14 +8479,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Quel état est attendu après REP MOVSB avec CX=2 et DF=0 ?",
+      "stem": "Après REP MOVSB avec SI=0100h, DI=0200h, CX=2, DF=0, et [DS:0100h]=41h, [DS:0101h]=42h, quels octets sont écrits à ES:0200h et ES:0201h ?",
       "choices": [
-        "CX=0, SI et DI augmentés de 2",
-        "CX=2, SI et DI diminués de 2",
-        "CX=0, SI inchangé"
+        "41h puis 42h",
+        "42h puis 41h",
+        "Deux zéros"
       ],
-      "correctAnswer": "CX=0, SI et DI augmentés de 2",
-      "explanation": "Deux transferts font progresser les deux index de deux octets.",
+      "correctAnswer": "41h puis 42h",
+      "explanation": "MOVSB lit chaque octet à DS:SI et l’écrit à ES:DI. Avec SI=0100h, DI=0200h, CX=2 et DF=0, les octets 41h puis 42h sont copiés dans le même ordre.",
       "category": "Analyse de résultat"
     },
     {
@@ -8499,10 +8499,10 @@
       "choices": [
         "Initialiser CX à une valeur non nulle et les index/segments",
         "Remplacer CX par IP",
-        "Effacer DF avec STD"
+        "Effacer DF avec CLD"
       ],
       "correctAnswer": "Initialiser CX à une valeur non nulle et les index/segments",
-      "explanation": "CX nul entraîne zéro itération ; les sources et destinations doivent aussi être initialisées.",
+      "explanation": "CX nul entraîne zéro itération ; CLD ne change que le sens des index et ne rend pas le compteur non nul.",
       "category": "Débogage"
     },
     {
@@ -8511,14 +8511,14 @@
       "kind": "final",
       "lesson": null,
       "number": 10,
-      "stem": "Quelle vérification couvre correctement une chaîne répétée ?",
+      "stem": "Quelle vérification couvre correctement REPNE SCASB ?",
       "choices": [
-        "Données copiées, CX, SI, DI, DF et FLAGS pertinents",
+        "Octet comparé, CX, DI, DF et ZF",
         "AX uniquement",
         "Le seul octet opcode"
       ],
-      "correctAnswer": "Données copiées, CX, SI, DI, DF et FLAGS pertinents",
-      "explanation": "Le comportement dépend des données, du compteur, des index, du sens et des conditions.",
+      "correctAnswer": "Octet comparé, CX, DI, DF et ZF",
+      "explanation": "SCASB compare AL à ES:DI ; REPNE décrémente CX, ajuste DI selon DF et utilise ZF comme condition d'arrêt.",
       "category": "Raisonnement"
     },
     {
@@ -8735,14 +8735,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "À quel offset physique se trouve l'entrée IVT du vecteur 30h ?",
+      "stem": "À quel offset physique commence l'entrée IVT du vecteur 21h ?",
       "choices": [
-        "00C0h",
-        "0030h",
-        "0300h"
+        "0084h",
+        "0021h",
+        "0210h"
       ],
-      "correctAnswer": "00C0h",
-      "explanation": "Chaque entrée occupe quatre octets : 30h×4=C0h.",
+      "correctAnswer": "0084h",
+      "explanation": "Chaque entrée occupe quatre octets. 21h×4=84h : l'entrée du vecteur 21h commence donc à l'adresse physique 00084h.",
       "category": "Prédiction"
     },
     {
@@ -8751,14 +8751,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Combien d'octets de contexte sont empilés par INT sur 8086 ?",
+      "stem": "SP vaut 1000h avant INT. Quelle valeur contient-il après l'empilement automatique du cadre d'interruption 8086 ?",
       "choices": [
-        "6 octets",
-        "2 octets",
-        "4 octets"
+        "0FFAh",
+        "0FFCh",
+        "0FFEh"
       ],
-      "correctAnswer": "6 octets",
-      "explanation": "INT sauvegarde FLAGS, CS et IP, trois mots de deux octets.",
+      "correctAnswer": "0FFAh",
+      "explanation": "INT empile trois mots de 16 bits. La pile descend de 2 octets par mot : 1000h−6=0FFAh.",
       "category": "Calcul / prédiction"
     },
     {
@@ -8783,14 +8783,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Quel état doit être restauré à la fin du gestionnaire ?",
+      "stem": "Avant INT, CS:IP=2000h:1234h, FLAGS=0202h et SP=1000h. Le gestionnaire ne modifie pas le cadre. Quel état retrouve-t-on après IRET ?",
       "choices": [
-        "IP, CS, FLAGS et SP cohérents",
-        "AX uniquement",
-        "CX et DX obligatoirement nuls"
+        "CS:IP=2000h:1234h, FLAGS=0202h et SP=1000h",
+        "CS:IP=0000h:0000h et SP=0FFAh",
+        "CS:IP=2000h:123Ah et SP=1000h"
       ],
-      "correctAnswer": "IP, CS, FLAGS et SP cohérents",
-      "explanation": "IRET restaure le contexte de retour et équilibre le cadre d'interruption.",
+      "correctAnswer": "CS:IP=2000h:1234h, FLAGS=0202h et SP=1000h",
+      "explanation": "INT sauvegarde FLAGS, CS et l'IP de continuation. IRET dépile IP, CS puis FLAGS ; après restauration des trois mots, SP revient à 1000h.",
       "category": "Analyse de résultat"
     },
     {
@@ -9087,14 +9087,14 @@
       "kind": "final",
       "lesson": null,
       "number": 8,
-      "stem": "Que vérifie le modèle après OUT DX,AL ?",
+      "stem": "Après MOV DX,20h / MOV AL,A5h / OUT DX,AL, quelle valeur doit apparaître dans l'état du port 20h ?",
       "choices": [
-        "L'état du port et la valeur écrite",
-        "Une adresse mémoire DS",
-        "Le contenu de CS"
+        "A5h",
+        "20h",
+        "00h"
       ],
-      "correctAnswer": "L'état du port et la valeur écrite",
-      "explanation": "Le modèle expose les ports configurés dans son état d'E/S.",
+      "correctAnswer": "A5h",
+      "explanation": "DX sélectionne le port 20h et AL fournit A5h ; OUT écrit donc A5h dans l'état du port 20h.",
       "category": "Analyse de résultat"
     },
     {
@@ -9343,14 +9343,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Quel IP suit MOV AX,1234h placé à 0000h ?",
+      "stem": "Les octets B8 34 12 89 D8 commencent à l'offset 0100h. À quel offset commence le second opcode ?",
       "choices": [
-        "0003h",
-        "0002h",
-        "0004h"
+        "0103h",
+        "0102h",
+        "0105h"
       ],
-      "correctAnswer": "0003h",
-      "explanation": "L'instruction de trois octets fait avancer IP de trois.",
+      "correctAnswer": "0103h",
+      "explanation": "B8 34 12 forme une instruction de trois octets ; le second opcode 89h commence donc à 0100h+3=0103h.",
       "category": "Prédiction"
     },
     {
@@ -9647,14 +9647,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Quelle EA donne BX=0100h, SI=2, disp8=4 ?",
+      "stem": "Avec DS=2000h et EA=0106h, quelle adresse physique correspond à DS:EA ?",
       "choices": [
-        "0106h",
-        "0102h",
-        "0104h"
+        "20106h",
+        "200106h",
+        "0106h"
       ],
-      "correctAnswer": "0106h",
-      "explanation": "La somme 0100h+0002h+0004h vaut 0106h.",
+      "correctAnswer": "20106h",
+      "explanation": "L'adresse physique vaut DS×10h+EA : 2000h×10h+0106h=20106h.",
       "category": "Prédiction"
     },
     {
@@ -9663,14 +9663,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Quelle valeur binaire vaut 40h ?",
+      "stem": "Pour MOV AX,[BX+SI-2], quel couple ModR/M puis disp8 encode l'opérande mémoire ?",
       "choices": [
-        "01000000b",
-        "10000000b",
-        "00000100b"
+        "40h FEh",
+        "40h 02h",
+        "80h FEh"
       ],
-      "correctAnswer": "01000000b",
-      "explanation": "40h correspond à 01000000b.",
+      "correctAnswer": "40h FEh",
+      "explanation": "Mod=01, Reg=000 (AX), R/M=000 ([BX+SI]) donne 40h ; le déplacement signé −2 est encodé FEh.",
       "category": "Calcul / prédiction"
     },
     {
@@ -9711,14 +9711,14 @@
       "kind": "final",
       "lesson": null,
       "number": 9,
-      "stem": "Comment encoder [BP] sans le confondre avec [disp16] ?",
+      "stem": "Dans l'encodage 8B 46 00, quel opérande mémoire est désigné par ModR/M et disp8 ?",
       "choices": [
-        "Mod=01,R/M=110,disp8=00h",
-        "Mod=00,R/M=110",
-        "Mod=11,R/M=110"
+        "[BP+0]",
+        "[disp16]",
+        "[SI+0]"
       ],
-      "correctAnswer": "Mod=01,R/M=110,disp8=00h",
-      "explanation": "Le cas [BP] utilise un déplacement nul explicite en disp8.",
+      "correctAnswer": "[BP+0]",
+      "explanation": "46h vaut 01 000 110 : Mod=01, Reg=000, R/M=110 désigne BP ; le disp8 00h donne [BP+0].",
       "category": "Débogage"
     },
     {
@@ -9951,14 +9951,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Quel rôle joue F4h dans le flux B8 34 12 F4 ?",
+      "stem": "Le flux B8 34 12 F4 commence à l'offset 0100h. À quel offset se trouve l'opcode HLT ?",
       "choices": [
-        "Il code HLT",
-        "Il code NOP",
-        "Il code INT 4"
+        "0103h",
+        "0102h",
+        "0104h"
       ],
-      "correctAnswer": "Il code HLT",
-      "explanation": "Après les trois octets de MOV AX,1234h, F4h termine le programme avec HLT.",
+      "correctAnswer": "0103h",
+      "explanation": "MOV AX,1234h occupe trois octets à partir de 0100h ; F4h se trouve donc à 0103h.",
       "category": "Prédiction"
     },
     {
@@ -10271,14 +10271,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Quel indicateur de FLAGS détermine le sens de progression des chaînes ?",
+      "stem": "REP MOVSB commence avec SI=1000h, DI=2000h, CX=3 et DF=1. Quelles valeurs SI et DI obtient-on après trois transferts ?",
       "choices": [
-        "DF",
-        "IF",
-        "OF"
+        "0FFDh et 1FFDh",
+        "1003h et 2003h",
+        "0FFEh et 1FFEh"
       ],
-      "correctAnswer": "DF",
-      "explanation": "DF est le Direction Flag dans FLAGS. DF=0 incrémente SI et DI après chaque opération de chaîne ; DF=1 les décrémente.",
+      "correctAnswer": "0FFDh et 1FFDh",
+      "explanation": "DF=1 décrémente SI et DI d'un octet après chaque MOVSB. Après trois transferts, les deux index ont reculé de trois : SI=0FFDh et DI=1FFDh ; CX atteint zéro.",
       "category": "Calcul / prédiction"
     },
     {
@@ -10559,14 +10559,14 @@
       "kind": "final",
       "lesson": null,
       "number": 5,
-      "stem": "Lors d'une opération normale de prélecture, combien d'octets le 8086 récupère-t-il ?",
+      "stem": "La file de prélecture contient déjà 4 octets. La BIU récupère un mot de 2 octets. Combien d'octets la file contient-elle ensuite ?",
       "choices": [
-        "2",
-        "1",
+        "6",
+        "5",
         "4"
       ],
-      "correctAnswer": "2",
-      "explanation": "La BIU du 8086 récupère normalement deux octets par opération de prélecture ; la capacité totale de la file reste de six octets.",
+      "correctAnswer": "6",
+      "explanation": "La file passe de 4 à 6 octets après le transfert d'un mot de deux octets ; elle atteint alors sa capacité de six octets.",
       "category": "Prédiction"
     },
     {
@@ -10575,14 +10575,14 @@
       "kind": "final",
       "lesson": null,
       "number": 6,
-      "stem": "Si un branchement conditionnel n'est pas pris, que devient la file de prélecture séquentielle ?",
+      "stem": "JNZ SHORT CIBLE est exécuté avec ZF=1. Quel est l'effet sur le flot d'instructions ?",
       "choices": [
-        "Elle reste utilisable car le flot séquentiel continue",
-        "Elle est toujours vidée par tout branchement",
-        "IP est remis à zéro"
+        "Le saut n'est pas pris : IP continue après JNZ et la file séquentielle reste utilisable",
+        "Le saut est pris et la file est vidée",
+        "IP revient à zéro"
       ],
-      "correctAnswer": "Elle reste utilisable car le flot séquentiel continue",
-      "explanation": "Si la condition n'est pas satisfaite, IP suit le chemin séquentiel. Le branchement n'impose donc pas de vider la file pour réalimenter un nouvel emplacement.",
+      "correctAnswer": "Le saut n'est pas pris : IP continue après JNZ et la file séquentielle reste utilisable",
+      "explanation": "JNZ saute seulement si ZF=0. Avec ZF=1, le saut n'est pas pris ; l'exécution continue à l'instruction suivante et le flot séquentiel préchargé reste cohérent.",
       "category": "Calcul / prédiction"
     },
     {
@@ -10895,14 +10895,14 @@
       "kind": "final",
       "lesson": null,
       "number": 7,
-      "stem": "Que fait CALL DOUBLE avec AX=3 et ADD AX,AX dans DOUBLE ?",
+      "stem": "CALL NEAR DOUBLE commence à IP=0100h avec l'encodage E8 05 00 et SP=1000h. Quelles valeurs sont empilées et quel est le nouveau SP ?",
       "choices": [
-        "Retourne AX=6",
-        "Retourne AX=3",
-        "Retourne AX=9"
+        "IP de retour 0103h ; SP=0FFEh",
+        "IP de retour 0105h ; SP=0FFCh",
+        "AX=0103h ; SP=1000h"
       ],
-      "correctAnswer": "Retourne AX=6",
-      "explanation": "La routine double AX puis RET reprend après CALL.",
+      "correctAnswer": "IP de retour 0103h ; SP=0FFEh",
+      "explanation": "CALL NEAR occupe trois octets : l'IP de continuation vaut 0103h. Il empile ce mot de deux octets, donc SP passe de 1000h à 0FFEh.",
       "category": "Analyse de programme"
     },
     {

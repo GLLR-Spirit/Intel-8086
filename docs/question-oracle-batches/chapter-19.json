@@ -443,23 +443,26 @@
     {
       "id": "C19-F-Q8",
       "status": "certified",
-      "rule": "bp_default_segment",
+      "rule": "effective_address_sum",
       "inputs": {
-        "effectiveAddress": "[BP+4]"
+        "base": 65520,
+        "index": 48,
+        "displacement": 4,
+        "width": 16
       },
       "expected": {
-        "segment": "SS"
+        "offset": 36
       },
-      "correctAnswer": "SS",
-      "derivation": "BP sélectionne SS comme segment par défaut pour les formes d'adressage qui l'utilisent. DS et ES peuvent être sélectionnés explicitement par un préfixe, mais ne sont pas le choix implicite.",
+      "correctAnswer": "0024h (repli sur 16 bits)",
+      "derivation": "FFF0h+0030h+0004h=10024h ; l'offset effectif 16 bits conserve 0024h. Le segment sélectionné est appliqué séparément pour former l'adresse physique.",
       "distractorRationales": [
         {
-          "choice": "DS",
-          "reason": "DS est le segment par défaut de nombreuses références, mais BP sélectionne SS."
+          "choice": "0020h (déplacement ignoré)",
+          "reason": "Sans le déplacement 0004h, la somme FFF0h+0030h se replie sur 0020h ; le déplacement doit être inclus."
         },
         {
-          "choice": "ES",
-          "reason": "ES est le segment par défaut des destinations de chaîne, pas des formes ordinaires utilisant BP."
+          "choice": "10024h (offset 20 bits)",
+          "reason": "L'adresse effective est un offset de 16 bits ; le bit de dépassement ne transforme pas l'offset en valeur 20 bits. L'adresse physique est formée ensuite avec le segment."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), effective-address calculation, default segment selection and memory operand sizes; Intel MCS-86 Assembly Language Reference Manual, MOV operand forms and ModR/M direct addressing."

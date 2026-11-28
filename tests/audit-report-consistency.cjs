@@ -21,12 +21,16 @@ assert.match(tracker, /300 pending/i, "Remaining individual question reviews mus
 assert.match(report, /684\/684[\s\S]*automatisés/i,
   "Audit report must label 684/684 as automated oracle evaluation");
 assert.match(report, /384\/684/, "Audit report must preserve the official certification count");
-assert.match(report, /323 questions \(chapitres 1 à 17\)/i, "Audit report must report the 323 individually reviewed questions");
+assert.match(report, /513 questions \(chapitres 1 à 27\)/i, "Audit report must report the 513 individually reviewed questions");
 assert.match(report, /300 restent non certifiées/i, "Audit report must distinguish official pending certification from review records");
-assert.match(tracker, /323 questions across chapters 1–17/i, "Tracker must report all documented individual reviews");
+assert.match(tracker, /684 questions across chapters 1–36/i, "Tracker must report all 36 chapters of individual reviews");
 assert.equal(oracleManifest.oracles.length, 684, "Manifest must expose all 684 registered question IDs");
-assert.equal(oracleManifest.oracleCoverageSummary.individuallyReviewedQuestions, 323, "Manifest review total must match the documented review set");
-assert.equal(oracleManifest.independentReviewBatches.length, 17, "Manifest must list all 17 individual review files");
+assert.equal(oracleManifest.oracleCoverageSummary.individuallyReviewedQuestions, 684, "Manifest review total must match all 36 individual review files");
+assert.equal(oracleManifest.oracleCoverageSummary.individuallyReviewedPassed, 575, "Manifest must record independently reviewed questions passed without correction");
+assert.equal(oracleManifest.oracleCoverageSummary.individuallyReviewedCorrected, 109, "Manifest must record questions corrected during independent review");
+assert.equal(oracleManifest.oracleCoverageSummary.individuallyReviewedBlocked, 0, "Manifest must expose blocked review items");
+assert.equal(oracleManifest.independentReviewBatches.length, 36, "Manifest must list all 36 individual review files");
+assert.deepEqual(oracleManifest.independentReviewBatches.map(item => item.chapter), Array.from({ length: 36 }, (_, i) => i + 1), "Manifest review chapters must be contiguous and ordered");
 
 // The workflow label must not imply that an automated evaluator certifies questions independently.
 assert.match(workflow, /Validate question oracle evaluators \(automated; not independent certification\)/i,

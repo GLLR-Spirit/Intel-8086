@@ -1,0 +1,7 @@
+"use strict";const fs=require("node:fs");const assert=require("node:assert/strict");
+const key=JSON.parse(fs.readFileSync("docs/question-semantic-key-8086.json","utf8")),batch=JSON.parse(fs.readFileSync("docs/question-oracle-batches/chapter-34.json","utf8")),review=JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-34.json","utf8"));
+const ids=key.questions.filter(q=>q.chapter===34).map(q=>q.id).sort();assert.equal(ids.length,19);assert.deepEqual(review.records.map(r=>r.id).sort(),ids);
+assert.deepEqual(review.summary,{questionsReviewed:19,passed:18,corrected:1,needsRevision:0,blocked:0,officialCertificationCountBefore:384,officialCertificationCountAfter:384,remainingOfficialCertification:300});assert.deepEqual(review.openFindings,[]);
+const finals=key.questions.filter(q=>q.chapter===34&&q.kind==="final");for(const group of [["Définition","Compréhension"],["Syntaxe","Restrictions"],["Prédiction","Calcul / prédiction"],["Analyse de programme","Analyse de résultat"],["Débogage","Raisonnement"]])assert.equal(finals.filter(q=>group.includes(q.category)).length,2);
+const o=batch.oracles.find(o=>o.id==="C34-F-Q6");assert.equal(o.expected.SIHex,"0FFDh");assert.equal(o.expected.DIHex,"1FFDh");assert.equal(o.expected.CX,0);
+console.log("Chapter 34 independent review: 19/19 inspected; 18 passed; 1 calculation-category trace correction; final assessment balanced; official ledger unchanged at 384/684.");

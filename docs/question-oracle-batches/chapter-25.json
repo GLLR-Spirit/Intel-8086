@@ -132,8 +132,8 @@
           "reason": "00FCh est une extension par zéro ; CBW effectue une extension de signe pour une valeur négative."
         },
         {
-          "choice": "F C00h",
-          "reason": "FC00h place FCh dans l'octet haut au lieu de propager le signe dans AH."
+          "choice": "FC00h",
+          "reason": "FC00h place FCh dans l'octet haut ; CBW étend le signe de AL dans AH, ce qui produit FFFCh."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), DIV/IDIV implicit dividend and quotient/remainder registers, divide error, CBW and signed division; Intel MCS-86 Assembly Language Reference Manual, division instructions."
@@ -359,25 +359,25 @@
       "status": "certified",
       "rule": "div_byte_trace",
       "inputs": {
-        "dividend": 42,
-        "divisor": 5
+        "dividend": 255,
+        "divisor": 2
       },
       "expected": {
-        "quotient": 8,
-        "remainder": 2,
-        "AL": 8,
-        "AH": 2
+        "quotient": 127,
+        "remainder": 1,
+        "AL": 127,
+        "AH": 1
       },
-      "correctAnswer": "AL=8, AH=2",
-      "derivation": "La division 42 par 5 donne quotient 8 et reste 2, car 8×5+2=42. Pour DIV octet, AL reçoit le quotient et AH reçoit le reste.",
+      "correctAnswer": "AL=7Fh, AH=01h",
+      "derivation": "255=127×2+1. Le quotient 127 est placé dans AL (7Fh) et le reste 1 dans AH (01h).",
       "distractorRationales": [
         {
-          "choice": "AL=2, AH=8",
-          "reason": "Cette option inverse le quotient et le reste ; 8 est le quotient et 2 le reste."
+          "choice": "AL=01h, AH=7Fh",
+          "reason": "Cette proposition inverse quotient et reste ; 127 est le quotient et 1 le reste."
         },
         {
-          "choice": "AL=5, AH=42",
-          "reason": "Le diviseur et le dividende ne sont pas placés dans les registres de sortie ; quotient et reste valent 8 et 2."
+          "choice": "AL=FFh, AH=00h",
+          "reason": "FFh serait 255, mais 255/2 donne un quotient de 127 et un reste de 1."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), DIV/IDIV implicit dividend and quotient/remainder registers, divide error, CBW and signed division; Intel MCS-86 Assembly Language Reference Manual, division instructions."
@@ -385,27 +385,27 @@
     {
       "id": "C25-F-Q6",
       "status": "certified",
-      "rule": "div_byte_quotient_overflow",
+      "rule": "idiv_byte_trace",
       "inputs": {
-        "dividend": 256,
-        "divisor": 1,
-        "quotient": 256
+        "signedDividend": -7,
+        "divisor": 3
       },
       "expected": {
-        "fitsInAL": false,
-        "maxAL": 255,
-        "error": true
+        "quotient": -2,
+        "remainder": -1,
+        "AL": 254,
+        "AH": 255
       },
-      "correctAnswer": "256 ne tient pas dans AL",
-      "derivation": "Le quotient de 256/1 vaut 256, supérieur au maximum 255 représentable dans AL. Le 8086 signale une erreur de division car le quotient ne tient pas dans le registre destination.",
+      "correctAnswer": "AL=FEh, AH=FFh",
+      "derivation": "IDIV tronque le quotient vers zéro : −7/3 donne −2, reste −1. Sur huit bits, −2=FEh et −1=FFh.",
       "distractorRationales": [
         {
-          "choice": "Le reste vaut zéro",
-          "reason": "Un reste nul n'est pas une erreur ; le quotient 256 dépasse la capacité d'AL."
+          "choice": "AL=FDh, AH=00h",
+          "reason": "FDh représente −3, mais le quotient tronqué de −7/3 est −2 et le reste est −1."
         },
         {
-          "choice": "Le diviseur est non signé",
-          "reason": "Le fait que le diviseur soit non signé n'empêche pas le dépassement de quotient."
+          "choice": "AL=02h, AH=01h",
+          "reason": "Cette réponse ignore le signe négatif du dividende et du reste."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), DIV/IDIV implicit dividend and quotient/remainder registers, divide error, CBW and signed division; Intel MCS-86 Assembly Language Reference Manual, division instructions."
@@ -415,22 +415,22 @@
       "status": "certified",
       "rule": "cbw_sign_extend",
       "inputs": {
-        "AL": 252
+        "AL": 128
       },
       "expected": {
-        "AX": 65532,
-        "signedValue": -4
+        "AX": 65408,
+        "signedValue": -128
       },
-      "correctAnswer": "Étend FCh en FFFCh dans AX",
-      "derivation": "CBW prend le bit de signe de AL et le propage dans AH. FCh représente −4, donc le mot obtenu dans AX est FFFCh.",
+      "correctAnswer": "FF80h",
+      "derivation": "80h représente −128 sur huit bits signés. CBW propage le bit de signe dans AH et forme FF80h dans AX.",
       "distractorRationales": [
         {
-          "choice": "Efface AH",
-          "reason": "CBW propage le signe négatif et met AH à FFh, il ne l'efface pas."
+          "choice": "0080h",
+          "reason": "0080h correspond à une extension par zéro ; CBW propage le bit de signe pour obtenir FF80h."
         },
         {
-          "choice": "Copie BL dans AH",
-          "reason": "CBW ne lit pas BL ; il étend le signe de AL."
+          "choice": "8000h",
+          "reason": "8000h place le bit de signe dans le mauvais octet ; l'extension de AL=80h donne FF80h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), DIV/IDIV implicit dividend and quotient/remainder registers, divide error, CBW and signed division; Intel MCS-86 Assembly Language Reference Manual, division instructions."

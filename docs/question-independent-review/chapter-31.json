@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue pédagogique indépendante — chapitre 31",
+  "reviewDate": "2026-11-27",
+  "scope": "Examen individuel des 19 questions sur l'opcode, MOV immédiat, stockage little-endian, longueur d'instruction et encodage ModR/M.",
+  "sources": [
+    {
+      "id": "intel-8086-family-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "sections": "Instruction format; opcode; ModR/M; little-endian storage; MOV encodings."
+    },
+    {
+      "id": "intel-mcs86-reference",
+      "title": "Intel MCS-86 Assembly Language Reference Manual",
+      "edition": "1979",
+      "sections": "MOV register/immediate forms and instruction encoding."
+    },
+    {
+      "id": "independent-assembler-crosscheck",
+      "title": "Independent 16-bit assembler reference",
+      "sections": "The encoded forms B8 34 12, 89 D8 and 8B C3 were cross-checked conceptually against the 8086 field definitions; source text alone is not treated as proof."
+    }
+  ],
+  "records": [
+    {
+      "id": "C31-L1-Q1",
+      "result": "passed",
+      "finding": "L'opcode identifie l'opération et peut inclure des bits de sélection de forme ; il ne représente ni une adresse ni FLAGS.",
+      "basis": "Recalcul indépendant des opcodes, octets little-endian, longueurs et champs ModR/M à partir du format 8086."
+    },
+    {
+      "id": "C31-L1-Q2",
+      "result": "passed",
+      "finding": "MOV reg16,imm16 utilise B8+r ; AX a le code registre zéro, donc B8h.",
+      "basis": "Recalcul indépendant des opcodes, octets little-endian, longueurs et champs ModR/M à partir du format 8086."
+    },
+    {
+      "id": "C31-L1-Q3",
+      "result": "passed",
+      "finding": "1234h est stocké 34h puis 12h, octet faible à l'adresse la plus basse.",
+      "basis": "Recalcul indépendant des opcodes, octets little-endian, longueurs et champs ModR/M à partir du format 8086."
+    },
+    {
+      "id": "C31-L2-Q1",
+      "result": "passed",
+      "finding": "MOV AX,1234h mesure trois octets : un opcode et deux octets d'immédiat.",
+      "basis": "Recalcul indépendant des opcodes, octets little-endian, longueurs et champs ModR/M à partir du format 8086."
+    },
+    {
+      "id": "C31-L2-Q2",
+      "result": "passed",
+      "finding": "L'offset de continuation est 0003h depuis 0000h.",
+      "basis": "Recalcul indépendant des opcodes, octets little-endian, longueurs et champs ModR/M à partir du format 8086."
+    },
+    {
+      "id": "C31-L2-Q3",
+      "result": "passed",
+      "finding": "La longueur additionne uniquement les champs présents : préfixes, opcode, ModR/M, déplacement et immédiat.",
+      "basis": "Recalcul indépendant des opcodes, octets little-endian, longueurs et champs ModR/M à partir du format 8086."
+    },
+    {
+      "id": "C31-L3-Q1",
+      "result": "passed",
+      "finding": "89 D8 et 8B C3 encodent tous deux AX←BX ; les champs ModR/M et les directions d'opcode sont cohérents.",
+      "basis": "Recalcul indépendant des opcodes, octets little-endian, longueurs et champs ModR/M à partir du format 8086."
+    },
+    {
+      "id": "C31-L3-Q2",
+      "result": "passed",
+      "finding": "La première opérande est la destination ; MOV AX,BX copie BX vers AX.",
+      "basis": "Recalcul indépendant des opcodes, octets little-endian, longueurs et champs ModR/M à partir du format 8086."
+    },
+    {
+      "id": "C31-L3-Q3",
+      "result": "passed",
+      "finding": "Les opcodes directionnels 89h et 8Bh peuvent inverser l'interprétation Reg/RM tout en gardant le même transfert effectif.",
+      "basis": "Recalcul indépendant des opcodes, octets little-endian, longueurs et champs ModR/M à partir du format 8086."
+    },
+    {
+      "id": "C31-F-Q1",
+      "result": "passed",
+      "finding": "Définition de l'opcode exacte.",
+      "basis": "Recalcul indépendant des opcodes, octets little-endian, longueurs et champs ModR/M à partir du format 8086."
+    },
+    {
+      "id": "C31-F-Q2",
+      "result": "passed",
+      "finding": "La convention little-endian place l'octet faible à l'adresse basse.",
+      "basis": "Recalcul indépendant des opcodes, octets little-endian, longueurs et champs ModR/M à partir du format 8086."
+    },
+    {
+      "id": "C31-F-Q3",
+      "result": "passed",
+      "finding": "B8 34 12 est l'encodage exact de MOV AX,1234h.",
+      "basis": "Recalcul indépendant des opcodes, octets little-endian, longueurs et champs ModR/M à partir du format 8086."
+    },
+    {
+      "id": "C31-F-Q4",
+      "result": "passed",
+      "finding": "L'immédiat 16 bits occupe deux octets après B8h.",
+      "basis": "Recalcul indépendant des opcodes, octets little-endian, longueurs et champs ModR/M à partir du format 8086."
+    },
+    {
+      "id": "C31-F-Q5",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait la question intermédiaire sur IP=0003h. Elle vérifie désormais la frontière d'instruction dans un flux de cinq octets : le second opcode commence à 0103h.",
+      "basis": "Recalcul indépendant des opcodes, octets little-endian, longueurs et champs ModR/M à partir du format 8086."
+    },
+    {
+      "id": "C31-F-Q6",
+      "result": "passed",
+      "finding": "5678h est encodé 78h puis 56h en little-endian.",
+      "basis": "Recalcul indépendant des opcodes, octets little-endian, longueurs et champs ModR/M à partir du format 8086."
+    },
+    {
+      "id": "C31-F-Q7",
+      "result": "passed",
+      "finding": "89 D8 décode vers MOV AX,BX : ModR/M D8h désigne Reg=BX et R/M=AX avec la direction 89h.",
+      "basis": "Recalcul indépendant des opcodes, octets little-endian, longueurs et champs ModR/M à partir du format 8086."
+    },
+    {
+      "id": "C31-F-Q8",
+      "result": "passed",
+      "finding": "Les encodages 89 D8 et 8B C3 sont équivalents par inversion des champs directionnels.",
+      "basis": "Recalcul indépendant des opcodes, octets little-endian, longueurs et champs ModR/M à partir du format 8086."
+    },
+    {
+      "id": "C31-F-Q9",
+      "result": "passed",
+      "finding": "L'immédiat 1234h doit être stocké 34 12, et non 12 34.",
+      "basis": "Recalcul indépendant des opcodes, octets little-endian, longueurs et champs ModR/M à partir du format 8086."
+    },
+    {
+      "id": "C31-F-Q10",
+      "result": "passed",
+      "finding": "La validation exige octets, longueur et désassemblage confrontés à une référence indépendante.",
+      "basis": "Recalcul indépendant des opcodes, octets little-endian, longueurs et champs ModR/M à partir du format 8086."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 18,
+    "corrected": 1,
+    "needsRevision": 0,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  },
+  "openFindings": []
+}

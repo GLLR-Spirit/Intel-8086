@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue pédagogique indépendante — chapitre 36",
+  "reviewDate": "2026-11-27",
+  "scope": "Examen individuel des 19 questions du projet intégré : spécification, calculs, procédures, CALL/RET, FLAGS, cas limites et traçabilité des validations.",
+  "sources": [
+    {
+      "id": "intel-8086-family-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "sections": "ADD and FLAGS behavior; CALL and RET; stack and return address."
+    },
+    {
+      "id": "intel-mcs86-reference",
+      "title": "Intel MCS-86 Assembly Language Reference Manual",
+      "edition": "1979",
+      "sections": "Procedure calls, near relative CALL and return-address handling."
+    },
+    {
+      "id": "software-verification-practice",
+      "title": "Software verification practice",
+      "sections": "Explicit specifications, boundary cases, assertions and reproducible evidence."
+    }
+  ],
+  "records": [
+    {
+      "id": "C36-L1-Q1",
+      "result": "passed",
+      "finding": "Une spécification complète définit entrées, sorties, contraintes et cas limites avant l'implémentation.",
+      "basis": "Recalcul indépendant des additions et retenues ; trace du cadre CALL near ; contrôle des contrats de procédure et des assertions."
+    },
+    {
+      "id": "C36-L1-Q2",
+      "result": "passed",
+      "finding": "7+5=12 dans AX, sans retenue non signée.",
+      "basis": "Recalcul indépendant des additions et retenues ; trace du cadre CALL near ; contrôle des contrats de procédure et des assertions."
+    },
+    {
+      "id": "C36-L1-Q3",
+      "result": "passed",
+      "finding": "Les cas limites définis avant le code guident les tests frontières et les assertions.",
+      "basis": "Recalcul indépendant des additions et retenues ; trace du cadre CALL near ; contrôle des contrats de procédure et des assertions."
+    },
+    {
+      "id": "C36-L2-Q1",
+      "result": "passed",
+      "finding": "Une procédure encapsule une opération réutilisable avec un contrat d'appel.",
+      "basis": "Recalcul indépendant des additions et retenues ; trace du cadre CALL near ; contrôle des contrats de procédure et des assertions."
+    },
+    {
+      "id": "C36-L2-Q2",
+      "result": "passed",
+      "finding": "DOUBLE qui exécute ADD AX,AX transforme AX=3 en AX=6 puis RET revient à l'appelant.",
+      "basis": "Recalcul indépendant des additions et retenues ; trace du cadre CALL near ; contrôle des contrats de procédure et des assertions."
+    },
+    {
+      "id": "C36-L2-Q3",
+      "result": "passed",
+      "finding": "La validation vérifie le résultat AX et le retour de SP à la valeur d'entrée si le contrat de pile est respecté.",
+      "basis": "Recalcul indépendant des additions et retenues ; trace du cadre CALL near ; contrôle des contrats de procédure et des assertions."
+    },
+    {
+      "id": "C36-L3-Q1",
+      "result": "passed",
+      "finding": "FFh+1 donne 100h ; AL reçoit 00h et CF=1.",
+      "basis": "Recalcul indépendant des additions et retenues ; trace du cadre CALL near ; contrôle des contrats de procédure et des assertions."
+    },
+    {
+      "id": "C36-L3-Q2",
+      "result": "passed",
+      "finding": "FFh+1 teste le bouclage non signé et la retenue.",
+      "basis": "Recalcul indépendant des additions et retenues ; trace du cadre CALL near ; contrôle des contrats de procédure et des assertions."
+    },
+    {
+      "id": "C36-L3-Q3",
+      "result": "passed",
+      "finding": "Un dossier de validation reproductible relie source, attendu, observé et preuves.",
+      "basis": "Recalcul indépendant des additions et retenues ; trace du cadre CALL near ; contrôle des contrats de procédure et des assertions."
+    },
+    {
+      "id": "C36-F-Q1",
+      "result": "passed",
+      "finding": "Le contrat d'interface doit préciser entrées, sorties, effets de bord et registres préservés.",
+      "basis": "Recalcul indépendant des additions et retenues ; trace du cadre CALL near ; contrôle des contrats de procédure et des assertions."
+    },
+    {
+      "id": "C36-F-Q2",
+      "result": "passed",
+      "finding": "La conception formalise l'algorithme avant sa traduction en instructions.",
+      "basis": "Recalcul indépendant des additions et retenues ; trace du cadre CALL near ; contrôle des contrats de procédure et des assertions."
+    },
+    {
+      "id": "C36-F-Q3",
+      "result": "passed",
+      "finding": "ADD AX,BX additionne BX à AX et stocke le résultat dans la destination AX.",
+      "basis": "Recalcul indépendant des additions et retenues ; trace du cadre CALL near ; contrôle des contrats de procédure et des assertions."
+    },
+    {
+      "id": "C36-F-Q4",
+      "result": "passed",
+      "finding": "CALL/RET exige un IP de retour correct et une pile équilibrée.",
+      "basis": "Recalcul indépendant des additions et retenues ; trace du cadre CALL near ; contrôle des contrats de procédure et des assertions."
+    },
+    {
+      "id": "C36-F-Q5",
+      "result": "passed",
+      "finding": "CALL NEAR empile l'offset de l'instruction suivant CALL, et non CS ou AX.",
+      "basis": "Recalcul indépendant des additions et retenues ; trace du cadre CALL near ; contrôle des contrats de procédure et des assertions."
+    },
+    {
+      "id": "C36-F-Q6",
+      "result": "passed",
+      "finding": "FFFFh+1 sur 16 bits produit AX=0000h avec CF=1.",
+      "basis": "Recalcul indépendant des additions et retenues ; trace du cadre CALL near ; contrôle des contrats de procédure et des assertions."
+    },
+    {
+      "id": "C36-F-Q7",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait le résultat de DOUBLE déjà demandé dans la leçon 2. Elle trace désormais l'IP de retour et SP d'un CALL NEAR concret.",
+      "basis": "Recalcul indépendant des additions et retenues ; trace du cadre CALL near ; contrôle des contrats de procédure et des assertions."
+    },
+    {
+      "id": "C36-F-Q8",
+      "result": "passed",
+      "finding": "Le résultat AL=00h ne suffit pas ; CF=1 doit être vérifié séparément.",
+      "basis": "Recalcul indépendant des additions et retenues ; trace du cadre CALL near ; contrôle des contrats de procédure et des assertions."
+    },
+    {
+      "id": "C36-F-Q9",
+      "result": "passed",
+      "finding": "L'absence d'erreur d'exécution ne prouve pas la justesse ; les états registres, mémoire, FLAGS et pile doivent être assertés.",
+      "basis": "Recalcul indépendant des additions et retenues ; trace du cadre CALL near ; contrôle des contrats de procédure et des assertions."
+    },
+    {
+      "id": "C36-F-Q10",
+      "result": "passed",
+      "finding": "La reproductibilité exige vecteurs, attendus, observés et logs de validation.",
+      "basis": "Recalcul indépendant des additions et retenues ; trace du cadre CALL near ; contrôle des contrats de procédure et des assertions."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 18,
+    "corrected": 1,
+    "needsRevision": 0,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  },
+  "openFindings": []
+}

@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue individuelle — chapitre 27",
+  "reviewDate": "2026-11-27",
+  "scope": "Examen individuel des 19 questions sur MOVSB, STOSB, SCASB, DS:SI, ES:DI, DF, index implicites et segment override source. Revue distincte des oracles automatiques.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "sections": "MOVS/STOS/SCAS string instructions, implicit segments and index registers, DF effects and segment override prefixes.",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Assembly Language Reference Manual",
+      "edition": "1979",
+      "sections": "String instruction forms and segment override prefixes.",
+      "url": "https://bitsavers.trailing-edge.com/pdf/intel/ISIS_II/9800640A_MCS-86_Assembly_Language_Reference_Manual_Apr79.pdf"
+    }
+  ],
+  "records": [
+    {
+      "id": "C27-L1-Q1",
+      "result": "passed",
+      "finding": "MOVSB lit la source à DS:SI par défaut et écrit à ES:DI.",
+      "basis": "Intel 8086 Family User's Manual, MOVSB implicit operands."
+    },
+    {
+      "id": "C27-L1-Q2",
+      "result": "passed",
+      "finding": "Avec DF=0, MOVSB incrémente SI et DI d'un octet.",
+      "basis": "Intel 8086 Family User's Manual, DF effects."
+    },
+    {
+      "id": "C27-L1-Q3",
+      "result": "passed",
+      "finding": "ES est le segment destination imposé pour MOVS ; DS est le segment source par défaut.",
+      "basis": "Intel 8086 Family User's Manual, string instruction segment selection."
+    },
+    {
+      "id": "C27-L2-Q1",
+      "result": "passed",
+      "finding": "STOSB écrit le contenu de AL à ES:DI.",
+      "basis": "Intel 8086 Family User's Manual, STOSB implicit source and destination."
+    },
+    {
+      "id": "C27-L2-Q2",
+      "result": "passed",
+      "finding": "Avec AL=41h et DI=0100h, STOSB écrit 41h à ES:0100h.",
+      "basis": "Trace indépendante et STOSB semantics."
+    },
+    {
+      "id": "C27-L2-Q3",
+      "result": "passed",
+      "finding": "STOSB utilise DI et ajuste cet index selon DF.",
+      "basis": "Intel 8086 Family User's Manual, STOSB index update."
+    },
+    {
+      "id": "C27-L3-Q1",
+      "result": "passed",
+      "finding": "SCASB compare AL avec l'octet à ES:DI.",
+      "basis": "Intel 8086 Family User's Manual, SCASB semantics."
+    },
+    {
+      "id": "C27-L3-Q2",
+      "result": "passed",
+      "finding": "Si AL égale l'octet mémoire, la soustraction de comparaison donne zéro et ZF=1.",
+      "basis": "Sémantique CMP/SCASB et FLAGS."
+    },
+    {
+      "id": "C27-L3-Q3",
+      "result": "passed",
+      "finding": "SCASB utilise DI et ajuste DI selon DF.",
+      "basis": "Intel 8086 Family User's Manual, SCASB index update."
+    },
+    {
+      "id": "C27-F-Q1",
+      "result": "passed",
+      "finding": "Les opérandes implicites de MOVSB sont DS:SI source et ES:DI destination.",
+      "basis": "Intel 8086 Family User's Manual, MOVSB."
+    },
+    {
+      "id": "C27-F-Q2",
+      "result": "passed",
+      "finding": "DF commande le sens de progression des index de chaîne.",
+      "basis": "Intel 8086 Family User's Manual, Direction Flag."
+    },
+    {
+      "id": "C27-F-Q3",
+      "result": "passed",
+      "finding": "MOVSB copie un octet de la source vers la destination et ajuste les index.",
+      "basis": "Intel 8086 Family User's Manual, MOVSB."
+    },
+    {
+      "id": "C27-F-Q4",
+      "result": "passed",
+      "finding": "ES reste le segment destination de MOVSB même lorsqu'un préfixe remplace le segment source.",
+      "basis": "Intel 8086 Family User's Manual, segment override behavior for string operations."
+    },
+    {
+      "id": "C27-F-Q5",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait le cas DF=0 de la leçon. Elle teste maintenant DF=1, qui décrémente SI et DI après le transfert.",
+      "basis": "Trace indépendante : SI 0100h→00FFh et DI 0200h→01FFh."
+    },
+    {
+      "id": "C27-F-Q6",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait STOSB avec DF=0. Elle teste maintenant le repliement de DI : avec DF=1 et DI=0000h, l'index devient FFFFh après l'écriture.",
+      "basis": "Mise à jour de DI sur 16 bits : 0000h−1=FFFFh."
+    },
+    {
+      "id": "C27-F-Q7",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait SCASB sur deux octets égaux. Elle teste maintenant une comparaison inégale 41h contre 42h, donc ZF=0.",
+      "basis": "Comparaison indépendante : 41h≠42h."
+    },
+    {
+      "id": "C27-F-Q8",
+      "result": "passed",
+      "finding": "MOVSB avec DF=0 copie la donnée et incrémente SI/DI d'un octet ; CX n'est pas modifié automatiquement par MOVSB seul.",
+      "basis": "Intel 8086 Family User's Manual, MOVSB and REP distinction."
+    },
+    {
+      "id": "C27-F-Q9",
+      "result": "corrected",
+      "finding": "L'oracle utilisait FS comme segment override, mais FS n'existe pas sur le 8086. Il utilise maintenant CS, qui est un segment override valide pour la source ; ES reste la destination.",
+      "basis": "Jeu de registres de segment 8086 : CS, DS, SS, ES uniquement."
+    },
+    {
+      "id": "C27-F-Q10",
+      "result": "passed",
+      "finding": "La validation d'une instruction de chaîne doit couvrir données source/destination, index, DF, segments et FLAGS pertinents.",
+      "basis": "Synthèse MOVSB/STOSB/SCASB."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 15,
+    "corrected": 4,
+    "needsRevision": 0,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  },
+  "openFindings": []
+}

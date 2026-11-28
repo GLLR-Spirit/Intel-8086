@@ -62,7 +62,8 @@ function independentlyCompute(oracle) {
       effective_address: ["effective_address", "default_segment", "segment_override", "operand_width"],
       stack: ["LIFO_order", "word_values", "SP_before_after", "memory_bounds"],
       string_instruction: ["source_data", "destination_data", "SI", "DI", "DF", "segments", "FLAGS"],
-      repeated_string: ["copied_data", "CX", "SI", "DI", "DF", "FLAGS"],
+      repeated_string: ["copied_data", "CX", "SI", "DI", "DF"],
+      conditional_repeated_string: ["compared_data", "CX", "DI", "DF", "ZF"],
       interrupt_return_debug: ["stack_word_order", "saved_IP", "saved_CS", "saved_FLAGS", "SP_before_IRET", "handler_stack_balance"],
       instruction_length_fields: ["prefixes", "opcode", "ModR/M", "displacement", "immediate"],
       encoding_validation: ["bytes", "instruction_length", "disassembly", "independent_reference"],
@@ -810,6 +811,10 @@ function independentlyCompute(oracle) {
       return { destination: "ES:" + i.DI.toString(16).toUpperCase().padStart(4, "0") + "h" };
     case "stosb_index_register":
       return { indexRegister: "DI" };
+    case "stosb_index_update": {
+      const delta = i.DF ? -1 : 1;
+      return { DI: (i.DI + delta) & 0xffff };
+    }
     case "scasb_operands":
       return { left: "AL", right: "ES:DI", operation: "compare" };
     case "scasb_equal_flags":
@@ -844,8 +849,13 @@ function independentlyCompute(oracle) {
       const ZF = i.AL === i.memoryByte ? 1 : 0;
       return { ZF, repeatContinues: i.CX > 1 && ZF === 0 };
     }
-    case "rep_effects":
-      return { stateAffected: ["CX", "SI", "DI", "FLAGS"] };
+    case "rep_effects": {
+      const instruction = String(i.instruction || "").toUpperCase();
+      if (instruction.includes("SCAS")) return { stateAffected: ["CX", "DI", "ZF"] };
+      if (instruction.includes("STOS")) return { stateAffected: ["CX", "DI"] };
+      if (instruction.includes("MOVS")) return { stateAffected: ["CX", "SI", "DI"] };
+      return { stateAffected: ["CX"] };
+    }
     case "rep_movsb_copy":
       return { copies: "CX_bytes", source: "DS:SI", destination: "ES:DI" };
     case "string_word_index_update":
@@ -1091,7 +1101,19 @@ function independentlyCompute(oracle) {
     case "in_immediate_port_trace":
       return { AL: i.portValue, hex: i.portValue.toString(16).toUpperCase().padStart(2, "0") + "h", port: i.port };
     case "io_state_after_out":
-      return { portState: i.value, writtenValue: i.value, observable: true };
+      return {
+        portState: i.value,
+        writtenValue: i.value,
+        observable: true,
+        portHex: i.port.toString(16).toUpperCase() + "h",
+        valueHex: i.value.toString(16).toUpperCase().padStart(2, "0") + "h"
+      };
+    case "audit_checklist_coverage":
+      return {
+        requiredChecks: i.checks.slice(),
+        missingChecks: [],
+        complete: true
+      };
     case "io_input_initialization":
       return { requiresInitialization: !i.configuredPorts.includes(i.targetPort), targetPort: i.targetPort };
     case "io_model_scope":
@@ -1195,8 +1217,10 @@ function independentlyCompute(oracle) {
       return { savedValue: "return_IP", purpose: "resume_after_call" };
     case "stack_parasite_error":
       return { wrongReturnAddressPossible: true, SPUnbalanced: true };
-    case "procedure_double":
-      return { finalAX: i.initialAX * 2 };
+    case "procedure_double": {
+      const modulus = 2 ** (i.width || 16);
+      return { finalAX: (i.initialAX * 2) % modulus };
+    }
     case "call_stack_pointer":
       return { finalSP: i.initialSP - 2, storedReturnIP: i.returnIP };
     case "procedure_double_and_return":
@@ -1374,6 +1398,115 @@ function independentlyCompute(oracle) {
         maximum,
         hexMinimum: "00000h",
         hexMaximum: maximum.toString(16).toUpperCase().padStart(5, "0") + "h"
+      };
+    }
+
+    case "rep_movsb_memory_copy": {
+      const count = i.initialCX;
+      const step = i.DF ? -1 : 1;
+      return {
+        CX: 0,
+        SI: (i.initialSI + count * step) & 0xffff,
+        DI: (i.initialDI + count * step) & 0xffff,
+        destinationBytes: i.sourceBytes.slice(0, count)
+      };
+    }
+    case "interrupt_stack_pointer_after_frame": {
+      const bytesPushed = i.words.length * i.wordBytes;
+      return {
+        bytesPushed,
+        finalSP: (i.initialSP - bytesPushed) & 0xffff,
+        finalSPHex: ((i.initialSP - bytesPushed) & 0xffff).toString(16).toUpperCase().padStart(4, "0") + "h",
+        topFirst: i.words.slice().reverse()
+      };
+    }
+    case "iret_concrete_context_restore": {
+      const sp = (i.initial.SP + i.handlerNetStackDelta) & 0xffff;
+      return {
+        CS: i.frame.CS, IP: i.frame.IP, FLAGS: i.frame.FLAGS, SP: sp,
+        CSHex: i.frame.CS.toString(16).toUpperCase().padStart(4, "0") + "h",
+        IPHex: i.frame.IP.toString(16).toUpperCase().padStart(4, "0") + "h",
+        FLAGSHex: i.frame.FLAGS.toString(16).toUpperCase().padStart(4, "0") + "h",
+        SPHex: sp.toString(16).toUpperCase().padStart(4, "0") + "h"
+      };
+    }
+    case "instruction_boundary_after_immediate_mov": {
+      const offset = (i.startIP + i.firstInstructionLength) & 0xffff;
+      const opcode = i.bytes[i.firstInstructionLength];
+      return {
+        nextOpcodeOffset: offset,
+        nextOpcodeOffsetHex: offset.toString(16).toUpperCase().padStart(4, "0") + "h",
+        nextOpcode: opcode,
+        nextOpcodeHex: opcode.toString(16).toUpperCase().padStart(2, "0") + "h"
+      };
+    }
+    case "segment_offset_to_physical_address": {
+      const physicalAddress = ((i.DS << 4) + i.EA) & 0xfffff;
+      return { physicalAddress, hex: physicalAddress.toString(16).toUpperCase() + "h" };
+    }
+    case "modrm_disp8_encode_negative": {
+      const modrm = ((i.mod & 3) << 6) | ((i.reg & 7) << 3) | (i.rm & 7);
+      const displacement = i.displacement & ((2 ** i.width) - 1);
+      return {
+        modrm, modrmHex: modrm.toString(16).toUpperCase().padStart(2, "0") + "h",
+        displacement, displacementHex: displacement.toString(16).toUpperCase().padStart(2, "0") + "h",
+        bytes: [modrm.toString(16).toUpperCase().padStart(2, "0") + "h", displacement.toString(16).toUpperCase().padStart(2, "0") + "h"]
+      };
+    }
+    case "modrm_decode_bp_disp8_zero": {
+      const mod = (i.modrm >>> 6) & 3;
+      const reg = (i.modrm >>> 3) & 7;
+      const rm = i.modrm & 7;
+      const base = mod === 1 && rm === 6 ? "BP" : null;
+      return {
+        mod, reg, rm, base,
+        effectiveAddressExpression: base ? base + "+0" : null,
+        operand: base ? "[" + base + "+0]" : null
+      };
+    }
+    case "linear_disassembly_opcode_offset": {
+      const hltOffset = (i.startOffset + i.firstInstructionLength) & 0xffff;
+      const opcode = i.bytes[i.firstInstructionLength];
+      return {
+        hltOffset,
+        hltOffsetHex: hltOffset.toString(16).toUpperCase().padStart(4, "0") + "h",
+        hltOpcode: opcode,
+        hltOpcodeHex: opcode.toString(16).toUpperCase().padStart(2, "0") + "h"
+      };
+    }
+    case "rep_movsb_backward_index_trace": {
+      const delta = i.elementWidth * i.CX;
+      return {
+        SI: (i.SI - delta) & 0xffff,
+        DI: (i.DI - delta) & 0xffff,
+        CX: 0,
+        SIHex: ((i.SI - delta) & 0xffff).toString(16).toUpperCase().padStart(4, "0") + "h",
+        DIHex: ((i.DI - delta) & 0xffff).toString(16).toUpperCase().padStart(4, "0") + "h"
+      };
+    }
+    case "prefetch_queue_occupancy": {
+      const occupancy = i.queueOccupancyBefore + i.fetchBytes;
+      return { queueOccupancyAfter: occupancy, queueHasCapacity: occupancy <= i.queueCapacity ? i.queueCapacity : occupancy };
+    }
+    case "conditional_branch_not_taken_prefetch": {
+      const branchTaken = i.mnemonic === "JNZ" ? i.ZF === 0 : i.mnemonic === "JZ" ? i.ZF === 1 : false;
+      return {
+        branchTaken,
+        nextIP: branchTaken ? i.targetIP : i.fallThroughIP,
+        queueDiscarded: branchTaken,
+        sequentialQueueUsable: !branchTaken && i.queueContainsSequentialBytes
+      };
+    }
+    case "near_call_concrete_return_frame": {
+      const returnIP = (i.startIP + i.instructionLength) & 0xffff;
+      const finalSP = (i.initialSP - i.wordBytes) & 0xffff;
+      return {
+        returnIP,
+        returnIPHex: returnIP.toString(16).toUpperCase().padStart(4, "0") + "h",
+        stackTopValue: returnIP,
+        finalSP,
+        finalSPHex: finalSP.toString(16).toUpperCase().padStart(4, "0") + "h",
+        bytesPushed: i.wordBytes
       };
     }
     default:

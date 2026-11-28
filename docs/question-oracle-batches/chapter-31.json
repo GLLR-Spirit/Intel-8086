@@ -408,26 +408,39 @@
     {
       "id": "C31-F-Q5",
       "status": "certified",
-      "rule": "instruction_next_ip",
+      "rule": "instruction_boundary_after_immediate_mov",
       "inputs": {
-        "startIP": 0,
-        "length": 3,
-        "ipBits": 16
+        "startIP": 256,
+        "bytes": [
+          184,
+          52,
+          18,
+          137,
+          216
+        ],
+        "firstInstructionBytes": [
+          184,
+          52,
+          18
+        ],
+        "firstInstructionLength": 3
       },
       "expected": {
-        "nextIP": 3,
-        "hex": "0003h"
+        "nextOpcodeOffset": 259,
+        "nextOpcodeOffsetHex": "0103h",
+        "nextOpcode": 137,
+        "nextOpcodeHex": "89h"
       },
-      "correctAnswer": "0003h",
-      "derivation": "La longueur de MOV AX,1234h est de trois octets. En partant de IP=0000h, l'adresse de l'instruction suivante est 0000h+0003h=0003h.",
+      "correctAnswer": "0103h",
+      "derivation": "À partir de 0100h, les octets B8 34 12 constituent MOV AX,1234h : un opcode B8h suivi de l'immédiat 34h,12h. Cette instruction occupe trois octets ; l'opcode suivant 89h commence donc à 0103h.",
       "distractorRationales": [
         {
-          "choice": "0002h",
-          "reason": "Cette valeur ne compte que deux octets et omet un octet de l'encodage."
+          "choice": "0102h",
+          "reason": "Cette position omet le deuxième octet de l'immédiat 16 bits."
         },
         {
-          "choice": "0004h",
-          "reason": "Cette valeur compte un octet supplémentaire alors que l'instruction ne contient que trois octets."
+          "choice": "0105h",
+          "reason": "Cette position compte à tort cinq octets pour la première instruction ; MOV AX,imm16 occupe trois octets."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), Instruction Format, Opcode, ModR/M and Little-Endian Data Storage; Intel MCS-86 Assembly Language Reference Manual, MOV encodings and operand fields."

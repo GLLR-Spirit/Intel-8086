@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue pédagogique indépendante — chapitre 29",
+  "reviewDate": "2026-11-27",
+  "scope": "Examen individuel des 19 questions sur l'IVT, les vecteurs, le cadre empilé par INT, la restauration par IRET et les limites de l'abstraction VECTOR. Les oracles préexistants ont été traités comme des éléments à vérifier, jamais comme preuve de certification.",
+  "sources": [
+    {
+      "id": "intel-8086-family-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "sections": "Interrupt operations; interrupt vector table; interrupt stack frame; INT and IRET."
+    },
+    {
+      "id": "intel-mcs86-reference",
+      "title": "Intel MCS-86 Assembly Language Reference Manual",
+      "edition": "1979",
+      "sections": "Interrupt handling and far pointers."
+    },
+    {
+      "id": "lab-implementation",
+      "title": "Intel-8086 Lab source and documentation",
+      "sections": "VECTOR directive semantics and simulator scope; checked to distinguish the pedagogical abstraction from hardware behavior."
+    }
+  ],
+  "records": [
+    {
+      "id": "C29-L1-Q1",
+      "result": "passed",
+      "finding": "La formule 4×n est correcte pour l'adresse physique de début d'une entrée de quatre octets dans l'IVT située à l'adresse zéro ; la formulation précise qu'il s'agit de l'entrée.",
+      "basis": "Vérification indépendante contre la sémantique 8086 du manuel Intel ; calculs manuels des adresses et de SP ; inspection du contrat d'implémentation pour les éléments propres au laboratoire."
+    },
+    {
+      "id": "C29-L1-Q2",
+      "result": "passed",
+      "finding": "30h×4=C0h ; le calcul hexadécimal et la distinction numéro/adresse sont corrects.",
+      "basis": "Vérification indépendante contre la sémantique 8086 du manuel Intel ; calculs manuels des adresses et de SP ; inspection du contrat d'implémentation pour les éléments propres au laboratoire."
+    },
+    {
+      "id": "C29-L1-Q3",
+      "result": "passed",
+      "finding": "Une entrée contient l'offset 16 bits puis le segment 16 bits du pointeur far.",
+      "basis": "Vérification indépendante contre la sémantique 8086 du manuel Intel ; calculs manuels des adresses et de SP ; inspection du contrat d'implémentation pour les éléments propres au laboratoire."
+    },
+    {
+      "id": "C29-L2-Q1",
+      "result": "passed",
+      "finding": "INT empile FLAGS, CS puis l'IP de continuation ; trois mots, sans sauvegarder automatiquement tous les registres généraux.",
+      "basis": "Vérification indépendante contre la sémantique 8086 du manuel Intel ; calculs manuels des adresses et de SP ; inspection du contrat d'implémentation pour les éléments propres au laboratoire."
+    },
+    {
+      "id": "C29-L2-Q2",
+      "result": "passed",
+      "finding": "Le dernier mot empilé, IP, se trouve au sommet d'une pile descendante.",
+      "basis": "Vérification indépendante contre la sémantique 8086 du manuel Intel ; calculs manuels des adresses et de SP ; inspection du contrat d'implémentation pour les éléments propres au laboratoire."
+    },
+    {
+      "id": "C29-L2-Q3",
+      "result": "passed",
+      "finding": "IRET restaure IP, CS et FLAGS ; l'explication distingue retour et arrêt processeur.",
+      "basis": "Vérification indépendante contre la sémantique 8086 du manuel Intel ; calculs manuels des adresses et de SP ; inspection du contrat d'implémentation pour les éléments propres au laboratoire."
+    },
+    {
+      "id": "C29-L3-Q1",
+      "result": "passed",
+      "finding": "L'ordre de dépilement IP, CS, FLAGS est exact.",
+      "basis": "Vérification indépendante contre la sémantique 8086 du manuel Intel ; calculs manuels des adresses et de SP ; inspection du contrat d'implémentation pour les éléments propres au laboratoire."
+    },
+    {
+      "id": "C29-L3-Q2",
+      "result": "passed",
+      "finding": "L'IP sauvegardé est l'adresse de continuation après l'instruction INT.",
+      "basis": "Vérification indépendante contre la sémantique 8086 du manuel Intel ; calculs manuels des adresses et de SP ; inspection du contrat d'implémentation pour les éléments propres au laboratoire."
+    },
+    {
+      "id": "C29-L3-Q3",
+      "result": "passed",
+      "finding": "SP revient à sa valeur d'entrée si les opérations propres au gestionnaire sont équilibrées ; cette condition est indiquée.",
+      "basis": "Vérification indépendante contre la sémantique 8086 du manuel Intel ; calculs manuels des adresses et de SP ; inspection du contrat d'implémentation pour les éléments propres au laboratoire."
+    },
+    {
+      "id": "C29-F-Q1",
+      "result": "passed",
+      "finding": "Définition correcte de l'IVT et de son emplacement physique.",
+      "basis": "Vérification indépendante contre la sémantique 8086 du manuel Intel ; calculs manuels des adresses et de SP ; inspection du contrat d'implémentation pour les éléments propres au laboratoire."
+    },
+    {
+      "id": "C29-F-Q2",
+      "result": "passed",
+      "finding": "La taille de quatre octets est justifiée par deux mots de 16 bits.",
+      "basis": "Vérification indépendante contre la sémantique 8086 du manuel Intel ; calculs manuels des adresses et de SP ; inspection du contrat d'implémentation pour les éléments propres au laboratoire."
+    },
+    {
+      "id": "C29-F-Q3",
+      "result": "passed",
+      "finding": "VECTOR est explicitement présenté comme une directive du simulateur, pas comme une instruction machine 8086.",
+      "basis": "Vérification indépendante contre la sémantique 8086 du manuel Intel ; calculs manuels des adresses et de SP ; inspection du contrat d'implémentation pour les éléments propres au laboratoire."
+    },
+    {
+      "id": "C29-F-Q4",
+      "result": "passed",
+      "finding": "IRET doit retrouver IP, CS, FLAGS au sommet dans cet ordre.",
+      "basis": "Vérification indépendante contre la sémantique 8086 du manuel Intel ; calculs manuels des adresses et de SP ; inspection du contrat d'implémentation pour les éléments propres au laboratoire."
+    },
+    {
+      "id": "C29-F-Q5",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait exactement le calcul du vecteur 30h de la leçon 1. Elle utilise désormais le vecteur 21h : 21h×4=84h.",
+      "basis": "Vérification indépendante contre la sémantique 8086 du manuel Intel ; calculs manuels des adresses et de SP ; inspection du contrat d'implémentation pour les éléments propres au laboratoire."
+    },
+    {
+      "id": "C29-F-Q6",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait le comptage de trois mots. Elle calcule désormais SP après empilement depuis 1000h : 1000h−6=0FFAh.",
+      "basis": "Vérification indépendante contre la sémantique 8086 du manuel Intel ; calculs manuels des adresses et de SP ; inspection du contrat d'implémentation pour les éléments propres au laboratoire."
+    },
+    {
+      "id": "C29-F-Q7",
+      "result": "passed",
+      "finding": "L'analyse distingue le dispatch par vecteur et la sauvegarde du cadre de retour, sans confondre INT avec une écriture de port.",
+      "basis": "Vérification indépendante contre la sémantique 8086 du manuel Intel ; calculs manuels des adresses et de SP ; inspection du contrat d'implémentation pour les éléments propres au laboratoire."
+    },
+    {
+      "id": "C29-F-Q8",
+      "result": "corrected",
+      "finding": "L'ancienne question restait générale. Elle trace désormais des valeurs concrètes de CS, IP, FLAGS et SP à travers INT/IRET.",
+      "basis": "Vérification indépendante contre la sémantique 8086 du manuel Intel ; calculs manuels des adresses et de SP ; inspection du contrat d'implémentation pour les éléments propres au laboratoire."
+    },
+    {
+      "id": "C29-F-Q9",
+      "result": "passed",
+      "finding": "La démarche de débogage vérifie l'ordre réel du cadre et l'équilibre des opérations de pile.",
+      "basis": "Vérification indépendante contre la sémantique 8086 du manuel Intel ; calculs manuels des adresses et de SP ; inspection du contrat d'implémentation pour les éléments propres au laboratoire."
+    },
+    {
+      "id": "C29-F-Q10",
+      "result": "passed",
+      "finding": "Le périmètre de VECTOR est borné : l'abstraction ne prétend pas simuler les signaux, le contrôleur externe ou tous les cycles physiques.",
+      "basis": "Vérification indépendante contre la sémantique 8086 du manuel Intel ; calculs manuels des adresses et de SP ; inspection du contrat d'implémentation pour les éléments propres au laboratoire."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 16,
+    "corrected": 3,
+    "needsRevision": 0,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  },
+  "openFindings": []
+}
