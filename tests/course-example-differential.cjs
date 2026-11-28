@@ -212,8 +212,8 @@ const maximumAlternative = api.executeAll([
 ].join("\n"));
 const maximumAlternativeExercise = exerciseByTitle("Programme à compléter : calculer le maximum");
 assert.ok(!maximumAlternative.error, "EX21 alternative maximum path must execute");
-assert.equal(maximumAlternativeExercise.exercise[3](maximumAlternative), true,
-  "EX21 alternative maximum path must preserve the result");
+assert.equal(maximumAlternative.reg.DX, 30,
+  "EX21 alternative maximum path must return the larger AX value");
 assert.equal(api.exerciseMethodSatisfied(maximumAlternativeExercise.index, maximumAlternative), true,
   "EX21 must accept the alternative AX-greater branch path");
 
