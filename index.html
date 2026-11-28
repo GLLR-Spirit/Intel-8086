@@ -157,7 +157,7 @@ exercises.push(
 ["Défi expert : copie de mots en sens décroissant","Initialise DS=1000h et ES=2000h. Place 1234h puis 5678h aux offsets source 0100h et 0102h. Copie les deux mots en ordre décroissant avec SI, DI, STD et REP MOVSW. Rétablis DF avec CLD.","; Initialise DS et ES\n; Place les deux mots source\n; Configure SI, DI et CX\n; Copie en sens décroissant puis restaure DF\nHLT",function(s){return s.reg.SI===0x00FE&&s.reg.DI===0x01FE&&s.reg.SP===0xFFFE&&s.flags.DF===0&&s.mem[0x20200]===0x34&&s.mem[0x20201]===0x12&&s.mem[0x20202]===0x78&&s.mem[0x20203]===0x56;},{level:"Expert",hint:"Avec STD, les index diminuent de deux après chaque MOVSW. Commence au dernier mot et restaure DF avec CLD après REP MOVSW.",steps:["Initialise DS et ES avec des segments distincts.","Écris 1234h à DS:0100h et 5678h à DS:0102h.","Initialise SI=0102h, DI=0202h et CX=2.","STD active le parcours décroissant ; REP MOVSW copie deux mots.","CLD restaure le sens croissant ; SI et DI valent alors 00FEh et 01FEh."],solution:"MOV AX, 1000h\nMOV DS, AX\nMOV AX, 2000h\nMOV ES, AX\nMOV WORD PTR [0100h], 1234h\nMOV WORD PTR [0102h], 5678h\nMOV SI, 0102h\nMOV DI, 0202h\nMOV CX, 2\nSTD\nREP MOVSW\nCLD\nHLT"},{type:"challenge",difficulty:"Expert"}]
 );
 exercises.push(
-["Saut direct : vérifier la cible","Le saut doit ignorer MOV AX,2 et atteindre SUITE. Le résultat attendu est AX=1 et BX=3.","MOV AX, 1\nJMP SUITE\nMOV AX, 2\nSUITE:\nMOV BX, 3\nHLT",function(s){return s.reg.AX===1&&s.reg.BX===3;},{level:"Intermédiaire",hint:"JMP transfère directement le contrôle vers l'étiquette ; les instructions situées avant la cible sont sautées.",steps:["AX reçoit 1.","JMP SUITE transfère l'exécution à l'étiquette SUITE.","MOV AX,2 n'est donc jamais exécuté.","BX reçoit 3 puis HLT termine le programme."],solution:"MOV AX, 1\nJMP SUITE\nMOV AX, 2\nSUITE:\nMOV BX, 3\nHLT"},{type:"application",difficulty:"Intermédiaire"}],
+["Saut direct : vérifier la cible","Le saut doit ignorer MOV AX,2 et atteindre SUITE. Le résultat attendu est AX=1 et BX=3.","MOV AX, 1\n; ajoute JMP SUITE ici\nMOV AX, 2\nSUITE:\nMOV BX, 3\nHLT",function(s){return s.reg.AX===1&&s.reg.BX===3;},{level:"Intermédiaire",hint:"JMP transfère directement le contrôle vers l'étiquette ; les instructions situées avant la cible sont sautées.",steps:["AX reçoit 1.","JMP SUITE transfère l'exécution à l'étiquette SUITE.","MOV AX,2 n'est donc jamais exécuté.","BX reçoit 3 puis HLT termine le programme."],solution:"MOV AX, 1\nJMP SUITE\nMOV AX, 2\nSUITE:\nMOV BX, 3\nHLT"},{type:"application",difficulty:"Intermédiaire"}],
 ["Procédure : CALL et RET near","Écris une procédure DOUBLE appelée avec CALL. Elle doit doubler AX=5 puis revenir après CALL. Vérifie aussi que la pile est équilibrée.","MOV AX, 5\n; appelle DOUBLE puis termine\nHLT\nDOUBLE:\nADD AX, AX\nRET",function(s){return s.reg.AX===10&&s.reg.SP===0xFFFE&&s.stack.length===0;},{level:"Avancé",hint:"CALL empile l'offset de retour. RET le récupère ; ne modifie pas le cadre de pile entre les deux.",steps:["MOV AX,5 initialise la valeur.","CALL DOUBLE empile l'adresse de reprise et saute à la procédure.","ADD AX,AX double la valeur dans AX.","RET restaure l'IP de retour ; SP doit retrouver sa valeur initiale."],solution:"MOV AX, 5\nCALL DOUBLE\nHLT\nDOUBLE:\nADD AX, AX\nRET"},{type:"application",difficulty:"Avancé",requiredTrace:["CALL","ADD","RET"],requiredOperands:[{op:"CALL",args:["DOUBLE"]},{op:"ADD",args:["AX","AX"]},{op:"RET",args:[]}]}],
 ["Paramètre sur pile : lire avec BP","Passe la valeur 5 sur la pile. La procédure doit lire ce paramètre, le doubler, puis le retirer de la pile avec RET 2. Résultat : AX=10 et SP restauré.","MOV AX, 5\nPUSH AX\nCALL DOUBLE_PARAM\nHLT\nDOUBLE_PARAM:\n; construis le cadre BP et lis le paramètre\n; double la valeur puis retourne en nettoyant le paramètre",function(s){return s.reg.AX===10&&s.reg.SP===0xFFFE&&s.stack.length===0;},{level:"Expert",hint:"Après CALL puis PUSH BP, le premier paramètre se trouve à SS:[BP+4]. RET 2 libère le mot de paramètre après le retour.",steps:["AX reçoit 5 et PUSH AX transmet le paramètre.","CALL empile l'adresse de retour.","PUSH BP puis MOV BP,SP établissent un cadre stable.","MOV AX,WORD PTR [BP+4] lit le paramètre ; ADD AX,AX le double.","POP BP restaure BP et RET 2 retourne en libérant le paramètre."],solution:"MOV AX, 5\nPUSH AX\nCALL DOUBLE_PARAM\nHLT\nDOUBLE_PARAM:\nPUSH BP\nMOV BP, SP\nMOV AX, WORD PTR [BP+4]\nADD AX, AX\nPOP BP\nRET 2"},{type:"completion",difficulty:"Expert",requiredTrace:["PUSH","CALL","PUSH","MOV","MOV","ADD","POP","RET"],requiredOperands:[{op:"MOV",args:["BP","SP"]},{op:"MOV",args:["AX","WORD PTR [BP+4]"]},{op:"RET",args:["2"]}]}],
 ["Programmation modulaire : deux routines","Construis deux routines : ADD_BX ajoute BX à AX, puis DOUBLE double le résultat. Avec AX=3 et BX=4, le résultat final doit être AX=14. La pile doit rester équilibrée.","MOV AX, 3\nMOV BX, 4\nCALL ADD_BX\nCALL DOUBLE\nHLT\nADD_BX:\n; ajoute BX à AX et retourne\nDOUBLE:\n; double AX et retourne",function(s){return s.reg.AX===14&&s.reg.SP===0xFFFE&&s.stack.length===0;},{level:"Avancé",hint:"Chaque routine doit se terminer par RET et ne doit pas consommer le cadre d'appel de l'autre routine.",steps:["AX=3 et BX=4 constituent les entrées.","CALL ADD_BX exécute ADD AX,BX puis RET ; AX vaut 7.","CALL DOUBLE exécute ADD AX,AX puis RET ; AX vaut 14.","Les deux retours doivent laisser SP à FFFEh."],solution:"MOV AX, 3\nMOV BX, 4\nCALL ADD_BX\nCALL DOUBLE\nHLT\nADD_BX:\nADD AX, BX\nRET\nDOUBLE:\nADD AX, AX\nRET"},{type:"probleme",difficulty:"Avancé",requiredTrace:["CALL","ADD","RET","CALL","ADD","RET"],requiredOperands:[{op:"ADD",args:["AX","BX"]},{op:"ADD",args:["AX","AX"]}]}],
@@ -930,6 +930,26 @@ setExerciseMethod("Segments : initialiser SS et BP",{requiredOperandSequences:[[
 setExerciseMethod("Débogage : suivre les deux chemins",{requiredTrace:["CMP","JLE"],requiredOperands:[{op:"CMP",args:["AX","BX"]}]});
 setExerciseMethod("Raisonnement : comparaison signée",{requiredOperandSequences:[[{op:"CMP",args:["AL","BL"]}]],requiredAnyOps:[["JG","JLE","JNG","JNLE"]]});
 
+// Lot 3 — contrats de méthode EX21 à EX30.
+setExerciseMethod("Programme à compléter : calculer le maximum",{
+ requiredOneOfOperandSequences:[[
+  [{op:"CMP",args:["AX","BX"]},{op:"JGE",args:["AX_MAX"]},{op:"MOV",args:["DX","BX"]},{op:"JMP",args:["FIN"]}],
+  [{op:"CMP",args:["AX","BX"]},{op:"JGE",args:["AX_MAX"]},{op:"MOV",args:["DX","AX"]}]
+ ]]
+});
+setExerciseMethod("Débogage : corriger une boucle",{
+ requiredOperandSequences:[[{op:"ADD",args:["AX","3"]},{op:"LOOP",args:["BOUCLE"]}]],
+ forbiddenOperands:[{op:"INC",args:["CX"]}]
+});
+setExerciseMethod("Débogage : réparer l’ordre d’un échange",{requiredOperandSequences:[[
+ {op:"MOV",args:["DX","AX"]},{op:"MOV",args:["AX","BX"]},{op:"MOV",args:["BX","DX"]}
+]]});
+setExerciseMethod("Problème complet : somme des nombres pairs",{
+ requiredTrace:["TEST","JNZ","ADD","INC","LOOP"],
+ requiredOperands:[{op:"TEST",args:["BX","1"]},{op:"JNZ",args:["IMPAIR"]},{op:"ADD",args:["AX","BX"]},{op:"INC",args:["BX"]},{op:"LOOP",args:["BOUCLE"]}]
+});
+setExerciseMethod("Saut direct : vérifier la cible",{requiredOperandSequences:[[{op:"JMP",args:["SUITE"]}]]});
+
 // Contrats de méthode complémentaires issus de la revue EX01–EX48.
 // Les séquences sont contrôlées sur la trace réellement exécutée (pas sur le texte source).
 function setExerciseTraceAt(index,sequence){
@@ -954,6 +974,13 @@ function exerciseMethodSatisfied(index,state){
   return !!actual&&actual.op===expected.op&&(!expected.args||
    (actual.args.length===expected.args.length&&actual.args.every(function(arg,i){return arg===expected.args[i];})));
  }
+ function sequenceMatches(sequence){
+  var position=0;
+  for(var t=0;t<trace.length&&position<sequence.length;t++){
+   if(matches(trace[t],sequence[position]))position++;
+  }
+  return position===sequence.length;
+ }
  var sequences=(metadata.requiredTrace?[metadata.requiredTrace]:[]).concat(metadata.requiredTraces||[]);
  for(var s=0;s<sequences.length;s++){
   var required=sequences[s],cursor=0;
@@ -963,13 +990,19 @@ function exerciseMethodSatisfied(index,state){
  if(!(metadata.requiredOperands||[]).every(function(expected){
   return trace.some(function(actual){return matches(actual,expected);});
  }))return false;
+ if((metadata.forbiddenOperands||[]).some(function(expected){
+  return trace.some(function(actual){return matches(actual,expected);});
+ }))return false;
+ if((metadata.forbiddenOps||[]).some(function(op){
+  return trace.some(function(actual){return actual.op===op;});
+ }))return false;
  var operandSequences=metadata.requiredOperandSequences||[];
  for(var q=0;q<operandSequences.length;q++){
-  var sequence=operandSequences[q],position=0;
-  for(var t=0;t<trace.length&&position<sequence.length;t++){
-   if(matches(trace[t],sequence[position]))position++;
-  }
-  if(position!==sequence.length)return false;
+  if(!sequenceMatches(operandSequences[q]))return false;
+ }
+ var alternativeGroups=metadata.requiredOneOfOperandSequences||[];
+ for(var a=0;a<alternativeGroups.length;a++){
+  if(!alternativeGroups[a].some(function(sequence){return sequenceMatches(sequence);}))return false;
  }
  return (metadata.requiredAnyOps||[]).every(function(group){
   return group.some(function(op){return trace.some(function(actual){return actual.op===op;});});
