@@ -353,3 +353,5 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - Programmes de départ EX11–EX18 rendus réellement incomplets ; EX19 reçoit un défaut de branchement à corriger ; EX20 devient un cas signé distinct d'EX14.
 - Dix tests négatifs ajoutés, avec résultat final correct mais méthode obligatoire absente ; une alternative JLE positive est ajoutée pour EX20.
 - **EX11–EX20 restent non certifiés** jusqu'à réussite des tests, de l'audit navigateur et de la vérification pédagogique indépendante.
+
+- Première CI du lot 2 : les tests de méthode (10/10 positifs, 10/10 contournements rejetés), les corrections guidées et le différentiel source/binaire passent. L'audit navigateur a révélé une ancienne variante EX20 encore fondée sur FCh/03h ; le test a été actualisé pour la nouvelle comparaison 7Fh/80h. Nouvelle CI attendue.
