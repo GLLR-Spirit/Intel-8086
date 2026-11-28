@@ -342,3 +342,5 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - Les deux échecs initiaux sont des défauts réels de cette branche, pas des résultats ignorés : le lot reste ouvert et non certifié.
 
 - Renforcement final EX04 : le validateur n'accepte plus n'importe quel Jcc, uniquement JE/JZ/JNE/JNZ. Un test négatif JA conserve CX=1 mais doit être rejeté.
+
+- **Lot 1 EX01–EX10 : certifié dans le cadre de l'audit pédagogique**, après vérification séparée du résultat, de la méthode (10/10 positifs, 10/10 contournements rejetés, variantes EX04) et de la correction pédagogique. CI et audit navigateur réussis sur le commit `851c21e` (runs 46090112358 et 46090112357).
