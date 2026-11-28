@@ -340,3 +340,5 @@ The mission remains in progress. Passing automated suites is evidence for the te
 
 - Première CI automatique de la PR #11 : deux défauts détectés, EX07 (solution guidée liée au programme de départ devenu incomplet) et EX04 (alias JE/JNE absents du groupe de branchements acceptés). Les deux corrections ont été poussées ; la nouvelle CI doit encore confirmer leur résolution.
 - Les deux échecs initiaux sont des défauts réels de cette branche, pas des résultats ignorés : le lot reste ouvert et non certifié.
+
+- Renforcement final EX04 : le validateur n'accepte plus n'importe quel Jcc, uniquement JE/JZ/JNE/JNZ. Un test négatif JA conserve CX=1 mais doit être rejeté.
