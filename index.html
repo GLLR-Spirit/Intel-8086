@@ -170,7 +170,7 @@ exercises.push(
 ["ModR/M : écrire puis relire une donnée","Utilise BX=0100h, SI=2 et le déplacement 4 pour écrire ABCDh puis relire le mot à [BX+SI+4]. Résultat attendu : AX=ABCDh.","MOV BX, 0100h\nMOV SI, 2\n; écris et relis le mot avec [BX+SI+4]\nHLT",function(s){return s.reg.AX===0xABCD&&s.mem[0x106]===0xCD&&s.mem[0x107]===0xAB;},{level:"Expert",hint:"L'adresse effective vaut BX+SI+4 = 0106h. Le mot est stocké en little-endian.",steps:["BX vaut 0100h et SI vaut 0002h.","L'adresse effective est 0100h+0002h+0004h = 0106h.","Écris ABCDh à cette adresse avec un opérande WORD PTR.","Relis le mot dans AX ; les octets mémoire sont CDh puis ABh."],solution:"MOV BX, 0100h\nMOV SI, 2\nMOV WORD PTR [BX+SI+4], ABCDh\nMOV AX, WORD PTR [BX+SI+4]\nHLT"},{type:"application",difficulty:"Expert"}],
 ["Assembleur et désassembleur : branchement symbolique","Assemble un saut vers FIN, laisse NOP sur le chemin ignoré, puis charge 1234h dans AX. Le désassemblage séquentiel doit retrouver les frontières d'instructions.","JMP FIN\nNOP\nFIN:\nMOV AX, 1234h\nHLT",function(s){return s.reg.AX===0x1234;},{level:"Expert",hint:"L'étiquette FIN est résolue en déplacement relatif. Le désassembleur doit consommer chaque instruction selon sa longueur réelle.",steps:["JMP FIN transfère le contrôle à l'étiquette.","NOP est sauté à l'exécution mais reste présent dans le flux binaire.","MOV AX,1234h occupe trois octets : B8 34 12.","HLT termine le flux après le MOV."],solution:"JMP FIN\nNOP\nFIN:\nMOV AX, 1234h\nHLT"},{type:"probleme",difficulty:"Expert"}],
 ["Préfixe de segment : distinguer DS et ES","Écris 11h à DS:0100h et 22h à ES:0100h. Lis chaque octet avec un override explicite. Résultat attendu : AX=2211h.","MOV AX, 1000h\nMOV DS, AX\nMOV AX, 2000h\nMOV ES, AX\nMOV BX, 0100h\n; écris deux valeurs dans des segments distincts\n; relis-les avec DS: et ES:\nHLT",function(s){return s.reg.AX===0x2211&&s.mem[0x10100]===0x11&&s.mem[0x20100]===0x22;},{level:"Expert",hint:"DS et ES désignent deux bases physiques différentes. Le préfixe doit s'appliquer à l'opérande mémoire concerné.",steps:["DS reçoit 1000h et ES reçoit 2000h.","BX vaut 0100h ; écris 11h via DS et 22h via ES.","Lis AL avec DS:[BX], puis AH avec ES:[BX].","AX doit valoir 2211h et les deux octets doivent rester à leurs adresses physiques respectives."],solution:"MOV AX, 1000h\nMOV DS, AX\nMOV AX, 2000h\nMOV ES, AX\nMOV BX, 0100h\nMOV BYTE PTR [BX], 11h\nMOV BYTE PTR ES:[BX], 22h\nMOV AL, DS:[BX]\nMOV AH, ES:[BX]\nHLT"},{type:"application",difficulty:"Expert"}],
-["Optimisation : préserver le résultat et reconnaître les limites","Calcule 4×2 avec SHL AX,1. Vérifie AX=8, puis explique pourquoi le résultat fonctionnel ne prouve pas à lui seul un gain de cycles sur un 8086 physique.","MOV AX, 4\nSHL AX, 1\nHLT",function(s){return s.reg.AX===8;},{level:"Expert",hint:"SHL d'un bit multiplie une valeur non signée par deux modulo 16 bits. Le simulateur ne mesure pas les cycles physiques.",steps:["AX reçoit 4.","SHL AX,1 décale les bits vers la gauche d'une position.","AX vaut 8 après l'opération.","Le test confirme le résultat, mais ne mesure ni la BIU, ni la file de prélecture, ni les cycles du bus."],solution:"MOV AX, 4\nSHL AX, 1\nHLT"},{type:"raisonnement",difficulty:"Expert"}],
+["Optimisation : préserver le résultat sans prétendre mesurer les cycles","Calcule 4×2 avec SHL AX,1 et vérifie AX=8. Ce test valide le résultat fonctionnel ; il ne mesure pas les cycles d'un 8086 physique.","MOV AX, 4\nSHL AX, 1\nHLT",function(s){return s.reg.AX===8;},{level:"Expert",hint:"SHL d'un bit multiplie une valeur non signée par deux modulo 16 bits. Le simulateur ne mesure pas les cycles physiques.",steps:["AX reçoit 4.","SHL AX,1 décale les bits vers la gauche d'une position.","AX vaut 8 après l'opération.","Le test confirme le résultat fonctionnel ; aucune mesure BIU, file de prélecture ou cycle de bus n'est effectuée."],solution:"MOV AX, 4\nSHL AX, 1\nHLT"},{type:"raisonnement",difficulty:"Expert"}],
 ["Projet de synthèse : somme d'un tableau en mémoire","Initialise DS=1000h, place les mots 2, 3 et 4 à partir de 0100h, additionne-les avec SI et CX, puis stocke le total à 0200h. Résultat attendu : AX=9 et mémoire 0200h=9.","; initialise DS et les trois mots\n; parcours le tableau avec SI et CX\n; stocke le total à 0200h\nHLT",function(s){return s.reg.AX===9&&s.reg.CX===0&&s.mem[0x10200]===9&&s.mem[0x10201]===0;},{level:"Expert",hint:"Utilise CX=3 comme compteur, SI comme index et ADD AX,WORD PTR [SI] pour accumuler chaque mot.",steps:["Initialise DS à 1000h et écris 2, 3 et 4 aux offsets 0100h, 0102h et 0104h.","Initialise SI=0100h, CX=3 et AX=0.","À chaque tour, ajoute le mot pointé par DS:SI puis augmente SI de deux.","LOOP décrémente CX et répète trois fois.","Écris le total 9 à DS:0200h et vérifie AX, CX et les deux octets mémoire."],solution:"MOV AX, 1000h\nMOV DS, AX\nMOV WORD PTR [0100h], 2\nMOV WORD PTR [0102h], 3\nMOV WORD PTR [0104h], 4\nMOV SI, 0100h\nMOV CX, 3\nMOV AX, 0\nSOMME:\nADD AX, WORD PTR [SI]\nADD SI, 2\nLOOP SOMME\nMOV WORD PTR [0200h], AX\nHLT"},{type:"probleme",difficulty:"Expert"}]
 );
 var projects=[["Calculatrice entière","Effectuer addition, soustraction et comparaison.","Débutant"],["Compteur avec boucle","Générer une suite de valeurs en utilisant CX et LOOP.","Débutant"],["Analyse de bits","Tester et modifier des bits avec AND, OR et XOR.","Intermédiaire"],["Recherche du maximum","Comparer plusieurs valeurs et conserver la plus grande.","Intermédiaire"],["Mini-menu DOS","Explorer les interruptions DOS simulées.","Avancé"],["Routine de traitement","Étudier la décomposition d'un programme en sous-programmes.","Avancé"]];
@@ -996,6 +996,16 @@ setExerciseMethod("Interruptions : préserver un registre dans le gestionnaire",
  {op:"INT",args:["31H"]},{op:"PUSH",args:["BX"]},{op:"ADD",args:["AX","3"]},{op:"POP",args:["BX"]},{op:"IRET",args:[]}
 ]]});
 setExerciseMethod("Intégration : copier, vérifier et signaler par interruption",{
+ requiredOperandSequences:[[
+  {op:"PUSH",args:["BX"]},
+  {op:"CMP",args:["BYTE PTR ES:[0201H]","22H"]},
+  {op:"MOV",args:["BX","1"]},
+  {op:"MOV",args:["DX","BX"]},
+  {op:"POP",args:["BX"]},
+  {op:"INT",args:["30H"]},
+  {op:"MOV",args:["AX","DX"]},
+  {op:"IRET",args:[]}
+ ]],
  requiredOperands:[
   {op:"CMP",args:["BYTE PTR ES:[0201H]","22H"]},
   {op:"MOV",args:["DX","BX"]},
@@ -1005,6 +1015,16 @@ setExerciseMethod("Intégration : copier, vérifier et signaler par interruption
  ]
 });
 setExerciseMethod("Intégration : parcours inverse et contrôle de mot",{
+ requiredOperandSequences:[[
+  {op:"PUSH",args:["BX"]},
+  {op:"CMP",args:["WORD PTR ES:[0200H]","5678H"]},
+  {op:"MOV",args:["BX","1"]},
+  {op:"MOV",args:["DX","BX"]},
+  {op:"POP",args:["BX"]},
+  {op:"INT",args:["31H"]},
+  {op:"MOV",args:["AX","DX"]},
+  {op:"IRET",args:[]}
+ ]],
  requiredOperands:[
   {op:"CMP",args:["WORD PTR ES:[0200H]","5678H"]},
   {op:"MOV",args:["DX","BX"]},
