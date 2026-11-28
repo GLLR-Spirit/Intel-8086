@@ -168,6 +168,57 @@ assert.equal(api.exerciseMethodSatisfied(signedAlternativeExercise.index, signed
 
 console.log("Exercise method batch 2 PASS: 10/10 reference methods accepted; 10/10 result-only bypasses rejected; EX20 signed JLE alternative accepted.");
 
+// Lot 3 — contrôles indépendants des méthodes obligatoires EX21–EX30.
+const thirdTenMethodCases = [
+  { title: "Programme à compléter : calculer le maximum", bypass: "MOV DX, 23\nHLT" },
+  { title: "Débogage : corriger une boucle", bypass: [
+    "MOV AX, 0", "MOV CX, 4", "BOUCLE:", "ADD AX, 3",
+    "INC CX", "DEC CX", "LOOP BOUCLE", "HLT"
+  ].join("\n") },
+  { title: "Débogage : réparer l’ordre d’un échange", bypass: "MOV AX, 1234h\nMOV BX, 0ABCDh\nXCHG AX, BX\nHLT" },
+  { title: "Problème complet : somme des nombres pairs", bypass: "MOV AX, 12\nMOV CX, 0\nHLT" },
+  { title: "Défi expert : copie de mots en sens décroissant", bypass: [
+    "MOV AX, 1000h", "MOV DS, AX", "MOV AX, 2000h", "MOV ES, AX",
+    "MOV WORD PTR [0100h], 1234h", "MOV WORD PTR [0102h], 5678h",
+    "MOV AX, 1234h", "MOV WORD PTR ES:[0200h], AX",
+    "MOV AX, 5678h", "MOV WORD PTR ES:[0202h], AX",
+    "MOV SI, 00FEh", "MOV DI, 01FEh", "CLD", "HLT"
+  ].join("\n") },
+  { title: "Saut direct : vérifier la cible", bypass: "MOV AX, 1\nMOV AX, 2\nMOV AX, 1\nSUITE:\nMOV BX, 3\nHLT" },
+  { title: "Procédure : CALL et RET near", bypass: "MOV AX, 10\nHLT" },
+  { title: "Paramètre sur pile : lire avec BP", bypass: "MOV AX, 10\nHLT" },
+  { title: "Programmation modulaire : deux routines", bypass: "MOV AX, 14\nHLT" },
+  { title: "MUL : produit non signé sur 8 bits", bypass: "MOV AX, 42\nHLT" }
+];
+assert.equal(thirdTenMethodCases.length, 10, "Batch 3 must cover exactly ten exercises");
+for (const spec of thirdTenMethodCases) {
+  const { index, exercise } = exerciseByTitle(spec.title);
+  const reference = api.executeAll(exercise[4].solution);
+  assert.ok(!reference.error, spec.title + " reference solution must execute");
+  assert.equal(exercise[3](reference), true, spec.title + " reference result oracle");
+  assert.equal(api.exerciseMethodSatisfied(index, reference), true, spec.title + " ordered method contract");
+
+  const bypass = api.executeAll(spec.bypass);
+  assert.ok(!bypass.error, spec.title + " result-only bypass must execute");
+  assert.equal(exercise[3](bypass), true, spec.title + " bypass must preserve the expected final result");
+  assert.equal(api.exerciseMethodSatisfied(index, bypass), false,
+    spec.title + " must reject a result-only bypass that omits the required method");
+}
+
+// EX21's alternative maximum branch must also be accepted when AX > BX.
+const maximumAlternative = api.executeAll([
+  "MOV AX, 30", "MOV BX, 23", "CMP AX, BX", "JGE AX_MAX",
+  "MOV DX, BX", "JMP FIN", "AX_MAX:", "MOV DX, AX", "FIN:", "HLT"
+].join("\n"));
+const maximumAlternativeExercise = exerciseByTitle("Programme à compléter : calculer le maximum");
+assert.ok(!maximumAlternative.error, "EX21 alternative maximum path must execute");
+assert.equal(maximumAlternativeExercise.exercise[3](maximumAlternative), true,
+  "EX21 alternative maximum path must preserve the result");
+assert.equal(api.exerciseMethodSatisfied(maximumAlternativeExercise.index, maximumAlternative), true,
+  "EX21 must accept the alternative AX-greater branch path");
+
+console.log("Exercise method batch 3 PASS: 10/10 reference methods accepted; 10/10 result-only bypasses rejected; EX21 alternate maximum path accepted.");
+
 function compareRecord(a, b, label) {
   assert.deepEqual(plain(a), plain(b), label);
 }
