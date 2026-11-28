@@ -399,3 +399,21 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - Contrats d'opérandes ajoutés ou renforcés pour MUL/DIV, PUSHF/POPF, REP MOVSB, REPNE SCASB, les deux procédures/interruption refondues et les intégrations EX47/EX48.
 - Huit tests négatifs conservent les états finaux attendus tout en contournant les méthodes.
 - **EX41–EX48 non certifiés** tant que CI, navigateur et revue pédagogique distincte ne sont pas confirmés.
+
+
+#### Décision finale — lot 3 EX21–EX30
+
+- CI et navigateur réussis sur le commit `5f9842a2d9039e71d5354af8aa720be8155fe79f` (runs 46091088758 et 46091088755).
+- La mise à jour ultérieure du lot 5 supprime les deux doublons pédagogiques qui bloquaient la progression : EX41 n'est plus un second exercice DOUBLE identique à EX27 ; EX46 n'est plus une seconde interruption qui charge seulement AX=1234h comme EX33.
+- Les dix résultats, les dix méthodes et les dix corrections ont été revus séparément ; les tests positifs/négatifs du lot 3 et le test du chemin alternatif EX21 passent.
+- **Décision : EX21–EX30 certifiés dans le cadre de cet audit pédagogique**, sous réserve de la portée limitée aux exercices du lot 3.
+
+
+#### Décision finale — lot 5 EX41–EX48
+
+- Sur le commit `28c1a943632962b6f091ef036287fd19806a3fe9`, `Validate Intel 8086 Lab` : succès (run 46092187178).
+- Sur le même commit, `Niveau 3 — audit navigateur` : succès (run 46092187209).
+- Le test dédié accepte les huit corrections de référence et rejette les huit contournements résultat-seul.
+- Le différentiel global compare les 48 corrections sur les chemins source et binaire ; il réussit.
+- Les huit consignes, indices, étapes et corrections ont été relus séparément. Les doublons EX27/EX41 et EX33/EX46 sont supprimés par les refontes EX41 et EX46.
+- **Décision : EX41–EX48 certifiés dans le cadre de cet audit pédagogique**, limitée à ces huit exercices.
