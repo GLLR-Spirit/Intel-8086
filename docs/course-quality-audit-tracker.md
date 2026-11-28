@@ -417,3 +417,17 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - Le différentiel global compare les 48 corrections sur les chemins source et binaire ; il réussit.
 - Les huit consignes, indices, étapes et corrections ont été relus séparément. Les doublons EX27/EX41 et EX33/EX46 sont supprimés par les refontes EX41 et EX46.
 - **Décision : EX41–EX48 certifiés dans le cadre de cet audit pédagogique**, limitée à ces huit exercices.
+
+
+#### Décision finale — lot 4 EX31–EX40
+
+- EX39 a été reformulé : la consigne demande maintenant de calculer et vérifier AX=8 ; la limite de simulation est donnée comme contexte explicatif, et non comme une réponse libre à corriger automatiquement.
+- Les dix résultats, méthodes et corrections pédagogiques ont ainsi été vérifiés séparément ; le test rejette 10/10 contournements.
+- Sur le commit `bec9a22f275f8977ff6eb55eda177c0579b17132` : `Validate Intel 8086 Lab` succès (run 46092464354) et `Niveau 3 — audit navigateur` succès (run 46092464172).
+- **Décision : EX31–EX40 certifiés dans le cadre de cet audit pédagogique.**
+
+#### Diagnostic et résolution des échecs de CI des lots 4–5
+
+- Premier échec : les notes éditoriales EX41/EX46 avaient été affectées comme chaînes alors que le schéma exige des objets `{prerequisites,pitfall}`. Les deux notes ont été remises au schéma attendu.
+- Deuxième échec : après la reformulation d'EX39, le contrat de méthode et le test de lot utilisaient encore l'ancien titre. Ils ont été alignés sur le nouveau titre.
+- Après ces corrections, les deux suites automatiques et l'audit navigateur réussissent sur le commit `bec9a22f275f8977ff6eb55eda177c0579b17132`. Aucun échec n'a été ignoré.
