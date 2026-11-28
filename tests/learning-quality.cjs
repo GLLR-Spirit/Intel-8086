@@ -30,7 +30,7 @@ assert.equal(learning.exerciseDifficultyRationales.length,48,"Every exercise mus
 assert.ok(learning.exerciseDifficultyRationales.every(value=>typeof value==="string"&&value.trim()),"All 48 difficulty rationales must be non-empty.");
 assert.ok(learning.exerciseAdditionalOracle(34,learning.exercises[34][4].solution),"EX35 exact encoding oracle must accept its correction.");
 assert.ok(learning.exerciseAdditionalOracle(36,learning.exercises[36][4].solution),"EX37 disassembly oracle must accept its correction.");
-assert.equal(learning.exerciseAdditionalOracle(36,"MOV AX,1234h\\nHLT"),false,"EX37 must reject a program that omits the required jump and NOP boundaries.");
+assert.equal(learning.exerciseAdditionalOracle(36,"MOV AX,1234h\nHLT"),false,"EX37 must reject a program that omits the required jump and NOP boundaries.");
 const chapterVisuals = Array.from({length:36},(_,index)=>learning.courseVisual(index));
 assert.equal(chapterVisuals.length,36,"Visual audit must inspect all 36 chapters");
 assert.ok(chapterVisuals.every(markup=>typeof markup==="string"&&markup.includes("course-visual")),
