@@ -79,6 +79,8 @@ jobs:
         run: node tests/chapter-36-independent-review.cjs
       - name: Validate question oracle evaluators (automated; not independent certification)
         run: node tests/question-oracle-certification.cjs
+      - name: Verify mandatory methods and negative bypasses for exercises EX31–EX40
+        run: node tests/exercise-method-batch-04.cjs
       - name: Compare 108 course examples and 48 corrections across source and binary execution
         run: node tests/course-example-differential.cjs
       - name: Run independent instruction vectors
