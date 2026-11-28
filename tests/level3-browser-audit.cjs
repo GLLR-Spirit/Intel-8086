@@ -369,7 +369,7 @@ const path = require("node:path");
       {index:3,from:"MOV AX, 15",to:"MOV AX, 14",check:state=>state.reg.CX===0},
       {index:13,from:"MOV AL, 0FCh",to:"MOV AL, 3",check:state=>state.reg.CX===0},
       {index:18,from:"MOV AX, 8",to:"MOV AX, 2",check:state=>state.reg.DX===0},
-      {index:19,from:"MOV AL, 0FCh",to:"MOV AL, 3",check:state=>state.reg.DX===0},
+      {index:19,from:"MOV AL, 7Fh",to:"MOV AL, 80h",check:state=>state.reg.DX===0},
       {index:20,from:"MOV AX, 17",to:"MOV AX, 30",check:state=>state.reg.DX===30},
       {index:20,from:"MOV AX, 17",to:"MOV AX, 23",check:state=>state.reg.DX===23},
       {index:44,from:"MOV AL, 42h",to:"MOV AL, 44h",check:state=>state.reg.CX===0&&state.reg.DI===0x0103&&state.flags.ZF===0},

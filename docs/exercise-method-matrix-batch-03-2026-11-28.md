@@ -1,0 +1,48 @@
+# Lot 3 — matrice de méthode et correction pédagogique EX21–EX30
+
+Date : 28 novembre 2026  
+Branche : `audit/exercises-batch-01-2026-11-28`
+
+## Matrice EX21–EX30
+
+| ID | Résultat attendu | Méthode obligatoire | Contournement négatif | Revue pédagogique |
+|---|---|---|---|---|
+| EX21 | DX = max(17,23) = 23 | CMP AX,BX puis chemin JGE cohérent ; le contrat accepte les deux chemins possibles | Charger directement DX=23 | Le cas AX>BX est aussi testé ; les deux branches du maximum sont couvertes |
+| EX22 | AX=12, CX=0 | ADD AX,3 puis LOOP BOUCLE ; INC CX est interdit | INC CX puis DEC CX pour conserver le résultat tout en gardant l'instruction fautive | La correction identifie le compteur CX et explique pourquoi l'incrémentation casse LOOP |
+| EX23 | AX=ABCDh, BX=1234h | Sauvegarder AX dans DX, copier BX dans AX, restaurer DX dans BX | Utiliser XCHG pour obtenir le même état sans DX | L'ordre des transferts est expliqué ; l'écrasement initial est corrigé |
+| EX24 | AX=12, somme de 2+4+6 | TEST BX,1, JNZ IMPAIR, ADD AX,BX, INC BX, LOOP BOUCLE | Affecter directement AX=12 et CX=0 | La parité est reliée au bit de poids faible et ZF ; les valeurs paires sont sélectionnées |
+| EX25 | Copie décroissante des deux mots, DF restauré | STD, REP MOVSW, CLD ; contrat de trace déjà présent | Copier manuellement par MOV et CLD sans STD/REP MOVSW | L'explication précise SI/DI, CX, le sens décroissant et la restauration de DF |
+| EX26 | AX=1, BX=3 ; MOV AX,2 ignoré | JMP SUITE | Produire le même état final sans saut | Programme de départ corrigé : JMP est désormais à compléter |
+| EX27 | AX=10, SP restauré, pile vide | CALL DOUBLE, ADD AX,AX, RET | Affecter directement AX=10 | La correction explique l'adresse de retour et l'équilibre de pile |
+| EX28 | AX=10, SP restauré, pile vide | PUSH/CALL, cadre BP, lecture [BP+4], ADD, POP BP, RET 2 | Affecter directement AX=10 | La correction explique l'emplacement du paramètre et le nettoyage par RET 2 |
+| EX29 | AX=14, SP restauré, pile vide | Deux appels/retours, ADD AX,BX puis ADD AX,AX | Affecter directement AX=14 | Les responsabilités des deux routines et l'équilibre de pile sont séparés |
+| EX30 | AX=42, CF=0, OF=0 | MUL BL | Affecter directement AX=42 | La correction explique le produit 8 bits et le produit complet dans AX |
+
+## Modifications appliquées
+
+- Extension du validateur avec des séquences alternatives ordonnées : un exercice à deux chemins peut accepter chaque chemin correct sans exiger que les deux soient exécutés dans une seule trace.
+- Extension du validateur avec des opérandes interdits : EX22 rejette INC CX même si une instruction compensatrice préserve le résultat final.
+- Ajout de contrats de méthode pour EX21–EX24 et EX26 ; conservation des contrats déjà présents pour EX25 et EX27–EX30.
+- EX26 : retrait du JMP déjà présent dans le programme de départ.
+- Ajout de dix contournements négatifs et d'un test positif pour la seconde branche du maximum EX21.
+
+## État de vérification
+
+- Relecture statique des dix consignes, programmes de départ et corrections : effectuée.
+- Contrats de méthode et tests négatifs : ajoutés.
+- Exécution automatique, audit navigateur et vérification pédagogique finale : en attente.
+- **Aucun exercice EX21–EX30 n'est certifié à ce stade.**
+
+
+## Diagnostic du premier test EX21
+
+La première CI du lot 3 a confirmé que les tests des lots 1 et 2 passent, mais le test positif de la seconde branche EX21 réutilisait à tort le prédicat fixe de l'exercice (DX=23) pour une entrée modifiée AX=30/BX=23. Le prédicat de l'exercice est volontairement fixé aux données initiales ; le test de branche alternative doit utiliser son propre oracle indépendant DX=30. L'assertion a été corrigée sans modifier le validateur ni le résultat attendu du véritable exercice.
+
+
+## Décision finale — EX21–EX30
+
+- `Validate Intel 8086 Lab` : succès — run [46091088758](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46091088758).
+- `Niveau 3 — audit navigateur` : succès — run [46091088755](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46091088755).
+- 10/10 méthodes de référence acceptées ; 10/10 contournements résultat-seul rejetés ; le chemin AX>BX alternatif d'EX21 est accepté.
+- Les corrections pédagogiques ont été relues séparément. EX27 est maintenant différencié d'EX41 par la refonte d'EX41, et les autres objectifs du lot restent distincts.
+- **Décision : EX21–EX30 certifiés dans le cadre de cet audit pédagogique.**

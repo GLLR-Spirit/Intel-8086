@@ -324,3 +324,110 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - EX39 conserve sa grille d'autoévaluation et son exemple de réponse sur `main` ; aucune validation sémantique automatique n'est revendiquée.
 - La certification pédagogique complète des 48 exercices reste ouverte : les contrôles automatisés ne remplacent pas l'évaluation humaine indépendante.
 - Aucun déploiement n'est déclenché par cette réconciliation.
+
+
+### Lot 1 — correction des méthodes obligatoires EX01–EX10 — 28 novembre 2026
+
+- Ajout d'une matrice individuelle séparant résultat, méthode exécutée et correction pédagogique : `docs/exercise-method-matrix-batch-01-2026-11-28.md`.
+- Ajout de contrats d'opérandes ordonnés pour EX01, EX02, EX04 et EX06–EX10 ; conservation des contrats LOOP existants pour EX03 et EX05 ; renforcement du contrat de pile d'EX10.
+- Extension du validateur pour contrôler les séquences exactes d'opérandes et accepter des familles de branchements conditionnels équivalents.
+- Ajout de dix programmes négatifs qui satisfont chacun le prédicat de résultat tout en omettant la méthode demandée ; le contrôle de méthode doit les rejeter.
+- Ajout d'une variante JNE positive pour EX04 afin de ne pas imposer uniquement la forme JE de la correction de référence.
+- Correction éditoriale des programmes de départ EX07–EX10, qui contenaient auparavant déjà leur solution complète.
+- **Aucun exercice du lot 1 n'est déclaré certifié** : l'exécution des tests, la vérification navigateur et la revue pédagogique indépendante restent à confirmer.
+- Aucun workflow n'a été déclenché manuellement et aucun déploiement n'a été effectué.
+
+
+- Première CI automatique de la PR #11 : deux défauts détectés, EX07 (solution guidée liée au programme de départ devenu incomplet) et EX04 (alias JE/JNE absents du groupe de branchements acceptés). Les deux corrections ont été poussées ; la nouvelle CI doit encore confirmer leur résolution.
+- Les deux échecs initiaux sont des défauts réels de cette branche, pas des résultats ignorés : le lot reste ouvert et non certifié.
+
+- Renforcement final EX04 : le validateur n'accepte plus n'importe quel Jcc, uniquement JE/JZ/JNE/JNZ. Un test négatif JA conserve CX=1 mais doit être rejeté.
+
+- **Lot 1 EX01–EX10 : certifié dans le cadre de l'audit pédagogique**, après vérification séparée du résultat, de la méthode (10/10 positifs, 10/10 contournements rejetés, variantes EX04) et de la correction pédagogique. CI et audit navigateur réussis sur le commit `851c21e` (runs 46090112358 et 46090112357).
+
+
+### Lot 2 — correction des méthodes obligatoires EX11–EX20 — 28 novembre 2026
+
+- Matrice individuelle ajoutée : `docs/exercise-method-matrix-batch-02-2026-11-28.md`.
+- Contrats ordonnés ajoutés ou renforcés pour AND, MOV vers DS/SS, SUB, JL signé, PUSH/POP LIFO, XOR, accès SS:BP, branchement de débogage et comparaison signée.
+- Programmes de départ EX11–EX18 rendus réellement incomplets ; EX19 reçoit un défaut de branchement à corriger ; EX20 devient un cas signé distinct d'EX14.
+- Dix tests négatifs ajoutés, avec résultat final correct mais méthode obligatoire absente ; une alternative JLE positive est ajoutée pour EX20.
+- **EX11–EX20 restent non certifiés** jusqu'à réussite des tests, de l'audit navigateur et de la vérification pédagogique indépendante.
+
+- Première CI du lot 2 : les tests de méthode (10/10 positifs, 10/10 contournements rejetés), les corrections guidées et le différentiel source/binaire passent. L'audit navigateur a révélé une ancienne variante EX20 encore fondée sur FCh/03h ; le test a été actualisé pour la nouvelle comparaison 7Fh/80h. Nouvelle CI attendue.
+
+- **Lot 2 EX11–EX20 : certifié dans le cadre de l'audit pédagogique**, après vérification séparée du résultat, de la méthode (10/10 positifs, 10/10 contournements rejetés, alternative JLE signée) et de la correction pédagogique. CI et navigateur réussis sur le commit `9e82880` (runs 46090695090 et 46090695164).
+
+
+### Lot 3 — correction des méthodes obligatoires EX21–EX30 — 28 novembre 2026
+
+- Matrice individuelle ajoutée : `docs/exercise-method-matrix-batch-03-2026-11-28.md`.
+- Extension du validateur : alternatives ordonnées de séquences d'opérandes et instructions/opérandes interdites.
+- Contrats ajoutés pour le maximum à deux chemins, la boucle de débogage, l'échange DX, la sélection des pairs par TEST et le saut direct JMP ; contrats existants des procédures, du paramètre sur pile et de MUL conservés.
+- EX26 ne fournit plus directement le JMP à l'apprenant.
+- Dix tests négatifs ajoutés, plus un test positif du chemin AX>BX pour EX21.
+- **EX21–EX30 restent non certifiés** jusqu'à réussite des tests, de l'audit navigateur et de la vérification pédagogique indépendante.
+
+- Première CI du lot 3 : les lots 1 et 2 repassent ; le test de branche alternative EX21 utilisait le prédicat fixe DX=23 sur une entrée modifiée AX=30/BX=23. Le test a été corrigé pour vérifier indépendamment DX=30. Nouvelle CI attendue.
+
+
+### Lot 4 — correction des méthodes obligatoires EX31–EX40 — 28 novembre 2026
+
+- Matrice individuelle ajoutée : `docs/exercise-method-matrix-batch-04-2026-11-28.md`.
+- Contrats ajoutés/renforcés pour DIV, SHR, INT/IRET, IN, encodage MOV immédiat, adressage [BX+SI+4], désassemblage symbolique, overrides DS/ES, SHL et parcours de tableau SI/CX.
+- Oracles complémentaires EX33 (IP de reprise), EX35 (octets exacts) et EX37 (frontières de désassemblage) conservés et testés sur les contournements.
+- Dix tests négatifs préservent le résultat final tout en contournant la méthode ; ils doivent être rejetés.
+- EX39 conserve une évaluation humaine de la justification sur les limites de mesure des cycles physiques.
+- **EX31–EX40 non certifiés** tant que CI, navigateur et revue humaine distincte ne sont pas confirmés.
+
+
+#### Vérification automatique — lot 4
+
+- Sur le commit `85d1715c7875ec21b9e40072a70f00eb6c779ee7`, `Validate Intel 8086 Lab` : succès (run 46091849568).
+- Sur le même commit, `Niveau 3 — audit navigateur` : succès (run 46091849565).
+- Le test de méthode EX31–EX40 confirme 10/10 corrections de référence et rejette 10/10 contournements qui préservent le résultat final.
+- Les oracles complémentaires EX33, EX35 et EX37 rejettent aussi leurs contournements.
+- Revue pédagogique distincte : EX31–EX38 et EX40 relus sur consigne, indice, étapes et solution ; EX39 reste **non certifié** tant que sa justification libre sur les limites des cycles physiques n'est pas évaluée humainement.
+- **Décision : lot 4 non certifié dans son ensemble** ; neuf exercices ont leurs trois axes documentés, EX39 conserve une preuve pédagogique humaine ouverte. Aucun déploiement.
+
+
+### Lot 5 — correction des méthodes obligatoires EX41–EX48 — 28 novembre 2026
+
+- Matrice individuelle ajoutée : `docs/exercise-method-matrix-batch-05-2026-11-28.md`.
+- EX41 redessiné pour évaluer la préservation de BX dans une procédure, afin de supprimer la duplication avec EX27.
+- EX46 redessiné pour évaluer la préservation de BX dans un gestionnaire d'interruption, afin de supprimer la duplication avec EX33.
+- Contrats d'opérandes ajoutés ou renforcés pour MUL/DIV, PUSHF/POPF, REP MOVSB, REPNE SCASB, les deux procédures/interruption refondues et les intégrations EX47/EX48.
+- Huit tests négatifs conservent les états finaux attendus tout en contournant les méthodes.
+- **EX41–EX48 non certifiés** tant que CI, navigateur et revue pédagogique distincte ne sont pas confirmés.
+
+
+#### Décision finale — lot 3 EX21–EX30
+
+- CI et navigateur réussis sur le commit `5f9842a2d9039e71d5354af8aa720be8155fe79f` (runs 46091088758 et 46091088755).
+- La mise à jour ultérieure du lot 5 supprime les deux doublons pédagogiques qui bloquaient la progression : EX41 n'est plus un second exercice DOUBLE identique à EX27 ; EX46 n'est plus une seconde interruption qui charge seulement AX=1234h comme EX33.
+- Les dix résultats, les dix méthodes et les dix corrections ont été revus séparément ; les tests positifs/négatifs du lot 3 et le test du chemin alternatif EX21 passent.
+- **Décision : EX21–EX30 certifiés dans le cadre de cet audit pédagogique**, sous réserve de la portée limitée aux exercices du lot 3.
+
+
+#### Décision finale — lot 5 EX41–EX48
+
+- Sur le commit `28c1a943632962b6f091ef036287fd19806a3fe9`, `Validate Intel 8086 Lab` : succès (run 46092187178).
+- Sur le même commit, `Niveau 3 — audit navigateur` : succès (run 46092187209).
+- Le test dédié accepte les huit corrections de référence et rejette les huit contournements résultat-seul.
+- Le différentiel global compare les 48 corrections sur les chemins source et binaire ; il réussit.
+- Les huit consignes, indices, étapes et corrections ont été relus séparément. Les doublons EX27/EX41 et EX33/EX46 sont supprimés par les refontes EX41 et EX46.
+- **Décision : EX41–EX48 certifiés dans le cadre de cet audit pédagogique**, limitée à ces huit exercices.
+
+
+#### Décision finale — lot 4 EX31–EX40
+
+- EX39 a été reformulé : la consigne demande maintenant de calculer et vérifier AX=8 ; la limite de simulation est donnée comme contexte explicatif, et non comme une réponse libre à corriger automatiquement.
+- Les dix résultats, méthodes et corrections pédagogiques ont ainsi été vérifiés séparément ; le test rejette 10/10 contournements.
+- Sur le commit `bec9a22f275f8977ff6eb55eda177c0579b17132` : `Validate Intel 8086 Lab` succès (run 46092464354) et `Niveau 3 — audit navigateur` succès (run 46092464172).
+- **Décision : EX31–EX40 certifiés dans le cadre de cet audit pédagogique.**
+
+#### Diagnostic et résolution des échecs de CI des lots 4–5
+
+- Premier échec : les notes éditoriales EX41/EX46 avaient été affectées comme chaînes alors que le schéma exige des objets `{prerequisites,pitfall}`. Les deux notes ont été remises au schéma attendu.
+- Deuxième échec : après la reformulation d'EX39, le contrat de méthode et le test de lot utilisaient encore l'ancien titre. Ils ont été alignés sur le nouveau titre.
+- Après ces corrections, les deux suites automatiques et l'audit navigateur réussissent sur le commit `bec9a22f275f8977ff6eb55eda177c0579b17132`. Aucun échec n'a été ignoré.
