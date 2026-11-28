@@ -40,3 +40,13 @@ Sur le commit `28c1a943632962b6f091ef036287fd19806a3fe9` :
 - Le différentiel global des 48 corrections confirme la parité des états architecturaux source/binaire.
 - Revue distincte des consignes, indices, étapes et corrections : PASS.
 - **Décision : EX41–EX48 certifiés dans le cadre de cet audit pédagogique.**
+
+
+## Vérification finale consolidée
+
+Sur le commit `bec9a22f275f8977ff6eb55eda177c0579b17132` :
+- `Validate Intel 8086 Lab` : succès — run [46092464354](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46092464354).
+- `Niveau 3 — audit navigateur` : succès — run [46092464172](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46092464172).
+- Les séquences ordonnées de sauvegarde/restauration et de transfert du statut d'EX47/EX48 sont vérifiées en plus des traces REP/INT.
+- 8/8 méthodes de référence acceptées et 8/8 contournements rejetés.
+- **Décision : EX41–EX48 certifiés dans le cadre de cet audit pédagogique.**
