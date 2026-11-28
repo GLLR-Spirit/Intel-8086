@@ -460,7 +460,7 @@ HLT`);
 console.log("Exercise method audit: 9 reference methods accepted; 9 result-only bypasses rejected.");
 
 const renderer = match[1].slice(match[1].indexOf("function renderExercises()"), match[1].indexOf("\nfunction renderProjects()"));
-assert.ok(renderer.includes("Indice et correction expliquée"), "Exercise UI must expose progressive guidance");
+assert.ok(renderer.includes("Prérequis, piège fréquent, indice et correction expliquée"), "Exercise UI must expose progressive guidance");
 assert.ok(renderer.includes("guide.steps"), "Exercise UI must render step-by-step solutions");
 assert.ok(renderer.includes("data-solution"), "Exercise UI must let the learner load the complete correction");
 
