@@ -336,3 +336,7 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - Correction éditoriale des programmes de départ EX07–EX10, qui contenaient auparavant déjà leur solution complète.
 - **Aucun exercice du lot 1 n'est déclaré certifié** : l'exécution des tests, la vérification navigateur et la revue pédagogique indépendante restent à confirmer.
 - Aucun workflow n'a été déclenché manuellement et aucun déploiement n'a été effectué.
+
+
+- Première CI automatique de la PR #11 : deux défauts détectés, EX07 (solution guidée liée au programme de départ devenu incomplet) et EX04 (alias JE/JNE absents du groupe de branchements acceptés). Les deux corrections ont été poussées ; la nouvelle CI doit encore confirmer leur résolution.
+- Les deux échecs initiaux sont des défauts réels de cette branche, pas des résultats ignorés : le lot reste ouvert et non certifié.
