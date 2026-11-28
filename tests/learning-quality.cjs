@@ -28,9 +28,12 @@ assert.equal(learning.exerciseEditorialNotes.length,48,"Every exercise must have
 assert.ok(learning.exerciseEditorialNotes.every(note=>note&&note.prerequisites.trim()&&note.pitfall.trim()),"All 48 editorial notes must contain concrete prerequisites and pitfalls.");
 assert.equal(learning.exerciseDifficultyRationales.length,48,"Every exercise must have an individual difficulty rationale.");
 assert.ok(learning.exerciseDifficultyRationales.every(value=>typeof value==="string"&&value.trim()),"All 48 difficulty rationales must be non-empty.");
-assert.ok(learning.exerciseAdditionalOracle(34,learning.exercises[34][4].solution),"EX35 exact encoding oracle must accept its correction.");
-assert.ok(learning.exerciseAdditionalOracle(36,learning.exercises[36][4].solution),"EX37 disassembly oracle must accept its correction.");
-assert.equal(learning.exerciseAdditionalOracle(36,"MOV AX,1234h\nHLT"),false,"EX37 must reject a program that omits the required jump and NOP boundaries.");
+assert.ok(learning.exerciseAdditionalOracle(34,learning.executeAll(learning.exercises[34][4].solution),learning.exercises[34][4].solution),"EX35 exact encoding oracle must accept its correction.");
+const ex33Source=learning.exercises[32][4].solution, ex33State=learning.executeAll(ex33Source);
+assert.ok(learning.exerciseAdditionalOracle(32,ex33State,ex33Source),"EX33 return-address oracle must accept the expected post-HLT IP.");
+assert.equal(learning.exerciseAdditionalOracle(32,{...ex33State,reg:{...ex33State.reg,IP:0}},ex33Source),false,"EX33 must reject an incorrect post-return IP.");
+assert.ok(learning.exerciseAdditionalOracle(36,learning.executeAll(learning.exercises[36][4].solution),learning.exercises[36][4].solution),"EX37 disassembly oracle must accept its correction.");
+assert.equal(learning.exerciseAdditionalOracle(36,learning.executeAll("MOV AX,1234h\nHLT"),"MOV AX,1234h\nHLT"),false,"EX37 must reject a program that omits the required jump and NOP boundaries.");
 const chapterVisuals = Array.from({length:36},(_,index)=>learning.courseVisual(index));
 assert.equal(chapterVisuals.length,36,"Visual audit must inspect all 36 chapters");
 assert.ok(chapterVisuals.every(markup=>typeof markup==="string"&&markup.includes("course-visual")),
