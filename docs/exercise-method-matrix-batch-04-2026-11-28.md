@@ -31,3 +31,14 @@ Branche : \`audit/exercises-batch-01-2026-11-28\`
 Le test \`tests/exercise-method-batch-04.cjs\` vérifie les dix corrections de référence, les contrats sur les traces source et les dix contournements résultat-seul. Pour EX33, EX35 et EX37, il vérifie aussi le rejet par l'oracle complémentaire.
 
 **Aucune certification pédagogique du lot EX31–EX40 n'est annoncée avant réussite de la CI, de l'audit navigateur et de la revue humaine distincte, notamment la justification d'EX39.**
+
+
+## Vérification automatique et décision
+
+Sur le commit `85d1715c7875ec21b9e40072a70f00eb6c779ee7` :
+- `Validate Intel 8086 Lab` : succès — run [46091849568](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46091849568).
+- `Niveau 3 — audit navigateur` : succès — run [46091849565](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46091849565).
+- 10/10 corrections de référence acceptées ; 10/10 contournements résultat-seul rejetés.
+- EX33, EX35 et EX37 : les oracles complémentaires rejettent également les variantes qui omettent le retour d'interruption, l'encodage exact ou les frontières de désassemblage.
+
+**Décision pédagogique : EX31–EX38 et EX40 ont fait l'objet d'une revue séparée des consignes, indices, étapes et corrections. EX39 reste non certifié**, car la justification demandée sur les cycles physiques doit être examinée humainement ; la simulation de SHL et le résultat AX=8 ne prouvent pas la qualité de cette justification. Le lot 4 n'est donc pas déclaré entièrement certifié.
