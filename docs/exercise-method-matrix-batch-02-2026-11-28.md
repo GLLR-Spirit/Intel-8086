@@ -34,3 +34,10 @@ Branche : `audit/exercises-batch-01-2026-11-28`
 - Contrats de méthode et tests négatifs : ajoutés.
 - Exécution automatique, audit navigateur et vérification pédagogique finale : en attente.
 - **Aucun exercice EX11–EX20 n'est certifié à ce stade.** Les trois axes doivent être validés séparément.
+
+
+## Diagnostic de l'audit navigateur
+
+La première exécution navigateur a échoué sur une variante de test devenue obsolète après la refonte d'EX20 : elle remplaçait encore FCh par 03h et attendait DX=0. Le nouvel exercice compare 7Fh (+127) à 80h (−128). Le cas négatif pertinent remplace donc 7Fh par 80h, ce qui rend les valeurs égales et doit produire DX=0. Le fixture navigateur a été aligné sur ce nouveau scénario.
+
+Le contrôle de méthode, les dix tests positifs/négatifs et l'audit différentiel des 48 corrections avaient déjà réussi. Le nouvel audit navigateur doit encore confirmer la correction du fixture.
