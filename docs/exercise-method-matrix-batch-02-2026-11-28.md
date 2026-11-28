@@ -41,3 +41,23 @@ Branche : `audit/exercises-batch-01-2026-11-28`
 La première exécution navigateur a échoué sur une variante de test devenue obsolète après la refonte d'EX20 : elle remplaçait encore FCh par 03h et attendait DX=0. Le nouvel exercice compare 7Fh (+127) à 80h (−128). Le cas négatif pertinent remplace donc 7Fh par 80h, ce qui rend les valeurs égales et doit produire DX=0. Le fixture navigateur a été aligné sur ce nouveau scénario.
 
 Le contrôle de méthode, les dix tests positifs/négatifs et l'audit différentiel des 48 corrections avaient déjà réussi. Le nouvel audit navigateur doit encore confirmer la correction du fixture.
+
+
+## Vérification séparée et décision — lot 2
+
+| Axe | Contrôle | Résultat |
+|---|---|---|
+| Résultat | Les dix corrections de référence satisfont leurs prédicats ; les 48 corrections passent l'audit différentiel source/binaire | PASS |
+| Méthode | 10/10 méthodes de référence acceptées ; 10/10 contournements résultat-seul rejetés ; alternative JLE signée acceptée pour EX20 | PASS |
+| Correction pédagogique | Relecture individuelle des dix consignes, indices, étapes, corrections et cohérence des objectifs | PASS |
+
+**Décision : EX11–EX20 sont certifiés dans le cadre de cet audit pédagogique.** Cette certification porte uniquement sur ce lot.
+
+### CI et navigateur
+
+Sur le commit `9e82880993ad16047a9356fdb7871c62355a6348` :
+
+- `Validate Intel 8086 Lab` : succès — run [46090695090](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46090695090).
+- `Niveau 3 — audit navigateur` : succès — run [46090695164](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46090695164).
+- L'audit navigateur confirme également la variante EX20 actualisée avec 7Fh/80h.
+- Aucun workflow n'a été lancé manuellement.
