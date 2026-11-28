@@ -106,10 +106,10 @@ var exercises=[
 ];
 exercises.push(
 ["Architecture : transfert entre registres","Complète le programme : charge 1234h dans AX, copie AX dans BX puis termine. Les deux registres doivent contenir 1234h.","; charge 1234h dans AX\n; copie AX dans BX\nHLT",function(s){return s.reg.AX===0x1234&&s.reg.BX===0x1234;},{level:"Débutant",hint:"MOV AX,1234h initialise le registre source ; MOV BX,AX copie son contenu sans modifier AX.",steps:["Charge 1234h dans AX.","Copie AX dans BX avec MOV BX,AX.","HLT termine le programme ; vérifie AX et BX."],solution:"MOV AX, 1234h\nMOV BX, AX\nHLT"},{type:"completion",difficulty:"Débutant"}],
-["Numération : addition en hexadécimal","Calcule 2Ah + 06h dans AL. Résultat attendu : 30h.","MOV AL, 2Ah\nMOV BL, 6\nADD AL, BL\nHLT",function(s){return (s.reg.AX&255)===0x30;}],
-["Registres : modifier un octet","Charge AX avec 1234h puis AL avec 56h. AX doit devenir 1256h.","MOV AX, 1234h\nMOV AL, 56h\nHLT",function(s){return s.reg.AX===0x1256;}],
-["MOV : respecter destination et source","Copie 25 dans AX puis AX dans BX. Les deux registres doivent contenir 25.","MOV AX, 25\nMOV BX, AX\nHLT",function(s){return s.reg.AX===25&&s.reg.BX===25;}],
-["Pile : vérifier PUSH et POP","Empile 1234h, modifie AX, puis dépile dans BX. BX doit retrouver 1234h.","MOV AX, 1234h\nPUSH AX\nMOV AX, 0\nPOP BX\nHLT",function(s){return s.reg.BX===0x1234&&s.reg.SP===0xFFFE&&s.stack.length===0;}],
+["Numération : addition en hexadécimal","Calcule 2Ah + 06h dans AL. Résultat attendu : 30h.","MOV AL, 2Ah\nMOV BL, 6\n; additionne les deux valeurs dans AL\nHLT",function(s){return (s.reg.AX&255)===0x30;}],
+["Registres : modifier un octet","Charge AX avec 1234h puis AL avec 56h. AX doit devenir 1256h.","; charge 1234h dans AX\n; remplace AL par 56h\nHLT",function(s){return s.reg.AX===0x1256;}],
+["MOV : respecter destination et source","Copie 25 dans AX puis AX dans BX. Les deux registres doivent contenir 25.","; copie 25 dans AX\n; copie AX dans BX\nHLT",function(s){return s.reg.AX===25&&s.reg.BX===25;}],
+["Pile : vérifier PUSH et POP","Empile 1234h, modifie AX, puis dépile dans BX. BX doit retrouver 1234h.","MOV AX, 1234h\n; empile AX\nMOV AX, 0\n; dépile dans BX\nHLT",function(s){return s.reg.BX===0x1234&&s.reg.SP===0xFFFE&&s.stack.length===0;}],
 ["Logique : appliquer un masque AND","Conserve uniquement les quatre bits faibles de ACh. Résultat attendu : 0Ch.","MOV AL, 0ACh\nAND AL, 0Fh\nHLT",function(s){return (s.reg.AX&255)===0x0C;}],
 ["Segments : initialiser DS","Charge 1000h dans DS et 0010h dans BX. Vérifie les deux registres.","MOV AX, 1000h\nMOV DS, AX\nMOV BX, 0010h\nHLT",function(s){return s.reg.DS===0x1000&&s.reg.BX===0x10;}]
 );
