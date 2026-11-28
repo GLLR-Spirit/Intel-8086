@@ -122,6 +122,52 @@ assert.equal(api.exerciseMethodSatisfied(compareAlternativeExercise.index, compa
 
 console.log("Exercise method batch 1 PASS: 10/10 reference methods accepted; 10/10 result-only bypasses rejected; EX04 JNE alternative accepted and irrelevant JA rejected.");
 
+// Lot 2 — contrôles indépendants des méthodes obligatoires EX11–EX20.
+const secondTenMethodCases = [
+  { title: "Logique : appliquer un masque AND", bypass: "MOV AL, 0Ch\nHLT" },
+  { title: "Segments : initialiser DS", bypass: "MOV AX, 1000h\nPUSH AX\nPOP DS\nMOV BX, 0010h\nHLT" },
+  { title: "Soustraction et résultat nul", bypass: "MOV AX, 16\nHLT" },
+  { title: "Branchement signé", bypass: "MOV CX, 1\nHLT" },
+  { title: "Boucle : somme de 1 à 4", bypass: "MOV AX, 10\nMOV CX, 0\nHLT" },
+  { title: "Pile : ordre LIFO", bypass: "MOV CX, 2222h\nMOV DX, 1111h\nHLT" },
+  { title: "XOR : basculer des bits", bypass: "MOV AL, 5Ah\nHLT" },
+  { title: "Segments : initialiser SS et BP", bypass: [
+    "MOV AX, 2000h", "PUSH AX", "POP SS", "MOV BP, 0010h",
+    "MOV AX, 2000h", "MOV DS, AX", "MOV WORD PTR [0010h], 1234h",
+    "MOV BX, WORD PTR [0010h]", "HLT"
+  ].join("\n") },
+  { title: "Débogage : suivre les deux chemins", bypass: "MOV DX, 1\nHLT" },
+  { title: "Raisonnement : comparaison signée", bypass: "MOV DX, 1\nHLT" }
+];
+assert.equal(secondTenMethodCases.length, 10, "Batch 2 must cover exactly ten exercises");
+for (const spec of secondTenMethodCases) {
+  const { index, exercise } = exerciseByTitle(spec.title);
+  const reference = api.executeAll(exercise[4].solution);
+  assert.ok(!reference.error, spec.title + " reference solution must execute");
+  assert.equal(exercise[3](reference), true, spec.title + " reference result oracle");
+  assert.equal(api.exerciseMethodSatisfied(index, reference), true, spec.title + " ordered method contract");
+
+  const bypass = api.executeAll(spec.bypass);
+  assert.ok(!bypass.error, spec.title + " result-only bypass must execute");
+  assert.equal(exercise[3](bypass), true, spec.title + " bypass must preserve the expected final result");
+  assert.equal(api.exerciseMethodSatisfied(index, bypass), false,
+    spec.title + " must reject a result-only bypass that omits the required method");
+}
+
+// EX20 accepts the opposite branch layout when it still uses a signed condition.
+const signedAlternative = api.executeAll([
+  "MOV AL, 7Fh", "MOV BL, 80h", "CMP AL, BL", "JLE NOT_GREATER",
+  "MOV DX, 1", "HLT", "NOT_GREATER:", "MOV DX, 0", "HLT"
+].join("\n"));
+const signedAlternativeExercise = exerciseByTitle("Raisonnement : comparaison signée");
+assert.ok(!signedAlternative.error, "EX20 signed JLE alternative must execute");
+assert.equal(signedAlternativeExercise.exercise[3](signedAlternative), true,
+  "EX20 signed JLE alternative must preserve the result");
+assert.equal(api.exerciseMethodSatisfied(signedAlternativeExercise.index, signedAlternative), true,
+  "EX20 must accept an equivalent signed JLE implementation");
+
+console.log("Exercise method batch 2 PASS: 10/10 reference methods accepted; 10/10 result-only bypasses rejected; EX20 signed JLE alternative accepted.");
+
 function compareRecord(a, b, label) {
   assert.deepEqual(plain(a), plain(b), label);
 }
