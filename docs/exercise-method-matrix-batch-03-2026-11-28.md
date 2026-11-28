@@ -37,3 +37,12 @@ Branche : `audit/exercises-batch-01-2026-11-28`
 ## Diagnostic du premier test EX21
 
 La première CI du lot 3 a confirmé que les tests des lots 1 et 2 passent, mais le test positif de la seconde branche EX21 réutilisait à tort le prédicat fixe de l'exercice (DX=23) pour une entrée modifiée AX=30/BX=23. Le prédicat de l'exercice est volontairement fixé aux données initiales ; le test de branche alternative doit utiliser son propre oracle indépendant DX=30. L'assertion a été corrigée sans modifier le validateur ni le résultat attendu du véritable exercice.
+
+
+## Décision finale — EX21–EX30
+
+- `Validate Intel 8086 Lab` : succès — run [46091088758](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46091088758).
+- `Niveau 3 — audit navigateur` : succès — run [46091088755](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46091088755).
+- 10/10 méthodes de référence acceptées ; 10/10 contournements résultat-seul rejetés ; le chemin AX>BX alternatif d'EX21 est accepté.
+- Les corrections pédagogiques ont été relues séparément. EX27 est maintenant différencié d'EX41 par la refonte d'EX41, et les autres objectifs du lot restent distincts.
+- **Décision : EX21–EX30 certifiés dans le cadre de cet audit pédagogique.**
