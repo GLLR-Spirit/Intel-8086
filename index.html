@@ -892,7 +892,7 @@ setExerciseMethod("Échanger deux valeurs",{requiredOperandSequences:[[
 ]]});
 setExerciseMethod("Comparer deux valeurs",{
  requiredOperandSequences:[[{op:"CMP",args:["AX","BX"]}]],
- requiredAnyOps:[["JO","JNO","JB","JNB","JZ","JNZ","JE","JNE","JBE","JNBE","JS","JNS","JP","JNP","JL","JNL","JLE","JNLE","JG","JNG","JGE","JNGE","JA","JNA","JAE","JNAE"]]
+ requiredAnyOps:[["JE","JZ","JNE","JNZ"]]
 });
 setExerciseMethod("Architecture : transfert entre registres",{requiredOperandSequences:[[
  {op:"MOV",args:["AX","1234H"]},{op:"MOV",args:["BX","AX"]}
