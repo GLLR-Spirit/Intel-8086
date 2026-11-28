@@ -880,6 +880,18 @@ setExerciseMethod("Chaînes : copier deux octets avec REP MOVSB",{requiredTrace:
 setExerciseMethod("Chaînes : rechercher 42h avec REPNE SCASB",{requiredTrace:["REPNE_SCASB"]});
 setExerciseMethod("Interruption logicielle : INT et IRET",{requiredTrace:["INT","MOV","IRET"],requiredOperands:[{op:"INT",args:["30H"]},{op:"MOV",args:["AX","1234H"]},{op:"IRET",args:[]}]});
 
+// Contrats de méthode obligatoires — lot EX01 à EX10.
+setExerciseMethod("Additionner deux nombres",{requiredTrace:["ADD"],requiredOperands:[{op:"ADD",args:["AX","BX"]}]});
+setExerciseMethod("Échanger deux valeurs",{requiredTrace:["MOV","MOV","MOV"],requiredOperands:[{op:"MOV",args:["DX","AX"]},{op:"MOV",args:["AX","BX"]},{op:"MOV",args:["BX","DX"]}]});
+setExerciseMethod("Somme répétée",{requiredTrace:["LOOP","LOOP","LOOP","LOOP"],requiredOperands:[{op:"ADD",args:["AX","5"]}]});
+setExerciseMethod("Comparer deux valeurs",{requiredTrace:["CMP","JE","MOV"],requiredOperands:[{op:"CMP",args:["AX","BX"]},{op:"JE",args:["EGAL"]},{op:"MOV",args:["CX","1"]}]});
+setExerciseMethod("Somme de 1 à 6",{requiredTrace:["LOOP","LOOP","LOOP","LOOP","LOOP","LOOP"],requiredOperands:[{op:"ADD",args:["AX","BX"]},{op:"INC",args:["BX"]}]});
+setExerciseMethod("Architecture : transfert entre registres",{requiredTrace:["MOV","MOV"],requiredOperands:[{op:"MOV",args:["AX","1234H"]},{op:"MOV",args:["BX","AX"]}]});
+setExerciseMethod("Numération : addition en hexadécimal",{requiredTrace:["ADD"],requiredOperands:[{op:"ADD",args:["AL","BL"]}]});
+setExerciseMethod("Registres : modifier un octet",{requiredTrace:["MOV","MOV"],requiredOperands:[{op:"MOV",args:["AX","1234H"]},{op:"MOV",args:["AL","56H"]}]});
+setExerciseMethod("MOV : respecter destination et source",{requiredTrace:["MOV","MOV"],requiredOperands:[{op:"MOV",args:["AX","25"]},{op:"MOV",args:["BX","AX"]}]});
+setExerciseMethod("Pile : vérifier PUSH et POP",{requiredTrace:["PUSH","MOV","POP"],requiredOperands:[{op:"PUSH",args:["AX"]},{op:"MOV",args:["AX","0"]},{op:"POP",args:["BX"]}]});
+
 // Contrats de méthode complémentaires issus de la revue EX01–EX48.
 // Les séquences sont contrôlées sur la trace réellement exécutée (pas sur le texte source).
 function setExerciseTraceAt(index,sequence){
