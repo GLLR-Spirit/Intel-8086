@@ -64,3 +64,33 @@ Les 48 entrées ont été parcourues au niveau intitulé / consigne / programme 
 ## Étape suivante
 
 Traiter D1, D2 et D3 comme trois décisions de conception distinctes, puis effectuer la revue détaillée de chaque exercice : consigne, prérequis, solution, méthode obligatoire, branches alternatives, état final, erreurs fréquentes, difficulté et adéquation au chapitre. Pour chaque correction, ajouter un contrôle négatif démontrant qu'une solution qui contourne la méthode exigée est refusée.
+
+
+## Vérification ciblée des contrats de méthode — première lecture du validateur
+
+La lecture du mécanisme `exerciseMethodSatisfied`, des appels `setExerciseMethod` et de `exerciseTraceContracts` montre que la présence d'un validateur d'état final ne garantit pas l'emploi des méthodes annoncées. Les contrats sont bien contrôlés sur la trace réellement exécutée, mais ils ne couvrent pas encore toutes les consignes explicites.
+
+### Cas explicites à traiter
+
+| Exercice | Méthode demandée dans la consigne | Contrat de trace repéré | Conclusion provisoire |
+|---|---|---|---|
+| EX20 | Choisir le branchement signé adapté | Aucun contrat dédié repéré | L'état final DX=1 ne prouve pas que le branchement signé a été exécuté. |
+| EX24 | Utiliser une boucle et TEST pour sélectionner les nombres pairs | Aucun contrat dédié repéré | Le total AX=12 peut être obtenu sans démontrer TEST ni la boucle demandée. |
+| EX26 | Utiliser JMP pour ignorer MOV AX,2 et atteindre SUITE | Aucun contrat dédié repéré | AX=1 et BX=3 ne prouvent pas que le saut demandé a été utilisé. |
+| EX36 | Écrire puis relire à l'adresse [BX+SI+4] | Aucun contrat dédié repéré | AX=ABCDh ne prouve pas que le calcul d'adresse et l'opérande mémoire exigés ont été utilisés. |
+| EX38 | Lire les deux segments avec des overrides explicites DS: et ES: | Aucun contrat dédié repéré | AX=2211h ne prouve pas que les préfixes de segment ont été employés. |
+| EX40 | Parcourir le tableau avec SI et CX, puis stocker le total | Aucun contrat dédié repéré | AX=9 et mémoire[0200h]=9 ne prouvent pas le parcours demandé. |
+
+Cette liste est un **minimum confirmé**, pas encore l'inventaire exhaustif. Les exercices EX01–EX23 et EX27–EX48 doivent être comparés systématiquement à leurs verbes d'action et méthodes imposées. Un contrat ne doit être ajouté que si la méthode est réellement obligatoire dans la consigne ; les variantes légitimes doivent rester possibles.
+
+### Différence entre preuve de résultat et preuve de méthode
+
+Le validateur actuel appelle successivement le contrôle de méthode, l'oracle complémentaire, puis le prédicat d'état final. C'est une architecture appropriée. Le défaut identifié est la couverture incomplète des consignes par les métadonnées, pas l'absence du mécanisme de contrôle.
+
+Pour chaque cas confirmé, la correction devra inclure :
+- un contrat d'instructions réellement exécutées, avec opérandes ou cibles quand cela est nécessaire ;
+- au moins un cas négatif qui conserve le résultat final mais contourne la méthode ;
+- un test de non-régression qui démontre le rejet du contournement ;
+- une vérification que le contrat n'interdit pas une variante correcte annoncée comme acceptable.
+
+Aucun contrat n'a été ajouté dans cette passe : les signatures exactes doivent être fondées sur la trace réellement produite par l'exécution et testées contre les solutions de référence.
