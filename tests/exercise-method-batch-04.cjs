@@ -37,7 +37,7 @@ const cases = [
   ["ModR/M : écrire puis relire une donnée", "MOV BX,0100h\nMOV SI,2\nMOV WORD PTR [0106h],ABCDh\nMOV AX,WORD PTR [0106h]\nHLT"],
   ["Assembleur et désassembleur : branchement symbolique", "MOV AX,1234h\nHLT", true],
   ["Préfixe de segment : distinguer DS et ES", "MOV AX,1000h\nMOV DS,AX\nMOV AX,2000h\nMOV ES,AX\nMOV BX,0100h\nMOV BYTE PTR [BX],11h\nMOV BYTE PTR ES:[BX],22h\nMOV AX,2211h\nHLT"],
-  ["Optimisation : préserver le résultat et reconnaître les limites", "MOV AX,8\nHLT"],
+  ["Optimisation : préserver le résultat sans prétendre mesurer les cycles", "MOV AX,8\nHLT"],
   ["Projet de synthèse : somme d'un tableau en mémoire", "MOV AX,1000h\nMOV DS,AX\nMOV AX,9\nMOV CX,0\nMOV WORD PTR [0200h],9\nHLT"]
 ];
 
