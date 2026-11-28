@@ -215,34 +215,25 @@ Le test navigateur indépendant inclut maintenant neuf variantes de données pou
 Il vérifie aussi explicitement la présence des méthodes demandées dans les corrections EX02, EX03, EX05, EX25, EX33, EX34, EX43, EX45, EX46, EX47 et EX48 (registre temporaire, CX/LOOP, direction des chaînes, E/S, FLAGS et interruptions). Ces contrôles empêchent qu'un résultat final isolé soit pris pour la preuve d'une méthode qui n'aurait pas été utilisée.
 
 
-### EX39 — contrôle de justification plus discriminant
+### EX39 — justification et limites de l'automatisation
 
-Le contrôle ne se contente plus de rechercher cinq mots isolés. Il exige des groupes de notions reliés dans la réponse : résultat fonctionnel/équivalence, effet sur les cycles, BIU avec prélecture, bus avec accès mémoire, et limite explicite du simulateur. Un contrôle négatif fournit volontairement tous les termes tout en affirmant le contraire ; il doit être rejeté. Cette règle améliore la détection des réponses incohérentes, mais reste une grille lexicale structurée et ne remplace pas une correction sémantique humaine.
+La version réconciliée conserve sur `main` une réponse argumentée avec critères d'autoévaluation et exemple de réponse. Le contrôle automatique valide le programme, mais ne prétend pas noter la qualité sémantique du texte. La justification doit être évaluée humainement à l'aide de la grille ; aucune certification automatique de la réponse écrite n'est revendiquée.
 
 ## Mise à jour — contrôle des méthodes réellement exécutées
 
 Une faiblesse supplémentaire a été corrigée après inspection des validateurs : un résultat architectural final correct ne prouvait pas que l'élève avait réellement exécuté l'instruction demandée. Les contrôles de méthode précédents vérifiaient surtout les corrections guidées, pas le programme soumis.
 
-- L'exécution source conserve maintenant une trace ordonnée des mnémoniques effectivement exécutés (executedInstructions).
-- validateExercise impose une sous-séquence d'instructions exécutées pour les 21 exercices explicitement associés à une méthode : boucles, copie de chaînes, procédures CALL/RET, MUL/DIV, décalage, interruptions INT/IRET, E/S IN, sauvegarde de FLAGS et opérations de pile.
-- Les contrôles sont effectués sur la trace d'exécution, pas par simple recherche de mots dans le texte source ; une instruction présente uniquement dans un commentaire ou jamais atteinte ne satisfait donc pas le contrat.
+- L'implémentation réconciliée utilise la trace structurée `instructionTrace` (mnémonique, opérandes et position d'exécution), déjà présente sur `main`.
+- Les métadonnées `requiredTrace` et `requiredTraces`, contrôlées par `exerciseMethodSatisfied`, imposent une sous-séquence d'instructions exécutées pour les exercices explicitement associés à une méthode : boucles, copie de chaînes, procédures CALL/RET, MUL/DIV, décalage, interruptions INT/IRET, E/S IN, sauvegarde de FLAGS et opérations de pile.
+- Les contrôles sont effectués sur la trace structurée d'exécution, pas par simple recherche de mots dans le texte source ; une instruction présente uniquement dans un commentaire ou jamais atteinte ne satisfait donc pas le contrat.
 - Deux contrôles négatifs conservent artificiellement l'état final réussi tout en retirant CALL ou RET de la trace : les validateurs EX27 et EX41 doivent les refuser.
 - L'audit navigateur vérifie aussi que les corrections guidées des 21 exercices respectent leurs séquences obligatoires.
 
 Cette correction améliore la vérification des méthodes pour les exercices mappés. Elle ne constitue pas une certification exhaustive des 48 exercices : les autres consignes doivent encore être examinées individuellement pour identifier leurs propres contrats d'exécution, et les contrôles qualitatifs restent à terminer.
 
 
-## État de la réconciliation — 28 novembre 2026
+## Réconciliation avec main — 28 novembre 2026
 
-Le rapport initial a été rédigé sur une version antérieure de la branche d'audit. Depuis, `main` a intégré une validation des méthodes fondée sur `instructionTrace`, une trace structurée contenant le mnémonique, les opérandes et les adresses CS:IP. La réconciliation conserve ce mécanisme plus récent plutôt que de réintroduire l'ancien tableau `executedInstructions`.
+La branche d'origine a été réconciliée avec les évolutions intervenues depuis son point de divergence. La trace d'exécution structurée et les contrats de méthode plus récents de `main` sont conservés ; l'ancien mécanisme `executedInstructions` est écarté. Les fiches éditoriales sont réintégrées dans l'interface : prérequis, piège fréquent et justification du niveau pour chacun des 48 exercices.
 
-Les 21 séquences de méthode listées dans le rapport sont maintenant ajoutées comme contrats complémentaires aux métadonnées des exercices. Les exigences déjà présentes sur `main` (notamment les séquences existantes et les opérandes attendus) restent actives. Le test navigateur vérifie les corrections guidées et refuse les cas où l'état final est conservé artificiellement sans exécution de CALL ou RET.
-
-**Limite :** ce report de contrats et ces tests ne constituent pas une certification pédagogique indépendante complète des 48 exercices. Les écarts consignés dans le registre doivent être revérifiés individuellement, et la qualité sémantique des consignes et corrections nécessite toujours une revue éditoriale humaine.
-
-
-### Vérification CI de la réconciliation — 28 novembre 2026
-
-- [Validation principale #2084](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46083010243) : réussie, incluant les tests simulateur et l'audit navigateur du cours.
-- [Audit navigateur niveau 3 #1437](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46083010230) : réussi. Les 21 contrats de trace et les deux cas négatifs CALL/RET ont été vérifiés dans l'étape d'audit navigateur.
-- Cette réussite CI valide les contrôles automatisés exécutés par ces workflows ; elle ne remplace pas la certification éditoriale humaine des 48 exercices.
+Les contrôles navigateur couvrent les 1 554 combinaisons des filtres, neuf variantes de chemins et les oracles binaires d'EX35/EX37. EX39 reste une autoévaluation guidée nécessitant une revue humaine de la réponse rédigée. Ces contrôles ne constituent pas une certification pédagogique complète des 48 exercices.

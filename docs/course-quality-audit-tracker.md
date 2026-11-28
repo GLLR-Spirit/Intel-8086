@@ -314,3 +314,13 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - Static coverage comparison found no oracle rule without a registered evaluator across the 36 supplemental batches. The independent evaluator suite then passed all 684/684 records, with 0 blocked, in CI run [46073976054](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46073976054).
 - The same CI run passed the browser audit job; separate browser audit [46073976102](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46073976102) also succeeded.
 - This establishes automated evaluator/runtime concordance, not a substitute for independent pedagogical certification. The official ledger remains 384/684, with 300 questions pending stable-ID reconciliation. No merge or deployment was performed.
+
+### Réconciliation de la branche d'audit éditorial — 28 novembre 2026
+
+- Réintégration de l'historique `main` dans la branche d'audit sans écraser les évolutions récentes : la fusion technique conserve les deux lignées de commits.
+- Conservation de la trace structurée `instructionTrace` et des contrats `requiredTrace` / `requiredTraces` déjà présents sur `main`. L'ancien mécanisme local `executedInstructions` de la branche d'origine n'est pas réintroduit.
+- Ajout des 48 fiches de prérequis et pièges fréquents, ainsi que des 48 justifications de niveau, directement dans les guides d'exercices.
+- Ajout d'un audit navigateur des 1 554 combinaisons de filtres, de neuf variantes de chemins et de contrôles négatifs d'encodage/désassemblage pour EX35 et EX37.
+- EX39 conserve sa grille d'autoévaluation et son exemple de réponse sur `main` ; aucune validation sémantique automatique n'est revendiquée.
+- La certification pédagogique complète des 48 exercices reste ouverte : les contrôles automatisés ne remplacent pas l'évaluation humaine indépendante.
+- Aucun déploiement n'est déclenché par cette réconciliation.

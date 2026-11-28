@@ -19,11 +19,21 @@ function element(id) {
 const document = { getElementById: element, querySelectorAll: () => [] };
 const localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
 const context = { document, localStorage, console, confirm: () => true };
-const instrumented = match[1].replace(/\}\)\(\);\s*$/, "globalThis.__learningData = { lessons, chapterLearning, curriculum, exercises, exerciseChapterAssignments, exerciseMetadata, instructions, instructionMeta, executeAll, executeBinary, assembleProgram, disassembleBytes, courseVisual, exerciseMethodSatisfied };\n})();");
+const instrumented = match[1].replace(/\}\)\(\);\s*$/, "globalThis.__learningData = { lessons, chapterLearning, curriculum, exercises, exerciseChapterAssignments, exerciseMetadata, instructions, instructionMeta, executeAll, executeBinary, assembleProgram, disassembleBytes, courseVisual, exerciseMethodSatisfied, exerciseEditorialNotes, exerciseDifficultyRationales, exerciseAdditionalOracle };\n})();");
 assert.notEqual(instrumented, match[1], "Application closure must be instrumented for learning checks");
 vm.runInNewContext(instrumented, context, { timeout: 5000 });
 const learning = context.__learningData;
 assert.ok(learning, "Learning data must be exposed to the isolated test harness");
+assert.equal(learning.exerciseEditorialNotes.length,48,"Every exercise must have an individual prerequisite and common-pitfall note.");
+assert.ok(learning.exerciseEditorialNotes.every(note=>note&&note.prerequisites.trim()&&note.pitfall.trim()),"All 48 editorial notes must contain concrete prerequisites and pitfalls.");
+assert.equal(learning.exerciseDifficultyRationales.length,48,"Every exercise must have an individual difficulty rationale.");
+assert.ok(learning.exerciseDifficultyRationales.every(value=>typeof value==="string"&&value.trim()),"All 48 difficulty rationales must be non-empty.");
+assert.ok(learning.exerciseAdditionalOracle(34,learning.executeAll(learning.exercises[34][4].solution),learning.exercises[34][4].solution),"EX35 exact encoding oracle must accept its correction.");
+const ex33Source=learning.exercises[32][4].solution, ex33State=learning.executeAll(ex33Source);
+assert.ok(learning.exerciseAdditionalOracle(32,ex33State,ex33Source),"EX33 return-address oracle must accept the expected post-HLT IP.");
+assert.equal(learning.exerciseAdditionalOracle(32,{...ex33State,reg:{...ex33State.reg,IP:0}},ex33Source),false,"EX33 must reject an incorrect post-return IP.");
+assert.ok(learning.exerciseAdditionalOracle(36,learning.executeAll(learning.exercises[36][4].solution),learning.exercises[36][4].solution),"EX37 disassembly oracle must accept its correction.");
+assert.equal(learning.exerciseAdditionalOracle(36,learning.executeAll("MOV AX,1234h\nHLT"),"MOV AX,1234h\nHLT"),false,"EX37 must reject a program that omits the required jump and NOP boundaries.");
 const chapterVisuals = Array.from({length:36},(_,index)=>learning.courseVisual(index));
 assert.equal(chapterVisuals.length,36,"Visual audit must inspect all 36 chapters");
 assert.ok(chapterVisuals.every(markup=>typeof markup==="string"&&markup.includes("course-visual")),
@@ -450,7 +460,7 @@ HLT`);
 console.log("Exercise method audit: 9 reference methods accepted; 9 result-only bypasses rejected.");
 
 const renderer = match[1].slice(match[1].indexOf("function renderExercises()"), match[1].indexOf("\nfunction renderProjects()"));
-assert.ok(renderer.includes("Indice et correction expliquée"), "Exercise UI must expose progressive guidance");
+assert.ok(renderer.includes("Prérequis, piège fréquent, indice et correction expliquée"), "Exercise UI must expose progressive guidance");
 assert.ok(renderer.includes("guide.steps"), "Exercise UI must render step-by-step solutions");
 assert.ok(renderer.includes("data-solution"), "Exercise UI must let the learner load the complete correction");
 

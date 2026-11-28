@@ -741,6 +741,106 @@ exercises[38][6]={
  modelAnswer:"Le programme calcule correctement 4×2 : après MOV AX,4 puis SHL AX,1, AX vaut 8. Cette égalité vérifie le résultat, pas la durée d’exécution. Sur un 8086 réel, la durée dépend du temps propre aux instructions ainsi que des transferts mémoire et des conditions du bus. La BIU peut précharger les octets d’instruction dans sa file pendant que l’EU exécute, mais les accès mémoire et les changements de flot peuvent perturber ce chevauchement. Les temps d’attente et l’état du bus comptent également. Comme ce simulateur ne modélise pas ces cycles matériels, on ne peut pas en déduire que SHL est plus rapide dans ce cas. Il faudrait comparer des mesures ou des tables de cycles documentées dans des conditions identiques."
 };
 var exerciseFilterState={search:"",chapter:"all",difficulty:"all",type:"all"};
+var exerciseEditorialNotes=[
+{prerequisites:"AX, BX, ADD et syntaxe destination/source.",pitfall:"ADD BX,AX place le total dans BX ; vérifier que la destination reste AX."},
+{prerequisites:"MOV, registres 16 bits et registre temporaire.",pitfall:"Écraser AX avant de le sauvegarder détruit la première valeur ; utiliser DX avant tout transfert."},
+{prerequisites:"CX compteur, étiquette, ADD et LOOP.",pitfall:"Oublier LOOP ou modifier CX dans le corps fausse le nombre de passages."},
+{prerequisites:"CMP, ZF, branchement conditionnel et JMP.",pitfall:"CMP ne stocke pas de résultat ; un JMP de sortie évite de traverser le bloc alternatif."},
+{prerequisites:"Boucle comptée, accumulateur, INC et LOOP.",pitfall:"Incrémenter BX avant ADD décale la série ; ajouter la valeur courante avant de préparer la suivante."},
+{prerequisites:"Registres généraux et transfert MOV.",pitfall:"Inverser les opérandes de MOV copie dans le mauvais registre ; la destination est à gauche."},
+{prerequisites:"Hexadécimal, octets et addition.",pitfall:"2Ah vaut 42 en décimal ; A vaut 10, pas zéro."},
+{prerequisites:"AX, AH, AL et registres 8 bits.",pitfall:"MOV AX,56h remplacerait les 16 bits ; MOV AL,56h préserve AH."},
+{prerequisites:"Syntaxe Intel de MOV.",pitfall:"MOV AX,BX et MOV BX,AX ont des effets différents ; lire destination puis source."},
+{prerequisites:"Pile descendante, PUSH, POP et SP.",pitfall:"La pile est LIFO : le dernier mot empilé est le premier récupéré."},
+{prerequisites:"Opérations logiques et représentation binaire.",pitfall:"Le masque 0Fh conserve les bits faibles ; F0h conserverait les bits forts."},
+{prerequisites:"Registres de segment et transfert via AX.",pitfall:"MOV DS,1000h immédiat n’est pas valide ; passer par AX."},
+{prerequisites:"SUB, résultat 16 bits et ZF.",pitfall:"ZF décrit le résultat ; 25−9 vaut 16, donc ZF=0."},
+{prerequisites:"Complément à deux, CMP et branches signées/non signées.",pitfall:"JB est non signé ; −4 comparé à +2 exige une condition signée comme JL."},
+{prerequisites:"Accumulation, INC, CX et LOOP.",pitfall:"Incrémenter BX avant ADD saute la première valeur ; additionner puis incrémenter."},
+{prerequisites:"PUSH, POP, SP et LIFO.",pitfall:"Le premier empilé n’est pas le premier dépilé ; vérifier l’ordre inverse."},
+{prerequisites:"XOR bit à bit.",pitfall:"OR combine les bits à 1 ; XOR met à 1 seulement les bits différents."},
+{prerequisites:"SS, BP et adressage basé.",pitfall:"BP utilise SS par défaut sur 8086 ; ne pas supposer DS."},
+{prerequisites:"CMP, JLE, JMP et flot de contrôle.",pitfall:"JLE est signé ; le saut de sortie empêche le second bloc de s’exécuter par chute."},
+{prerequisites:"Complément à deux, CMP et JL.",pitfall:"FCh vaut 252 non signé mais −4 signé sur 8 bits ; choisir la condition selon l’interprétation."},
+{prerequisites:"CMP, JGE, branchement et registre résultat.",pitfall:"Prévoir le cas AX inférieur à BX et le cas AX supérieur ou égal sans écraser les entrées."},
+{prerequisites:"CX, LOOP et compteur d’itérations.",pitfall:"INC CX annule le décrément de LOOP et empêche la terminaison ; CX doit rester le compteur restant."},
+{prerequisites:"MOV et registre temporaire.",pitfall:"Sauvegarder AX après MOV AX,BX est trop tard ; copier AX dans DX avant l’écrasement."},
+{prerequisites:"TEST, bit de poids faible et branchement.",pitfall:"Après TEST BX,1, JNZ écarte les nombres impairs ; inverser la condition ajoute les mauvais éléments."},
+{prerequisites:"DS/ES, SI/DI, DF, STD/CLD et REP MOVSW.",pitfall:"Avec STD, SI et DI diminuent ; commencer au dernier mot puis restaurer DF avec CLD."},
+{prerequisites:"JMP direct, étiquettes et séquence d’instructions.",pitfall:"L’instruction sautée reste dans le flux binaire et doit être décodée."},
+{prerequisites:"CALL near, adresse de retour, RET et SP.",pitfall:"Sans RET ou avec SP altéré, le retour ne reprend pas après CALL."},
+{prerequisites:"PUSH, CALL, BP, SS:[BP+4] et RET 2.",pitfall:"Après CALL et PUSH BP, le paramètre est à BP+4 ; BP+2 désigne l’adresse de retour."},
+{prerequisites:"Procédures near, CALL/RET et conventions de registres.",pitfall:"Chaque routine doit terminer par RET pour restituer le contexte d’appel."},
+{prerequisites:"MUL implicite, AL, opérande 8 bits et CF/OF.",pitfall:"MUL r/m8 place le produit complet dans AX ; CF/OF indiquent si AH est non nul."},
+{prerequisites:"DIV 8 bits, AX dividende, AL quotient et AH reste.",pitfall:"Ne pas inverser quotient et reste : AL reçoit le quotient, AH le reste."},
+{prerequisites:"SHR, binaire et CF.",pitfall:"SHR insère zéro et copie le bit expulsé dans CF ; SAR conserve le signe."},
+{prerequisites:"Vecteur logiciel, INT, cadre FLAGS/CS/IP et IRET.",pitfall:"RET ne restaure pas le cadre complet de INT ; utiliser IRET."},
+{prerequisites:"Ports d’E/S, DX et IN.",pitfall:"IN AL,DX lit un port, pas une adresse mémoire ; DX contient le numéro du port."},
+{prerequisites:"Opcode MOV r16,imm16 et little-endian.",pitfall:"1234h est émis 34h puis 12h ; l’ordre des octets est inversé par rapport à l’écriture."},
+{prerequisites:"ModR/M, BX+SI, déplacement et mots little-endian.",pitfall:"L’adresse effective est BX+SI+4, soit 0106h ; une erreur de déplacement vise une autre case."},
+{prerequisites:"Étiquettes, déplacement relatif, tailles et désassemblage séquentiel.",pitfall:"Le NOP sauté reste présent ; le désassembleur suit les frontières binaires, pas le chemin d’exécution."},
+{prerequisites:"DS/ES, adresse physique et préfixe de segment.",pitfall:"BX utilise DS par défaut ; l’override ES doit être appliqué explicitement."},
+{prerequisites:"SHL, résultat fonctionnel, BIU, prélecture, bus et limites du simulateur.",pitfall:"AX=8 ne prouve aucun gain de cycles ; il faut un modèle temporel ou une mesure physique."},
+{prerequisites:"DS, tableau de mots, SI, CX et adressage mémoire.",pitfall:"Un mot occupe deux octets ; avancer SI de 1 désaligne la lecture, utiliser un pas de deux."},
+{prerequisites:"CALL/RET, pile et SP.",pitfall:"AX correct ne prouve pas un retour propre ; vérifier SP restauré et pile vide."},
+{prerequisites:"MUL/DIV 8 bits et registres implicites AX/AL/AH.",pitfall:"MUL produit dans AX ; DIV r/m8 consomme AX puis place quotient et reste dans AL/AH."},
+{prerequisites:"FLAGS, STC/CLC, PUSHF/POPF et pile.",pitfall:"Oublier POPF laisse CF modifié et SP diminué de deux."},
+{prerequisites:"DS:SI source, ES:DI destination, DF et REP MOVSB.",pitfall:"MOVSB écrit toujours vers ES:DI ; CLD est nécessaire pour le sens croissant."},
+{prerequisites:"SCASB, AL, ES:DI, REPNE, ZF et CX.",pitfall:"SCASB compare AL à ES:[DI] ; REPNE s’arrête à l’égalité ou lorsque CX devient nul."},
+{prerequisites:"INT, gestionnaire, IRET et restauration du contexte.",pitfall:"Le gestionnaire ne dépile pas lui-même le cadre INT ; IRET restaure IP, CS et FLAGS."},
+{prerequisites:"REP MOVSB, segments, CMP, PUSH/POP et INT/IRET.",pitfall:"Sauvegarder une valeur sentinelle non nulle dans BX, transmettre le statut dans DX, puis restaurer BX avant INT."},
+{prerequisites:"REP MOVSW, STD/CLD, segments, pile et INT/IRET.",pitfall:"Commencer au dernier mot en parcours décroissant, restaurer DF avec CLD et vérifier BX après POP."}
+];
+var exerciseDifficultyRationales=[
+"Débutant : une addition à deux opérandes et un seul résultat à contrôler.",
+"Débutant : trois transferts MOV suffisent à échanger deux valeurs sans branchement.",
+"Intermédiaire : nécessite une boucle comptée et la compréhension de CX/LOOP.",
+"Intermédiaire : introduit CMP, ZF et deux chemins de contrôle.",
+"Intermédiaire : combine accumulateur, compteur, incrément et boucle.",
+"Débutant : transfert direct entre deux registres 16 bits.",
+"Débutant : conversion hexadécimale simple suivie d’une addition sur octet.",
+"Débutant : met en pratique la relation entre AX, AH et AL.",
+"Débutant : vérifie uniquement l’ordre destination/source de MOV.",
+"Intermédiaire : introduit la pile, SP et la récupération LIFO.",
+"Intermédiaire : exige de comprendre un masque logique bit à bit.",
+"Intermédiaire : demande de transférer une valeur vers un registre de segment avec une étape intermédiaire.",
+"Intermédiaire : combine SUB et lecture de ZF après calcul.",
+"Avancé : exige de distinguer interprétation signée et non signée sur 8 bits.",
+"Intermédiaire : combine accumulation, incrément et compteur de boucle.",
+"Intermédiaire : demande de raisonner sur l’ordre LIFO de deux mots.",
+"Intermédiaire : nécessite un calcul XOR bit à bit et sa conversion hexadécimale.",
+"Avancé : associe SS, BP et la règle du segment par défaut pour l’adressage basé.",
+"Avancé : demande d’analyser le chemin pris et le bloc alternatif dans un flot conditionnel.",
+"Intermédiaire : applique le complément à deux et un branchement signé simple.",
+"Facile : sélectionne le maximum avec une comparaison et deux chemins courts.",
+"Avancé : diagnostique une boucle qui ne termine pas à cause d’une mise à jour contradictoire du compteur.",
+"Intermédiaire : identifie une perte de donnée causée par l’ordre incorrect de transferts.",
+"Expert : combine TEST, branchement conditionnel, accumulation et boucle comptée.",
+"Expert : combine segments distincts, DF, REP MOVSW et parcours mémoire décroissant.",
+"Intermédiaire : vérifie la cible d’un saut direct et l’instruction ignorée.",
+"Avancé : introduit CALL/RET, adresse de retour et équilibre de pile.",
+"Expert : exige de reconstruire un cadre BP et de comprendre RET avec nettoyage du paramètre.",
+"Avancé : orchestre deux routines et leurs conventions de retour.",
+"Avancé : combine multiplication implicite sur 8 bits et interprétation de CF/OF.",
+"Avancé : exige de connaître le dividende, le quotient et le reste implicites de DIV 8 bits.",
+"Avancé : combine décalage, représentation binaire et indicateur de retenue.",
+"Expert : met en jeu le vecteur logiciel, le cadre d’interruption et IRET.",
+"Avancé : distingue espace d’E/S, registre DX et lecture de port.",
+"Expert : demande de relier syntaxe assembleur, opcode et ordre little-endian.",
+"Expert : exige le calcul d’adresse effective, le codage ModR/M et la mémoire little-endian.",
+"Expert : combine résolution de symbole, déplacement relatif et frontières de désassemblage.",
+"Expert : compare deux segments logiques et vérifie les préfixes d’override.",
+"Expert : demande un raisonnement critique sur la différence entre résultat fonctionnel et performance matérielle.",
+"Expert : combine initialisation de segment, parcours indexé d’un tableau de mots, boucle et écriture du résultat.",
+"Avancé : combine appel de procédure, retour et invariants de pile.",
+"Avancé : combine MUL et DIV 8 bits avec leurs registres implicites différents.",
+"Avancé : combine sauvegarde/restauration de FLAGS et invariants de pile.",
+"Avancé : combine segments, index, direction et répétition de chaîne.",
+"Avancé : combine comparaison mémoire, répétition conditionnelle et interprétation de ZF/CX/DI.",
+"Avancé : combine gestionnaire logiciel, sauvegarde de contexte et reprise après IRET.",
+"Avancé : intègre copie de chaîne, contrôle mémoire, préservation d’un registre et interruption.",
+"Expert : intègre copie de mots inversée, gestion de DF, validation mémoire, pile et interruption."
+];
 function exerciseMetadata(x,i){
  var chapters=(exerciseChapterAssignments[i]||[]).map(function(n){return n-1;});
  var g=x[4]||{},type=x[5]&&x[5].type;
@@ -753,7 +853,7 @@ function exerciseMetadata(x,i){
  }
  var difficulty=(x[5]&&x[5].difficulty)||g.level||(i<5?"Débutant":"Intermédiaire");
  if(!["Débutant","Facile","Intermédiaire","Avancé","Expert"].includes(difficulty))difficulty="Intermédiaire";
- return {chapters:chapters,type:type,difficulty:difficulty};
+ return {chapters:chapters,type:type,difficulty:difficulty,editorial:exerciseEditorialNotes[i]||null,levelRationale:exerciseDifficultyRationales[i]||null};
 }
 function exerciseTypeLabel(type){return {application:"Application directe",raisonnement:"Raisonnement",completion:"Programme à compléter",debug:"Débogage / correction",probleme:"Problème complet",challenge:"Défi expert"}[type]||"Application directe";}
 function initExerciseFilters(){
@@ -810,6 +910,12 @@ function exerciseMethodSatisfied(index,state){
   return trace.some(function(actual){return actual.op===expected.op&&actual.args.length===expected.args.length&&actual.args.every(function(arg,i){return arg===expected.args[i];});});
  });
 }
+function exerciseAdditionalOracle(index,state,source){
+ if(index===32)return !!state&&state.reg&&state.reg.IP===0x0006;
+ if(index===34){var encoded=assembleProgram(source);return encoded.bytes.join(",")==="184,52,18,244";}
+ if(index===36){var encoded=assembleProgram(source),decoded=disassembleBytes(encoded.bytes),rows=decoded.rows;return encoded.bytes.join(",")==="235,1,144,184,52,18,244"&&rows.length===4&&rows.map(function(row){return row.size;}).join(",")==="2,1,3,1"&&/^JMP/.test(rows[0].instruction)&&/^NOP$/.test(rows[1].instruction)&&/^MOV AX, 1234h$/i.test(rows[2].instruction)&&/^HLT$/.test(rows[3].instruction);}
+ return true;
+}
 function renderExercises(){
  var visible=[];
  exercises.forEach(function(x,i){
@@ -825,11 +931,11 @@ function renderExercises(){
  $("exerciseList").innerHTML=visible.length?visible.map(function(v){
   var x=v.x,i=v.i,g=v.g,guide=v.g,m=v.m;
   var reasoning=x[6];
-  return '<article class="exercise"><div class="eyebrow">'+m.difficulty+' · '+exerciseTypeLabel(m.type)+'</div><b>'+(i+1)+'. '+x[0]+'</b> '+(passed.has(i)?"<span class='success'>✓ Réussi</span>":"")+'<p class="muted">'+x[1]+'</p><p class="muted"><b>Chapitres :</b> '+m.chapters.map(function(n){return (n+1)+". "+lessons[n][0];}).join(" · ")+'</p>'+(reasoning?'<section class="exercise-reasoning"><h4>Réponse argumentée</h4><p>'+reasoning.prompt+'</p><label for="exerciseReasoning39"><b>Ta réponse</b></label><textarea id="exerciseReasoning39" aria-label="Réponse argumentée sur les performances du 8086" placeholder="Rédige ton analyse en tes propres mots…"></textarea><b>Grille d’autoévaluation</b><ul>'+reasoning.criteria.map(function(item){return '<li>'+item+'</li>';}).join("")+'</ul><p class="muted">Le contrôle automatique vérifie uniquement le programme. La qualité de ton explication doit être comparée à cette grille et à l’exemple de réponse.</p><details><summary>Exemple de réponse argumentée</summary><p>'+reasoning.modelAnswer+'</p></details></section>':'')+'<button class="btn" data-load="'+i+'">Charger l’énoncé</button> <button class="btn primary" data-check="'+i+'">Vérifier ma solution</button><details class="exercise-guide"><summary>Indice et correction expliquée · étapes progressives</summary><p><b>Indice :</b> '+g.hint+'</p><details><summary>Afficher les étapes de raisonnement</summary><ol>'+guide.steps.map(function(step){return '<li>'+step+'</li>';}).join("")+'</ol></details><button class="btn" data-solution="'+i+'">Charger la solution complète dans l’atelier</button></details></article>';
+  return '<article class="exercise"><div class="eyebrow">'+m.difficulty+' · '+exerciseTypeLabel(m.type)+'</div><b>'+(i+1)+'. '+x[0]+'</b> '+(passed.has(i)?"<span class='success'>✓ Réussi</span>":"")+'<p class="muted">'+x[1]+'</p><p class="muted"><b>Chapitres :</b> '+m.chapters.map(function(n){return (n+1)+". "+lessons[n][0];}).join(" · ")+'</p>'+(reasoning?'<section class="exercise-reasoning"><h4>Réponse argumentée</h4><p>'+reasoning.prompt+'</p><label for="exerciseReasoning39"><b>Ta réponse</b></label><textarea id="exerciseReasoning39" aria-label="Réponse argumentée sur les performances du 8086" placeholder="Rédige ton analyse en tes propres mots…"></textarea><b>Grille d’autoévaluation</b><ul>'+reasoning.criteria.map(function(item){return '<li>'+item+'</li>';}).join("")+'</ul><p class="muted">Le contrôle automatique vérifie uniquement le programme. La qualité de ton explication doit être comparée à cette grille et à l’exemple de réponse.</p><details><summary>Exemple de réponse argumentée</summary><p>'+reasoning.modelAnswer+'</p></details></section>':'')+'<button class="btn" data-load="'+i+'">Charger l’énoncé</button> <button class="btn primary" data-check="'+i+'">Vérifier ma solution</button><details class="exercise-guide"><summary>Prérequis, piège fréquent, indice et correction expliquée</summary><p><b>Prérequis :</b> '+(m.editorial?m.editorial.prerequisites:"Notions du chapitre associé.")+'</p><p><b>Piège fréquent :</b> '+(m.editorial?m.editorial.pitfall:"Vérifier les registres et les effets de chaque instruction.")+'</p><p><b>Pourquoi ce niveau :</b> '+(m.levelRationale||"Niveau à réévaluer.")+'</p><p><b>Indice :</b> '+g.hint+'</p><details><summary>Afficher les étapes de raisonnement</summary><ol>'+guide.steps.map(function(step){return '<li>'+step+'</li>';}).join("")+'</ol></details><button class="btn" data-solution="'+i+'">Charger la solution complète dans l’atelier</button></details></article>';
  }).join(""):'<div class="panel"><b>Aucun exercice ne correspond à ces filtres.</b><p class="muted">Élargis la recherche ou réinitialise les filtres.</p></div>';
  document.querySelectorAll("#exerciseList [data-load]").forEach(function(b){b.onclick=function(){$("code").value=exercises[+b.dataset.load][2];navigate("editor");resetCPU();};});
  document.querySelectorAll("#exerciseList [data-solution]").forEach(function(b){b.onclick=function(){var x=exercises[+b.dataset.solution];$("code").value=(x[4]&&x[4].solution)||x[2];navigate("editor");resetCPU();status("Correction chargée dans l’atelier. Exécute-la pas à pas pour vérifier chaque étape.",false);};});
- document.querySelectorAll("#exerciseList [data-check]").forEach(function(b){b.onclick=function(){var i=+b.dataset.check,s=executeAll($("code").value);if(s.error){status(s.error,true);return;}if(!exerciseMethodSatisfied(i,s)){status("Résultat obtenu, mais la méthode demandée n’a pas été démontrée par les instructions réellement exécutées.",true);return;}if(i===38){if(exercises[i][3](s)){status("Programme vérifié : AX=8. Le raisonnement écrit reste à évaluer séparément avec la grille et l’exemple de réponse.",false);renderCPU(s);}else status("Résultat incorrect : vérifie AX après SHL.",true);return;}if(exercises[i][3](s)){passed.add(i);storageSet("i86-exercises",JSON.stringify(Array.from(passed)));renderExercises();stats();status("Bravo : résultat attendu correct.",false,true);renderCPU(s);}else status("Pas encore. Vérifie tes registres, tes sauts et le résultat final. Ouvre l’indice si nécessaire.",true);};});
+ document.querySelectorAll("#exerciseList [data-check]").forEach(function(b){b.onclick=function(){var i=+b.dataset.check,s=executeAll($("code").value);if(s.error){status(s.error,true);return;}if(!exerciseMethodSatisfied(i,s)){status("Résultat obtenu, mais la méthode demandée n’a pas été démontrée par les instructions réellement exécutées.",true);return;}if(!exerciseAdditionalOracle(i,s,$("code").value)){status("Encodage ou désassemblage incorrect : vérifie le flux binaire et ses frontières.",true);return;}if(i===38){if(exercises[i][3](s)){status("Programme vérifié : AX=8. Le raisonnement écrit reste à évaluer séparément avec la grille et l’exemple de réponse.",false);renderCPU(s);}else status("Résultat incorrect : vérifie AX après SHL.",true);return;}if(exercises[i][3](s)){passed.add(i);storageSet("i86-exercises",JSON.stringify(Array.from(passed)));renderExercises();stats();status("Bravo : résultat attendu correct.",false,true);renderCPU(s);}else status("Pas encore. Vérifie tes registres, tes sauts et le résultat final. Ouvre l’indice si nécessaire.",true);};});
 }
 function renderProjects(){$("projectList").innerHTML=projects.map(function(p){return '<article class="panel"><div class="eyebrow">'+p[2]+'</div><h3>'+p[0]+'</h3><p class="muted">'+p[1]+'</p><button class="btn" data-project="'+p[0]+'">Utiliser comme idée</button></article>';}).join("");document.querySelectorAll("[data-project]").forEach(function(b){b.onclick=function(){var p=projects.find(function(x){return x[0]===b.dataset.project;});$("projectTitle").value=p[0];$("projectIdea").value=p[1];};});}
 $("saveIdea").onclick=function(){var savedTitle=storageSet("i86-title",$("projectTitle").value),savedIdea=storageSet("i86-idea",$("projectIdea").value);$("ideaStatus").textContent=savedTitle&&savedIdea?"Idée enregistrée sur cet appareil.":"Stockage local indisponible : l’idée ne sera pas conservée après fermeture.";};$("projectTitle").value=storageGet("i86-title","");$("projectIdea").value=storageGet("i86-idea","");
@@ -2172,6 +2278,6 @@ for(var auditedChapter=0;auditedChapter<19;auditedChapter++){
 }
 
 renderLessons();showLesson(0);renderInstructions();initExerciseFilters();renderExercises();renderProjects();stats();
-if(typeof window!=="undefined"&&window.location&&/(?:\?|&)audit=1(?:&|$)/.test(window.location.search||"")){window.__8086Audit={executeAll:executeAll,executeBinary:executeBinary,assembleProgram:assembleProgram,disassembleBytes:disassembleBytes,curriculum:curriculum,exercises:exercises,exerciseMetadata:exerciseMetadata,exerciseMethodSatisfied:exerciseMethodSatisfied,exerciseTraceContracts:exerciseTraceContracts,level3LessonQuestions:level3LessonQuestions,level3FinalQuestions:level3FinalQuestions,runSelfTests:runSelfTests};}
+if(typeof window!=="undefined"&&window.location&&/(?:\?|&)audit=1(?:&|$)/.test(window.location.search||"")){window.__8086Audit={executeAll:executeAll,executeBinary:executeBinary,assembleProgram:assembleProgram,disassembleBytes:disassembleBytes,curriculum:curriculum,exercises:exercises,exerciseMetadata:exerciseMetadata,exerciseMethodSatisfied:exerciseMethodSatisfied,exerciseTraceContracts:exerciseTraceContracts,exerciseEditorialNotes:exerciseEditorialNotes,exerciseDifficultyRationales:exerciseDifficultyRationales,exerciseFilterState:exerciseFilterState,renderExercises:renderExercises,exerciseAdditionalOracle:exerciseAdditionalOracle,level3LessonQuestions:level3LessonQuestions,level3FinalQuestions:level3FinalQuestions,runSelfTests:runSelfTests};}
 })();
 </script></body></html>
