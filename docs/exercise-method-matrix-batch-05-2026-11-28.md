@@ -29,3 +29,14 @@ Le test \`tests/exercise-method-batch-05.cjs\` vérifie les huit corrections de 
 ## Limites de certification
 
 Le lot ne sera pas déclaré certifié avant réussite de la CI et de l'audit navigateur, puis revue distincte des huit corrections pédagogiques. Les contrôles automatiques de trace ne remplacent pas la lecture humaine des explications.
+
+
+## Décision finale — EX41–EX48
+
+Sur le commit `28c1a943632962b6f091ef036287fd19806a3fe9` :
+- `Validate Intel 8086 Lab` : succès — run [46092187178](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46092187178).
+- `Niveau 3 — audit navigateur` : succès — run [46092187209](https://github.com/GLLR-Spirit/Intel-8086/actions/runs/46092187209).
+- 8/8 corrections de référence acceptées ; 8/8 contournements résultat-seul rejetés.
+- Le différentiel global des 48 corrections confirme la parité des états architecturaux source/binaire.
+- Revue distincte des consignes, indices, étapes et corrections : PASS.
+- **Décision : EX41–EX48 certifiés dans le cadre de cet audit pédagogique.**
