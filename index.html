@@ -950,6 +950,36 @@ setExerciseMethod("Problème complet : somme des nombres pairs",{
 });
 setExerciseMethod("Saut direct : vérifier la cible",{requiredOperandSequences:[[{op:"JMP",args:["SUITE"]}]]});
 
+// Lot 4 — contrats de méthode EX31 à EX40.
+setExerciseMethod("DIV : quotient et reste sur 8 bits",{requiredOperandSequences:[[{op:"DIV",args:["BL"]}]]});
+setExerciseMethod("Décalage : SHR et retenue",{requiredOperandSequences:[[{op:"SHR",args:["AL","1"]}]]});
+setExerciseMethod("Interruption logicielle : INT et IRET",{requiredOperandSequences:[[{op:"INT",args:["30H"]},{op:"MOV",args:["AX","1234H"]},{op:"IRET",args:[]}]]});
+setExerciseMethod("Entrée-sortie : lire un port",{requiredOperandSequences:[[{op:"IN",args:["AL","DX"]}]]});
+setExerciseMethod("Encodage : vérifier MOV immédiat",{requiredOperandSequences:[[{op:"MOV",args:["AX","1234H"]},{op:"HLT",args:[]}]]});
+setExerciseMethod("ModR/M : écrire puis relire une donnée",{requiredOperandSequences:[[
+ {op:"MOV",args:["WORD PTR [BX+SI+4]","ABCDH"]},
+ {op:"MOV",args:["AX","WORD PTR [BX+SI+4]"]}
+]]});
+setExerciseMethod("Assembleur et désassembleur : branchement symbolique",{requiredOperandSequences:[[
+ {op:"JMP",args:["FIN"]},{op:"MOV",args:["AX","1234H"]},{op:"HLT",args:[]}
+]]});
+setExerciseMethod("Préfixe de segment : distinguer DS et ES",{requiredOperandSequences:[[
+ {op:"MOV",args:["BYTE PTR [BX]","11H"]},
+ {op:"MOV",args:["BYTE PTR ES:[BX]","22H"]},
+ {op:"MOV",args:["AL","DS:[BX]"]},
+ {op:"MOV",args:["AH","ES:[BX]"]}
+]]});
+setExerciseMethod("Optimisation : préserver le résultat et reconnaître les limites",{requiredOperandSequences:[[{op:"SHL",args:["AX","1"]}]]});
+setExerciseMethod("Projet de synthèse : somme d'un tableau en mémoire",{
+ requiredTrace:["ADD","ADD","LOOP","ADD","ADD","LOOP","ADD","ADD","LOOP"],
+ requiredOperands:[
+  {op:"ADD",args:["AX","WORD PTR [SI]"]},
+  {op:"ADD",args:["SI","2"]},
+  {op:"LOOP",args:["SOMME"]},
+  {op:"MOV",args:["WORD PTR [0200H]","AX"]}
+ ]
+});
+
 // Contrats de méthode complémentaires issus de la revue EX01–EX48.
 // Les séquences sont contrôlées sur la trace réellement exécutée (pas sur le texte source).
 function setExerciseTraceAt(index,sequence){
