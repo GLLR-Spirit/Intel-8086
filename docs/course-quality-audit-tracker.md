@@ -367,3 +367,5 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - EX26 ne fournit plus directement le JMP à l'apprenant.
 - Dix tests négatifs ajoutés, plus un test positif du chemin AX>BX pour EX21.
 - **EX21–EX30 restent non certifiés** jusqu'à réussite des tests, de l'audit navigateur et de la vérification pédagogique indépendante.
+
+- Première CI du lot 3 : les lots 1 et 2 repassent ; le test de branche alternative EX21 utilisait le prédicat fixe DX=23 sur une entrée modifiée AX=30/BX=23. Le test a été corrigé pour vérifier indépendamment DX=30. Nouvelle CI attendue.
