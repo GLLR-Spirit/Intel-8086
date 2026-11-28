@@ -880,6 +880,32 @@ setExerciseMethod("Chaînes : copier deux octets avec REP MOVSB",{requiredTrace:
 setExerciseMethod("Chaînes : rechercher 42h avec REPNE SCASB",{requiredTrace:["REPNE_SCASB"]});
 setExerciseMethod("Interruption logicielle : INT et IRET",{requiredTrace:["INT","MOV","IRET"],requiredOperands:[{op:"INT",args:["30H"]},{op:"MOV",args:["AX","1234H"]},{op:"IRET",args:[]}]});
 
+// Lot 1 — contrats de méthode EX01 à EX10.
+// Les séquences d'opérandes sont ordonnées et portent sur les instructions réellement exécutées.
+setExerciseMethod("Additionner deux nombres",{requiredOperandSequences:[[{op:"ADD",args:["AX","BX"]}]]});
+setExerciseMethod("Échanger deux valeurs",{requiredOperandSequences:[[
+ {op:"MOV",args:["DX","AX"]},{op:"MOV",args:["AX","BX"]},{op:"MOV",args:["BX","DX"]}
+]]});
+setExerciseMethod("Comparer deux valeurs",{
+ requiredOperandSequences:[[{op:"CMP",args:["AX","BX"]}]],
+ requiredAnyOps:[["JO","JNO","JB","JNB","JZ","JNZ","JBE","JNBE","JS","JNS","JP","JNP","JL","JNL","JLE","JNLE","JG","JNG","JGE","JNGE","JA","JNA","JAE","JNAE"]]
+});
+setExerciseMethod("Architecture : transfert entre registres",{requiredOperandSequences:[[
+ {op:"MOV",args:["AX","1234H"]},{op:"MOV",args:["BX","AX"]}
+]]});
+setExerciseMethod("Numération : addition en hexadécimal",{requiredOperandSequences:[[{op:"ADD",args:["AL","BL"]}]]});
+setExerciseMethod("Registres : modifier un octet",{requiredOperandSequences:[[
+ {op:"MOV",args:["AX","1234H"]},{op:"MOV",args:["AL","56H"]}
+]]});
+setExerciseMethod("MOV : respecter destination et source",{requiredOperandSequences:[[
+ {op:"MOV",args:["AX","25"]},{op:"MOV",args:["BX","AX"]}
+]]});
+setExerciseMethod("Pile : vérifier PUSH et POP",{
+ requiredOperandSequences:[[
+  {op:"PUSH",args:["AX"]},{op:"MOV",args:["AX","0"]},{op:"POP",args:["BX"]}
+ ]]
+});
+
 // Contrats de méthode complémentaires issus de la revue EX01–EX48.
 // Les séquences sont contrôlées sur la trace réellement exécutée (pas sur le texte source).
 function setExerciseTraceAt(index,sequence){
@@ -900,14 +926,29 @@ Object.keys(exerciseTraceContracts).forEach(function(rawIndex){
 
 function exerciseMethodSatisfied(index,state){
  var metadata=exercises[index]&&exercises[index][5]||{},trace=state&&state.instructionTrace||[];
+ function matches(actual,expected){
+  return !!actual&&actual.op===expected.op&&(!expected.args||
+   (actual.args.length===expected.args.length&&actual.args.every(function(arg,i){return arg===expected.args[i];})));
+ }
  var sequences=(metadata.requiredTrace?[metadata.requiredTrace]:[]).concat(metadata.requiredTraces||[]);
  for(var s=0;s<sequences.length;s++){
   var required=sequences[s],cursor=0;
   for(var i=0;i<trace.length&&cursor<required.length;i++){if(trace[i].op===required[cursor])cursor++;}
   if(cursor!==required.length)return false;
  }
- return (metadata.requiredOperands||[]).every(function(expected){
-  return trace.some(function(actual){return actual.op===expected.op&&actual.args.length===expected.args.length&&actual.args.every(function(arg,i){return arg===expected.args[i];});});
+ if(!(metadata.requiredOperands||[]).every(function(expected){
+  return trace.some(function(actual){return matches(actual,expected);});
+ }))return false;
+ var operandSequences=metadata.requiredOperandSequences||[];
+ for(var q=0;q<operandSequences.length;q++){
+  var sequence=operandSequences[q],position=0;
+  for(var t=0;t<trace.length&&position<sequence.length;t++){
+   if(matches(trace[t],sequence[position]))position++;
+  }
+  if(position!==sequence.length)return false;
+ }
+ return (metadata.requiredAnyOps||[]).every(function(group){
+  return group.some(function(op){return trace.some(function(actual){return actual.op===op;});});
  });
 }
 function exerciseAdditionalOracle(index,state,source){
