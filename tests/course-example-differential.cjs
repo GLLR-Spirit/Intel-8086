@@ -69,6 +69,49 @@ for (const spec of [
 }
 console.log("CALL/RET, BP+4/RET 2 and modular-routine method gates reject result-only bypasses.");
 
+// Lot 1 — contrôles indépendants des méthodes obligatoires EX01–EX10.
+const firstTenMethodCases = [
+  { title: "Additionner deux nombres", bypass: "MOV AX, 20\\nHLT" },
+  { title: "Échanger deux valeurs", bypass: "MOV AX, 9\\nMOV BX, 4\\nHLT" },
+  { title: "Somme répétée", bypass: "MOV AX, 20\\nMOV CX, 0\\nHLT" },
+  { title: "Comparer deux valeurs", bypass: "MOV CX, 1\\nHLT" },
+  { title: "Somme de 1 à 6", bypass: "MOV AX, 21\\nMOV CX, 0\\nHLT" },
+  { title: "Architecture : transfert entre registres", bypass: "MOV AX, 1234h\\nMOV BX, 1234h\\nHLT" },
+  { title: "Numération : addition en hexadécimal", bypass: "MOV AL, 30h\\nHLT" },
+  { title: "Registres : modifier un octet", bypass: "MOV AX, 1256h\\nHLT" },
+  { title: "MOV : respecter destination et source", bypass: "MOV AX, 25\\nMOV BX, 25\\nHLT" },
+  { title: "Pile : vérifier PUSH et POP", bypass: "MOV BX, 1234h\\nHLT" }
+];
+assert.equal(firstTenMethodCases.length, 10, "Batch 1 must cover exactly ten exercises");
+for (const spec of firstTenMethodCases) {
+  const { index, exercise } = exerciseByTitle(spec.title);
+  const reference = api.executeAll(exercise[4].solution);
+  assert.ok(!reference.error, spec.title + " reference solution must execute");
+  assert.equal(exercise[3](reference), true, spec.title + " reference result oracle");
+  assert.equal(api.exerciseMethodSatisfied(index, reference), true, spec.title + " ordered method contract");
+
+  const bypass = api.executeAll(spec.bypass);
+  assert.ok(!bypass.error, spec.title + " result-only bypass must execute");
+  assert.equal(exercise[3](bypass), true, spec.title + " bypass must preserve the expected final result");
+  assert.equal(api.exerciseMethodSatisfied(index, bypass), false,
+    spec.title + " must reject a result-only bypass that omits the required method");
+}
+
+// EX04 accepts a different valid conditional-branch form; the contract must not
+// overfit the reference solution's JE mnemonic or label.
+const compareAlternative = api.executeAll([
+  "MOV AX, 15", "MOV BX, 15", "CMP AX, BX", "JNE DIFFERENT",
+  "MOV CX, 1", "HLT", "DIFFERENT:", "MOV CX, 0", "HLT"
+].join("\\n"));
+const compareAlternativeExercise = exerciseByTitle("Comparer deux valeurs");
+assert.ok(!compareAlternative.error, "EX04 alternative conditional solution must execute");
+assert.equal(compareAlternativeExercise.exercise[3](compareAlternative), true,
+  "EX04 alternative conditional solution must preserve the result");
+assert.equal(api.exerciseMethodSatisfied(compareAlternativeExercise.index, compareAlternative), true,
+  "EX04 must accept an equivalent JNE implementation");
+
+console.log("Exercise method batch 1 PASS: 10/10 reference methods accepted; 10/10 result-only bypasses rejected; EX04 JNE alternative accepted.");
+
 function compareRecord(a, b, label) {
   assert.deepEqual(plain(a), plain(b), label);
 }
