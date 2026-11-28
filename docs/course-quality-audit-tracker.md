@@ -344,3 +344,12 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - Renforcement final EX04 : le validateur n'accepte plus n'importe quel Jcc, uniquement JE/JZ/JNE/JNZ. Un test négatif JA conserve CX=1 mais doit être rejeté.
 
 - **Lot 1 EX01–EX10 : certifié dans le cadre de l'audit pédagogique**, après vérification séparée du résultat, de la méthode (10/10 positifs, 10/10 contournements rejetés, variantes EX04) et de la correction pédagogique. CI et audit navigateur réussis sur le commit `851c21e` (runs 46090112358 et 46090112357).
+
+
+### Lot 2 — correction des méthodes obligatoires EX11–EX20 — 28 novembre 2026
+
+- Matrice individuelle ajoutée : `docs/exercise-method-matrix-batch-02-2026-11-28.md`.
+- Contrats ordonnés ajoutés ou renforcés pour AND, MOV vers DS/SS, SUB, JL signé, PUSH/POP LIFO, XOR, accès SS:BP, branchement de débogage et comparaison signée.
+- Programmes de départ EX11–EX18 rendus réellement incomplets ; EX19 reçoit un défaut de branchement à corriger ; EX20 devient un cas signé distinct d'EX14.
+- Dix tests négatifs ajoutés, avec résultat final correct mais méthode obligatoire absente ; une alternative JLE positive est ajoutée pour EX20.
+- **EX11–EX20 restent non certifiés** jusqu'à réussite des tests, de l'audit navigateur et de la vérification pédagogique indépendante.
