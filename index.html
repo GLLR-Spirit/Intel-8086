@@ -969,7 +969,7 @@ setExerciseMethod("Préfixe de segment : distinguer DS et ES",{requiredOperandSe
  {op:"MOV",args:["AL","DS:[BX]"]},
  {op:"MOV",args:["AH","ES:[BX]"]}
 ]]});
-setExerciseMethod("Optimisation : préserver le résultat et reconnaître les limites",{requiredOperandSequences:[[{op:"SHL",args:["AX","1"]}]]});
+setExerciseMethod("Optimisation : préserver le résultat sans prétendre mesurer les cycles",{requiredOperandSequences:[[{op:"SHL",args:["AX","1"]}]]});
 setExerciseMethod("Projet de synthèse : somme d'un tableau en mémoire",{
  requiredTrace:["ADD","ADD","LOOP","ADD","ADD","LOOP","ADD","ADD","LOOP"],
  requiredOperands:[
