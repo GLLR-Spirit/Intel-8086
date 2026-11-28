@@ -316,6 +316,85 @@ const path = require("node:path");
     "The disassembler action must be keyboard-operable and render decoded instructions.");
 
   await keyboardPage.close();
+  // Independent editorial metadata, exhaustive filters, and source/binary exercise oracles.
+  const exerciseEditorialAudit = await page.evaluate(() => {
+    const api = window.__8086Audit;
+    const failures = [];
+    const chapter = document.querySelector("#exerciseChapter");
+    const difficulty = document.querySelector("#exerciseDifficulty");
+    const type = document.querySelector("#exerciseType");
+    const search = document.querySelector("#exerciseSearch");
+    const chapters = [...chapter.options].map(option => option.value);
+    const difficulties = [...difficulty.options].map(option => option.value);
+    const types = [...type.options].map(option => option.value);
+    const expectedFor = (chapterValue, difficultyValue, typeValue, query) =>
+      api.exercises.map((exercise, index) => {
+        const metadata = api.exerciseMetadata(exercise, index);
+        const chapterNames = metadata.chapters.map(number => api.curriculum[number][0]);
+        const guide = exercise[4] || {};
+        const searchText = [exercise[0], exercise[1], exercise[2],
+          ({application:"Application directe",raisonnement:"Raisonnement",completion:"Programme à compléter",debug:"Débogage / correction",probleme:"Problème complet",challenge:"Défi expert"}[metadata.type] || "Application directe"),
+          chapterNames.join(" "), guide.hint || "", (guide.steps || []).join(" "), guide.solution || ""
+        ].join(" ").toLowerCase();
+        return { exercise, index, metadata, searchText };
+      }).filter(item => (!query || item.searchText.includes(query)) &&
+        (chapterValue === "all" || item.metadata.chapters.includes(Number(chapterValue))) &&
+        (difficultyValue === "all" || item.metadata.difficulty === difficultyValue) &&
+        (typeValue === "all" || item.metadata.type === typeValue)
+      ).map(item => (item.index + 1) + ". " + item.exercise[0]);
+    let combinations = 0;
+    for (const chapterValue of chapters) for (const difficultyValue of difficulties) for (const typeValue of types) {
+      chapter.value = chapterValue; difficulty.value = difficultyValue; type.value = typeValue;
+      api.exerciseFilterState.chapter = chapterValue; api.exerciseFilterState.difficulty = difficultyValue;
+      api.exerciseFilterState.type = typeValue; api.exerciseFilterState.search = ""; api.renderExercises();
+      const expected = expectedFor(chapterValue, difficultyValue, typeValue, "");
+      const actual = [...document.querySelectorAll("#exerciseList .exercise > b")].map(node => node.textContent.trim());
+      combinations++;
+      if (JSON.stringify(actual) !== JSON.stringify(expected)) failures.push({chapterValue,difficultyValue,typeValue,expected,actual});
+      const countText = document.querySelector("#exerciseCount").textContent.trim();
+      const match = countText.match(/(\d+) exercice\(s\) affiché\(s\) sur (\d+)/);
+      if (!match || Number(match[1]) !== expected.length || Number(match[2]) !== api.exercises.length)
+        failures.push({chapterValue,difficultyValue,typeValue,countText,expectedCount:expected.length});
+    }
+    chapter.value="all"; difficulty.value="all"; type.value="all";
+    api.exerciseFilterState.chapter="all"; api.exerciseFilterState.difficulty="all"; api.exerciseFilterState.type="all";
+    const sourceTarget = api.exercises.find(exercise => /MOV\s/.test(exercise[2]));
+    const sourceQuery = sourceTarget ? sourceTarget[2].match(/MOV\s+[A-Z]+/)?.[0]?.toLowerCase() : null;
+    if (!sourceQuery) failures.push({search:"source",error:"No MOV source token found."});
+    else { search.value=sourceQuery; api.exerciseFilterState.search=sourceQuery; api.renderExercises();
+      const expected=expectedFor("all","all","all",sourceQuery);
+      const actual=[...document.querySelectorAll("#exerciseList .exercise > b")].map(node=>node.textContent.trim());
+      if(JSON.stringify(actual)!==JSON.stringify(expected)) failures.push({search:sourceQuery,expected,actual}); }
+    const variants = [
+      {index:3,from:"MOV AX, 15",to:"MOV AX, 14",check:state=>state.reg.CX===0},
+      {index:13,from:"MOV AL, 0FCh",to:"MOV AL, 3",check:state=>state.reg.CX===0},
+      {index:18,from:"MOV AX, 8",to:"MOV AX, 2",check:state=>state.reg.DX===0},
+      {index:19,from:"MOV AL, 0FCh",to:"MOV AL, 3",check:state=>state.reg.DX===0},
+      {index:20,from:"MOV AX, 17",to:"MOV AX, 30",check:state=>state.reg.DX===30},
+      {index:20,from:"MOV AX, 17",to:"MOV AX, 23",check:state=>state.reg.DX===23},
+      {index:44,from:"MOV AL, 42h",to:"MOV AL, 44h",check:state=>state.reg.CX===0&&state.reg.DI===0x0103&&state.flags.ZF===0},
+      {index:46,from:"CMP BYTE PTR ES:[0201h], 22h",to:"CMP BYTE PTR ES:[0201h], 99h",check:state=>state.reg.AX===0&&state.reg.BX===0xBEEF},
+      {index:47,from:"CMP WORD PTR ES:[0200h], 5678h",to:"CMP WORD PTR ES:[0200h], 9999h",check:state=>state.reg.AX===0&&state.reg.BX===0xBEEF}
+    ].map(item => { const original=api.exercises[item.index][4].solution; const source=original.replace(item.from,item.to);
+      const state=api.executeAll(source); return {index:item.index,valid:!state.error&&source!==original&&item.check(state)}; });
+    const notes=api.exerciseEditorialNotes, rationales=api.exerciseDifficultyRationales;
+    const notesValid=notes.length===48&&notes.every(note=>note&&note.prerequisites.trim()&&note.pitfall.trim());
+    const rationalesValid=rationales.length===48&&rationales.every(value=>typeof value==="string"&&value.trim());
+    const oracle35=api.exerciseAdditionalOracle(34,api.exercises[34][4].solution);
+    const oracle35RejectsWrong=!api.exerciseAdditionalOracle(34,"MOV AX,1234h\\nNOP\\nHLT");
+    const oracle37=api.exerciseAdditionalOracle(36,api.exercises[36][4].solution);
+    const oracle37RejectsWrong=!api.exerciseAdditionalOracle(36,"MOV AX,1234h\\nHLT");
+    return {combinations,failures,chapters:chapters.length,difficulties:difficulties.length,types:types.length,notesValid,rationalesValid,variants,oracle35,oracle35RejectsWrong,oracle37,oracle37RejectsWrong};
+  });
+  assert.equal(exerciseEditorialAudit.combinations,1554,"All chapter/difficulty/type combinations must be checked.");
+  assert.deepEqual(exerciseEditorialAudit.failures,[],"Exhaustive exercise filters and source search must match independent expected results.");
+  assert.equal(exerciseEditorialAudit.chapters,37); assert.equal(exerciseEditorialAudit.difficulties,6); assert.equal(exerciseEditorialAudit.types,7);
+  assert.ok(exerciseEditorialAudit.notesValid,"All 48 exercises need individual prerequisites and pitfalls.");
+  assert.ok(exerciseEditorialAudit.rationalesValid,"All 48 exercises need a difficulty rationale.");
+  assert.ok(exerciseEditorialAudit.variants.every(item=>item.valid),"All nine alternative data paths must behave as expected: "+JSON.stringify(exerciseEditorialAudit.variants));
+  assert.ok(exerciseEditorialAudit.oracle35&&exerciseEditorialAudit.oracle35RejectsWrong,"EX35 must enforce exact machine-code bytes.");
+  assert.ok(exerciseEditorialAudit.oracle37&&exerciseEditorialAudit.oracle37RejectsWrong,"EX37 must enforce disassembly boundaries and reject a missing jump/NOP.");
+  console.log("Exercise editorial metadata: 48/48; filter matrix: 1,554/1,554; branch variants: 9/9; EX35/EX37 binary oracles PASS.");
   console.log("Keyboard navigation, focus retention/transfer, course, exercise filter and editor activation PASS.");
 
   // Course example hand-off must load the selected lesson's exact source into the editor.
