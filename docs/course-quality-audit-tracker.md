@@ -324,3 +324,14 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - EX39 conserve sa grille d'autoévaluation et son exemple de réponse sur `main` ; aucune validation sémantique automatique n'est revendiquée.
 - La certification pédagogique complète des 48 exercices reste ouverte : les contrôles automatisés ne remplacent pas l'évaluation humaine indépendante.
 - Aucun déploiement n'est déclenché par cette réconciliation.
+
+
+### Première passe indépendante des 48 exercices — 28 novembre 2026
+
+- Parcours statique des 48 intitulés, consignes et programmes de départ sur le commit `9fd63e2`.
+- Trois répétitions prioritaires relevées : EX14/EX20 (même comparaison signée FCh < 02h), EX27/EX41 (même procédure DOUBLE avec CALL/RET) et EX33/EX46 (même scénario INT/IRET).
+- Les recouvrements EX02/EX23, EX30/EX42, EX44/EX47, EX25/EX48 et EX03/EX15 sont documentés comme progressions potentiellement acceptables, sous réserve de contrôler les critères réellement évalués.
+- Points de vigilance ciblés : EX18 (SS:BP non démontré par un accès mémoire), EX24 (TEST et branchement de parité), DF et SI/DI pour EX25/EX48, justification humaine d'EX39, contrats de méthode EX47/EX48.
+- Rapport : `docs/exercise-independent-review-2026-11-28.md`.
+- Cette passe porte uniquement sur intitulés, consignes et programmes de départ. **Aucun des 48 exercices n'est déclaré certifié** ; solutions, validateurs, prérequis, variantes et qualité des corrections restent à examiner individuellement.
+- Aucun changement fonctionnel, aucune fusion dans `main`, aucun déploiement.
