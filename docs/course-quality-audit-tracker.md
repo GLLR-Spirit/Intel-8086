@@ -335,3 +335,6 @@ The mission remains in progress. Passing automated suites is evidence for the te
 - Rapport : `docs/exercise-independent-review-2026-11-28.md`.
 - Cette passe porte uniquement sur intitulés, consignes et programmes de départ. **Aucun des 48 exercices n'est déclaré certifié** ; solutions, validateurs, prérequis, variantes et qualité des corrections restent à examiner individuellement.
 - Aucun changement fonctionnel, aucune fusion dans `main`, aucun déploiement.
+
+- Revue ciblée du mécanisme de validation : des consignes explicites ne disposent pas encore d'un contrat de méthode repéré, notamment EX20 (branchement signé), EX24 (TEST + boucle), EX26 (JMP), EX36 (opérande [BX+SI+4]), EX38 (overrides DS/ES) et EX40 (parcours SI/CX). Les prédicats d'état final seuls ne démontrent pas ces méthodes. Cette liste est un minimum confirmé, pas l'inventaire exhaustif.
+- Le mécanisme de trace structurée est bien appelé avant le prédicat final ; le problème identifié porte sur la couverture incomplète des consignes par les contrats, pas sur l'absence du mécanisme.
