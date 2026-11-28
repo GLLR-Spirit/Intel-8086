@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue pédagogique indépendante — chapitre 32",
+  "reviewDate": "2026-11-27",
+  "scope": "Examen individuel des 19 questions sur ModR/M, adressage 16 bits, calcul d'EA, sélection de segment et déplacements.",
+  "sources": [
+    {
+      "id": "intel-8086-family-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "sections": "ModR/M byte; effective address calculation; 16-bit addressing modes; displacement encoding."
+    },
+    {
+      "id": "intel-mcs86-reference",
+      "title": "Intel MCS-86 Assembly Language Reference Manual",
+      "edition": "1979",
+      "sections": "Memory operands and ModR/M encoding."
+    },
+    {
+      "id": "lab-instruction-reference",
+      "title": "Intel-8086 Lab instruction reference",
+      "sections": "Addressing and encoding support boundaries."
+    }
+  ],
+  "records": [
+    {
+      "id": "C32-L1-Q1",
+      "result": "passed",
+      "finding": "ModR/M est partitionné en Mod (2 bits), Reg (3 bits), R/M (3 bits).",
+      "basis": "Recalcul indépendant des champs ModR/M, des EA, du segment par défaut, de la conversion segment:offset et des déplacements signés."
+    },
+    {
+      "id": "C32-L1-Q2",
+      "result": "passed",
+      "finding": "40h=01000000b se décompose 01|000|000.",
+      "basis": "Recalcul indépendant des champs ModR/M, des EA, du segment par défaut, de la conversion segment:offset et des déplacements signés."
+    },
+    {
+      "id": "C32-L1-Q3",
+      "result": "passed",
+      "finding": "Mod=01 sélectionne un déplacement signé de huit bits.",
+      "basis": "Recalcul indépendant des champs ModR/M, des EA, du segment par défaut, de la conversion segment:offset et des déplacements signés."
+    },
+    {
+      "id": "C32-L2-Q1",
+      "result": "passed",
+      "finding": "EA additionne base, index et déplacement modulo 65536 ; le segment est calculé séparément.",
+      "basis": "Recalcul indépendant des champs ModR/M, des EA, du segment par défaut, de la conversion segment:offset et des déplacements signés."
+    },
+    {
+      "id": "C32-L2-Q2",
+      "result": "passed",
+      "finding": "0100h+0002h+0004h=0106h.",
+      "basis": "Recalcul indépendant des champs ModR/M, des EA, du segment par défaut, de la conversion segment:offset et des déplacements signés."
+    },
+    {
+      "id": "C32-L2-Q3",
+      "result": "passed",
+      "finding": "[BX+SI] sélectionne DS par défaut ; BP est le registre qui entraîne SS.",
+      "basis": "Recalcul indépendant des champs ModR/M, des EA, du segment par défaut, de la conversion segment:offset et des déplacements signés."
+    },
+    {
+      "id": "C32-L3-Q1",
+      "result": "passed",
+      "finding": "Mod=00,R/M=110 est le cas spécial d'adressage direct disp16.",
+      "basis": "Recalcul indépendant des champs ModR/M, des EA, du segment par défaut, de la conversion segment:offset et des déplacements signés."
+    },
+    {
+      "id": "C32-L3-Q2",
+      "result": "passed",
+      "finding": "1234h est stocké 34h puis 12h.",
+      "basis": "Recalcul indépendant des champs ModR/M, des EA, du segment par défaut, de la conversion segment:offset et des déplacements signés."
+    },
+    {
+      "id": "C32-L3-Q3",
+      "result": "passed",
+      "finding": "[BP] doit utiliser Mod=01,R/M=110,disp8=00h pour ne pas être interprété comme disp16.",
+      "basis": "Recalcul indépendant des champs ModR/M, des EA, du segment par défaut, de la conversion segment:offset et des déplacements signés."
+    },
+    {
+      "id": "C32-F-Q1",
+      "result": "passed",
+      "finding": "La définition du byte ModR/M est exacte.",
+      "basis": "Recalcul indépendant des champs ModR/M, des EA, du segment par défaut, de la conversion segment:offset et des déplacements signés."
+    },
+    {
+      "id": "C32-F-Q2",
+      "result": "passed",
+      "finding": "Mod=01 signifie disp8 signé.",
+      "basis": "Recalcul indépendant des champs ModR/M, des EA, du segment par défaut, de la conversion segment:offset et des déplacements signés."
+    },
+    {
+      "id": "C32-F-Q3",
+      "result": "passed",
+      "finding": "8B 40 04 décode correctement MOV AX,[BX+SI+4].",
+      "basis": "Recalcul indépendant des champs ModR/M, des EA, du segment par défaut, de la conversion segment:offset et des déplacements signés."
+    },
+    {
+      "id": "C32-F-Q4",
+      "result": "passed",
+      "finding": "Mod=00,R/M=110 désigne disp16 direct.",
+      "basis": "Recalcul indépendant des champs ModR/M, des EA, du segment par défaut, de la conversion segment:offset et des déplacements signés."
+    },
+    {
+      "id": "C32-F-Q5",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait le calcul d'EA de la leçon 2. Elle demande désormais la formation de l'adresse physique depuis DS=2000h et EA=0106h : 20106h.",
+      "basis": "Recalcul indépendant des champs ModR/M, des EA, du segment par défaut, de la conversion segment:offset et des déplacements signés."
+    },
+    {
+      "id": "C32-F-Q6",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait la conversion binaire de 40h. Elle demande désormais d'encoder [BX+SI−2] avec ModR/M=40h et disp8=FEh.",
+      "basis": "Recalcul indépendant des champs ModR/M, des EA, du segment par défaut, de la conversion segment:offset et des déplacements signés."
+    },
+    {
+      "id": "C32-F-Q7",
+      "result": "passed",
+      "finding": "Reg=000 désigne AX pour une opération 16 bits.",
+      "basis": "Recalcul indépendant des champs ModR/M, des EA, du segment par défaut, de la conversion segment:offset et des déplacements signés."
+    },
+    {
+      "id": "C32-F-Q8",
+      "result": "passed",
+      "finding": "La présence de BP sélectionne SS par défaut pour [BP+SI].",
+      "basis": "Recalcul indépendant des champs ModR/M, des EA, du segment par défaut, de la conversion segment:offset et des déplacements signés."
+    },
+    {
+      "id": "C32-F-Q9",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait la règle abstraite [BP]. Elle décode désormais 8B 46 00 en [BP+0].",
+      "basis": "Recalcul indépendant des champs ModR/M, des EA, du segment par défaut, de la conversion segment:offset et des déplacements signés."
+    },
+    {
+      "id": "C32-F-Q10",
+      "result": "passed",
+      "finding": "L'audit doit couvrir les combinaisons Mod, Reg, R/M, déplacements et extensions pertinentes.",
+      "basis": "Recalcul indépendant des champs ModR/M, des EA, du segment par défaut, de la conversion segment:offset et des déplacements signés."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 16,
+    "corrected": 3,
+    "needsRevision": 0,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  },
+  "openFindings": []
+}

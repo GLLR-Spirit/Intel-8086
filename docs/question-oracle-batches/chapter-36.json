@@ -441,30 +441,36 @@
     {
       "id": "C36-F-Q7",
       "status": "certified",
-      "rule": "procedure_call_double",
+      "rule": "near_call_concrete_return_frame",
       "inputs": {
-        "initialAX": 3,
-        "procedure": [
-          "ADD AX,AX",
-          "RET"
+        "startIP": 256,
+        "encoding": [
+          232,
+          5,
+          0
         ],
-        "callPushesReturnIP": true
+        "instructionLength": 3,
+        "initialSP": 4096,
+        "wordBytes": 2
       },
       "expected": {
-        "finalAX": 6,
-        "returnsAfterCall": true,
-        "stackBalanced": true
+        "returnIP": 259,
+        "returnIPHex": "0103h",
+        "stackTopValue": 259,
+        "finalSP": 4094,
+        "finalSPHex": "0FFEh",
+        "bytesPushed": 2
       },
-      "correctAnswer": "Retourne AX=6",
-      "derivation": "CALL sauvegarde l'IP de continuation et entre dans DOUBLE. ADD AX,AX transforme 3 en 6 ; RET dépile l'adresse de retour et reprend après CALL, en restaurant l'équilibre de pile si la routine n'a pas laissé de PUSH parasite.",
+      "correctAnswer": "IP de retour 0103h ; SP=0FFEh",
+      "derivation": "E8 05 00 est un CALL near rel16 de trois octets. L'adresse de continuation est donc 0100h+3=0103h. CALL empile cet IP sur un mot de 16 bits ; la pile descend de deux octets, de 1000h à 0FFEh. Le déplacement 0005h sert à calculer la cible et ne change pas l'adresse de retour.",
       "distractorRationales": [
         {
-          "choice": "Retourne AX=3",
-          "reason": "La routine exécute ADD AX,AX ; elle ne conserve donc pas la valeur d'entrée inchangée."
+          "choice": "IP de retour 0105h ; SP=0FFCh",
+          "reason": "0105h confond l'adresse de retour avec la cible du saut ; le CALL occupe trois octets et n'empile qu'un mot."
         },
         {
-          "choice": "Retourne AX=9",
-          "reason": "La routine double par addition et ne calcule pas le carré 3×3."
+          "choice": "AX=0103h ; SP=1000h",
+          "reason": "CALL empile l'IP de continuation sur la pile ; il ne place pas cette adresse dans AX."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (October 1979), ADD, FLAGS and CALL/RET behavior; Intel MCS-86 Assembly Language Reference Manual, procedure calls. Test specifications and evidence are software verification practices."

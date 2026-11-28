@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue individuelle — chapitre 25",
+  "reviewDate": "2026-11-27",
+  "scope": "Examen individuel des 19 questions sur DIV/IDIV octet, dividende implicite, quotient/reste, CBW, erreur de division et frontières de quotient. Revue séparée des oracles automatiques.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "sections": "DIV/IDIV implicit dividend and quotient/remainder registers, divide error, CBW and signed division.",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Assembly Language Reference Manual",
+      "edition": "1979",
+      "sections": "Division instruction forms and quotient/remainder registers.",
+      "url": "https://bitsavers.trailing-edge.com/pdf/intel/ISIS_II/9800640A_MCS-86_Assembly_Language_Reference_Manual_Apr79.pdf"
+    }
+  ],
+  "records": [
+    {
+      "id": "C25-L1-Q1",
+      "result": "passed",
+      "finding": "DIV r/m8 utilise AX comme dividende implicite 16 bits.",
+      "basis": "Intel 8086 Family User's Manual, DIV byte form."
+    },
+    {
+      "id": "C25-L1-Q2",
+      "result": "passed",
+      "finding": "42/5 donne quotient 8 et reste 2 ; AL=8 et AH=2.",
+      "basis": "42=8×5+2 et convention DIV byte."
+    },
+    {
+      "id": "C25-L1-Q3",
+      "result": "passed",
+      "finding": "DIV r/m8 place le quotient dans AL et le reste dans AH.",
+      "basis": "Intel 8086 Family User's Manual, quotient/remainder registers."
+    },
+    {
+      "id": "C25-L2-Q1",
+      "result": "passed",
+      "finding": "CBW étend le signe de AL dans AH pour former AX.",
+      "basis": "Intel 8086 Family User's Manual, CBW semantics."
+    },
+    {
+      "id": "C25-L2-Q2",
+      "result": "corrected",
+      "finding": "Le distracteur `F C00h` contenait un espace et n'était pas une notation hexadécimale valide ; il est corrigé en FC00h.",
+      "basis": "Correction éditoriale de la notation hexadécimale ; le résultat FFFCh reste correct."
+    },
+    {
+      "id": "C25-L2-Q3",
+      "result": "passed",
+      "finding": "CBW fournit à IDIV byte un dividende signé 16 bits cohérent lorsque la valeur initiale est dans AL.",
+      "basis": "Intel 8086 Family User's Manual, CBW and IDIV."
+    },
+    {
+      "id": "C25-L3-Q1",
+      "result": "passed",
+      "finding": "L'erreur de division survient pour diviseur nul ou quotient hors plage ; un reste non nul est autorisé.",
+      "basis": "Intel 8086 Family User's Manual, divide error."
+    },
+    {
+      "id": "C25-L3-Q2",
+      "result": "passed",
+      "finding": "0100h/1 donne quotient 256, qui ne tient pas dans AL (0–255).",
+      "basis": "Calcul indépendant et DIV byte destination width."
+    },
+    {
+      "id": "C25-L3-Q3",
+      "result": "passed",
+      "finding": "Comparer 00FFh/1 et 0100h/1 teste exactement la frontière 255/256.",
+      "basis": "Calcul indépendant."
+    },
+    {
+      "id": "C25-F-Q1",
+      "result": "passed",
+      "finding": "DIV effectue une division non signée ; IDIV effectue une division signée.",
+      "basis": "Intel 8086 Family User's Manual, DIV/IDIV semantics."
+    },
+    {
+      "id": "C25-F-Q2",
+      "result": "passed",
+      "finding": "DIV r/m8 utilise AX comme dividende, AL comme quotient et AH comme reste.",
+      "basis": "Intel 8086 Family User's Manual, DIV byte form."
+    },
+    {
+      "id": "C25-F-Q3",
+      "result": "passed",
+      "finding": "DIV BL est la syntaxe valide pour diviser AX par BL en non signé.",
+      "basis": "Intel MCS-86 Assembly Language Reference Manual, DIV syntax."
+    },
+    {
+      "id": "C25-F-Q4",
+      "result": "passed",
+      "finding": "Le diviseur nul et le quotient non représentable sont les deux conditions d'erreur examinées ; reste non nul et dividende impair ne suffisent pas.",
+      "basis": "Intel 8086 Family User's Manual, divide error."
+    },
+    {
+      "id": "C25-F-Q5",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait exactement 42/5 de la leçon. Elle teste maintenant 255/2=127 reste 1, soit AL=7Fh et AH=01h.",
+      "basis": "255=127×2+1 ; convention quotient AL, reste AH."
+    },
+    {
+      "id": "C25-F-Q6",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait le dépassement 256/1 de la leçon. Elle teste maintenant IDIV −7/3 : quotient tronqué vers zéro −2, reste −1.",
+      "basis": "Sémantique IDIV : quotient tronqué vers zéro et reste de même signe que le dividende."
+    },
+    {
+      "id": "C25-F-Q7",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait CBW avec AL=FCh. Elle teste maintenant la frontière signée AL=80h, qui devient AX=FF80h.",
+      "basis": "80h représente −128 sur 8 bits ; CBW étend le signe vers 16 bits."
+    },
+    {
+      "id": "C25-F-Q8",
+      "result": "passed",
+      "finding": "IDIV −4/2 donne quotient −2 (FEh) et reste nul (00h).",
+      "basis": "Calcul signé indépendant et convention IDIV byte."
+    },
+    {
+      "id": "C25-F-Q9",
+      "result": "passed",
+      "finding": "Pour corriger un dépassement de quotient, il faut examiner largeur du dividende et capacité du registre de quotient ; effacer CF ne corrige pas l'erreur.",
+      "basis": "Intel 8086 Family User's Manual, divide error and implicit destination."
+    },
+    {
+      "id": "C25-F-Q10",
+      "result": "passed",
+      "finding": "La validation d'une division doit contrôler quotient, reste, signe et conditions d'erreur.",
+      "basis": "Synthèse des règles DIV/IDIV."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 15,
+    "corrected": 4,
+    "needsRevision": 0,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  },
+  "openFindings": []
+}

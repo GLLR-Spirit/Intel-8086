@@ -472,16 +472,16 @@
         ],
         "samePhysical": true
       },
-      "correctAnswer": "Ils calculent tous deux 10010h",
-      "derivation": "1000h×10h+0010h=10010h et 1001h×10h+0000h=10010h. Les deux couples segment:offset sont différents mais désignent la même adresse physique.",
+      "correctAnswer": "La même adresse physique 10010h",
+      "derivation": "Dans le programme, DS:BX vaut 1000h×10h+0010h=10010h et ES:DI vaut 1001h×10h+0000h=10010h. Les deux références désignent le même octet physique.",
       "distractorRationales": [
         {
-          "choice": "Leurs offsets sont égaux",
-          "reason": "Les deux adresses physiques sont égales à 10010h ; leurs offsets ne sont pas égaux."
+          "choice": "10010h et 10001h",
+          "reason": "Les deux références ne produisent pas deux adresses distinctes : le calcul segment×16+offset donne 10010h dans les deux cas."
         },
         {
-          "choice": "Ils utilisent le même segment",
-          "reason": "Les segments 1000h et 1001h sont différents, même si le résultat physique est identique."
+          "choice": "Deux segments indépendants",
+          "reason": "Les segments ne sont pas des espaces physiques indépendants ; leurs fenêtres peuvent se recouvrir et désigner le même octet."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), segmented memory addressing, 20-bit physical address formation and segment overlap; Intel MCS-86 Assembly Language Reference Manual, segment registers."

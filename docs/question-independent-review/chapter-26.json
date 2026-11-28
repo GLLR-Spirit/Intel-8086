@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue individuelle — chapitre 26",
+  "reviewDate": "2026-11-27",
+  "scope": "Examen individuel des 19 questions sur SHR, SAR, ROL, comptes immédiats/CL, propagation du signe et effets sur CF/OF. Revue distincte des oracles automatiques.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "sections": "SHR/SAR/ROL/shift and rotate instruction semantics, implicit count CL and FLAGS effects.",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Assembly Language Reference Manual",
+      "edition": "1979",
+      "sections": "Shift and rotate instruction forms, count operand and flags.",
+      "url": "https://bitsavers.trailing-edge.com/pdf/intel/ISIS_II/9800640A_MCS-86_Assembly_Language_Reference_Manual_Apr79.pdf"
+    }
+  ],
+  "records": [
+    {
+      "id": "C26-L1-Q1",
+      "result": "passed",
+      "finding": "SHR place dans CF le bit de poids faible expulsé lors d'un décalage à droite.",
+      "basis": "Intel 8086 Family User's Manual, SHR semantics."
+    },
+    {
+      "id": "C26-L1-Q2",
+      "result": "passed",
+      "finding": "81h décalé logiquement d'un bit donne 40h et CF=1.",
+      "basis": "Calcul binaire indépendant."
+    },
+    {
+      "id": "C26-L1-Q3",
+      "result": "passed",
+      "finding": "SHR insère zéro dans le bit de poids fort ; il ne propage pas le signe.",
+      "basis": "Intel 8086 Family User's Manual, logical shift semantics."
+    },
+    {
+      "id": "C26-L2-Q1",
+      "result": "passed",
+      "finding": "SAR recopie le bit de signe dans les nouvelles positions de poids fort.",
+      "basis": "Intel 8086 Family User's Manual, arithmetic shift semantics."
+    },
+    {
+      "id": "C26-L2-Q2",
+      "result": "passed",
+      "finding": "FCh (−4) décalé arithmétiquement d'un bit donne FEh (−2), CF=0.",
+      "basis": "Calcul indépendant en complément à deux."
+    },
+    {
+      "id": "C26-L2-Q3",
+      "result": "passed",
+      "finding": "SAR convient à un décalage à droite de valeurs signées car il propage le bit de signe.",
+      "basis": "Intel 8086 Family User's Manual, SAR semantics."
+    },
+    {
+      "id": "C26-L3-Q1",
+      "result": "passed",
+      "finding": "ROL fait circuler le bit de poids fort vers le bit de poids faible.",
+      "basis": "Intel 8086 Family User's Manual, ROL semantics."
+    },
+    {
+      "id": "C26-L3-Q2",
+      "result": "passed",
+      "finding": "ROL 81h,1 donne 03h et CF=1.",
+      "basis": "Calcul binaire indépendant."
+    },
+    {
+      "id": "C26-L3-Q3",
+      "result": "passed",
+      "finding": "Une rotation réinjecte le bit sortant ; un décalage remplit la position libérée et peut perdre le bit.",
+      "basis": "Intel 8086 Family User's Manual, shift versus rotate."
+    },
+    {
+      "id": "C26-F-Q1",
+      "result": "passed",
+      "finding": "CF reçoit le dernier bit expulsé par le décalage.",
+      "basis": "Intel 8086 Family User's Manual, shift flags."
+    },
+    {
+      "id": "C26-F-Q2",
+      "result": "passed",
+      "finding": "SHR insère zéro tandis que SAR propage le bit de signe.",
+      "basis": "Intel 8086 Family User's Manual, SHR/SAR."
+    },
+    {
+      "id": "C26-F-Q3",
+      "result": "passed",
+      "finding": "SHR AL,1 est une forme valide ; sur 8086, le compte est 1 ou fourni par CL.",
+      "basis": "Intel MCS-86 Assembly Language Reference Manual, shift forms."
+    },
+    {
+      "id": "C26-F-Q4",
+      "result": "passed",
+      "finding": "CL est le registre de compte variable ; CX entier et DL ne sont pas acceptés comme compte implicite.",
+      "basis": "Intel 8086 Family User's Manual, count operand."
+    },
+    {
+      "id": "C26-F-Q5",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait SHR 81h,1 de la leçon. Elle vérifie maintenant deux décalages successifs avec CL=2 : 81h→40h→20h, CF final=0.",
+      "basis": "Trace binaire indépendante sur deux itérations."
+    },
+    {
+      "id": "C26-F-Q6",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait SAR FCh,1 de la leçon. Elle teste maintenant la frontière signée 80h (−128), qui devient C0h (−64).",
+      "basis": "Calcul indépendant en complément à deux."
+    },
+    {
+      "id": "C26-F-Q7",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait ROL 81h,1 de la leçon. Elle teste maintenant ROL 80h,1 : le bit 7 sort dans CF et revient en bit 0, résultat 01h.",
+      "basis": "Trace circulaire indépendante."
+    },
+    {
+      "id": "C26-F-Q8",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait SHR 81h,1 et son état CF. Elle teste maintenant deux rotations ROL : 81h→03h→06h, CF final=0.",
+      "basis": "Trace de rotation indépendante sur deux itérations."
+    },
+    {
+      "id": "C26-F-Q9",
+      "result": "passed",
+      "finding": "Pour préserver un signe négatif lors d'un décalage à droite, SAR doit remplacer SHR.",
+      "basis": "Analyse de sélection d'instruction."
+    },
+    {
+      "id": "C26-F-Q10",
+      "result": "passed",
+      "finding": "La vérification d'une rotation doit tenir compte du résultat, de CF et de la définition d'OF selon le compte ; OF n'est pas défini pour tous les comptes.",
+      "basis": "Intel 8086 Family User's Manual, rotate flags."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 15,
+    "corrected": 4,
+    "needsRevision": 0,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  },
+  "openFindings": []
+}

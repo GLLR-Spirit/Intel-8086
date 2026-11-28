@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue individuelle — chapitre 21",
+  "reviewDate": "2026-11-27",
+  "scope": "Examen individuel des 19 questions sur CALL/RET near et MUL mot. Chaque énoncé, réponse, distracteur, explication et calcul a été vérifié séparément des oracles automatiques.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "sections": "Near CALL/RET stack behavior, return IP, stack pointer changes, unsigned MUL result registers.",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Assembly Language Reference Manual",
+      "edition": "1979",
+      "sections": "Procedure calls, near returns and multiplication instruction forms.",
+      "url": "https://bitsavers.trailing-edge.com/pdf/intel/ISIS_II/9800640A_MCS-86_Assembly_Language_Reference_Manual_Apr79.pdf"
+    }
+  ],
+  "records": [
+    {
+      "id": "C21-L1-Q1",
+      "result": "passed",
+      "finding": "CALL near empile l'offset de retour IP et conserve CS.",
+      "basis": "Intel 8086 Family User's Manual, near CALL semantics."
+    },
+    {
+      "id": "C21-L1-Q2",
+      "result": "passed",
+      "finding": "L'adresse de retour est l'offset de l'instruction qui suit CALL.",
+      "basis": "Intel 8086 Family User's Manual, near CALL/RET control transfer."
+    },
+    {
+      "id": "C21-L1-Q3",
+      "result": "passed",
+      "finding": "CS reste inchangé pendant un appel near ; IP est transféré vers la cible.",
+      "basis": "Intel 8086 Family User's Manual, near control transfers."
+    },
+    {
+      "id": "C21-L2-Q1",
+      "result": "passed",
+      "finding": "RET near dépile le mot de retour dans IP et reprend l'exécution.",
+      "basis": "Intel 8086 Family User's Manual, RET near semantics."
+    },
+    {
+      "id": "C21-L2-Q2",
+      "result": "passed",
+      "finding": "RET reprend à l'instruction suivant CALL, conformément à l'IP de continuation sauvegardé.",
+      "basis": "Trace de contrôle CALL/RET."
+    },
+    {
+      "id": "C21-L2-Q3",
+      "result": "passed",
+      "finding": "Un retour near équilibré restaure IP et SP si la procédure ne laisse pas de mots supplémentaires sur la pile.",
+      "basis": "Trace de pile : CALL empile un mot, RET le retire."
+    },
+    {
+      "id": "C21-L3-Q1",
+      "result": "passed",
+      "finding": "MUL r/m16 produit un résultat 32 bits dans DX:AX.",
+      "basis": "Intel 8086 Family User's Manual, unsigned MUL result registers."
+    },
+    {
+      "id": "C21-L3-Q2",
+      "result": "passed",
+      "finding": "3×3=9 ; AX=0009h et DX=0000h, donc DX:AX=0000:0009h.",
+      "basis": "Calcul indépendant et convention DX:AX."
+    },
+    {
+      "id": "C21-L3-Q3",
+      "result": "passed",
+      "finding": "DX doit être lu car le produit de deux opérandes 16 bits peut dépasser 16 bits ; DX contient le mot haut.",
+      "basis": "Intel 8086 Family User's Manual, MUL word result."
+    },
+    {
+      "id": "C21-F-Q1",
+      "result": "passed",
+      "finding": "La définition d'un appel near est correcte : IP change, CS reste identique.",
+      "basis": "Intel 8086 Family User's Manual, near CALL."
+    },
+    {
+      "id": "C21-F-Q2",
+      "result": "passed",
+      "finding": "CALL empile l'IP de continuation pour permettre à RET de reprendre après l'appel.",
+      "basis": "Intel 8086 Family User's Manual, near CALL/RET."
+    },
+    {
+      "id": "C21-F-Q3",
+      "result": "passed",
+      "finding": "RET est l'instruction de retour near ; IRET et RETF restaurent des cadres de pile différents.",
+      "basis": "Intel MCS-86 Assembly Language Reference Manual, RET/RETF/IRET."
+    },
+    {
+      "id": "C21-F-Q4",
+      "result": "passed",
+      "finding": "Un mot parasite au sommet peut être interprété par RET comme IP de retour et provoquer un saut incorrect.",
+      "basis": "Trace de pile et sémantique RET."
+    },
+    {
+      "id": "C21-F-Q5",
+      "result": "passed",
+      "finding": "AX=5 puis ADD AX,AX donne AX=10 ; RET ne restaure pas AX implicitement.",
+      "basis": "Calcul indépendant et sémantique des registres de résultat."
+    },
+    {
+      "id": "C21-F-Q6",
+      "result": "passed",
+      "finding": "CALL near empile un mot : FFFEh−2=FFFCh.",
+      "basis": "Arithmétique SP et CALL near."
+    },
+    {
+      "id": "C21-F-Q7",
+      "result": "passed",
+      "finding": "La routine double AX puis RET dépile l'IP de retour et reprend après CALL.",
+      "basis": "Trace instruction par instruction."
+    },
+    {
+      "id": "C21-F-Q8",
+      "result": "passed",
+      "finding": "Un retour near correct restaure l'IP de continuation, équilibre SP et ne modifie pas CS.",
+      "basis": "Trace CALL/RET et registre de segment."
+    },
+    {
+      "id": "C21-F-Q9",
+      "result": "passed",
+      "finding": "La correction d'un retour erroné consiste à examiner les PUSH/POP et l'ordre des mots au sommet de pile.",
+      "basis": "Analyse de pile et cause du mauvais IP dépilé."
+    },
+    {
+      "id": "C21-F-Q10",
+      "result": "passed",
+      "finding": "Un contrat d'entrée/sortie et une discipline de pile explicites rendent la procédure réutilisable.",
+      "basis": "Principes de conception d'interfaces de procédures et sémantique CALL/RET."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 19,
+    "corrected": 0,
+    "needsRevision": 0,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  },
+  "openFindings": []
+}

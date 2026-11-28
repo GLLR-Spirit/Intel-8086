@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "title": "Revue indépendante — chapitre 28",
+  "reviewDate": "2026-11-27",
+  "scope": "Examen individuel des 19 questions sur REP/REPE/REPNE, CX, DF, MOVSB/MOVSW, STOSB, SCASB et l'état de fin de répétition. Revue séparée des évaluateurs automatiques.",
+  "sources": [
+    {
+      "id": "intel-8086-manual",
+      "title": "Intel 8086 Family User's Manual",
+      "edition": "October 1979",
+      "sections": "String instructions, REP/REPE/REPNE prefixes, CX counter, SI/DI updates, Direction Flag and zero-count behavior.",
+      "url": "https://bitsavers.trailing-edge.com/components/intel/8086/9800722-03_The_8086_Family_Users_Manual_Oct79.pdf"
+    },
+    {
+      "id": "intel-mcs86-manual",
+      "title": "Intel MCS-86 Assembly Language Reference Manual",
+      "edition": "1979",
+      "sections": "String instruction forms and repeat prefixes.",
+      "url": "https://bitsavers.trailing-edge.com/pdf/intel/ISIS_II/9800640A_MCS-86_Assembly_Language_Reference_Manual_Apr79.pdf"
+    }
+  ],
+  "records": [
+    {
+      "id": "C28-L1-Q1",
+      "result": "passed",
+      "finding": "REP utilise CX comme compteur implicite ; AX et SP ne remplissent pas ce rôle.",
+      "basis": "Intel 8086 Family User's Manual (1979), sémantique des instructions de chaîne et des préfixes de répétition ; calcul ou trace indépendante lorsque nécessaire."
+    },
+    {
+      "id": "C28-L1-Q2",
+      "result": "passed",
+      "finding": "DF sélectionne l'incrémentation ou la décrémentation de SI et DI.",
+      "basis": "Intel 8086 Family User's Manual (1979), sémantique des instructions de chaîne et des préfixes de répétition ; calcul ou trace indépendante lorsque nécessaire."
+    },
+    {
+      "id": "C28-L1-Q3",
+      "result": "passed",
+      "finding": "CLD efface DF ; MOVSB incrémente SI et DI d'un octet après le transfert.",
+      "basis": "Intel 8086 Family User's Manual (1979), sémantique des instructions de chaîne et des préfixes de répétition ; calcul ou trace indépendante lorsque nécessaire."
+    },
+    {
+      "id": "C28-L2-Q1",
+      "result": "passed",
+      "finding": "REPNE poursuit tant que CX est non nul et ZF vaut zéro ; l'arrêt survient si l'une des deux conditions cesse.",
+      "basis": "Intel 8086 Family User's Manual (1979), sémantique des instructions de chaîne et des préfixes de répétition ; calcul ou trace indépendante lorsque nécessaire."
+    },
+    {
+      "id": "C28-L2-Q2",
+      "result": "passed",
+      "finding": "SCASB établit ZF=1 en cas d'égalité ; REPNE arrête alors la répétition.",
+      "basis": "Intel 8086 Family User's Manual (1979), sémantique des instructions de chaîne et des préfixes de répétition ; calcul ou trace indépendante lorsque nécessaire."
+    },
+    {
+      "id": "C28-L2-Q3",
+      "result": "passed",
+      "finding": "CX, DI et ZF sont les états pertinents pour REPNE SCASB ; DI évolue selon DF.",
+      "basis": "Intel 8086 Family User's Manual (1979), sémantique des instructions de chaîne et des préfixes de répétition ; calcul ou trace indépendante lorsque nécessaire."
+    },
+    {
+      "id": "C28-L3-Q1",
+      "result": "passed",
+      "finding": "REP MOVSB transfère CX octets de DS:SI vers ES:DI, sous réserve d'une interruption conditionnelle applicable.",
+      "basis": "Intel 8086 Family User's Manual (1979), sémantique des instructions de chaîne et des préfixes de répétition ; calcul ou trace indépendante lorsque nécessaire."
+    },
+    {
+      "id": "C28-L3-Q2",
+      "result": "passed",
+      "finding": "MOVSW transfère un mot ; avec DF=0, SI et DI progressent chacun de deux octets.",
+      "basis": "Intel 8086 Family User's Manual (1979), sémantique des instructions de chaîne et des préfixes de répétition ; calcul ou trace indépendante lorsque nécessaire."
+    },
+    {
+      "id": "C28-L3-Q3",
+      "result": "passed",
+      "finding": "CX fixe le nombre d'itérations ; CX=0 avant REP entraîne zéro transfert.",
+      "basis": "Intel 8086 Family User's Manual (1979), sémantique des instructions de chaîne et des préfixes de répétition ; calcul ou trace indépendante lorsque nécessaire."
+    },
+    {
+      "id": "C28-F-Q1",
+      "result": "passed",
+      "finding": "La définition distingue REP de REPE/REPNE et précise le rôle supplémentaire de ZF pour les variantes conditionnelles.",
+      "basis": "Intel 8086 Family User's Manual (1979), sémantique des instructions de chaîne et des préfixes de répétition ; calcul ou trace indépendante lorsque nécessaire."
+    },
+    {
+      "id": "C28-F-Q2",
+      "result": "passed",
+      "finding": "Le rôle de DF est correctement limité au sens de progression des index, et non à la longueur du transfert.",
+      "basis": "Intel 8086 Family User's Manual (1979), sémantique des instructions de chaîne et des préfixes de répétition ; calcul ou trace indépendante lorsque nécessaire."
+    },
+    {
+      "id": "C28-F-Q3",
+      "result": "passed",
+      "finding": "MOV CX,2 suivi de REP MOVSB constitue la séquence correcte pour demander deux transferts octet.",
+      "basis": "Intel 8086 Family User's Manual (1979), sémantique des instructions de chaîne et des préfixes de répétition ; calcul ou trace indépendante lorsque nécessaire."
+    },
+    {
+      "id": "C28-F-Q4",
+      "result": "passed",
+      "finding": "La condition d'arrêt de REPNE SCASB est correcte : CX=0 ou ZF=1.",
+      "basis": "Intel 8086 Family User's Manual (1979), sémantique des instructions de chaîne et des préfixes de répétition ; calcul ou trace indépendante lorsque nécessaire."
+    },
+    {
+      "id": "C28-F-Q5",
+      "result": "passed",
+      "finding": "Avec CX=2 et sans condition d'arrêt anticipé, REP MOVSB copie deux octets.",
+      "basis": "Intel 8086 Family User's Manual (1979), sémantique des instructions de chaîne et des préfixes de répétition ; calcul ou trace indépendante lorsque nécessaire."
+    },
+    {
+      "id": "C28-F-Q6",
+      "result": "passed",
+      "finding": "Après deux itérations complètes, le compteur CX initialisé à 2 atteint zéro.",
+      "basis": "Intel 8086 Family User's Manual (1979), sémantique des instructions de chaîne et des préfixes de répétition ; calcul ou trace indépendante lorsque nécessaire."
+    },
+    {
+      "id": "C28-F-Q7",
+      "result": "passed",
+      "finding": "REP STOSB écrit AL à ES:DI deux fois et DI avance d'un octet après chaque écriture lorsque DF=0.",
+      "basis": "Intel 8086 Family User's Manual (1979), sémantique des instructions de chaîne et des préfixes de répétition ; calcul ou trace indépendante lorsque nécessaire."
+    },
+    {
+      "id": "C28-F-Q8",
+      "result": "corrected",
+      "finding": "L'ancienne question répétait essentiellement l'état CX/SI/DI déjà demandé par F6. Elle demande maintenant de tracer les deux octets réellement copiés de DS:0100h–0101h vers ES:0200h–0201h.",
+      "basis": "Intel 8086 Family User's Manual (1979), sémantique des instructions de chaîne et des préfixes de répétition ; calcul ou trace indépendante lorsque nécessaire."
+    },
+    {
+      "id": "C28-F-Q9",
+      "result": "passed",
+      "finding": "La correction distingue correctement CX=0, qui supprime les itérations, de CLD, qui ne modifie que DF.",
+      "basis": "Intel 8086 Family User's Manual (1979), sémantique des instructions de chaîne et des préfixes de répétition ; calcul ou trace indépendante lorsque nécessaire."
+    },
+    {
+      "id": "C28-F-Q10",
+      "result": "passed",
+      "finding": "La vérification proposée couvre la donnée comparée, CX, DI, DF et ZF, soit les états nécessaires à REPNE SCASB.",
+      "basis": "Intel 8086 Family User's Manual (1979), sémantique des instructions de chaîne et des préfixes de répétition ; calcul ou trace indépendante lorsque nécessaire."
+    }
+  ],
+  "summary": {
+    "questionsReviewed": 19,
+    "passed": 18,
+    "corrected": 1,
+    "needsRevision": 0,
+    "blocked": 0,
+    "officialCertificationCountBefore": 384,
+    "officialCertificationCountAfter": 384,
+    "remainingOfficialCertification": 300
+  },
+  "openFindings": []
+}

@@ -1,0 +1,15 @@
+"use strict";
+const fs=require("node:fs");const assert=require("node:assert/strict");
+const key=JSON.parse(fs.readFileSync("docs/question-semantic-key-8086.json","utf8"));
+const batch=JSON.parse(fs.readFileSync("docs/question-oracle-batches/chapter-31.json","utf8"));
+const review=JSON.parse(fs.readFileSync("docs/question-independent-review/chapter-31.json","utf8"));
+const ids=key.questions.filter(q=>q.chapter===31).map(q=>q.id).sort();
+assert.equal(ids.length,19);assert.deepEqual(review.records.map(r=>r.id).sort(),ids);
+assert.deepEqual(review.summary,{questionsReviewed:19,passed:18,corrected:1,needsRevision:0,blocked:0,officialCertificationCountBefore:384,officialCertificationCountAfter:384,remainingOfficialCertification:300});
+assert.deepEqual(review.openFindings,[]);
+const finals=key.questions.filter(q=>q.chapter===31&&q.kind==="final");
+for(const group of [["Définition","Compréhension"],["Syntaxe","Restrictions"],["Prédiction","Calcul / prédiction"],["Analyse de programme","Analyse de résultat"],["Débogage","Raisonnement"]])assert.equal(finals.filter(q=>group.includes(q.category)).length,2);
+const q=key.questions.find(q=>q.id==="C31-F-Q5"),o=batch.oracles.find(o=>o.id==="C31-F-Q5");
+assert.equal(q.correctAnswer,"0103h");assert.equal(o.expected.nextOpcodeOffset,259);assert.equal(o.expected.nextOpcodeHex,"89h");
+assert.ok(review.records.some(r=>r.id==="C31-F-Q5"&&r.result==="corrected"));
+console.log("Chapter 31 independent review: 19/19 inspected; 18 passed; 1 duplicate-boundary question corrected; final assessment balanced; official ledger unchanged at 384/684.");

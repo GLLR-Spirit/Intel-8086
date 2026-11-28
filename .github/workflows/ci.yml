@@ -40,8 +40,46 @@ jobs:
         run: node tests/learning-quality.cjs
       - name: Validate chapter 16 independent review and correction record
         run: node tests/chapter-16-independent-review.cjs
-      - name: Validate chapter 17 independent review and open assessment blueprint finding
+      - name: Validate chapter 17 independent review and balanced assessment blueprint
         run: node tests/chapter-17-independent-review.cjs
+      - name: Validate chapter 18 independent review and balanced assessment blueprint
+        run: node tests/chapter-18-independent-review.cjs
+      - name: Validate chapter 19 independent review and effective-address boundary
+        run: node tests/chapter-19-independent-review.cjs
+      - name: Validate chapter 20 independent review and stack semantics
+        run: node tests/chapter-20-independent-review.cjs
+      - name: Validate chapter 21 independent review and near CALL RET semantics
+        run: node tests/chapter-21-independent-review.cjs
+      - name: Validate chapter 22 independent review and parameter passing
+        run: node tests/chapter-22-independent-review.cjs
+      - name: Validate chapter 23 independent review and modular routines
+        run: node tests/chapter-23-independent-review.cjs
+      - name: Validate chapter 24 independent review and multiplication semantics
+        run: node tests/chapter-24-independent-review.cjs
+      - name: Validate chapter 25 independent review and division semantics
+        run: node tests/chapter-25-independent-review.cjs
+      - name: Validate chapter 26 independent review and shift rotate semantics
+        run: node tests/chapter-26-independent-review.cjs
+      - name: Validate chapter 27 independent review and string instruction semantics
+        run: node tests/chapter-27-independent-review.cjs
+      - name: Validate chapter 28 independent review and repeated string semantics
+        run: node tests/chapter-28-independent-review.cjs
+      - name: Validate chapter 29 independent review and interrupt-frame semantics
+        run: node tests/chapter-29-independent-review.cjs
+      - name: Validate chapter 30 independent review and I/O semantics
+        run: node tests/chapter-30-independent-review.cjs
+      - name: Validate chapter 31 independent review and machine encoding semantics
+        run: node tests/chapter-31-independent-review.cjs
+      - name: Validate chapter 32 independent review and ModR/M semantics
+        run: node tests/chapter-32-independent-review.cjs
+      - name: Validate chapter 33 independent review and disassembly semantics
+        run: node tests/chapter-33-independent-review.cjs
+      - name: Validate chapter 34 independent review and prefix semantics
+        run: node tests/chapter-34-independent-review.cjs
+      - name: Validate chapter 35 independent review and BIU/prefetch semantics
+        run: node tests/chapter-35-independent-review.cjs
+      - name: Validate chapter 36 independent review and integrated-project semantics
+        run: node tests/chapter-36-independent-review.cjs
       - name: Validate question oracle evaluators (automated; not independent certification)
         run: node tests/question-oracle-certification.cjs
       - name: Compare 108 course examples and 48 corrections across source and binary execution

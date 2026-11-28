@@ -230,16 +230,16 @@
         "fullProductStored": true,
         "CF_OFIndicateHighHalf": true
       },
-      "correctAnswer": "Le produit complet et l'indication de dépassement répondent à deux contrôles différents",
-      "derivation": "Le produit complet est conservé dans AX pour la forme octet ou DX:AX pour la forme mot. CF/OF indiquent si la moitié haute est non nulle ; ces indicateurs ne remplacent pas la lecture du produit.",
+      "correctAnswer": "DX:AX contient le produit complet et CF/OF signalent si DX est non nul",
+      "derivation": "Pour MUL r/m16, le produit complet de 32 bits est stocké dans DX:AX. CF et OF signalent si le mot haut DX est non nul ; ils ne contiennent pas eux-mêmes le produit.",
       "distractorRationales": [
         {
           "choice": "CF et OF contiennent les deux octets hauts",
-          "reason": "CF et OF signalent la moitié haute, mais ne contiennent pas les octets hauts du produit."
+          "reason": "CF et OF sont des indicateurs ; les deux mots du produit sont stockés dans DX:AX."
         },
         {
           "choice": "DX est toujours indéfini",
-          "reason": "DX est défini comme moitié haute pour MUL mot ; il n'est pas toujours indéfini."
+          "reason": "Pour MUL mot, DX contient explicitement la moitié haute du produit."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -350,23 +350,23 @@
       "status": "certified",
       "rule": "mul_byte_trace",
       "inputs": {
-        "AL": 6,
-        "BL": 7
+        "AL": 128,
+        "BL": 2
       },
       "expected": {
-        "AX": 42,
-        "product": 42
+        "AX": 256,
+        "product": 256
       },
-      "correctAnswer": "42",
-      "derivation": "6×7=42 décimal, soit 002Ah. Le produit octet est stocké dans AX, avec AH=00h et AL=2Ah.",
+      "correctAnswer": "0100h",
+      "derivation": "80h représente 128 en non signé et BL vaut 02h. MUL BL calcule 128 × 2 = 256, soit 0100h. Le produit complet est placé dans AX : AH reçoit 01h et AL reçoit 00h. La moitié haute étant non nulle, CF et OF sont positionnés.",
       "distractorRationales": [
         {
-          "choice": "13",
-          "reason": "Le produit 6×7 vaut 42, pas 13."
+          "choice": "FF00h",
+          "reason": "FF00h correspond à −256 en signé sur 16 bits ; MUL interprète ici 80h comme 128 non signé."
         },
         {
-          "choice": "36",
-          "reason": "La multiplication de 6 par 7 donne 42 ; 36 correspondrait à 6×6 et ne suit pas les opérandes de l'exemple."
+          "choice": "0080h",
+          "reason": "0080h correspond à 128 ; le produit 128×2 vaut 256, soit 0100h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -374,26 +374,28 @@
     {
       "id": "C24-F-Q6",
       "status": "certified",
-      "rule": "mul_byte_product",
+      "rule": "imul_byte_product",
       "inputs": {
-        "AL": 255,
-        "operand": 2
+        "left": 128,
+        "right": 2,
+        "bits": 8
       },
       "expected": {
-        "product": 510,
-        "AX": 510,
-        "hex": "01FEh"
+        "signedLeft": -128,
+        "signedRight": 2,
+        "product": -256,
+        "resultAX": 65280
       },
-      "correctAnswer": "01FEh",
-      "derivation": "255×2 donne 510 décimal. La conversion hexadécimale donne 01FEh, donc AH=01h et AL=FEh dans AX.",
+      "correctAnswer": "FF00h (−256)",
+      "derivation": "80h vaut −128 en complément à deux sur huit bits. −128×2=−256, encodé FF00h sur seize bits dans AX.",
       "distractorRationales": [
         {
-          "choice": "00FEh",
-          "reason": "00FEh vaut 254 et omet le bit haut 01h du produit 510."
+          "choice": "0100h (256)",
+          "reason": "0100h est le résultat non signé 128×2 ; IMUL interprète 80h comme −128."
         },
         {
-          "choice": "0100h",
-          "reason": "0100h vaut 256 et ne correspond pas à 255×2."
+          "choice": "FFFEh (−2)",
+          "reason": "FFFEh représente −2 ; le produit −128×2 vaut −256, soit FF00h."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), MUL/IMUL operand forms, implicit operands, result registers and CF/OF behavior; Intel MCS-86 Assembly Language Reference Manual, multiplication instructions."
@@ -465,7 +467,7 @@
         "OF": 1
       },
       "correctAnswer": "La moitié haute du produit est non nulle",
-      "derivation": "Pour MUL, CF et OF signalent que la moitié haute du produit est non nulle. Ils ne signifient pas que le produit est toujours négatif et ne signalent pas un diviseur nul.",
+      "derivation": "Pour MUL r/m16, CF et OF valent 1 si DX, moitié haute du produit 32 bits stocké dans DX:AX, est non nul.",
       "distractorRationales": [
         {
           "choice": "Le produit est toujours négatif",

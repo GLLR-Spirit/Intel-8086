@@ -358,26 +358,28 @@
     {
       "id": "C22-F-Q5",
       "status": "certified",
-      "rule": "procedure_addition",
+      "rule": "stack_lifo_order",
       "inputs": {
-        "left": 4,
-        "right": 5,
-        "width": 16
+        "sequence": [
+          "PUSH PARAM_A",
+          "PUSH PARAM_B",
+          "POP PARAM_B",
+          "POP PARAM_A"
+        ]
       },
       "expected": {
-        "AX": 9,
-        "sum": 9
+        "order": "last_in_first_out"
       },
-      "correctAnswer": "AX=9",
-      "derivation": "Les paramètres 4 et 5 sont additionnés : 4+5=9. La routine doit placer ce résultat dans AX conformément au contrat de sortie documenté.",
+      "correctAnswer": "B puis A",
+      "derivation": "Les paramètres sont empilés A puis B ; la discipline LIFO impose de dépiler B avant A.",
       "distractorRationales": [
         {
-          "choice": "AX=20",
-          "reason": "La somme des paramètres est 4+5=9 ; AX=20 ne correspond pas au calcul demandé et ne peut pas être le résultat de cette routine."
+          "choice": "A puis B",
+          "reason": "Cet ordre ne respecte pas LIFO : B est le dernier paramètre empilé et doit être dépilé en premier."
         },
         {
-          "choice": "AX=1",
-          "reason": "La somme des deux paramètres est 4+5=9 ; AX=1 ne correspond ni à leur addition ni au résultat attendu dans AX."
+          "choice": "A et B simultanément",
+          "reason": "Une pile ne dépile pas deux paramètres simultanément ; les valeurs sont récupérées une par une au sommet."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
@@ -385,24 +387,26 @@
     {
       "id": "C22-F-Q6",
       "status": "certified",
-      "rule": "pop_restores_saved_value",
+      "rule": "call_stack_pointer",
       "inputs": {
-        "register": "AX",
-        "savedValue": 4660
+        "initialSP": 4092,
+        "returnIP": 4660,
+        "width": 16
       },
       "expected": {
-        "restoredValue": 4660
+        "finalSP": 4090,
+        "storedReturnIP": 4660
       },
-      "correctAnswer": "1234h",
-      "derivation": "Le mot empilé vaut 1234h ; POP AX le retire du sommet et restaure AX à cette valeur. Le résultat dépend de la discipline LIFO et de l'absence d'empilement parasite.",
+      "correctAnswer": "0FFAh",
+      "derivation": "SP vaut 0FFCh juste avant CALL. L'appel near empile un mot de retour et décrémente SP de deux : 0FFCh−2=0FFAh.",
       "distractorRationales": [
         {
-          "choice": "0000h",
-          "reason": "Le mot sauvegardé est 1234h ; POP AX ne le remplace pas par zéro."
+          "choice": "0FFCh",
+          "reason": "Cette valeur est celle de SP avant CALL ; l'appel near réserve deux octets pour l'IP de retour."
         },
         {
-          "choice": "FFFFh",
-          "reason": "FFFFh n'est pas le contenu empilé ; POP restaure la valeur réellement sauvegardée."
+          "choice": "0FF8h",
+          "reason": "Un seul mot est empilé par CALL near ; SP ne descend pas de quatre octets."
         }
       ],
       "reference": "Intel 8086 Family User's Manual (1979), CALL/RET and stack operations; Intel MCS-86 Assembly Language Reference Manual, procedure interfaces and register conventions. Calling conventions are software contracts, not hardware-enforced rules."
